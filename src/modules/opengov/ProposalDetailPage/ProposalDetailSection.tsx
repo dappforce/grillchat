@@ -2,14 +2,19 @@ import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import MdRenderer from '@/components/MdRenderer'
 import ProfilePreview from '@/components/ProfilePreview'
+import PopOver from '@/components/floating/PopOver'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
 import { useState } from 'react'
 import { FaCheck, FaX } from 'react-icons/fa6'
 import ProposalDetailModal from './ProposalDetailModal'
+
+dayjs.extend(duration)
 
 export default function ProposalDetailSection({
   proposal,
@@ -95,40 +100,92 @@ function Status({ proposal }: { proposal: Proposal }) {
                 Nay <span className='text-text-muted'>(125)</span>
               </span>
             </div>
-            <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
+            <span>{formatBalanceWithDecimals(proposal.vote.nays)} DOT</span>
           </div>
         </div>
       </div>
       <div className='flex flex-col gap-4'>
-        <StatusProgressBar progress={60} text='28d' title='Decision' />
-        <StatusProgressBar progress={90} text='1d' title='Confirmation' />
-        <StatusProgressBar progress={10} text='28d' title='Decision' />
+        <StatusProgressBar periodData={proposal.decision} title='Decision' />
+        <StatusProgressBar
+          periodData={proposal.confirmation}
+          title='Confirmation'
+        />
+        {/* <StatusProgressBar
+          progress={10}
+          title='Decision'
+          currentDayElapsed={0}
+          duration={0}
+        /> */}
       </div>
     </Card>
   )
 }
 
+function getProposalPeriodStatus(period: {
+  startTime: number
+  endTime: number
+  duration: number
+}) {
+  const periodDuration = dayjs.duration(period.duration).asDays()
+  const periodPercentage =
+    (dayjs().diff(period.startTime) / period.duration) * 100
+  const currentDay = dayjs().diff(period.startTime, 'days')
+  const daysLeft = dayjs(period.endTime).diff(dayjs(), 'days')
+  const hoursLeft = dayjs(period.endTime).diff(dayjs(), 'hours') % 24
+
+  return {
+    duration: periodDuration,
+    percentage: periodPercentage,
+    currentDayElapsed: currentDay,
+    daysLeft,
+    hoursLeft,
+  }
+}
 function StatusProgressBar({
-  progress,
-  text,
+  periodData,
   title,
 }: {
   title: string
-  text: string
-  progress: number
+  periodData: {
+    startTime: number
+    endTime: number
+    duration: number
+  } | null
 }) {
+  if (!periodData) return null
+  const { currentDayElapsed, duration, percentage, daysLeft, hoursLeft } =
+    getProposalPeriodStatus(periodData)
+  const percentageFixed = parseInt(percentage.toString())
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between gap-4 text-sm'>
         <span className='text-text-muted'>{title}</span>
-        <span>{text}</span>
+        <span>
+          <span className='text-text-muted'>{currentDayElapsed} / </span>
+          {duration}d
+        </span>
       </div>
-      <div
-        className='grid h-1.5 w-full rounded-full bg-background-lightest'
-        style={{ gridTemplateColumns: `${progress}fr ${100 - progress}fr` }}
+      <PopOver
+        triggerOnHover
+        panelSize='sm'
+        placement='top'
+        yOffset={10}
+        trigger={
+          <div
+            className='grid h-1.5 w-full rounded-full bg-background-lightest'
+            style={{
+              gridTemplateColumns: `${percentage}fr ${100 - percentageFixed}fr`,
+            }}
+          >
+            <div className='h-full rounded-full bg-background-primary' />
+          </div>
+        }
       >
-        <div className='h-full rounded-full bg-background-primary' />
-      </div>
+        <span>
+          {percentageFixed}%, {daysLeft}d {hoursLeft}h left
+        </span>
+      </PopOver>
     </div>
   )
 }
