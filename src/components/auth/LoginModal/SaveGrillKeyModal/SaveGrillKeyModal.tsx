@@ -111,7 +111,7 @@ export default function SaveGrillKeyModal({
           : undefined
       }
     >
-      {props.isOpen && provider !== 'evm' && (
+      {props.isOpen && provider !== 'evm' && provider !== 'polkadot' && (
         <DoOauthLogin onSuccess={() => setIsDoneLoading(true)} />
       )}
       <Component {...contentProps} />
