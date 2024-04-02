@@ -1,6 +1,6 @@
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import { toSubsocialAddress } from '@subsocial/utils'
-import { getProposalPeriods } from './data'
+import { POLKADOT_BLOCK_TIME, getProposalPeriods } from './data'
 
 export type ProposalStatus =
   | 'Confirming'
@@ -60,12 +60,21 @@ export type SubsquareProposal = {
         since: number
         confirming: number
       }
+      submissionDeposit: {
+        who: string
+        amount: number
+      }
+      decisionDeposit: {
+        who: string
+        amount: number
+      }
     }
     tally: {
       ayes: string
       nays: string
       support: string
     }
+    proposalHash: string
     treasuryInfo?: {
       amount: string
       beneficiary: string
@@ -74,19 +83,28 @@ export type SubsquareProposal = {
   }
 }
 
-export type ProposalDecisionPeriod = {
-  startTime?: number
-  endTime?: number
-  duration: number
-  timeLeft: number
-}
-export type ProposalConfirmationPeriod = {
-  startTime?: number
-  endTime?: number
-  duration: number
-  attempt: number
-  timeLeft?: number
-}
+export type ProposalDecisionPeriod =
+  | {
+      duration: number
+      timeLeft: number
+    }
+  | {
+      startTime: number
+      endTime: number
+      duration: number
+      timeLeft: number
+    }
+export type ProposalConfirmationPeriod =
+  | {
+      duration: number
+    }
+  | {
+      startTime: number
+      endTime: number
+      duration: number
+      attempt: number
+      timeLeft: number
+    }
 
 export type Proposal = {
   id: number
@@ -106,6 +124,28 @@ export type Proposal = {
 
   decision: ProposalDecisionPeriod | null
   confirmation: ProposalConfirmationPeriod | null
+  metadata: {
+    submissionDeposit: {
+      who: string
+      amount: number
+    } | null
+    decisionDeposit: {
+      who: string
+      amount: number
+    } | null
+    decisionPeriod: {
+      block: number
+      time: number
+    }
+    confirmingPeriod: {
+      block: number
+      time: number
+    }
+    enact: {
+      block: number
+    }
+    hash: string
+  }
 }
 
 export function mapSubsquareProposalToProposal(
@@ -128,6 +168,24 @@ export function mapSubsquareProposalToProposal(
     type: proposal.onchainData.info.origin.origins,
     track: proposal.track,
     content: proposal.content,
+    metadata: {
+      decisionDeposit: proposal.onchainData?.info?.decisionDeposit ?? null,
+      submissionDeposit: proposal.onchainData?.info?.submissionDeposit ?? null,
+      confirmingPeriod: {
+        block: proposal.onchainData.trackInfo.confirmPeriod,
+        time:
+          proposal.onchainData.trackInfo.confirmPeriod * POLKADOT_BLOCK_TIME,
+      },
+      decisionPeriod: {
+        block: proposal.onchainData.trackInfo.decisionPeriod,
+        time:
+          proposal.onchainData.trackInfo.decisionPeriod * POLKADOT_BLOCK_TIME,
+      },
+      enact: {
+        block: proposal.onchainData.trackInfo.minEnactmentPeriod,
+      },
+      hash: proposal.onchainData.proposalHash,
+    },
     ...getProposalPeriods(proposal),
   }
 }

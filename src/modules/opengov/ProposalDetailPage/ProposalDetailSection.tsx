@@ -9,18 +9,19 @@ import ProfilePreview from '@/components/ProfilePreview'
 import PopOver from '@/components/floating/PopOver'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
-import { Proposal } from '@/server/opengov/mapper'
+import {
+  Proposal,
+  ProposalConfirmationPeriod,
+  ProposalDecisionPeriod,
+} from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
 import { useState } from 'react'
 import { FaCheck, FaX } from 'react-icons/fa6'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 import ProposalMetadataModal from './ProposalMetadataModal'
-
-dayjs.extend(duration)
 
 export default function ProposalDetailSection({
   proposal,
@@ -194,13 +195,9 @@ function StatusProgressBar({
   title,
 }: {
   title: string
-  periodData: {
-    startTime: number
-    endTime: number
-    duration: number
-  } | null
+  periodData: ProposalDecisionPeriod | ProposalConfirmationPeriod | null
 }) {
-  if (!periodData) return null
+  if (!periodData || !('startTime' in periodData)) return null
   const { currentDayElapsed, duration, percentage, daysLeft, hoursLeft } =
     getProposalPeriodStatus(periodData)
   const percentageFixed = parseInt(percentage.toString())

@@ -5,7 +5,7 @@ import {
   SubsquareProposal,
 } from './mapper'
 
-const POLKADOT_BLOCK_TIME = 6_000
+export const POLKADOT_BLOCK_TIME = 6_000
 
 function getBlockTimeForStatus(
   timeline: { indexer: { blockTime: number }; name: string }[],

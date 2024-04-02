@@ -1,10 +1,7 @@
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
-import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
+import { getDurationWithPredefinedUnit } from '@/utils/date'
 import { ReactNode } from 'react'
-
-dayjs.extend(duration)
 
 const proposalsClassNameMap: Record<string, { text: string; bg: string }> = {
   Confirming: { text: cx('text-[#5EC269]'), bg: cx('bg-[#5EC26914]') },
@@ -44,24 +41,21 @@ export default function ProposalStatus({
 }
 
 function getRelativeTime(timeLeft: number) {
-  if (timeLeft > 24 * 60 * 60) {
-    const diff = Math.round(dayjs.duration(timeLeft).asDays())
-    return `${diff}d left`
-  } else if (timeLeft > 60 * 60) {
-    const diff = dayjs.duration(timeLeft).asHours()
-    return `${diff}h left`
-  }
-  const diff = dayjs.duration(timeLeft).asMinutes()
-  return `${diff}m left`
+  const { duration, unit } = getDurationWithPredefinedUnit(timeLeft)
+  let unitShort = ''
+  if (unit === 'days') unitShort = 'd'
+  if (unit === 'hours') unitShort = 'h'
+  if (unit === 'minutes') unitShort = 'm'
+  return `${duration}${unitShort}`
 }
 function ProposalPeriodLeft({ proposal }: { proposal: Proposal }) {
   let element: ReactNode = null
   if (proposal.status === 'Deciding') {
     const timeLeft = proposal.decision?.timeLeft
     if (timeLeft) element = <span>{getRelativeTime(timeLeft)}</span>
-  } else if (proposal.status === 'Confirming') {
-    const timeLeft = proposal.confirmation?.timeLeft
-    if (timeLeft) element = <span>{getRelativeTime(timeLeft)}</span>
+  } else if (proposal.status === 'Confirming' && proposal.confirmation) {
+    if ('timeLeft' in proposal.confirmation)
+      element = <span>{getRelativeTime(proposal.confirmation.timeLeft)}</span>
   }
   if (!element) return null
   return <> &middot; {element}</>
