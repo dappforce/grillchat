@@ -130,7 +130,13 @@ export const getPostsBySpaceContentQuery = createQuery({
 
 export const GET_OWNED_POST_IDS = gql`
   query GetOwnedPostIds($address: String!) {
-    posts(where: { ownedByAccount: { id_eq: $address }, isComment_eq: false }) {
+    posts(
+      where: {
+        ownedByAccount: { id_eq: $address }
+        space_isNull: false
+        isComment_eq: false
+      }
+    ) {
       id
     }
   }

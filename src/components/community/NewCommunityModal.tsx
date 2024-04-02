@@ -6,7 +6,7 @@ import Modal from '../modals/Modal'
 
 import { getPostQuery } from '@/services/api/query'
 import { useSubscriptionState } from '@/stores/subscription'
-import { getChatPageLink } from '@/utils/links'
+import { getChatPageLink, getWidgetChatPageLink } from '@/utils/links'
 import { sendMessageToParentWindow } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
@@ -36,7 +36,7 @@ const modalConfigByStep = {
     title: '✏️ Edit chat',
   },
   loading: {
-    title: 'Loading...',
+    title: 'Creating chat',
   },
 }
 
@@ -44,12 +44,16 @@ export type NewCommunityModalProps = {
   chat?: PostData
   hubId?: string
   withBackButton?: boolean
+  onBackClick?: () => void
+  customOnClose?: () => void
 }
 
 const NewCommunityModal = ({
   hubId,
   withBackButton = true,
   chat,
+  customOnClose,
+  onBackClick: customOnBackClick,
 }: NewCommunityModalProps) => {
   const { openModal, isOpen, defaultOpenState, newChatId, closeModal } =
     useCreateChatModal()
@@ -70,15 +74,18 @@ const NewCommunityModal = ({
     if (newChat) {
       const chatId = newChat.id
       async function onSuccessChatCreation() {
-        const url = urlJoin(
-          getChatPageLink({ query: {} }, chatId, hubId),
-          '?new=true'
-        )
+        const isWidget = window.location.pathname.includes('/widget')
 
-        sendMessageToParentWindow('redirect-hard', url)
-        await router.push(
-          urlJoin(getChatPageLink({ query: {} }, chatId, hubId), '?new=true')
-        )
+        if (isWidget) {
+          sendMessageToParentWindow(
+            'redirect-hard',
+            `${getWidgetChatPageLink({ query: {} }, chatId, hubId)}/?new=true`
+          )
+        } else {
+          await router.push(
+            urlJoin(getChatPageLink({ query: {} }, chatId, hubId), '?new=true')
+          )
+        }
       }
       onSuccessChatCreation()
       setSubscriptionState('post', 'dynamic')
@@ -95,17 +102,25 @@ const NewCommunityModal = ({
     ...(chat ? chat : {}),
   }
 
+  const onBackClick =
+    withBackButton && defaultOpenState !== 'new-comunity'
+      ? () => openModal({ defaultOpenState: 'new-comunity' })
+      : undefined
+
   return (
     <Modal
       isOpen={isOpen}
       title={title}
       withCloseButton
-      onBackClick={
-        withBackButton && defaultOpenState !== 'new-comunity'
-          ? () => openModal({ defaultOpenState: 'new-comunity' })
-          : undefined
+      onBackClick={customOnBackClick ? customOnBackClick : onBackClick}
+      closeModal={
+        customOnClose
+          ? () => {
+              customOnClose()
+              closeModal()
+            }
+          : closeModal
       }
-      closeModal={closeModal}
     >
       <Content {...augmentedFormProps} />
     </Modal>

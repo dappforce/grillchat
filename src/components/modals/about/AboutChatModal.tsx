@@ -63,7 +63,7 @@ export default function AboutChatModal({
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
   })
-  const { openModal } = useCreateChatModal()
+  const { openModal, closeModal: closeCreateChatModal } = useCreateChatModal()
   const sendEvent = useSendEvent()
   const refSearchParam = useReferralSearchParam()
 
@@ -117,6 +117,7 @@ export default function AboutChatModal({
       ),
     })
   }
+  const closeModal = () => setOpenedModalType(null)
 
   const getActionMenu = (
     joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
@@ -152,7 +153,7 @@ export default function AboutChatModal({
         icon: LuPencil,
         iconClassName: cx('text-text-muted'),
         onClick: () => {
-          setOpenedModalType(null)
+          setOpenedModalType('edit')
           openModal({ defaultOpenState: 'update-chat' })
           sendEvent('click edit_chat_menu')
         },
@@ -212,8 +213,6 @@ export default function AboutChatModal({
 
     return actionMenu
   }
-
-  const closeModal = () => setOpenedModalType(null)
 
   let subtitle = (
     <span>
@@ -302,7 +301,17 @@ export default function AboutChatModal({
         url={chatUrl}
         urlTitle={content.title}
       />
-      <NewCommunityModal chat={chat} />
+      <NewCommunityModal
+        chat={chat}
+        onBackClick={() => {
+          closeCreateChatModal()
+          setOpenedModalType(null)
+        }}
+        customOnClose={() => {
+          setOpenedModalType(null)
+          closeModal()
+        }}
+      />
       {hubId && (
         <ModerationInfoModal
           hubId={hubId}

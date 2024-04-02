@@ -141,6 +141,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
               await mutateAsync({
                 spaceId: hubId,
                 postId: chat?.id,
+                isChat: true,
                 ...data,
               })
               onSuccess?.()

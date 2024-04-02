@@ -131,14 +131,15 @@ type Content = {
   title: string
   body?: string
 }
-export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
-  Content
+export type UpsertPostParams = ({ postId: string } | { spaceId: string }) & {
+  isChat?: boolean
+} & Content
 
 async function generateMessageContent(
   params: UpsertPostParams,
   client: QueryClient
 ) {
-  const { image, title, body } = params
+  const { image, title, body, isChat } = params
 
   if ('postId' in params && params.postId) {
     const post = await getPostQuery.fetchQuery(client, params.postId)
@@ -159,6 +160,7 @@ async function generateMessageContent(
     image,
     title,
     body,
+    ...(isChat ? { isChat } : {}),
     optimisticId: crypto.randomUUID(),
   } as PostContent & { optimisticId: string }
 
