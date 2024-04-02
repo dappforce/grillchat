@@ -19,7 +19,7 @@ export default function ProposalDetailSection({
   className?: string
 }) {
   return (
-    <div className={cx('container-page flex flex-col gap-4', className)}>
+    <div className={cx('flex flex-col gap-4', className)}>
       <div className='flex items-center justify-between gap-3'>
         <div className='flex items-center gap-2'>
           <span>{formatBalanceWithDecimals(proposal.requested)} DOT</span>

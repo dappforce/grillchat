@@ -38,7 +38,10 @@ export default function DefaultLayout({
       style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
       {...props}
     >
-      <Navbar {...navbarProps} withSidebar={withSidebar} />
+      <Navbar
+        {...navbarProps}
+        withLargerContainer={withSidebar || navbarProps?.withLargerContainer}
+      />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
         <div

@@ -44,17 +44,13 @@ function getRelativeTime(endDate: number) {
   const end = dayjs(endDate).diff(dayjs(), 'seconds')
   if (end > 24 * 60 * 60) {
     const diff = Math.round(dayjs(endDate).diff(dayjs(), 'days', true))
-    const diffHours =
-      Math.round(dayjs(endDate).diff(dayjs(), 'hours', true)) % 24
-    return `${diff} day${diff > 1 ? 's' : ''} ${diffHours} hour${
-      diffHours > 1 ? 's' : ''
-    }`
+    return `${diff}d left`
   } else if (end > 60 * 60) {
     const diff = Math.round(dayjs(endDate).diff(dayjs(), 'hours', true))
-    return `${diff} hour${diff > 1 ? 's' : ''}`
+    return `${diff}h left`
   }
   const diff = Math.round(dayjs(endDate).diff(dayjs(), 'minutes', true))
-  return `${diff} minute${diff > 1 ? 's' : ''}`
+  return `${diff}m left`
 }
 function ProposalPeriodLeft({ proposal }: { proposal: Proposal }) {
   let element: ReactNode = null

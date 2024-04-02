@@ -19,6 +19,7 @@ export default function ProposalDetailPage({
   return (
     <DefaultLayout
       navbarProps={{
+        withLargerContainer: true,
         backButtonProps: {
           defaultBackLink: '/opengov',
           forceUseDefaultBackLink: false,
