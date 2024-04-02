@@ -45,11 +45,12 @@ export default function HubPageNavbar({
       <div className='flex flex-1 items-center'>
         {/* {backButton} */}
         {hamburgerMenu}
+        <div className='hidden w-[225px] md:block'>{logo}</div>
         <Button
           variant='transparent'
           interactive='none'
           size='noPadding'
-          className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left'
+          className='flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left md:pl-2'
           onClick={() => setIsOpenAboutModal(true)}
         >
           <ChatImage

@@ -81,7 +81,7 @@ export default function useOauthLogin({
         sendEvent('login_oauth_successful', { provider })
         finalizeTemporaryAccount()
         onSuccess()
-        signOut()
+        signOut({ redirect: false })
       },
     },
   })
