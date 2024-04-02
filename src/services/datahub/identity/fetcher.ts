@@ -42,9 +42,24 @@ export async function getLinkedIdentity(
     },
   })
 
-  const identity = data.linkedIdentities.filter(
+  const identities = data.linkedIdentities.filter(
     (identity) => identity.enabled
-  )?.[0]
+  )
+  const identityPriorityOrder = [
+    IdentityProvider.Polkadot,
+    IdentityProvider.Twitter,
+    IdentityProvider.Google,
+    IdentityProvider.Facebook,
+    IdentityProvider.Evm,
+    IdentityProvider.Email,
+  ]
+  const identitiesSorted = identities.toSorted((a, b) => {
+    const aIndex = identityPriorityOrder.indexOf(a.provider)
+    const bIndex = identityPriorityOrder.indexOf(b.provider)
+    return aIndex - bIndex
+  })
+  const identity = identitiesSorted[0]
+
   if (!identity) return null
   return {
     externalId: identity.externalId,
