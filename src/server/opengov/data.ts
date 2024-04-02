@@ -4,7 +4,7 @@ import {
   ProposalDecisionPeriod,
   SubsquareProposal,
 } from './mapper'
-import { TracksInfo, getPolkadotTracksInfo } from './track-info'
+import { TracksInfo } from './track-info'
 
 const POLKADOT_BLOCK_TIME = 6_000
 
@@ -39,7 +39,6 @@ function getDecisionData(
   proposal: SubsquareProposal
 ): ProposalDecisionPeriod | null {
   const trackInfo = allTrackInfo[proposal.track]
-  getPolkadotTracksInfo()
   if (!trackInfo) return null
 
   const startTime = getBlockTimeForStatus(
