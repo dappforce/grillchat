@@ -1,6 +1,7 @@
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { getProposalPeriods } from './data'
+import { TracksInfo } from './track-info'
 
 export type ProposalStatus =
   | 'Confirming'
@@ -72,6 +73,7 @@ export type Proposal = {
 }
 
 export function mapSubsquareProposalToProposal(
+  allTracksInfo: TracksInfo,
   proposal: SubsquareProposal
 ): Proposal {
   return {
@@ -91,6 +93,6 @@ export function mapSubsquareProposalToProposal(
     type: proposal.onchainData.info.origin.origins,
     track: proposal.track,
     content: proposal.content,
-    ...getProposalPeriods(proposal),
+    ...getProposalPeriods(allTracksInfo, proposal),
   }
 }

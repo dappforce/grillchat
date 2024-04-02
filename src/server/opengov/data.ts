@@ -4,7 +4,7 @@ import {
   ProposalDecisionPeriod,
   SubsquareProposal,
 } from './mapper'
-import { polkadotTrackInfo } from './track-info'
+import { TracksInfo, getPolkadotTracksInfo } from './track-info'
 
 const POLKADOT_BLOCK_TIME = 6_000
 
@@ -16,11 +16,12 @@ function getBlockTimeForStatus(
 }
 
 export function getProposalPeriods(
+  allTrackInfo: TracksInfo,
   proposal: SubsquareProposal
 ): Pick<Proposal, 'decision' | 'confirmation'> {
   const track = proposal.track
 
-  const trackInfo = polkadotTrackInfo[track]
+  const trackInfo = allTrackInfo[track]
   if (!trackInfo)
     return {
       confirmation: null,
@@ -28,15 +29,17 @@ export function getProposalPeriods(
     }
 
   return {
-    decision: getDecisionData(proposal),
-    confirmation: getConfirmationData(proposal),
+    decision: getDecisionData(allTrackInfo, proposal),
+    confirmation: getConfirmationData(allTrackInfo, proposal),
   }
 }
 
 function getDecisionData(
+  allTrackInfo: TracksInfo,
   proposal: SubsquareProposal
 ): ProposalDecisionPeriod | null {
-  const trackInfo = polkadotTrackInfo[proposal.track]
+  const trackInfo = allTrackInfo[proposal.track]
+  getPolkadotTracksInfo()
   if (!trackInfo) return null
 
   const startTime = getBlockTimeForStatus(
@@ -53,15 +56,15 @@ function getDecisionData(
 }
 
 function getConfirmationData(
+  allTrackInfo: TracksInfo,
   proposal: SubsquareProposal
 ): ProposalConfirmationPeriod | null {
-  const trackInfo = polkadotTrackInfo[proposal.track]
+  const trackInfo = allTrackInfo[proposal.track]
   if (!trackInfo) return null
 
   let confirmationStartTime: number | undefined
   let confirmationAttempt: number = 0
   proposal.onchainData.timeline?.forEach((t) => {
-    if (proposal.state.name === 'Confirming') console.log(t)
     if (t.name === 'ConfirmStarted') {
       confirmationStartTime = t.indexer.blockTime
       confirmationAttempt++

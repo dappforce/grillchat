@@ -22,3 +22,15 @@ export const getKiltApi = async () => {
 
   return api
 }
+
+let polkadotApi: Promise<ApiPromise> | null = null
+const polkadotApiUrl = 'https://polkadot.api.onfinality.io/public-ws'
+export const getPolkadotApi = async () => {
+  if (polkadotApi) return polkadotApi
+
+  const provider = new HttpProvider(polkadotApiUrl)
+  const api = ApiPromise.create({ provider, typesBundle })
+  polkadotApi = api
+
+  return api
+}

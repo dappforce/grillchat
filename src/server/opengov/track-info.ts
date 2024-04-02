@@ -1,3 +1,5 @@
+import { getPolkadotApi } from '../external'
+
 export const PostOrigin = {
   AUCTION_ADMIN: 15,
   BIG_SPENDER: 34,
@@ -16,7 +18,26 @@ export const PostOrigin = {
   WHITELISTED_CALLER: 1,
 }
 
-export const polkadotTrackInfo = {
+export type TracksInfo = Awaited<ReturnType<typeof getPolkadotTracksInfo>>
+export async function getPolkadotTracksInfo() {
+  const polkadotApi = await getPolkadotApi()
+  // TODO: add redis
+  const apiTracksInfo = polkadotApi.consts.referenda.tracks.toJSON()
+  const tracksInfo = { ...defaultPolkadotTrackInfo }
+  if (Array.isArray(apiTracksInfo)) {
+    ;(apiTracksInfo as any[]).forEach(
+      ([trackNum, trackInfo]: [number, any]) => {
+        tracksInfo[trackNum] = {
+          ...(defaultPolkadotTrackInfo[trackNum] || {}),
+          ...trackInfo,
+        }
+      }
+    )
+  }
+  return tracksInfo
+}
+
+const defaultPolkadotTrackInfo = {
   [PostOrigin.ROOT]: {
     trackId: 0,
     description: 'Origin for General network-wide improvements',
