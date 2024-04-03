@@ -101,7 +101,7 @@ export default function Name({
           className
         )}
       >
-        <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
+        <span className='my-1 h-3 w-20 rounded-full bg-background-lighter font-medium' />
       </span>
     )
   }
