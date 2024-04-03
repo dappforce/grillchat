@@ -1,14 +1,12 @@
 import Button from '@/components/Button'
+import { getPluralText } from '@/components/PluralText'
+import Spinner from '@/components/Spinner'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
 import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
-import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import LinkText from '@/components/LinkText'
-import { getPluralText } from '@/components/PluralText'
-import Spinner from '@/components/Spinner'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -35,6 +33,7 @@ import { ImageProps } from 'next/image'
 import Router, { useRouter } from 'next/router'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
+import BottomPanel from './BottomPanel'
 
 const NetworkStatus = dynamic(() => import('@/components/NetworkStatus'), {
   ssr: false,
@@ -223,24 +222,6 @@ export default function ChatPage({
         closeModal={() => setIsOpenCreateSuccessModal(false)}
       />
     </>
-  )
-}
-
-function BottomPanel() {
-  return (
-    <Container as='div' className='pb-2 text-center text-sm text-text-muted'>
-      <p className='inline'>
-        Powered by{' '}
-        <LinkText
-          variant='primary'
-          href='https://subsocial.network/'
-          openInNewTab
-        >
-          Subsocial
-        </LinkText>
-      </p>
-      <NetworkStatus className='ml-2 inline-block' />
-    </Container>
   )
 }
 

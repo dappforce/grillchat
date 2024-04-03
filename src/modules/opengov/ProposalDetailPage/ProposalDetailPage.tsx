@@ -3,6 +3,7 @@ import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
+import BottomPanel from '@/modules/chat/ChatPage/BottomPanel'
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
@@ -47,6 +48,7 @@ export default function ProposalDetailPage({
           asContainer
           withDesktopLeftOffset={424}
         />
+        <BottomPanel withDesktopLeftOffset={424} />
       </div>
     </DefaultLayout>
   )
