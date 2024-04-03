@@ -49,24 +49,24 @@ export function getDurationWithPredefinedUnit(time: number): {
   unit: 'days' | 'hours' | 'minutes'
   text: string
 } {
-  if (time > 24 * 60 * 60) {
-    const duration = getDuration(time, 'days')
+  if (time > 24 * 60 * 60 * 1000) {
+    const duration = parseInt(getDuration(time, 'days').toString())
     return {
-      duration: getDuration(time, 'days'),
+      duration,
       unit: 'days',
       text: `${duration} day${duration > 1 ? 's' : ''}`,
     }
-  } else if (time > 60 * 60) {
-    const duration = getDuration(time, 'hours')
+  } else if (time > 60 * 60 * 1000) {
+    const duration = parseInt(getDuration(time, 'hours').toString())
     return {
-      duration: getDuration(time, 'hours'),
+      duration,
       unit: 'hours',
       text: `${duration} hour${duration > 1 ? 's' : ''}`,
     }
   }
-  const duration = getDuration(time, 'minutes')
+  const duration = parseInt(getDuration(time, 'minutes').toString())
   return {
-    duration: getDuration(time, 'minutes'),
+    duration,
     unit: 'minutes',
     text: `${duration} min${duration > 1 ? 's' : ''}`,
   }

@@ -228,7 +228,8 @@ function StatusProgressBar({
         }
       >
         <span>
-          {percentageFixed}%, {daysLeft}d {hoursLeft}h left
+          {percentageFixed}%, {daysLeft > 0 ? `${daysLeft}d ` : ''}
+          {hoursLeft}h left
         </span>
       </PopOver>
     </div>
