@@ -14,12 +14,14 @@ import ProposalDetailSection from './ProposalDetailSection'
 
 export type ProposalDetailPageProps = {
   proposal: Proposal
+  chatId: string | null
 }
 
 const MemoizedChatRoom = memo(ChatRoom)
 
 export default function ProposalDetailPage({
   proposal,
+  chatId,
 }: ProposalDetailPageProps) {
   const [isOpenComment, setIsOpenComment] = useState(false)
 
@@ -79,7 +81,7 @@ export default function ProposalDetailPage({
           </Button>
         </div>
         <MemoizedChatRoom
-          chatId='88716'
+          chatId={chatId ?? ''}
           hubId='12466'
           asContainer
           withDesktopLeftOffset={416}

@@ -2,6 +2,7 @@ import Container from '@/components/Container'
 import Loading from '@/components/Loading'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { CHAT_PER_PAGE } from '@/constants/chat'
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
@@ -75,6 +76,7 @@ function ChatListContent({
   withDesktopLeftOffset,
   ...props
 }: ChatListProps) {
+  const lgUp = useBreakpointThreshold('lg')
   const sendEvent = useSendEvent()
   const { enableBackButton } = useConfigContext()
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId)
@@ -199,6 +201,12 @@ function ChatListContent({
                 : undefined
             }
             className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
+            style={{
+              left:
+                withDesktopLeftOffset && lgUp
+                  ? `calc(50% + ${withDesktopLeftOffset / 2}px)`
+                  : '',
+            }}
           />
         )}
         <ScrollableContainer
