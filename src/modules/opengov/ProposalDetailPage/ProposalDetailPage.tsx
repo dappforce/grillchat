@@ -7,7 +7,8 @@ import BottomPanel from '@/modules/chat/ChatPage/BottomPanel'
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
-import { ReactNode, useState } from 'react'
+import { ReactNode, memo, useState } from 'react'
+import { HiChevronUp } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 import ProposalDetailSection from './ProposalDetailSection'
 
@@ -15,9 +16,13 @@ export type ProposalDetailPageProps = {
   proposal: Proposal
 }
 
+const MemoizedChatRoom = memo(ChatRoom)
+
 export default function ProposalDetailPage({
   proposal,
 }: ProposalDetailPageProps) {
+  const [isOpenComment, setIsOpenComment] = useState(false)
+
   return (
     <DefaultLayout
       withFixedHeight
@@ -39,16 +44,47 @@ export default function ProposalDetailPage({
       }}
     >
       <div className='relative flex flex-1 flex-col overflow-hidden'>
-        <div className='absolute left-0 z-10 hidden h-[calc(100dvh_-_3.5rem)] overflow-auto pb-8 pl-4 pt-4 scrollbar-none lg:block [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]'>
-          <ProposalDetailSection proposal={proposal} className='w-[400px]' />
+        <div
+          className={cx(
+            'absolute left-0 z-20 bg-background transition scrollbar-none [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]',
+            isOpenComment && 'pointer-events-none -translate-y-1/4 opacity-0'
+          )}
+        >
+          <div className='h-[calc(100dvh_-_3.5rem)] overflow-auto px-4 pb-24 pt-4 lg:pb-8'>
+            <ProposalDetailSection
+              proposal={proposal}
+              className='lg:w-[400px]'
+            />
+          </div>
+          <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4'>
+            <Button
+              size='lg'
+              className='w-full'
+              onClick={() => setIsOpenComment(true)}
+            >
+              Comment (6)
+            </Button>
+          </div>
         </div>
-        <ChatRoom
+        <div className='w-full border-b border-border-gray bg-background-light lg:hidden'>
+          <Button
+            size='noPadding'
+            variant='transparent'
+            className='flex h-10 w-full items-center justify-center gap-2 text-sm text-text-muted'
+            interactive='none'
+            onClick={() => setIsOpenComment(false)}
+          >
+            <span>Back to proposal</span>
+            <HiChevronUp />
+          </Button>
+        </div>
+        <MemoizedChatRoom
           chatId='88716'
           hubId='12466'
           asContainer
-          withDesktopLeftOffset={424}
+          withDesktopLeftOffset={416}
         />
-        <BottomPanel withDesktopLeftOffset={424} />
+        <BottomPanel withDesktopLeftOffset={416} />
       </div>
     </DefaultLayout>
   )
