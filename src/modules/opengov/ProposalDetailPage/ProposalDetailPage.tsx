@@ -75,11 +75,11 @@ export default function ProposalDetailPage({
       <div className='relative flex flex-1 flex-col overflow-hidden'>
         <div
           className={cx(
-            'absolute left-0 z-20 w-full bg-background transition scrollbar-none lg:w-auto [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]',
+            'absolute left-0 z-20 w-full bg-background transition lg:w-auto [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]',
             isOpenComment && 'pointer-events-none -translate-y-1/4 opacity-0'
           )}
         >
-          <div className='h-[calc(100dvh_-_3.5rem)] overflow-auto px-4 pb-24 pt-4 lg:pb-8'>
+          <div className='h-[calc(100dvh_-_3.5rem)] overflow-auto px-4 pb-24 pt-4 scrollbar-none lg:pb-8'>
             <ProposalDetailSection
               proposal={proposal}
               className='lg:w-[400px]'
