@@ -1,10 +1,11 @@
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function CreateChatPage() {
   const myAddress = useMyMainAddress()
+  const [spaceId, setSpaceId] = useState('')
 
   useEffect(() => {
     if (myAddress) {
@@ -21,10 +22,16 @@ export default function CreateChatPage() {
       const eventData = event.data
       if (eventData && eventData.type === 'grill:create-chat') {
         const payload = eventData.payload as string
-        if (payload === 'open') {
+        const [state, spaceId] = payload.split('|')
+
+        if (state === 'open' && spaceId) {
           useCreateChatModal
             .getState()
             .openModal({ defaultOpenState: 'create-chat' })
+
+          setSpaceId(spaceId)
+        } else {
+          setSpaceId('')
         }
       }
     }
@@ -35,5 +42,5 @@ export default function CreateChatPage() {
     }
   }, [])
 
-  return <NewCommunityModal withBackButton={false} hubId={'8105'} />
+  return <NewCommunityModal withBackButton={false} hubId={spaceId} />
 }
