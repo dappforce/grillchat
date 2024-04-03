@@ -46,7 +46,7 @@ export default function ProposalDetailPage({
       <div className='relative flex flex-1 flex-col overflow-hidden'>
         <div
           className={cx(
-            'absolute left-0 z-20 bg-background transition scrollbar-none [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]',
+            'absolute left-0 z-20 w-full bg-background transition scrollbar-none [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]',
             isOpenComment && 'pointer-events-none -translate-y-1/4 opacity-0'
           )}
         >
