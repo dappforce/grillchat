@@ -151,6 +151,16 @@ export type Proposal = {
 export function mapSubsquareProposalToProposal(
   proposal: SubsquareProposal
 ): Proposal {
+  const decisionDeposit = proposal.onchainData?.info?.decisionDeposit ?? null
+  if (decisionDeposit) {
+    decisionDeposit.who = toSubsocialAddress(decisionDeposit.who)!
+  }
+
+  const submissionDeposit =
+    proposal.onchainData?.info?.submissionDeposit ?? null
+  if (submissionDeposit) {
+    submissionDeposit.who = toSubsocialAddress(submissionDeposit.who)!
+  }
   return {
     id: proposal.referendumIndex,
     beneficiary: proposal.onchainData.treasuryInfo?.beneficiary ?? '',
@@ -169,8 +179,8 @@ export function mapSubsquareProposalToProposal(
     track: proposal.track,
     content: proposal.content,
     metadata: {
-      decisionDeposit: proposal.onchainData?.info?.decisionDeposit ?? null,
-      submissionDeposit: proposal.onchainData?.info?.submissionDeposit ?? null,
+      decisionDeposit,
+      submissionDeposit,
       confirmingPeriod: {
         block: proposal.onchainData.trackInfo.confirmPeriod,
         time:
