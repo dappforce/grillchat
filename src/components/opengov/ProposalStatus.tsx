@@ -42,6 +42,8 @@ export default function ProposalStatus({
 
 function getRelativeTime(timeLeft: number) {
   const { duration, unit } = getDurationWithPredefinedUnit(timeLeft)
+  if (duration <= 0) return ''
+
   let unitShort = ''
   if (unit === 'days') unitShort = 'd'
   if (unit === 'hours') unitShort = 'h'
@@ -54,8 +56,10 @@ function ProposalPeriodLeft({ proposal }: { proposal: Proposal }) {
     const timeLeft = proposal.decision?.timeLeft
     if (timeLeft) element = <span>{getRelativeTime(timeLeft)}</span>
   } else if (proposal.status === 'Confirming' && proposal.confirmation) {
-    if ('timeLeft' in proposal.confirmation)
-      element = <span>{getRelativeTime(proposal.confirmation.timeLeft)}</span>
+    if ('timeLeft' in proposal.confirmation) {
+      const timeLeft = getRelativeTime(proposal.confirmation.timeLeft)
+      if (timeLeft) element = <span>{timeLeft}</span>
+    }
   }
   if (!element) return null
   return <> &middot; {element}</>
