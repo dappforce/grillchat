@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
@@ -18,6 +19,7 @@ export default function ProposalDetailPage({
 }: ProposalDetailPageProps) {
   return (
     <DefaultLayout
+      withFixedHeight
       navbarProps={{
         withLargerContainer: true,
         backButtonProps: {
@@ -35,11 +37,16 @@ export default function ProposalDetailPage({
         ),
       }}
     >
-      <div className={cx('container-page flex flex-1 items-start')}>
-        <div className={cx('sticky top-14 hidden w-[400px] pb-20 md:block')}>
-          <ProposalDetailSection proposal={proposal} className='pt-4' />
+      <div className='relative flex flex-1 flex-col overflow-hidden'>
+        <div className='container-page absolute left-1/2 mt-4 hidden -translate-x-1/2 lg:block'>
+          <ProposalDetailSection proposal={proposal} className='w-[400px]' />
         </div>
-        <div className='flex-1'>asdfasdf</div>
+        <ChatRoom
+          chatId='88716'
+          hubId='12466'
+          asContainer
+          withDesktopLeftOffset={424}
+        />
       </div>
     </DefaultLayout>
   )

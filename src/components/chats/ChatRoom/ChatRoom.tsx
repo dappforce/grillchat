@@ -32,6 +32,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   customAction?: ReactNode
   chatId: string
   hubId: string
+  withDesktopLeftOffset?: number
 }
 
 export default function ChatRoom({
@@ -41,13 +42,17 @@ export default function ChatRoom({
   customAction,
   chatId,
   hubId,
+  withDesktopLeftOffset,
   ...props
 }: ChatRoomProps) {
   const replyTo = useMessageData((state) => state.replyTo)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div {...props} className={cx('flex flex-col', className)}>
+    <div
+      {...props}
+      className={cx('flex flex-1 flex-col overflow-hidden', className)}
+    >
       <ChatList
         hubId={hubId}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
@@ -55,6 +60,7 @@ export default function ChatRoom({
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
+        withDesktopLeftOffset={withDesktopLeftOffset}
       />
       <ChatInputWrapper
         customAction={customAction}
@@ -62,6 +68,7 @@ export default function ChatRoom({
         hubId={hubId}
         asContainer={asContainer}
         scrollContainerRef={scrollContainerRef}
+        withDesktopLeftOffset={withDesktopLeftOffset}
       />
     </div>
   )
@@ -72,12 +79,14 @@ type ChatInputWrapperProps = Pick<
   'asContainer' | 'chatId' | 'hubId' | 'customAction'
 > & {
   scrollContainerRef: RefObject<HTMLDivElement>
+  withDesktopLeftOffset?: number
 }
 function ChatInputWrapper({
   asContainer,
   chatId,
   hubId,
   customAction,
+  withDesktopLeftOffset,
   scrollContainerRef,
 }: ChatInputWrapperProps) {
   const clearAction = useMessageData((state) => state.clearAction)
@@ -120,106 +129,116 @@ function ChatInputWrapper({
 
   return (
     <>
-      <Component className={cx('mt-auto flex flex-col py-2 pt-0')}>
-        <ActionDetailBar
-          chatId={chatId}
-          hubId={hubId}
-          scrollContainer={scrollContainerRef}
-        />
-        {(() => {
-          if (customAction) return customAction
+      <Component className={cx('mt-auto flex py-2 pt-0')}>
+        {!!withDesktopLeftOffset && (
+          <div
+            style={{ width: withDesktopLeftOffset }}
+            className='hidden flex-shrink-0 lg:block'
+          />
+        )}
+        <div className='flex flex-1 flex-col'>
+          <ActionDetailBar
+            chatId={chatId}
+            hubId={hubId}
+            scrollContainer={scrollContainerRef}
+          />
+          {(() => {
+            if (customAction) return customAction
 
-          if (loginOption === 'polkadot') {
-            if (!parentProxyAddress) {
-              return (
-                <Button
-                  variant='primary'
-                  size='lg'
-                  onClick={() => {
-                    if (isLoggedIn)
-                      openProfileModal({ defaultOpenState: 'polkadot-connect' })
-                    else openLoginModal(true, 'polkadot-connect')
-                  }}
-                >
-                  Connect Polkadot wallet
-                </Button>
-              )
-            } else if (isLoadingStakedInfo) {
-              return <Skeleton className='h-12 w-full' />
-            } else if (!hasUserStaked) {
-              return (
-                <span className='flex h-12 items-center justify-center rounded-full bg-background-light/50 px-8 text-center text-sm text-text-muted'>
-                  <span>
-                    In order to participate in this chat, you must{' '}
-                    <LinkText
-                      className='font-semibold'
-                      variant='primary'
-                      href='https://sub.id/creators'
-                    >
-                      stake SUB
-                    </LinkText>
-                    , enable Grill notifications, and sign in to Grill with that
-                    account, or link it to your existing account.
-                  </span>
-                </span>
-              )
-            }
-          }
-
-          if (isHidden)
-            return (
-              <TextArea
-                rows={1}
-                disabled
-                value='You cannot send messages in a hidden chat'
-                className='bg-background-light/50 text-center text-text-muted !brightness-100'
-                variant='fill'
-                pill
-              />
-            )
-
-          if (isJoined || isHubWithoutJoinButton)
-            return (
-              <ChatInputBar
-                formProps={{
-                  hubId,
-                  chatId,
-                  onSubmit: (isEditing) => {
-                    if (!isEditing) scrollToBottom()
-                  },
-                  isPrimary: true,
-                }}
-              />
-            )
-
-          return (
-            <JoinChatWrapper>
-              {({ isLoading, mutateAsync }) => {
-                const isButtonLoading = isLoading || isLoadingJoinedChat
+            if (loginOption === 'polkadot') {
+              if (!parentProxyAddress) {
                 return (
                   <Button
+                    variant='primary'
                     size='lg'
-                    className={cx(
-                      isButtonLoading && 'bg-background-light text-text-muted'
-                    )}
-                    disabledStyle='subtle'
-                    isLoading={isButtonLoading}
-                    onClick={async () => {
-                      await mutateAsync({ chatId })
-                      sendEvent(
-                        'join_chat',
-                        { chatId, hubId, eventSource: 'chat_required_btn' },
-                        { hasJoinedChats: true }
-                      )
+                    onClick={() => {
+                      if (isLoggedIn)
+                        openProfileModal({
+                          defaultOpenState: 'polkadot-connect',
+                        })
+                      else openLoginModal(true, 'polkadot-connect')
                     }}
                   >
-                    Join
+                    Connect Polkadot wallet
                   </Button>
                 )
-              }}
-            </JoinChatWrapper>
-          )
-        })()}
+              } else if (isLoadingStakedInfo) {
+                return <Skeleton className='h-12 w-full' />
+              } else if (!hasUserStaked) {
+                return (
+                  <span className='flex h-12 items-center justify-center rounded-full bg-background-light/50 px-8 text-center text-sm text-text-muted'>
+                    <span>
+                      In order to participate in this chat, you must{' '}
+                      <LinkText
+                        className='font-semibold'
+                        variant='primary'
+                        href='https://sub.id/creators'
+                      >
+                        stake SUB
+                      </LinkText>
+                      , enable Grill notifications, and sign in to Grill with
+                      that account, or link it to your existing account.
+                    </span>
+                  </span>
+                )
+              }
+            }
+
+            if (isHidden)
+              return (
+                <TextArea
+                  rows={1}
+                  disabled
+                  value='You cannot send messages in a hidden chat'
+                  className='bg-background-light/50 text-center text-text-muted !brightness-100'
+                  variant='fill'
+                  pill
+                />
+              )
+
+            if (isJoined || isHubWithoutJoinButton)
+              return (
+                <ChatInputBar
+                  formProps={{
+                    hubId,
+                    chatId,
+                    onSubmit: (isEditing) => {
+                      if (!isEditing) scrollToBottom()
+                    },
+                    isPrimary: true,
+                  }}
+                />
+              )
+
+            return (
+              <JoinChatWrapper>
+                {({ isLoading, mutateAsync }) => {
+                  const isButtonLoading = isLoading || isLoadingJoinedChat
+                  return (
+                    <Button
+                      size='lg'
+                      className={cx(
+                        isButtonLoading && 'bg-background-light text-text-muted'
+                      )}
+                      disabledStyle='subtle'
+                      isLoading={isButtonLoading}
+                      onClick={async () => {
+                        await mutateAsync({ chatId })
+                        sendEvent(
+                          'join_chat',
+                          { chatId, hubId, eventSource: 'chat_required_btn' },
+                          { hasJoinedChats: true }
+                        )
+                      }}
+                    >
+                      Join
+                    </Button>
+                  )
+                }}
+              </JoinChatWrapper>
+            )
+          })()}
+        </div>
       </Component>
 
       <ExtensionModals

@@ -211,7 +211,6 @@ export default function ChatPage({
           hubId={hubId}
           chatId={chatId}
           asContainer
-          className='flex-1 overflow-hidden'
           customAction={customAction}
         />
         <BottomPanel />
