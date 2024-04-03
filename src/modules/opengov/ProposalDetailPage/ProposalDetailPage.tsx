@@ -21,6 +21,18 @@ export type ProposalDetailPageProps = {
   chatId: string | null
 }
 
+export function getProposalResourceId(proposalId: number | string) {
+  return new Resource({
+    chainName: 'polkadot',
+    chainType: 'substrate',
+    resourceType: 'proposal',
+    resourceValue: {
+      id: proposalId.toString(),
+    },
+    schema: 'chain',
+  }).toResourceId()
+}
+
 export default function ProposalDetailPage({
   proposal,
   chatId,
@@ -37,15 +49,7 @@ export default function ProposalDetailPage({
       content: {
         title: proposal.title,
       },
-      resourceId: new Resource({
-        chainName: 'polkadot',
-        chainType: 'substrate',
-        resourceType: 'proposal',
-        resourceValue: {
-          id: proposal.id.toString(),
-        },
-        schema: 'chain',
-      }).toResourceId(),
+      resourceId: getProposalResourceId(proposal.id),
     })
     if (data?.postId) {
       setUsedChatId(data.postId)
