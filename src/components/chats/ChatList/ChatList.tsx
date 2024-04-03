@@ -219,67 +219,69 @@ function ChatListContent({
                 className='pointer-events-none hidden flex-shrink-0 lg:block'
               />
             )}
-            <InfiniteScroll
-              dataLength={renderedMessageIds.length}
-              next={() => {
-                loadMore()
-                sendEvent('load_more_messages', { currentPage })
-              }}
-              className={cx(
-                'relative flex flex-col-reverse !overflow-hidden pb-2',
-                // need to have enough room to open message menu
-                'min-h-[400px]'
-              )}
-              hasMore={!isAllMessagesLoaded}
-              inverse
-              scrollableTarget={scrollableContainerId}
-              loader={<Loading className='pb-2 pt-4' />}
-              endMessage={
-                currentPageMessageIds.length === 0 ? null : (
-                  <ChatTopNotice className='pb-2 pt-4' />
-                )
-              }
-              scrollThreshold={`${SCROLL_THRESHOLD}px`}
-            >
-              {renderedMessageQueries.map(({ data: message }, index) => {
-                // bottom message is the first element, because the flex direction is reversed
-                if (!message) return null
-
-                const isBottomMessage = isFirstRenderedMessage
-                isFirstRenderedMessage = false
-
-                const isMessageRead =
-                  lastFocusedTime >= message.struct.createdAtTime
-                // Only show the unread message notice for first message that is marked as read
-                const currentAlreadyRenderLastReadMessage =
-                  alreadyRenderLastReadMessage
-                if (isMessageRead) {
-                  alreadyRenderLastReadMessage = true
+            <div className='flex-1'>
+              <InfiniteScroll
+                dataLength={renderedMessageIds.length}
+                next={() => {
+                  loadMore()
+                  sendEvent('load_more_messages', { currentPage })
+                }}
+                className={cx(
+                  'relative flex w-full flex-col-reverse !overflow-hidden pb-2',
+                  // need to have enough room to open message menu
+                  'min-h-[400px]'
+                )}
+                hasMore={!isAllMessagesLoaded}
+                inverse
+                scrollableTarget={scrollableContainerId}
+                loader={<Loading className='pb-2 pt-4' />}
+                endMessage={
+                  currentPageMessageIds.length === 0 ? null : (
+                    <ChatTopNotice className='pb-2 pt-4' />
+                  )
                 }
+                scrollThreshold={`${SCROLL_THRESHOLD}px`}
+              >
+                {renderedMessageQueries.map(({ data: message }, index) => {
+                  // bottom message is the first element, because the flex direction is reversed
+                  if (!message) return null
 
-                const shouldRenderUnreadMessageNotice =
-                  !isBottomMessage &&
-                  !currentAlreadyRenderLastReadMessage &&
-                  isMessageRead
+                  const isBottomMessage = isFirstRenderedMessage
+                  isFirstRenderedMessage = false
 
-                return (
-                  <Fragment key={message?.id ?? index}>
-                    {shouldRenderUnreadMessageNotice && (
-                      <div className='mb-2 mt-4 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
-                        Unread messages
-                      </div>
-                    )}
-                    <ChatItemWithMenu
-                      chatItemClassName='mt-2'
-                      chatId={chatId}
-                      hubId={hubId}
-                      message={message}
-                      scrollToMessage={scrollToMessage}
-                    />
-                  </Fragment>
-                )
-              })}
-            </InfiniteScroll>
+                  const isMessageRead =
+                    lastFocusedTime >= message.struct.createdAtTime
+                  // Only show the unread message notice for first message that is marked as read
+                  const currentAlreadyRenderLastReadMessage =
+                    alreadyRenderLastReadMessage
+                  if (isMessageRead) {
+                    alreadyRenderLastReadMessage = true
+                  }
+
+                  const shouldRenderUnreadMessageNotice =
+                    !isBottomMessage &&
+                    !currentAlreadyRenderLastReadMessage &&
+                    isMessageRead
+
+                  return (
+                    <Fragment key={message?.id ?? index}>
+                      {shouldRenderUnreadMessageNotice && (
+                        <div className='mb-2 mt-4 w-full rounded-md bg-background-light py-0.5 text-center text-sm'>
+                          Unread messages
+                        </div>
+                      )}
+                      <ChatItemWithMenu
+                        chatItemClassName='mt-2'
+                        chatId={chatId}
+                        hubId={hubId}
+                        message={message}
+                        scrollToMessage={scrollToMessage}
+                      />
+                    </Fragment>
+                  )
+                })}
+              </InfiniteScroll>
+            </div>
           </Component>
         </ScrollableContainer>
 
