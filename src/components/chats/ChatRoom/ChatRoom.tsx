@@ -133,7 +133,7 @@ function ChatInputWrapper({
         {!!withDesktopLeftOffset && (
           <div
             style={{ width: withDesktopLeftOffset }}
-            className='hidden flex-shrink-0 lg:block'
+            className='pointer-events-none hidden flex-shrink-0 lg:block'
           />
         )}
         <div className='flex flex-1 flex-col'>

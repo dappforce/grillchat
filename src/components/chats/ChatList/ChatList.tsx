@@ -216,7 +216,7 @@ function ChatListContent({
             {!!withDesktopLeftOffset && (
               <div
                 style={{ width: withDesktopLeftOffset }}
-                className='hidden flex-shrink-0 lg:block'
+                className='pointer-events-none hidden flex-shrink-0 lg:block'
               />
             )}
             <InfiniteScroll

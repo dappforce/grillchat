@@ -29,7 +29,7 @@ export default function PinnedMessage({
         {withDesktopLeftOffset && (
           <div
             style={{ width: withDesktopLeftOffset }}
-            className='hidden flex-shrink-0 lg:block'
+            className='pointer-events-none hidden flex-shrink-0 lg:block'
           />
         )}
         <div className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'>

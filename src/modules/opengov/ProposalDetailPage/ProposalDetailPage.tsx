@@ -38,7 +38,7 @@ export default function ProposalDetailPage({
       }}
     >
       <div className='relative flex flex-1 flex-col overflow-hidden'>
-        <div className='container-page absolute left-1/2 mt-4 hidden -translate-x-1/2 lg:block'>
+        <div className='absolute left-0 z-10 mt-4 hidden pl-4 lg:block [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]'>
           <ProposalDetailSection proposal={proposal} className='w-[400px]' />
         </div>
         <ChatRoom
