@@ -93,70 +93,74 @@ async function createDiscussionAndGetPostId({
   contentCid: string
   api: ApiPromise
 }): Promise<ApiDiscussionResponse> {
-  return new Promise(async (resolve) => {
-    const unsub = await api.tx.resourceDiscussions
-      .createResourceDiscussion(resourceId, spaceId, IpfsWrapper(contentCid))
-      .signAndSend(
-        (
-          await WalletManager.getInstance()
-        ).account.discussionCreator,
-        async (resp: SubmittableResult) => {
-          const { status, events, dispatchError, isCompleted } = resp
+  return new Promise(async (resolve, reject) => {
+    try {
+      const unsub = await api.tx.resourceDiscussions
+        .createResourceDiscussion(resourceId, spaceId, IpfsWrapper(contentCid))
+        .signAndSend(
+          (
+            await WalletManager.getInstance()
+          ).account.discussionCreator,
+          async (resp: SubmittableResult) => {
+            const { status, events, dispatchError, isCompleted } = resp
 
-          if (dispatchError) {
-            resolve({
-              success: false,
-              message: getTxSubDispatchErrorMessage(dispatchError, api),
-            })
-            unsub()
-            return
-          }
-
-          if (status.isFinalized || status.isInBlock) {
-            for (const { event, phase } of events) {
-              try {
-                if (
-                  phase.isApplyExtrinsic &&
-                  event.section === 'resourceDiscussions' &&
-                  event.method === 'ResourceDiscussionLinked'
-                ) {
-                  const [resourceIdHex, , postId] = event.data.toJSON() as [
-                    string,
-                    string,
-                    number
-                  ]
-
-                  if (stringToHex(resourceId) === resourceIdHex) {
-                    resolve({
-                      message: 'OK',
-                      success: true,
-                      data: {
-                        postId: postId.toString(),
-                      },
-                    })
-                    unsub()
-                  }
-                }
-              } catch (e) {
-                resolve({
-                  success: false,
-                  message: getCommonErrorMessage(e),
-                  errors: [e],
-                })
-              }
+            if (dispatchError) {
+              resolve({
+                success: false,
+                message: getTxSubDispatchErrorMessage(dispatchError, api),
+              })
+              unsub()
+              return
             }
 
-            unsub()
-            return
-          } else {
-            console.error(`Status of sending: ${status.type}`)
-          }
+            if (status.isFinalized || status.isInBlock) {
+              for (const { event, phase } of events) {
+                try {
+                  if (
+                    phase.isApplyExtrinsic &&
+                    event.section === 'resourceDiscussions' &&
+                    event.method === 'ResourceDiscussionLinked'
+                  ) {
+                    const [resourceIdHex, , postId] = event.data.toJSON() as [
+                      string,
+                      string,
+                      number
+                    ]
 
-          if (isCompleted) {
-            unsub()
+                    if (stringToHex(resourceId) === resourceIdHex) {
+                      resolve({
+                        message: 'OK',
+                        success: true,
+                        data: {
+                          postId: postId.toString(),
+                        },
+                      })
+                      unsub()
+                    }
+                  }
+                } catch (e) {
+                  resolve({
+                    success: false,
+                    message: getCommonErrorMessage(e),
+                    errors: [e],
+                  })
+                }
+              }
+
+              unsub()
+              return
+            } else {
+              console.error(`Status of sending: ${status.type}`)
+            }
+
+            if (isCompleted) {
+              unsub()
+            }
           }
-        }
-      )
+        )
+    } catch (err) {
+      reject(err)
+    }
   })
 }
 

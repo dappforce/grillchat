@@ -46,6 +46,7 @@ export const env = createEnv({
       .string()
       .default('')
       .transform((val) => val.split(',').filter(Boolean)),
+    NEXT_PUBLIC_PROPOSAL_HUB: z.string().default(''),
     NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT: z.string().default(''),
 
     NEXT_PUBLIC_AMP_ID: z.string().default(''),

@@ -3,11 +3,15 @@ import ChatRoom from '@/components/chats/ChatRoom'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
+import { env } from '@/env.mjs'
+import useToastError from '@/hooks/useToastError'
 import BottomPanel from '@/modules/chat/ChatPage/BottomPanel'
 import { Proposal } from '@/server/opengov/mapper'
+import { useCreateDiscussion } from '@/services/api/mutation'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
-import { ReactNode, memo, useState } from 'react'
+import { Resource } from '@subsocial/resource-discussions'
+import { ReactNode, useState } from 'react'
 import { HiChevronUp } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 import ProposalDetailSection from './ProposalDetailSection'
@@ -17,13 +21,36 @@ export type ProposalDetailPageProps = {
   chatId: string | null
 }
 
-const MemoizedChatRoom = memo(ChatRoom)
-
 export default function ProposalDetailPage({
   proposal,
   chatId,
 }: ProposalDetailPageProps) {
   const [isOpenComment, setIsOpenComment] = useState(false)
+  const { mutateAsync, error, isLoading } = useCreateDiscussion()
+  useToastError(error, 'Failed to create discussion')
+
+  const [usedChatId, setUsedChatId] = useState(chatId)
+
+  const createDiscussion = async function () {
+    const { data } = await mutateAsync({
+      spaceId: env.NEXT_PUBLIC_PROPOSAL_HUB,
+      content: {
+        title: proposal.title,
+      },
+      resourceId: new Resource({
+        chainName: 'polkadot',
+        chainType: 'substrate',
+        resourceType: 'proposal',
+        resourceValue: {
+          id: proposal.id.toString(),
+        },
+        schema: 'chain',
+      }).toResourceId(),
+    })
+    if (data?.postId) {
+      setUsedChatId(data.postId)
+    }
+  }
 
   return (
     <DefaultLayout
@@ -80,11 +107,22 @@ export default function ProposalDetailPage({
             <HiChevronUp />
           </Button>
         </div>
-        <MemoizedChatRoom
-          chatId={chatId ?? ''}
+        <ChatRoom
+          chatId={usedChatId ?? ''}
           hubId='12466'
           asContainer
           withDesktopLeftOffset={416}
+          customAction={
+            !usedChatId ? (
+              <Button
+                size='lg'
+                onClick={createDiscussion}
+                isLoading={isLoading}
+              >
+                Start Discussion
+              </Button>
+            ) : undefined
+          }
         />
         <BottomPanel withDesktopLeftOffset={416} />
       </div>

@@ -43,6 +43,7 @@
     "@subsocial/api": "^0.8.14",
     "@subsocial/data-hub-sdk": "dappforce/subsocial-data-hub-sdk#staging",
     "@subsocial/grill-widget": "^0.0.8",
+    "@subsocial/resource-discussions": "^0.0.4",
     "@subsocial/utils": "0.8.14",
     "@subwallet/wagmi-connector": "0.2.1",
     "@t3-oss/env-nextjs": "^0.8.0",
