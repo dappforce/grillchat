@@ -46,7 +46,7 @@ export default function ProposalDetailPage({
       <div className='relative flex flex-1 flex-col overflow-hidden'>
         <div
           className={cx(
-            'absolute left-0 z-20 w-full bg-background transition scrollbar-none [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]',
+            'absolute left-0 z-20 w-full bg-background transition scrollbar-none lg:w-auto [@media(min-width:1300px)]:left-[calc((100%_-_1300px)_/_2)]',
             isOpenComment && 'pointer-events-none -translate-y-1/4 opacity-0'
           )}
         >
@@ -56,7 +56,7 @@ export default function ProposalDetailPage({
               className='lg:w-[400px]'
             />
           </div>
-          <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4'>
+          <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4 lg:hidden'>
             <Button
               size='lg'
               className='w-full'

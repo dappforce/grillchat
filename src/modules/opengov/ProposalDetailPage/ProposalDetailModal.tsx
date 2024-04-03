@@ -16,7 +16,10 @@ export default function ProposalDetailModal({
         <h1 className='text-2xl font-bold'>
           #{proposal.id} &middot; {proposal.title}
         </h1>
-        <MdRenderer className='max-w-none' source={proposal.content} />
+        <MdRenderer
+          className='max-w-none break-words [&_*]:max-w-full'
+          source={proposal.content}
+        />
       </div>
     </Modal>
   )
