@@ -11,7 +11,7 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
     parseInt(proposal.tally.support),
     parseInt(proposal.tally.electorate)
   )
-  const progressMax = BigNumber.max(supportPerBill, supportThreshold)
+  const progressMax = BigNumber.max(supportPerBill, threshold)
     .multipliedBy(1.25)
     .toNumber()
 
