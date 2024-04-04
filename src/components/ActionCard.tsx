@@ -115,7 +115,7 @@ function ActionItem({ action, size }: ActionItemProps) {
           )}
           {showBlinking && <DotBlinkingNotification />}
           {openInNewTab && (
-            <FaArrowUpRightFromSquare className='ml-auto text-sm text-text-muted' />
+            <FaArrowUpRightFromSquare className='ml-auto text-[0.875em] text-text-muted' />
           )}
         </span>
         <span className='text-sm text-text-muted'>{description}</span>
@@ -132,7 +132,11 @@ function ActionItem({ action, size }: ActionItemProps) {
       }
     }
     return (
-      <CustomLink {...anchorProps} href={href}>
+      <CustomLink
+        {...anchorProps}
+        className='block border-b border-background-lightest'
+        href={href}
+      >
         {button}
       </CustomLink>
     )

@@ -139,7 +139,7 @@ function Status({ proposal }: { proposal: Proposal }) {
         </div>
       </div>
       <ActionCard
-        className='p-0'
+        className='p-0 text-sm'
         actions={[
           {
             icon: (className) => (
