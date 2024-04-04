@@ -92,9 +92,9 @@ function Status({ proposal }: { proposal: Proposal }) {
       <div className='flex items-center gap-6'>
         <VoteSummary cutout={34} className='h-20 w-20' proposal={proposal} />
         <div className='flex w-full flex-col'>
-          <div className='flex items-center justify-between gap-2'>
-            <div className='flex items-center gap-1 text-sm'>
-              <FaCheck className='text-[#5EC269]' />
+          <div className='flex items-center justify-between gap-2 text-sm'>
+            <div className='flex items-center gap-1'>
+              <FaCheck className='text-base text-[#5EC269]' />
               <span>
                 Aye <span className='text-text-muted'>(125)</span>
               </span>
@@ -102,9 +102,9 @@ function Status({ proposal }: { proposal: Proposal }) {
             <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
           </div>
           <div className='my-3 h-px w-full bg-border-gray/70' />
-          <div className='flex items-center justify-between gap-2'>
-            <div className='flex items-center gap-1 text-sm'>
-              <FaXmark className='text-text-red' />
+          <div className='flex items-center justify-between gap-2 text-sm'>
+            <div className='flex items-center gap-1'>
+              <FaXmark className='text-base text-text-red' />
               <span>
                 Nay <span className='text-text-muted'>(125)</span>
               </span>
