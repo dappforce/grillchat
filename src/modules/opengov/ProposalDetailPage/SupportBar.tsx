@@ -1,7 +1,87 @@
+import PopOver from '@/components/floating/PopOver'
 import { CurveType, Proposal } from '@/server/opengov/mapper'
 
 export default function SupportBar({ proposal }: { proposal: Proposal }) {
-  const supportCurve = makeCurve(proposal.trackInfo.minApproval)
+  const supportThreshold = getSupportThreshold(proposal)
+  if (!supportThreshold) return null
+
+  const threshold = Number(supportThreshold) * Math.pow(10, 9)
+
+  const supportPerBill = calcPerbill(
+    parseInt(proposal.tally.total),
+    parseInt(proposal.tally.electorate)
+  )
+  const progressMax = BigNumber.max(supportPerBill, supportThreshold)
+    .multipliedBy(1.25)
+    .toNumber()
+
+  const markThreshold = Number((threshold / progressMax) * 100).toFixed(2)
+  const barPercentage = parseInt(
+    Number((supportPerBill / progressMax) * 100).toFixed(0)
+  )
+
+  const currentBill = getSupportPercentage(supportPerBill)
+
+  return (
+    <div className='flex flex-col gap-2 text-sm'>
+      <div className='relative grid grid-cols-2 justify-between gap-2 whitespace-nowrap'>
+        <span>0.0%</span>
+        <span
+          className='absolute -translate-x-1/2 text-center'
+          style={{ left: `${markThreshold}%` }}
+        >
+          {getSupportPercentage(threshold)}
+        </span>
+        <span className='text-right'>{getSupportPercentage(progressMax)}</span>
+      </div>
+      <PopOver
+        placement='bottom'
+        panelSize='sm'
+        yOffset={8}
+        triggerOnHover
+        trigger={
+          <div
+            className='relative grid h-1.5 w-full bg-background-lighter'
+            style={{
+              gridTemplateColumns: `${barPercentage}fr ${
+                100 - barPercentage
+              }fr`,
+            }}
+          >
+            <div
+              className='absolute top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#C3C8D4]'
+              style={{ left: `${markThreshold}%` }}
+            />
+            <div className='h-full rounded-full bg-background-primary' />
+          </div>
+        }
+      >
+        <span>Support: {currentBill}</span>
+      </PopOver>
+      <div className='relative'>
+        <span
+          className='absolute -translate-x-1/2 text-xs text-text-muted'
+          style={{ left: `${markThreshold}%` }}
+        >
+          Threshold
+        </span>
+        <span className='pointer-events-none text-xs opacity-0'>Threshold</span>
+      </div>
+    </div>
+  )
+}
+
+function getSupportPercentage(perbill: number) {
+  if (!perbill || perbill <= 0) {
+    return '0.0%'
+  }
+
+  const precision = perbill > 10 * Math.pow(10, 7) ? 1 : 2
+  return ((perbill / Math.pow(10, 9)) * 100).toFixed(precision) + '%'
+}
+
+function getSupportThreshold(proposal: Proposal) {
+  const supportCurve = makeCurve(proposal.trackInfo.minSupport)
   if (!proposal.decision || !('startBlock' in proposal.decision)) {
     return null
   }
@@ -21,9 +101,18 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
   const percentage = Math.min(gone / decisionPeriod, 1)
 
   const supportThreshold = supportCurve?.(percentage)
-  if (!supportThreshold) return null
+  return supportThreshold
+}
 
-  return <div>{parseInt(supportThreshold) * Math.pow(10, 9)}</div>
+function calcPerbill(numerator = 0, denominator = 0) {
+  if (!denominator) {
+    return 0
+  }
+
+  return new BigNumber(numerator)
+    .div(denominator)
+    .multipliedBy(Math.pow(10, 9))
+    .toNumber()
 }
 
 function makeCurve(curveField: CurveType) {
