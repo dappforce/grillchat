@@ -82,7 +82,7 @@ export default function OpengovProposalListPage() {
         },
       }}
     >
-      <div className='mx-auto flex max-w-screen-md flex-1 flex-col'>
+      <div className='mx-auto flex flex-1 flex-col'>
         {/* {sortBy && (
           <OpengovToolbar sortBy={sortBy} changeSortBy={changeSortBy} />
         )} */}
@@ -91,18 +91,16 @@ export default function OpengovProposalListPage() {
           next={fetchNextPage}
           loader={
             <Loading
-              className='pb-2 pt-4'
-              spinnerClassName={cx(
-                'border-border-gray dark:bg-background-lightest'
-              )}
+              className='col-span-2 pb-2 pt-4'
+              spinnerClassName={cx('border-border-gray')}
             />
           }
           dataLength={flattenedPages?.length ?? 0}
-          className='flex flex-col gap-2 p-2 pt-4'
+          className='flex flex-col gap-2 p-2 pt-4 lg:grid lg:grid-cols-2 lg:p-4'
         >
           {flattenedPages.map((proposal) => (
             <div key={proposal.id}>
-              <ProposalPreview proposal={proposal} />
+              <ProposalPreview proposal={proposal} className='h-full' />
             </div>
           ))}
         </InfiniteScroll>

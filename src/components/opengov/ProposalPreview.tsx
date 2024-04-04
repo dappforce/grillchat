@@ -12,22 +12,30 @@ import ProfilePreview from '../ProfilePreview'
 import ProposalStatus from './ProposalStatus'
 import VoteSummary from './VoteSummary'
 
-export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
+export default function ProposalPreview({
+  proposal,
+  className,
+}: {
+  proposal: Proposal
+  className?: string
+}) {
   return (
-    <div className={cx('rounded-2xl bg-background-light p-4')}>
-      <div className='flex flex-col'>
-        <ProfilePreview
-          withPolkadotIdentity
-          address={proposal.proposer}
-          showAddress={false}
-          className='gap-1'
-          nameClassName='text-sm text-text-muted'
-          avatarClassName='h-5 w-5'
-        />
-        <LinkText href={`/opengov/${proposal.id}`} className='mt-1'>
-          <span className='text-text-muted'>#</span>
-          {proposal.id} &middot; {proposal.title}
-        </LinkText>
+    <div className={cx('rounded-2xl bg-background-light p-4', className)}>
+      <div className='flex h-full flex-col justify-between'>
+        <div className='flex flex-col'>
+          <ProfilePreview
+            withPolkadotIdentity
+            address={proposal.proposer}
+            showAddress={false}
+            className='gap-1'
+            nameClassName='text-sm text-text-muted'
+            avatarClassName='h-5 w-5'
+          />
+          <LinkText href={`/opengov/${proposal.id}`} className='mt-1'>
+            <span className='text-text-muted'>#</span>
+            {proposal.id} &middot; {proposal.title}
+          </LinkText>
+        </div>
 
         <div className='my-4 grid grid-cols-[1fr_2fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm md:grid-cols-[2fr_3fr]'>
           <div className='flex flex-col gap-2 border-r border-border-gray'>
@@ -64,8 +72,10 @@ export default function ProposalPreview({ proposal }: { proposal: Proposal }) {
             <VoteSummary proposal={proposal} />
           </div>
         </div>
-        {/* <NoComments proposal={proposal} /> */}
-        <LastCommentItem proposal={proposal} />
+        <div>
+          {/* <NoComments proposal={proposal} /> */}
+          <LastCommentItem proposal={proposal} />
+        </div>
       </div>
     </div>
   )
