@@ -83,7 +83,7 @@ export default function ProposalDetailPage({
             isOpenComment && 'pointer-events-none -translate-y-1/4 opacity-0'
           )}
         >
-          <div className='h-[calc(100dvh_-_3.5rem)] overflow-auto px-4 pb-24 pt-4 scrollbar-none lg:pb-8'>
+          <div className='h-[calc(100dvh_-_3.5rem)] overflow-auto px-4 pb-24 pt-4 scrollbar-none lg:pb-8 lg:pr-0'>
             <ProposalDetailSection
               proposal={proposal}
               className='lg:w-[400px]'
