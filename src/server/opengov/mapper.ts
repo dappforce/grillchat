@@ -233,7 +233,6 @@ function getProposalFinishedPeriod(
   proposal: SubsquareProposal
 ): BlockTime | null {
   const timeline = proposal.onchainData.timeline
-  console.log(timeline)
   if (!timeline) return null
   const finished = timeline.find((t) => finishedStatus.includes(t.name))
   if (!finished) return null
