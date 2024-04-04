@@ -62,7 +62,7 @@ export default function ProposalPreview({
               <div className='flex flex-col gap-0.5'>
                 <span className='text-text-muted'>Voted</span>
                 <span>
-                  {formatBalanceWithDecimals(proposal.tally.total, {
+                  {formatBalanceWithDecimals(proposal.tally.support, {
                     precision: 2,
                   })}{' '}
                   DOT

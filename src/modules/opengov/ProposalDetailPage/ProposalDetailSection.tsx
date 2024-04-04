@@ -131,7 +131,7 @@ function Status({ proposal }: { proposal: Proposal }) {
               ({getCurrentBillPercentage(proposal)})
             </span>
           </div>
-          <span>≈ {formatBalanceWithDecimals(proposal.tally.total)} DOT</span>
+          <span>≈ {formatBalanceWithDecimals(proposal.tally.support)} DOT</span>
         </div>
         <div className='h-px w-full bg-border-gray/70' />
         <div className='flex items-center justify-between gap-4 text-sm'>

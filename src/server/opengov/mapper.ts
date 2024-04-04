@@ -3,13 +3,19 @@ import { toSubsocialAddress } from '@subsocial/utils'
 import { POLKADOT_BLOCK_TIME, getProposalPeriods } from './data'
 
 export type ProposalStatus =
-  | 'Confirming'
-  | 'Deciding'
+  | 'Submitted'
   | 'Preparing'
+  | 'Queueing'
+  | 'Confirmed'
+  | 'Deciding'
+  | 'Confirming'
   | 'Approved'
+  | 'Cancelled'
+  | 'Killed'
+  | 'TimedOut'
+  | 'Timeout'
   | 'Rejected'
   | 'Executed'
-  | 'Rejected'
 
 export type CurveType =
   | {
@@ -112,6 +118,10 @@ export type ProposalConfirmationPeriod =
       startBlock: number
     }
 
+type BlockTime = {
+  block: number
+  time: number
+}
 export type Proposal = {
   id: number
   beneficiary: string
@@ -122,11 +132,12 @@ export type Proposal = {
   type: string
   track: number
   tally: {
-    total: string
+    support: string
     ayes: string
     nays: string
     electorate: string
   }
+  finished: BlockTime | null
   status: ProposalStatus
   latestBlock: number
 
@@ -142,17 +153,9 @@ export type Proposal = {
       who: string
       amount: number
     } | null
-    decisionPeriod: {
-      block: number
-      time: number
-    }
-    confirmingPeriod: {
-      block: number
-      time: number
-    }
-    enact: {
-      block: number
-    }
+    decisionPeriod: BlockTime
+    confirmingPeriod: BlockTime
+    enact: { block: number }
     hash: string
   }
 }
@@ -186,7 +189,7 @@ export function mapSubsquareProposalToProposal(
     tally: {
       ayes: BigInt(proposal.onchainData.tally.ayes ?? '0').toString(),
       nays: BigInt(proposal.onchainData.tally.nays ?? '0').toString(),
-      total: BigInt(proposal.onchainData.tally.support ?? '0').toString(),
+      support: BigInt(proposal.onchainData.tally.support ?? '0').toString(),
       electorate: BigInt(
         proposal.onchainData.tally.electorate ?? '0'
       ).toString(),
@@ -213,7 +216,30 @@ export function mapSubsquareProposalToProposal(
       },
       hash: proposal.onchainData.proposalHash,
     },
+    finished: getProposalFinishedPeriod(proposal),
     ...getProposalPeriods(proposal),
+  }
+}
+
+const finishedStatus = [
+  'Approved',
+  'Rejected',
+  'TimedOut',
+  'Cancelled',
+  'Killed',
+  'Confirmed',
+] satisfies ProposalStatus[]
+function getProposalFinishedPeriod(
+  proposal: SubsquareProposal
+): BlockTime | null {
+  const timeline = proposal.onchainData.timeline
+  console.log(timeline)
+  if (!timeline) return null
+  const finished = timeline.find((t) => finishedStatus.includes(t.name))
+  if (!finished) return null
+  return {
+    block: finished.indexer.blockHeight,
+    time: finished.indexer.blockTime,
   }
 }
 
@@ -223,6 +249,6 @@ function getEstimatedCurrentHeight(
 ) {
   return (
     indexerHeight +
-    Math.floor((Date.now() / 1000 - indexerTimestamp) / POLKADOT_BLOCK_TIME)
+    Math.floor((Date.now() - indexerTimestamp) / POLKADOT_BLOCK_TIME)
   )
 }

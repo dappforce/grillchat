@@ -8,7 +8,7 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
   const threshold = Number(supportThreshold) * Math.pow(10, 9)
 
   const supportPerBill = calcPerbill(
-    parseInt(proposal.tally.total),
+    parseInt(proposal.tally.support),
     parseInt(proposal.tally.electorate)
   )
   const progressMax = BigNumber.max(supportPerBill, supportThreshold)
@@ -76,7 +76,7 @@ export function getCurrentBillPercentage(proposal: Proposal) {
   if (!supportThreshold) return null
 
   const supportPerBill = calcPerbill(
-    parseInt(proposal.tally.total),
+    parseInt(proposal.tally.support),
     parseInt(proposal.tally.electorate)
   )
 
@@ -99,7 +99,8 @@ function getSupportThreshold(proposal: Proposal) {
     return null
   }
   const decidingSince = proposal.decision.startBlock
-  const endHeight = proposal.latestBlock // TODO: or confirmation end block
+  const endHeight = proposal.finished?.block ?? proposal.latestBlock
+  console.log(proposal.finished)
   const decisionPeriod = proposal.trackInfo.decisionPeriod
 
   if (!endHeight) {
