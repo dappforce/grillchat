@@ -71,6 +71,19 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
   )
 }
 
+export function getCurrentBillPercentage(proposal: Proposal) {
+  const supportThreshold = getSupportThreshold(proposal)
+  if (!supportThreshold) return null
+
+  const supportPerBill = calcPerbill(
+    parseInt(proposal.tally.total),
+    parseInt(proposal.tally.electorate)
+  )
+
+  const currentBill = getSupportPercentage(supportPerBill)
+  return currentBill
+}
+
 function getSupportPercentage(perbill: number) {
   if (!perbill || perbill <= 0) {
     return '0.0%'

@@ -22,7 +22,7 @@ import { FaCheck, FaXmark } from 'react-icons/fa6'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 import ProposalMetadataModal from './ProposalMetadataModal'
-import SupportBar from './SupportBar'
+import SupportBar, { getCurrentBillPercentage } from './SupportBar'
 
 export default function ProposalDetailSection({
   proposal,
@@ -127,7 +127,9 @@ function Status({ proposal }: { proposal: Proposal }) {
           <div className='flex items-center gap-2'>
             <SupportIcon className='text-text-muted' />
             <span>Support</span>
-            <span className='text-text-muted'>(0.1%/32.6%)</span>
+            <span className='text-text-muted'>
+              ({getCurrentBillPercentage(proposal)})
+            </span>
           </div>
           <span>≈ {formatBalanceWithDecimals(proposal.tally.total)} DOT</span>
         </div>
