@@ -18,7 +18,7 @@ import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import { FaCheck, FaX } from 'react-icons/fa6'
+import { FaCheck, FaXmark } from 'react-icons/fa6'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 import ProposalMetadataModal from './ProposalMetadataModal'
@@ -93,9 +93,9 @@ function Status({ proposal }: { proposal: Proposal }) {
         <VoteSummary cutout={34} className='h-20 w-20' proposal={proposal} />
         <div className='flex w-full flex-col'>
           <div className='flex items-center justify-between gap-2'>
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-1 text-sm'>
               <FaCheck className='text-[#5EC269]' />
-              <span className='text-sm'>
+              <span>
                 Aye <span className='text-text-muted'>(125)</span>
               </span>
             </div>
@@ -103,9 +103,9 @@ function Status({ proposal }: { proposal: Proposal }) {
           </div>
           <div className='my-3 h-px w-full bg-border-gray/70' />
           <div className='flex items-center justify-between gap-2'>
-            <div className='flex items-center gap-1'>
-              <FaX className='text-text-red' />
-              <span className='text-sm'>
+            <div className='flex items-center gap-1 text-sm'>
+              <FaXmark className='text-text-red' />
+              <span>
                 Nay <span className='text-text-muted'>(125)</span>
               </span>
             </div>
