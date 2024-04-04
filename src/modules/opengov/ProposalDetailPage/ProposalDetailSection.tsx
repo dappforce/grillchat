@@ -4,6 +4,7 @@ import VoteIcon from '@/assets/icons/vote.svg'
 import ActionCard from '@/components/ActionCard'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
+import MdRenderer from '@/components/MdRenderer'
 import ProfilePreview from '@/components/ProfilePreview'
 import PopOver from '@/components/floating/PopOver'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
@@ -15,7 +16,6 @@ import {
 } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
-import { summarizeMd } from '@subsocial/utils'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { FaCheck, FaXmark } from 'react-icons/fa6'
@@ -55,9 +55,6 @@ export default function ProposalDetailSection({
 
 function Summary({ proposal }: { proposal: Proposal }) {
   const [isOpenModal, setIsOpenModal] = useState(false)
-  const stripped = proposal.content
-    .replace(/<[^>]*>?/gm, '')
-    .replace(/&nbsp;/g, '')
   return (
     <>
       <Card className='flex flex-col items-start gap-6 bg-background-light'>
@@ -65,9 +62,7 @@ function Summary({ proposal }: { proposal: Proposal }) {
           #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
           {proposal.title}
         </h1>
-        <span className='line-clamp-6'>
-          {summarizeMd(stripped, { limit: 500 }).summary}
-        </span>
+        <MdRenderer className='line-clamp-6' source={proposal.content} />
         <LinkText
           variant='secondary'
           href={`/opengov/${proposal.id}#detail`}
