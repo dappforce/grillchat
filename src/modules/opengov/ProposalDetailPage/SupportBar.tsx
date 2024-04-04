@@ -100,7 +100,6 @@ function getSupportThreshold(proposal: Proposal) {
   }
   const decidingSince = proposal.decision.startBlock
   const endHeight = proposal.finished?.block ?? proposal.latestBlock
-  console.log(proposal.finished)
   const decisionPeriod = proposal.trackInfo.decisionPeriod
 
   if (!endHeight) {

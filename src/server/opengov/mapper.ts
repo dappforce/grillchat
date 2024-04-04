@@ -136,6 +136,8 @@ export type Proposal = {
     ayes: string
     nays: string
     electorate: string
+    ayesCount?: number
+    naysCount?: number
   }
   finished: BlockTime | null
   status: ProposalStatus

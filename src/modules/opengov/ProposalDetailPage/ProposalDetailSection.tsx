@@ -97,7 +97,10 @@ function Status({ proposal }: { proposal: Proposal }) {
             <div className='flex items-center gap-1'>
               <FaCheck className='text-base text-[#5EC269]' />
               <span>
-                Aye <span className='text-text-muted'>(125)</span>
+                Aye{' '}
+                <span className='text-text-muted'>
+                  ({proposal.tally.ayesCount ?? 0})
+                </span>
               </span>
             </div>
             <span>{formatBalanceWithDecimals(proposal.tally.ayes)} DOT</span>
@@ -107,7 +110,10 @@ function Status({ proposal }: { proposal: Proposal }) {
             <div className='flex items-center gap-1'>
               <FaXmark className='text-base text-text-red' />
               <span>
-                Nay <span className='text-text-muted'>(125)</span>
+                Nay{' '}
+                <span className='text-text-muted'>
+                  ({proposal.tally.naysCount ?? 0})
+                </span>
               </span>
             </div>
             <span>{formatBalanceWithDecimals(proposal.tally.nays)} DOT</span>
