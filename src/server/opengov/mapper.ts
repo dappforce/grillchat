@@ -11,7 +11,7 @@ export type ProposalStatus =
   | 'Executed'
   | 'Rejected'
 
-type ApprovalType =
+export type CurveType =
   | {
       linearDecreasing: {
         length: number
@@ -46,8 +46,8 @@ export type SubsquareProposal = {
       decisionDeposit: string
       decisionPeriod: number
       maxDeciding: number
-      minApproval: ApprovalType
-      minSupport: ApprovalType
+      minApproval: CurveType
+      minSupport: CurveType
       minEnactmentPeriod: number
       name: string
       preparePeriod: number
@@ -73,13 +73,17 @@ export type SubsquareProposal = {
       ayes: string
       nays: string
       support: string
+      electorate: string
     }
     proposalHash: string
     treasuryInfo?: {
       amount: string
       beneficiary: string
     }
-    timeline?: { indexer: { blockTime: number }; name: string }[]
+    timeline?: {
+      indexer: { blockTime: number; blockHeight: number }
+      name: string
+    }[]
   }
 }
 
@@ -93,6 +97,7 @@ export type ProposalDecisionPeriod =
       endTime: number
       duration: number
       timeLeft: number
+      startBlock: number
     }
 export type ProposalConfirmationPeriod =
   | {
@@ -104,6 +109,7 @@ export type ProposalConfirmationPeriod =
       duration: number
       attempt: number
       timeLeft: number
+      startBlock: number
     }
 
 export type Proposal = {
@@ -115,15 +121,18 @@ export type Proposal = {
   requested: string
   type: string
   track: number
-  vote: {
+  tally: {
     total: string
     ayes: string
     nays: string
+    electorate: string
   }
   status: ProposalStatus
+  latestBlock: number
 
   decision: ProposalDecisionPeriod | null
   confirmation: ProposalConfirmationPeriod | null
+  trackInfo: SubsquareProposal['onchainData']['trackInfo']
   metadata: {
     submissionDeposit: {
       who: string
@@ -170,14 +179,22 @@ export function mapSubsquareProposalToProposal(
     ).toString(),
     status: proposal.state.name,
     title: proposal.title,
-    vote: {
+    latestBlock: getEstimatedCurrentHeight(
+      proposal.indexer.blockHeight,
+      proposal.indexer.blockTime
+    ),
+    tally: {
       ayes: BigInt(proposal.onchainData.tally.ayes ?? '0').toString(),
       nays: BigInt(proposal.onchainData.tally.nays ?? '0').toString(),
       total: BigInt(proposal.onchainData.tally.support ?? '0').toString(),
+      electorate: BigInt(
+        proposal.onchainData.tally.electorate ?? '0'
+      ).toString(),
     },
     type: proposal.onchainData.info.origin.origins,
     track: proposal.track,
     content: proposal.content,
+    trackInfo: proposal.onchainData.trackInfo,
     metadata: {
       decisionDeposit,
       submissionDeposit,
@@ -198,4 +215,14 @@ export function mapSubsquareProposalToProposal(
     },
     ...getProposalPeriods(proposal),
   }
+}
+
+function getEstimatedCurrentHeight(
+  indexerHeight: number,
+  indexerTimestamp: number
+) {
+  return (
+    indexerHeight +
+    Math.floor((Date.now() / 1000 - indexerTimestamp) / POLKADOT_BLOCK_TIME)
+  )
 }

@@ -56,7 +56,10 @@ export function formatBalanceWithDecimals(
   let parsedValue = BigNumber(value).div(10 ** decimalAmt)
   let roundings = ''
 
-  if (parsedValue.gte(1_000_000) && shorten) {
+  if (parsedValue.gte(1_000_000_000) && shorten) {
+    parsedValue = parsedValue.div(1_000_000_000)
+    roundings = 'B'
+  } else if (parsedValue.gte(1_000_000) && shorten) {
     parsedValue = parsedValue.div(1000000)
     roundings = 'M'
   } else if (parsedValue.gte(1_000) && shorten) {

@@ -20,8 +20,8 @@ export default function VoteSummary({
   let nayPercentage = 0
   let isAye = true
   try {
-    const aye = BigInt(proposal.vote.ayes)
-    const nay = BigInt(proposal.vote.nays)
+    const aye = BigInt(proposal.tally.ayes)
+    const nay = BigInt(proposal.tally.nays)
     isAye = aye > nay
 
     ayePercentage = Number(((aye * BigInt(100)) / (aye + nay)).toString())

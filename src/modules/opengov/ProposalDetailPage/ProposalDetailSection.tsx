@@ -22,6 +22,7 @@ import { FaCheck, FaXmark } from 'react-icons/fa6'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 import ProposalMetadataModal from './ProposalMetadataModal'
+import SupportBar from './SupportBar'
 
 export default function ProposalDetailSection({
   proposal,
@@ -104,7 +105,7 @@ function Status({ proposal }: { proposal: Proposal }) {
                 Aye <span className='text-text-muted'>(125)</span>
               </span>
             </div>
-            <span>{formatBalanceWithDecimals(proposal.vote.ayes)} DOT</span>
+            <span>{formatBalanceWithDecimals(proposal.tally.ayes)} DOT</span>
           </div>
           <div className='my-3 h-px w-full bg-border-gray/70' />
           <div className='flex items-center justify-between gap-2 text-sm'>
@@ -114,7 +115,7 @@ function Status({ proposal }: { proposal: Proposal }) {
                 Nay <span className='text-text-muted'>(125)</span>
               </span>
             </div>
-            <span>{formatBalanceWithDecimals(proposal.vote.nays)} DOT</span>
+            <span>{formatBalanceWithDecimals(proposal.tally.nays)} DOT</span>
           </div>
         </div>
       </div>
@@ -124,6 +125,7 @@ function Status({ proposal }: { proposal: Proposal }) {
           periodData={proposal.confirmation}
           title='Confirmation'
         />
+        <SupportBar proposal={proposal} />
       </div>
       <div className='flex flex-col gap-2.5'>
         <div className='flex items-center justify-between gap-4 text-sm'>
@@ -132,7 +134,7 @@ function Status({ proposal }: { proposal: Proposal }) {
             <span>Support</span>
             <span className='text-text-muted'>(0.1%/32.6%)</span>
           </div>
-          <span>≈ 331.59k DOT</span>
+          <span>≈ {formatBalanceWithDecimals(proposal.tally.total)} DOT</span>
         </div>
         <div className='h-px w-full bg-border-gray/70' />
         <div className='flex items-center justify-between gap-4 text-sm'>
@@ -140,7 +142,9 @@ function Status({ proposal }: { proposal: Proposal }) {
             <IssuanceIcon className='text-text-muted' />
             <span>Issuance</span>
           </div>
-          <span>≈ 690.59k DOT</span>
+          <span>
+            ≈ {formatBalanceWithDecimals(proposal.tally.electorate)} DOT
+          </span>
         </div>
       </div>
       <ActionCard

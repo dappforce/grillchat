@@ -8,10 +8,13 @@ import {
 export const POLKADOT_BLOCK_TIME = 6_000
 
 function getBlockTimeForStatus(
-  timeline: { indexer: { blockTime: number }; name: string }[],
+  timeline: {
+    indexer: { blockTime: number; blockHeight: number }
+    name: string
+  }[],
   status: string
 ) {
-  return timeline.find((t) => t.name === status)?.indexer.blockTime
+  return timeline.find((t) => t.name === status)?.indexer
 }
 
 export function getProposalPeriods(
@@ -35,13 +38,13 @@ function getDecisionData(
 ): ProposalDecisionPeriod | null {
   const trackInfo = proposal.onchainData.trackInfo
 
-  const startTime = getBlockTimeForStatus(
+  const start = getBlockTimeForStatus(
     proposal.onchainData.timeline ?? [],
     'DecisionStarted'
   )
   const duration = trackInfo.decisionPeriod * POLKADOT_BLOCK_TIME
 
-  if (!startTime) {
+  if (!start) {
     if (!proposal.onchainData?.info?.deciding?.since) return null
 
     const indexerBlockHeight = proposal.indexer.blockHeight
@@ -60,10 +63,11 @@ function getDecisionData(
   }
 
   return {
-    startTime,
+    startTime: start.blockTime,
     duration,
-    endTime: startTime + duration,
-    timeLeft: startTime + duration - Date.now(),
+    endTime: start.blockTime + duration,
+    timeLeft: start.blockTime + duration - Date.now(),
+    startBlock: start.blockHeight,
   }
 }
 
@@ -74,10 +78,12 @@ function getConfirmationData(
   if (!trackInfo) return null
 
   let confirmationStartTime: number | undefined
+  let confirmationStartBlock: number | undefined
   let confirmationAttempt: number = 0
   proposal.onchainData.timeline?.forEach((t) => {
     if (t.name === 'ConfirmStarted') {
       confirmationStartTime = t.indexer.blockTime
+      confirmationStartBlock = t.indexer.blockHeight
       confirmationAttempt++
     }
   })
@@ -98,5 +104,6 @@ function getConfirmationData(
     duration: confirmationDuration,
     endTime: (confirmationStartTime ?? 0) + confirmationDuration,
     attempt: confirmationAttempt,
+    startBlock: confirmationStartBlock,
   }
 }
