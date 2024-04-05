@@ -37,6 +37,7 @@ export type Account = {
   /** is off-chain data CID backed up in blockchain */
   backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   dataType: DataType
+  domains: Array<Domain>
   extensions: Array<ContentExtension>
   followers: Array<AccountFollowers>
   followersCount?: Maybe<Scalars['Int']['output']>
@@ -347,6 +348,41 @@ export type DateTimeDetailsResponseDto = {
   dayWithoutTime: Scalars['Int']['output']
   timestamp?: Maybe<Scalars['String']['output']>
   week?: Maybe<Scalars['Int']['output']>
+}
+
+export type Domain = {
+  __typename?: 'Domain'
+  createdAtBlock?: Maybe<Scalars['Int']['output']>
+  createdAtDate: Scalars['DateTime']['output']
+  id: Scalars['String']['output']
+  ownedByAccount: Account
+  ownershipTransfers?: Maybe<Array<DomainOwnershipTransferDetails>>
+  updatedAtBlock?: Maybe<Scalars['Int']['output']>
+  updatedAtDate?: Maybe<Scalars['DateTime']['output']>
+  value: Scalars['String']['output']
+}
+
+export type DomainOwnershipTransferDetails = {
+  __typename?: 'DomainOwnershipTransferDetails'
+  acceptedAtBlock?: Maybe<Scalars['Int']['output']>
+  acceptedAtDateTimestamp: Scalars['String']['output']
+  fromAddress: Scalars['String']['output']
+  toAddress: Scalars['String']['output']
+}
+
+export type DomainsInput = {
+  where: DomainsInputWhereArgs
+}
+
+export type DomainsInputWhereArgs = {
+  ownedByAddress?: InputMaybe<Array<Scalars['String']['input']>>
+  values?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type DomainsResponse = {
+  __typename?: 'DomainsResponse'
+  data: Array<Domain>
+  total: Scalars['Int']['output']
 }
 
 export type EvmAccount = {
@@ -819,6 +855,7 @@ export type Query = {
   activeStakingSuperLikes: SuperLikesResponseDto
   activeStakingSuperLikesNumberGoal: Scalars['Int']['output']
   activeStakingTotalActivityMetricsForFixedPeriod: TotalActivityMetricsForFixedPeriodResponseDto
+  domains: DomainsResponse
   findPosts: FindPostsResponseDto
   linkedIdentities: Array<LinkedIdentity>
   moderationBlockedResourceIds: Array<Scalars['String']['output']>
@@ -903,6 +940,10 @@ export type QueryActiveStakingSuperLikesArgs = {
 
 export type QueryActiveStakingTotalActivityMetricsForFixedPeriodArgs = {
   args: TotalActivityMetricsForFixedPeriodInput
+}
+
+export type QueryDomainsArgs = {
+  args: DomainsInput
 }
 
 export type QueryFindPostsArgs = {
@@ -1895,6 +1936,7 @@ export type GetPostMetadataQuery = {
       persistentId?: string | null
       rootPostPersistentId: string
       createdAtTime: any
+      summary?: string | null
     } | null
   }>
 }
@@ -2304,6 +2346,7 @@ export const GetPostMetadata = gql`
         persistentId
         rootPostPersistentId
         createdAtTime
+        summary
       }
     }
   }

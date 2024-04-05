@@ -54,7 +54,7 @@ export async function getProposalDetailServer({
 
   const votesData = (votesRes.data ?? []) as SubsquareVote[]
 
-  const mapped = mapSubsquareProposalToProposal(proposal)
+  const mapped = await mapSubsquareProposalToProposal(proposal)
   const allVotes = votesData
     .reduce((result, vote) => {
       if (vote.isSplit) {

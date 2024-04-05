@@ -135,16 +135,28 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
 
         <div className={cx('relative h-full w-full')}>
-          <Identicon
-            theme='polkadot'
-            value={address}
-            className='h-full w-full [&_svg]:h-full [&_svg]:w-full'
-          />
+          <IdenticonAvatar value={address} className='h-full w-full' />
         </div>
       </LinkOrText>
     )
   }
 )
+
+export function IdenticonAvatar({
+  value,
+  className,
+}: {
+  value: string
+  className?: string
+}) {
+  return (
+    <Identicon
+      theme='polkadot'
+      value={value}
+      className={cx('[&_svg]:h-full [&_svg]:w-full', className)}
+    />
+  )
+}
 
 const LinkOrText = forwardRef<
   any,

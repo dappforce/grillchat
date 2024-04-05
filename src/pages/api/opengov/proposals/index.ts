@@ -47,8 +47,11 @@ export async function getProposalsServer({
   const resData = res.data as { total: number; items: SubsquareProposal[] }
 
   const hasMore = page * limit < resData.total
+  const mappedData = await Promise.all(
+    resData.items.map((val) => mapSubsquareProposalToProposal(val))
+  )
   return {
-    data: resData.items.map((val) => mapSubsquareProposalToProposal(val)),
+    data: mappedData,
     page,
     hasMore,
     totalData: resData.total,

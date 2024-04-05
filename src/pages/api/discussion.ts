@@ -1,4 +1,5 @@
 import { getTxSubDispatchErrorMessage } from '@/server/blockchain'
+import { redisCallWrapper } from '@/server/cache'
 import {
   ApiResponse,
   getCommonErrorMessage,
@@ -128,11 +129,20 @@ async function createDiscussionAndGetPostId({
                     ]
 
                     if (stringToHex(resourceId) === resourceIdHex) {
+                      const id = postId.toString()
+                      await redisCallWrapper((redis) =>
+                        redis?.set(
+                          getDiscussionRedisKey(resourceId),
+                          id,
+                          'EX',
+                          MAX_AGE
+                        )
+                      )
                       resolve({
                         message: 'OK',
                         success: true,
                         data: {
-                          postId: postId.toString(),
+                          postId: id,
                         },
                       })
                       unsub()
@@ -164,7 +174,16 @@ async function createDiscussionAndGetPostId({
   })
 }
 
+const MAX_AGE = 24 * 60 * 60 // 24 hour
+const getDiscussionRedisKey = (id: string) => {
+  return `discussion:${id}`
+}
 export async function getDiscussion(resourceId: string) {
+  const cachedData = await redisCallWrapper((redis) => {
+    return redis?.get(getDiscussionRedisKey(resourceId))
+  })
+  if (typeof cachedData === 'string') return cachedData
+
   try {
     const subsocialApi = await (await getSubsocialApi()).substrateApi
     const existingDiscussionId = (
@@ -177,6 +196,15 @@ export async function getDiscussion(resourceId: string) {
         )
       )
     ).toString()
+
+    await redisCallWrapper((redis) =>
+      redis?.set(
+        getDiscussionRedisKey(resourceId),
+        existingDiscussionId,
+        'EX',
+        MAX_AGE
+      )
+    )
 
     return existingDiscussionId
   } catch (err) {
