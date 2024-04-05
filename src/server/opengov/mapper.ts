@@ -46,7 +46,7 @@ export type SubsquareProposal = {
     name: ProposalStatus
   }
   onchainData: {
-    trackInfo: {
+    trackInfo?: {
       id: number
       confirmPeriod: number
       decisionDeposit: string
@@ -145,7 +145,7 @@ export type Proposal = {
 
   decision: ProposalDecisionPeriod | null
   confirmation: ProposalConfirmationPeriod | null
-  trackInfo: SubsquareProposal['onchainData']['trackInfo']
+  trackInfo: SubsquareProposal['onchainData']['trackInfo'] | null
   metadata: {
     submissionDeposit: {
       who: string
@@ -155,9 +155,9 @@ export type Proposal = {
       who: string
       amount: number
     } | null
-    decisionPeriod: BlockTime
-    confirmingPeriod: BlockTime
-    enact: { block: number }
+    decisionPeriod: BlockTime | null
+    confirmingPeriod: BlockTime | null
+    enact: { block: number } | null
     hash: string
   }
 }
@@ -175,6 +175,9 @@ export function mapSubsquareProposalToProposal(
   if (submissionDeposit) {
     submissionDeposit.who = toSubsocialAddress(submissionDeposit.who)!
   }
+
+  const trackInfo = proposal.onchainData.trackInfo ?? null
+
   return {
     id: proposal.referendumIndex,
     beneficiary: proposal.onchainData.treasuryInfo?.beneficiary ?? '',
@@ -199,23 +202,27 @@ export function mapSubsquareProposalToProposal(
     type: proposal.onchainData.info.origin.origins,
     track: proposal.track,
     content: proposal.content,
-    trackInfo: proposal.onchainData.trackInfo,
+    trackInfo,
     metadata: {
       decisionDeposit,
       submissionDeposit,
-      confirmingPeriod: {
-        block: proposal.onchainData.trackInfo.confirmPeriod,
-        time:
-          proposal.onchainData.trackInfo.confirmPeriod * POLKADOT_BLOCK_TIME,
-      },
-      decisionPeriod: {
-        block: proposal.onchainData.trackInfo.decisionPeriod,
-        time:
-          proposal.onchainData.trackInfo.decisionPeriod * POLKADOT_BLOCK_TIME,
-      },
-      enact: {
-        block: proposal.onchainData.trackInfo.minEnactmentPeriod,
-      },
+      confirmingPeriod: trackInfo
+        ? {
+            block: trackInfo.confirmPeriod,
+            time: trackInfo.confirmPeriod * POLKADOT_BLOCK_TIME,
+          }
+        : null,
+      decisionPeriod: trackInfo
+        ? {
+            block: trackInfo.decisionPeriod,
+            time: trackInfo.decisionPeriod * POLKADOT_BLOCK_TIME,
+          }
+        : null,
+      enact: trackInfo
+        ? {
+            block: trackInfo.minEnactmentPeriod,
+          }
+        : null,
       hash: proposal.onchainData.proposalHash,
     },
     finished: getProposalFinishedPeriod(proposal),

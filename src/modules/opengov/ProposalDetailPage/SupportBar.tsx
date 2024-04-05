@@ -94,6 +94,8 @@ function getSupportPercentage(perbill: number) {
 }
 
 function getSupportThreshold(proposal: Proposal) {
+  if (!proposal.trackInfo) return null
+
   const supportCurve = makeCurve(proposal.trackInfo.minSupport)
   if (!proposal.decision || !('startBlock' in proposal.decision)) {
     return null

@@ -56,38 +56,56 @@ export default function ProposalMetadataModal({
           </MetadataItem>
         )}
         <div className='w-full border-b border-border-gray/70' />
-        <MetadataItem title='Decision Period'>
-          <span>
-            {getDurationWithPredefinedUnit(metadata.decisionPeriod.time).text}{' '}
-            <span className='text-text-muted'>
-              (
-              {formatBalance({
-                value: metadata.decisionPeriod.block.toString(),
-                defaultMaximumFractionDigits: 0,
-              })}{' '}
-              blocks)
-            </span>
-          </span>
-        </MetadataItem>
-        <div className='w-full border-b border-border-gray/70' />
-        <MetadataItem title='Confirming Period'>
-          <span>
-            {getDurationWithPredefinedUnit(metadata.confirmingPeriod.time).text}{' '}
-            <span className='text-text-muted'>
-              (
-              {formatBalance({
-                value: metadata.confirmingPeriod.block.toString(),
-                defaultMaximumFractionDigits: 0,
-              })}{' '}
-              blocks)
-            </span>
-          </span>
-        </MetadataItem>
-        <div className='w-full border-b border-border-gray/70' />
-        <MetadataItem title='Enact'>
-          <span>After: {metadata.enact.block}</span>
-        </MetadataItem>
-        <div className='w-full border-b border-border-gray/70' />
+        {metadata.decisionPeriod && (
+          <>
+            <MetadataItem title='Decision Period'>
+              <span>
+                {
+                  getDurationWithPredefinedUnit(metadata.decisionPeriod.time)
+                    .text
+                }{' '}
+                <span className='text-text-muted'>
+                  (
+                  {formatBalance({
+                    value: metadata.decisionPeriod.block.toString(),
+                    defaultMaximumFractionDigits: 0,
+                  })}{' '}
+                  blocks)
+                </span>
+              </span>
+            </MetadataItem>
+            <div className='w-full border-b border-border-gray/70' />
+          </>
+        )}
+        {metadata.confirmingPeriod && (
+          <>
+            <MetadataItem title='Confirming Period'>
+              <span>
+                {
+                  getDurationWithPredefinedUnit(metadata.confirmingPeriod.time)
+                    .text
+                }{' '}
+                <span className='text-text-muted'>
+                  (
+                  {formatBalance({
+                    value: metadata.confirmingPeriod.block.toString(),
+                    defaultMaximumFractionDigits: 0,
+                  })}{' '}
+                  blocks)
+                </span>
+              </span>
+            </MetadataItem>
+            <div className='w-full border-b border-border-gray/70' />
+          </>
+        )}
+        {metadata.enact && (
+          <>
+            <MetadataItem title='Enact'>
+              <span>After: {metadata.enact.block}</span>
+            </MetadataItem>
+            <div className='w-full border-b border-border-gray/70' />
+          </>
+        )}
         <MetadataItem title='Proposal Hash'>
           <span className='break-words'>{metadata.hash}</span>
         </MetadataItem>

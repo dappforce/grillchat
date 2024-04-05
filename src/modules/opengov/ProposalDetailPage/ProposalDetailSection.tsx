@@ -90,6 +90,7 @@ function Summary({ proposal }: { proposal: Proposal }) {
 function Status({ proposal }: { proposal: Proposal }) {
   const [isOpenModal, setIsOpenModal] = useState(false)
 
+  const currentSupport = getCurrentBillPercentage(proposal)
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>
       <div className='flex items-center justify-between gap-4'>
@@ -139,9 +140,9 @@ function Status({ proposal }: { proposal: Proposal }) {
           <div className='flex items-center gap-2'>
             <SupportIcon className='text-text-muted' />
             <span>Support</span>
-            <span className='text-text-muted'>
-              ({getCurrentBillPercentage(proposal)})
-            </span>
+            {currentSupport && (
+              <span className='text-text-muted'>({currentSupport})</span>
+            )}
           </div>
           <span>≈ {formatBalanceWithDecimals(proposal.tally.support)} DOT</span>
         </div>
