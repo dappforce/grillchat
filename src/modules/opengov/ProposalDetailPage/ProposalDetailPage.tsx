@@ -10,8 +10,10 @@ import { Proposal } from '@/server/opengov/mapper'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { replaceUrl } from '@/utils/window'
 import { Resource } from '@subsocial/resource-discussions'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { HiChevronUp } from 'react-icons/hi2'
 import ProposalDetailModal from './ProposalDetailModal'
 import ProposalDetailSection from './ProposalDetailSection'
@@ -40,6 +42,13 @@ export default function ProposalDetailPage({
   const [isOpenComment, setIsOpenComment] = useState(false)
   const { mutateAsync, error, isLoading } = useCreateDiscussion()
   useToastError(error, 'Failed to create discussion')
+
+  useEffect(() => {
+    if (getUrlQuery('chat') === 'true') {
+      setIsOpenComment(true)
+      replaceUrl(getCurrentUrlWithoutQuery('chat'))
+    }
+  }, [])
 
   const [usedChatId, setUsedChatId] = useState(chatId)
 

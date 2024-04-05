@@ -147,7 +147,7 @@ function NoComments({ proposal }: { proposal: Proposal }) {
             className='h-9 w-9 flex-shrink-0'
           />
         )}
-        <LinkText href={`/opengov/${proposal.id}`} className='w-full'>
+        <LinkText href={`/opengov/${proposal.id}?chat=true`} className='w-full'>
           <span className='text-text-muted'>Write a comment...</span>
         </LinkText>
       </div>
@@ -207,7 +207,7 @@ function LastCommentItem({
           />
         </div>
       </div>
-      <CustomLink href={`/opengov/${proposal.id}`}>
+      <CustomLink href={`/opengov/${proposal.id}?chat=true`}>
         <Button
           variant='primaryOutline'
           size='circle'
