@@ -24,6 +24,7 @@ type Action = {
 export type ActionCardProps = ComponentProps<'div'> & {
   actions: Action[]
   size?: 'md' | 'sm'
+  actionClassName?: string
 }
 
 /**
@@ -35,6 +36,7 @@ export type ActionCardProps = ComponentProps<'div'> & {
 export default function ActionCard({
   actions,
   size = 'md',
+  actionClassName,
   ...props
 }: ActionCardProps) {
   if (actions.length === 0) return null
@@ -79,25 +81,15 @@ function ActionItem({ action, size }: ActionItemProps) {
 
   const showBlinking = firstVisitNotificationStorageName && showNotification
 
-  const button = (
-    <Button
-      disabled={disabled || isComingSoon}
-      variant='transparent'
-      interactive='none'
-      size='noPadding'
-      key={text}
-      className={cx(
-        'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 text-left last:border-none',
-        'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
-        size === 'md' ? 'p-4' : 'px-4 py-3',
-        className
-      )}
-      onClick={(e) => {
-        firstVisitNotificationStorageName && closeNotification()
-        onClick?.(e as any)
-      }}
-      disabledStyle='subtle'
-    >
+  const containerClassName = cx(
+    'w-full rounded-none block border-b border-background-lightest p-4 text-left last:border-none',
+    'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
+    size === 'md' ? 'p-4' : 'px-4 py-3',
+    className
+  )
+
+  const content = (
+    <span className='flex w-full items-center gap-3 text-left'>
       <Icon
         className={cx(
           'flex-shrink-0 text-xl',
@@ -120,7 +112,7 @@ function ActionItem({ action, size }: ActionItemProps) {
         </span>
         <span className='text-sm text-text-muted'>{description}</span>
       </div>
-    </Button>
+    </span>
   )
 
   if (href && !disabled) {
@@ -132,15 +124,27 @@ function ActionItem({ action, size }: ActionItemProps) {
       }
     }
     return (
-      <CustomLink
-        {...anchorProps}
-        className='block border-b border-background-lightest'
-        href={href}
-      >
-        {button}
+      <CustomLink {...anchorProps} className={containerClassName} href={href}>
+        {content}
       </CustomLink>
     )
   }
 
-  return button
+  return (
+    <Button
+      disabled={disabled || isComingSoon}
+      variant='transparent'
+      interactive='none'
+      size='noPadding'
+      key={text}
+      className={containerClassName}
+      onClick={(e) => {
+        firstVisitNotificationStorageName && closeNotification()
+        onClick?.(e as any)
+      }}
+      disabledStyle='subtle'
+    >
+      {content}
+    </Button>
+  )
 }

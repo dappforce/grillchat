@@ -160,6 +160,7 @@ function Status({ proposal }: { proposal: Proposal }) {
             href: `https://polkadot.subsquare.io/referenda/${proposal.id}`,
             text: 'Vote',
             openInNewTab: true,
+            className: 'border-border-gray',
           },
           {
             icon: (className) => (
@@ -169,6 +170,7 @@ function Status({ proposal }: { proposal: Proposal }) {
             ),
             text: 'Show Details',
             onClick: () => setIsOpenModal(true),
+            className: 'border-border-gray',
           },
         ]}
         size='sm'
