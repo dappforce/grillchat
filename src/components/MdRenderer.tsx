@@ -8,9 +8,14 @@ import LinkText from './LinkText'
 interface Props {
   source?: string
   className?: string
+  removeEmptyParagraph?: boolean
 }
 
-export default function MdRenderer({ source, className = '' }: Props) {
+export default function MdRenderer({
+  source,
+  removeEmptyParagraph = false,
+  className = '',
+}: Props) {
   return (
     <div className={cx('prose max-w-full dark:prose-invert', className)}>
       <ReactMarkdown
@@ -25,6 +30,14 @@ export default function MdRenderer({ source, className = '' }: Props) {
             // @ts-expect-error - the props type is not correctly inferred
             <Image alt='' className='bg-background-lighter' {...props} />
           ),
+          p: (props) => {
+            if (!removeEmptyParagraph) return <p {...props} />
+
+            if (!props.children) return null
+            if (typeof props.children === 'string' && !props.children.trim())
+              return null
+            return <p {...props} />
+          },
         }}
       >
         {source}

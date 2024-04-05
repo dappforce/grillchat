@@ -62,7 +62,11 @@ function Summary({ proposal }: { proposal: Proposal }) {
           #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
           {proposal.title}
         </h1>
-        <MdRenderer className='line-clamp-6' source={proposal.content} />
+        <MdRenderer
+          className='prose-sm line-clamp-6'
+          removeEmptyParagraph
+          source={proposal.content}
+        />
         <LinkText
           variant='secondary'
           href={`/opengov/${proposal.id}#detail`}
