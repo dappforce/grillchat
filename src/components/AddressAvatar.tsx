@@ -5,8 +5,6 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getUserProfileLink } from '@/utils/links'
 import { decodeProfileSource } from '@/utils/profile'
-import * as bottts from '@dicebear/bottts'
-import { createAvatar } from '@dicebear/core'
 import Identicon from '@polkadot/react-identicon'
 import Image from 'next/image'
 import {
@@ -48,14 +46,6 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
 
     const { data: profile, isLoading } = getProfileQuery.useQuery(address)
     const { ensNames } = accountData || {}
-
-    // TODO: change to identicon
-    const avatar = useMemo(() => {
-      return createAvatar(bottts, {
-        size: 128,
-        seed: address,
-      }).toDataUriSync()
-    }, [address])
 
     const profileSource = profile?.profileSpace?.content?.profileSource
     const subsocialProfileImage = profile?.profileSpace?.content?.image
@@ -146,6 +136,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
 
         <div className={cx('relative h-full w-full')}>
           <Identicon
+            theme='polkadot'
             value={address}
             className='h-full w-full [&_svg]:h-full [&_svg]:w-full'
           />
