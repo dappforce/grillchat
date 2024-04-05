@@ -44,7 +44,7 @@ export default function ProposalPreview({
           </LinkText>
         </div>
 
-        <div className='mb-3 mt-4 grid grid-cols-[1fr_2fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm md:grid-cols-[2fr_3fr]'>
+        <div className='mb-3 mt-4 grid grid-cols-[1fr_2fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm xl:grid-cols-[2fr_3fr]'>
           <div className='flex flex-col gap-2 border-r border-border-gray'>
             <div className='flex flex-col gap-0.5'>
               <span className='text-text-muted'>Status</span>
@@ -76,7 +76,10 @@ export default function ProposalPreview({
                 </span>
               </div>
             </div>
-            <VoteSummary proposal={proposal} />
+            <VoteSummary
+              className='h-20 w-20 sm:h-24 sm:w-24'
+              proposal={proposal}
+            />
           </div>
         </div>
         <div>

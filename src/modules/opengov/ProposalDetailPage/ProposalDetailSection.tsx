@@ -98,7 +98,7 @@ function Status({ proposal }: { proposal: Proposal }) {
         <ProposalStatus withBg className='text-sm' proposal={proposal} />
       </div>
       <div className='flex items-center gap-6'>
-        <VoteSummary cutout={34} className='h-20 w-20' proposal={proposal} />
+        <VoteSummary className='h-20 w-20' proposal={proposal} />
         <div className='flex w-full flex-col'>
           <div className='flex items-center justify-between gap-2 text-sm'>
             <div className='flex items-center gap-1'>
