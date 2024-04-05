@@ -11,10 +11,6 @@ export default function ProposalMetadataModal({
 }: ModalFunctionalityProps & { proposal: Proposal }) {
   const metadata = proposal.metadata
 
-  const decisionDuration = getDurationWithPredefinedUnit(
-    proposal.metadata.decisionPeriod.time
-  )
-
   return (
     <Modal {...props} title='Metadata' withCloseButton>
       <div className='flex flex-col gap-3'>
@@ -38,7 +34,7 @@ export default function ProposalMetadataModal({
             </div>
           </MetadataItem>
         )}
-        <div className='h-px w-full bg-border-gray/70' />
+        <div className='w-full border-b border-border-gray/70' />
         {metadata.decisionDeposit && (
           <MetadataItem title='Decision'>
             <div className='flex items-center gap-1.5'>
@@ -59,7 +55,7 @@ export default function ProposalMetadataModal({
             </div>
           </MetadataItem>
         )}
-        <div className='h-px w-full bg-border-gray/70' />
+        <div className='w-full border-b border-border-gray/70' />
         <MetadataItem title='Decision Period'>
           <span>
             {getDurationWithPredefinedUnit(metadata.decisionPeriod.time).text}{' '}
@@ -73,7 +69,7 @@ export default function ProposalMetadataModal({
             </span>
           </span>
         </MetadataItem>
-        <div className='h-px w-full bg-border-gray/70' />
+        <div className='w-full border-b border-border-gray/70' />
         <MetadataItem title='Confirming Period'>
           <span>
             {getDurationWithPredefinedUnit(metadata.confirmingPeriod.time).text}{' '}
@@ -87,11 +83,11 @@ export default function ProposalMetadataModal({
             </span>
           </span>
         </MetadataItem>
-        <div className='h-px w-full bg-border-gray/70' />
+        <div className='w-full border-b border-border-gray/70' />
         <MetadataItem title='Enact'>
           <span>After: {metadata.enact.block}</span>
         </MetadataItem>
-        <div className='h-px w-full bg-border-gray/70' />
+        <div className='w-full border-b border-border-gray/70' />
         <MetadataItem title='Proposal Hash'>
           <span className='break-words'>{metadata.hash}</span>
         </MetadataItem>

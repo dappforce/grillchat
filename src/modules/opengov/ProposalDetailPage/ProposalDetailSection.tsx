@@ -105,7 +105,7 @@ function Status({ proposal }: { proposal: Proposal }) {
             </div>
             <span>{formatBalanceWithDecimals(proposal.tally.ayes)} DOT</span>
           </div>
-          <div className='my-3 h-px w-full bg-border-gray/70' />
+          <div className='my-3 w-full border-b border-border-gray/70' />
           <div className='flex items-center justify-between gap-2 text-sm'>
             <div className='flex items-center gap-1'>
               <FaXmark className='text-base text-text-red' />
@@ -139,7 +139,7 @@ function Status({ proposal }: { proposal: Proposal }) {
           </div>
           <span>≈ {formatBalanceWithDecimals(proposal.tally.support)} DOT</span>
         </div>
-        <div className='h-px w-full bg-border-gray/70' />
+        <div className='w-full border-b border-border-gray/70' />
         <div className='flex items-center justify-between gap-4 text-sm'>
           <div className='flex items-center gap-2'>
             <IssuanceIcon className='text-text-muted' />
