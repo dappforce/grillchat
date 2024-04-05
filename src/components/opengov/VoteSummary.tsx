@@ -28,6 +28,16 @@ export default function VoteSummary({
     nayPercentage = Number(((nay * BigInt(100)) / (aye + nay)).toString())
   } catch {}
 
+  let dataset: [number, number]
+  let displayedPercentage: number
+  if (isAye) {
+    displayedPercentage = ayePercentage
+    dataset = [displayedPercentage, 100 - displayedPercentage]
+  } else {
+    displayedPercentage = nayPercentage
+    dataset = [100 - displayedPercentage, displayedPercentage]
+  }
+
   return (
     <div className={cx('relative h-24 w-24 flex-shrink-0', className)}>
       <div className='absolute flex h-full w-full items-center justify-center p-2 text-center'>
@@ -44,7 +54,7 @@ export default function VoteSummary({
               type === 'small' && 'text-xs'
             )}
           >
-            {isAye ? ayePercentage : nayPercentage}%
+            {displayedPercentage}%
           </span>
           {type === 'default' && (
             <span className='text-xs text-text-muted'>
@@ -63,7 +73,7 @@ export default function VoteSummary({
         data={{
           datasets: [
             {
-              data: [ayePercentage, nayPercentage],
+              data: dataset,
               borderWidth: 0,
               spacing: 0,
               borderJoinStyle: 'round',
