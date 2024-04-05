@@ -64,7 +64,7 @@ export default function VoteSummary({
       <Doughnut
         className='relative'
         options={{
-          cutout: '85%',
+          cutout: '82%',
           backgroundColor: '#000',
           animation: false,
         }}

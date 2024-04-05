@@ -1,4 +1,5 @@
 import { EMOJI_COUNT_REGEX } from '@/constants/regex'
+import { summarizeMd } from '@subsocial/utils'
 import truncate from 'lodash.truncate'
 
 export function truncateText(text: string, length: number) {
@@ -41,4 +42,9 @@ export function getUrlFromText(str: string) {
   const urlRegex =
     /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]))/
   return urlRegex.exec(str)?.[0]
+}
+
+export function summarizeMdAndHtml(text: string) {
+  const mdText = text.replace(/<[^>]*>?/gm, '')
+  return summarizeMd(mdText).summary
 }

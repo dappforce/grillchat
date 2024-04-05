@@ -1,4 +1,3 @@
-import Reply from '@/assets/icons/reply.svg'
 import Send from '@/assets/icons/send.svg'
 import { env } from '@/env.mjs'
 import { Proposal } from '@/server/opengov/mapper'
@@ -8,6 +7,8 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
+import { summarizeMdAndHtml } from '@/utils/strings'
+import { FaRegComment } from 'react-icons/fa6'
 import AddressAvatar, { IdenticonAvatar } from '../AddressAvatar'
 import Button from '../Button'
 import LinkText from '../LinkText'
@@ -29,7 +30,7 @@ export default function ProposalPreview({
   return (
     <div className={cx('rounded-2xl bg-background-light p-4', className)}>
       <div className='flex h-full flex-col justify-between'>
-        <div className='flex flex-col'>
+        <div className='flex flex-col gap-2'>
           <ProfilePreview
             withPolkadotIdentity
             address={proposal.proposer}
@@ -38,49 +39,48 @@ export default function ProposalPreview({
             nameClassName='text-sm text-text-muted'
             avatarClassName='h-5 w-5'
           />
-          <LinkText href={`/opengov/${proposal.id}`} className='mt-1'>
+          <LinkText href={`/opengov/${proposal.id}`} className='font-medium'>
             <span className='text-text-muted'>#</span>
             {proposal.id} &middot; {proposal.title}
           </LinkText>
+          <div className='flex items-center'>
+            <span className='line-clamp-1 text-text-muted'>
+              {summarizeMdAndHtml(proposal.content)}
+            </span>
+            <LinkText
+              href={`/opengov/${proposal.id}`}
+              variant='primary'
+              className='flex-shrink-0 whitespace-nowrap'
+            >
+              Read more
+            </LinkText>
+          </div>
         </div>
 
-        <div className='mb-3 mt-4 grid grid-cols-[1fr_2fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm xl:grid-cols-[2fr_3fr]'>
-          <div className='flex flex-col gap-2 border-r border-border-gray'>
-            <div className='flex flex-col gap-0.5'>
-              <span className='text-text-muted'>Status</span>
-              <ProposalStatus proposal={proposal} />
-            </div>
-            <div className='flex flex-col gap-0.5'>
-              <span className='text-text-muted'>Comments</span>
-              <span>13</span>
-            </div>
+        <div className='mb-3 mt-4 grid grid-cols-[1fr_1fr_1fr_max-content] items-center gap-4 rounded-2xl bg-background px-4 pb-4 pt-3'>
+          <div className='flex flex-col gap-0.5'>
+            <span className='text-text-muted'>Status</span>
+            <ProposalStatus proposal={proposal} />
           </div>
-          <div className='flex items-center justify-between gap-8'>
-            <div className='flex flex-col gap-2'>
-              <div className='flex flex-col gap-0.5'>
-                <span className='text-text-muted'>Requested</span>
-                <span>
-                  {formatBalanceWithDecimals(proposal.requested, {
-                    precision: 2,
-                  })}{' '}
-                  DOT
-                </span>
-              </div>
-              <div className='flex flex-col gap-0.5'>
-                <span className='text-text-muted'>Voted</span>
-                <span>
-                  {formatBalanceWithDecimals(proposal.tally.support, {
-                    precision: 2,
-                  })}{' '}
-                  DOT
-                </span>
-              </div>
-            </div>
-            <VoteSummary
-              className='h-20 w-20 sm:h-24 sm:w-24'
-              proposal={proposal}
-            />
+          <div className='flex flex-col gap-0.5'>
+            <span className='text-text-muted'>Requested</span>
+            <span className='font-medium'>
+              {formatBalanceWithDecimals(proposal.requested, {
+                precision: 2,
+              })}{' '}
+              DOT
+            </span>
           </div>
+          <div className='flex flex-col gap-0.5'>
+            <span className='text-text-muted'>Voted</span>
+            <span className='font-medium'>
+              {formatBalanceWithDecimals(proposal.tally.support, {
+                precision: 2,
+              })}{' '}
+              DOT
+            </span>
+          </div>
+          <VoteSummary className='h-14 w-14' proposal={proposal} />
         </div>
         <div>
           <CommentsSection proposal={proposal} />
@@ -151,7 +151,7 @@ function NoComments({ proposal }: { proposal: Proposal }) {
           />
         )}
         <LinkText href={`/opengov/${proposal.id}?chat=true`} className='w-full'>
-          <span className='text-text-muted'>Write a comment...</span>
+          <span className='text-text-muted'>Write a first comment...</span>
         </LinkText>
       </div>
       <Button
@@ -180,45 +180,52 @@ function LastCommentItem({
   if (!proposal.chatId) return null
 
   return (
-    <div className='flex items-center justify-between'>
-      <div className='flex items-center gap-2'>
-        {ownerId ? (
-          <AddressAvatar address={proposal.proposer} />
-        ) : (
-          <Skeleton className='h-9 w-9' />
-        )}
-        <div className='flex flex-col items-start gap-0.5'>
-          <span className='flex items-center gap-2'>
-            {ownerId ? (
-              <Name
-                withPolkadotIdentity
-                className='text-sm'
-                address={ownerId}
-              />
-            ) : (
-              <Skeleton className='w-12' />
-            )}
-            <span className='text-xs text-text-muted'>
-              {createdAtTime ? getTimeRelativeToNow(createdAtTime) : ''}
+    <div className='flex flex-col gap-2'>
+      <span className='text-sm text-text-muted'>Latest comment:</span>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          {ownerId ? (
+            <AddressAvatar address={proposal.proposer} />
+          ) : (
+            <Skeleton className='h-9 w-9' />
+          )}
+          <div className='flex flex-col items-start gap-0.5 overflow-hidden'>
+            <span className='flex items-center gap-2'>
+              {ownerId ? (
+                <Name
+                  withPolkadotIdentity
+                  className='text-sm font-medium'
+                  address={ownerId}
+                />
+              ) : (
+                <Skeleton className='w-12' />
+              )}
+              <span className='text-xs text-text-muted'>
+                {createdAtTime ? getTimeRelativeToNow(createdAtTime) : ''}
+              </span>
             </span>
-          </span>
-          <ChatLastMessage
-            className='text-base text-text'
-            chatId={proposal.chatId}
-            defaultDesc={summary}
-            hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
-          />
+            <ChatLastMessage
+              className='text-base text-text'
+              chatId={proposal.chatId}
+              defaultDesc={summary}
+              hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
+            />
+          </div>
         </div>
-      </div>
-      <CustomLink href={`/opengov/${proposal.id}?chat=true`}>
-        <Button
-          variant='primaryOutline'
-          size='circle'
-          className='flex items-center gap-2 text-text-muted'
+        <CustomLink
+          href={`/opengov/${proposal.id}?chat=true`}
+          className='flex-shrink-0'
         >
-          <Reply className='relative -top-0.5' />
-        </Button>
-      </CustomLink>
+          <Button
+            variant='mutedOutline'
+            size='sm'
+            className='flex items-center gap-2 py-2 text-text-muted !ring-text-muted'
+          >
+            <FaRegComment />
+            <span className='relative -top-px'>140</span>
+          </Button>
+        </CustomLink>
+      </div>
     </div>
   )
 }
