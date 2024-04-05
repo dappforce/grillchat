@@ -1,3 +1,4 @@
+import { redisCallWrapper } from '@/server/cache'
 import { handlerWrapper } from '@/server/common'
 import {
   Proposal,
@@ -30,7 +31,9 @@ export type ApiProposalsResponse = {
   totalData: number
 }
 
-// TODO: add redis cache
+const PROPOSALS_MAX_AGE = 5 * 60 // 5 minutes
+const getProposalsRedisKey = (page: number, limit: number) =>
+  'proposals:' + page + ':' + limit
 export async function getProposalsServer({
   page = 1,
   limit = 10,
@@ -38,13 +41,35 @@ export async function getProposalsServer({
   page: number
   limit: number
 }): Promise<ApiProposalsResponse> {
-  const res = await subsquareApi.get('/gov2/referendums', {
-    params: {
-      page,
-      pageSize: limit,
-    },
+  let resData: { total: number; items: SubsquareProposal[] }
+  const cachedData = await redisCallWrapper(async (redis) => {
+    const data = await redis?.get(getProposalsRedisKey(page, limit))
+    return data
+      ? (JSON.parse(data) as {
+          total: number
+          items: SubsquareProposal[]
+        })
+      : null
   })
-  const resData = res.data as { total: number; items: SubsquareProposal[] }
+  if (cachedData) {
+    resData = cachedData
+  } else {
+    const res = await subsquareApi.get('/gov2/referendums', {
+      params: {
+        page,
+        pageSize: limit,
+      },
+    })
+    resData = res.data as { total: number; items: SubsquareProposal[] }
+    await redisCallWrapper(async (redis) => {
+      return redis?.set(
+        getProposalsRedisKey(page, limit),
+        JSON.stringify(resData),
+        'EX',
+        PROPOSALS_MAX_AGE
+      )
+    })
+  }
 
   const hasMore = page * limit < resData.total
   const mappedData = await Promise.all(

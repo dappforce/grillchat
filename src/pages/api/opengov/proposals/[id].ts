@@ -1,3 +1,4 @@
+import { redisCallWrapper } from '@/server/cache'
 import { handlerWrapper } from '@/server/common'
 import {
   Proposal,
@@ -25,7 +26,6 @@ export default handler
 
 export type ApiProposalsResponse = { data: Proposal }
 
-// TODO: add redis cache
 type SubsquareVote = {
   account: string
   ayeBalance: string
@@ -41,18 +41,44 @@ type SubsquareVote = {
   nay: boolean
   isAbstain: boolean
 }
+const PROPOSAL_DETAIL_MAX_AGE = 5 * 60 // 5 minutes
+const getProposalDetailRedisKey = (id: string) => 'proposal-detail:' + id
 export async function getProposalDetailServer({
   id,
 }: {
   id: number
 }): Promise<ApiProposalsResponse> {
-  const [res, votesRes] = await Promise.all([
-    subsquareApi.get(`/gov2/referendums/${id}`),
-    subsquareApi.get(`/gov2/referenda/${id}/votes`),
-  ] as const)
-  const proposal = res.data as SubsquareProposal
+  let proposal: SubsquareProposal
+  let votesData: SubsquareVote[]
 
-  const votesData = (votesRes.data ?? []) as SubsquareVote[]
+  const cachedData = await redisCallWrapper(async (redis) => {
+    const data = await redis?.get(getProposalDetailRedisKey(id.toString()))
+    return data
+      ? (JSON.parse(data) as {
+          proposal: SubsquareProposal
+          votesData: SubsquareVote[]
+        })
+      : null
+  })
+  if (cachedData) {
+    proposal = cachedData.proposal
+    votesData = cachedData.votesData
+  } else {
+    const [res, votesRes] = await Promise.all([
+      subsquareApi.get(`/gov2/referendums/${id}`),
+      subsquareApi.get(`/gov2/referenda/${id}/votes`),
+    ] as const)
+    proposal = res.data as SubsquareProposal
+    votesData = (votesRes.data ?? []) as SubsquareVote[]
+    await redisCallWrapper(async (redis) => {
+      return redis?.set(
+        getProposalDetailRedisKey(id.toString()),
+        JSON.stringify({ proposal, votesData }),
+        'EX',
+        PROPOSAL_DETAIL_MAX_AGE
+      )
+    })
+  }
 
   const mapped = await mapSubsquareProposalToProposal(proposal)
   const allVotes = votesData
