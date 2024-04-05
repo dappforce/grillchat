@@ -1,8 +1,6 @@
 import ProposalDetailPage, {
   ProposalDetailPageProps,
-  getProposalResourceId,
 } from '@/modules/opengov/ProposalDetailPage'
-import { getDiscussion } from '@/pages/api/discussion'
 import { getProposalDetailServer } from '@/pages/api/opengov/proposals/[id]'
 import { getCommonStaticProps } from '@/utils/page'
 
@@ -11,12 +9,6 @@ export function getStaticPaths() {
     paths: [],
     fallback: 'blocking',
   }
-}
-
-async function prefetchChat(proposalId: number) {
-  const linkedResource = await getDiscussion(getProposalResourceId(proposalId))
-  if (!linkedResource) return ''
-  return linkedResource
 }
 
 export const getStaticProps = getCommonStaticProps<ProposalDetailPageProps>(
