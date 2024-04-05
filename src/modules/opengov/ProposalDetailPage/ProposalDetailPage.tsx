@@ -113,7 +113,7 @@ export default function ProposalDetailPage({
         </div>
         <ChatRoom
           chatId={usedChatId ?? ''}
-          hubId='12466'
+          hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
           asContainer
           withDesktopLeftOffset={416}
           customAction={
