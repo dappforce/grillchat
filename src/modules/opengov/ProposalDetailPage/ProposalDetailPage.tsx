@@ -45,7 +45,7 @@ export default function ProposalDetailPage({
 
   const createDiscussion = async function () {
     const { data } = await mutateAsync({
-      spaceId: env.NEXT_PUBLIC_PROPOSAL_HUB,
+      spaceId: env.NEXT_PUBLIC_PROPOSALS_HUB,
       content: {
         title: proposal.title,
       },
