@@ -39,7 +39,10 @@ export default function ProposalPreview({
             nameClassName='text-sm text-text-muted'
             avatarClassName='h-5 w-5'
           />
-          <LinkText href={`/opengov/${proposal.id}`} className='font-medium'>
+          <LinkText
+            href={`/opengov/${proposal.id}`}
+            className='w-max font-medium'
+          >
             <span className='text-text-muted'>#</span>
             {proposal.id} &middot; {proposal.title}
           </LinkText>
@@ -177,6 +180,12 @@ function LastCommentItem({
   ownerId?: string
   createdAtTime?: number
 }) {
+  const { data: postMetadata, isLoading } = getPostMetadataQuery.useQuery(
+    proposal.chatId ?? '',
+    {
+      enabled: !!proposal.chatId,
+    }
+  )
   if (!proposal.chatId) return null
 
   return (
@@ -219,10 +228,12 @@ function LastCommentItem({
           <Button
             variant='mutedOutline'
             size='sm'
-            className='flex items-center gap-2 py-2 text-text-muted !ring-text-muted'
+            className='flex items-center gap-2 py-1.5 text-text-muted !ring-text-muted'
           >
             <FaRegComment />
-            <span className='relative -top-px'>140</span>
+            <span className='relative -top-px'>
+              {postMetadata?.totalCommentsCount ?? 0}
+            </span>
           </Button>
         </CustomLink>
       </div>
