@@ -1,44 +1,17 @@
 import Loading from '@/components/Loading'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import ProposalPreview from '@/components/opengov/ProposalPreview'
-import useSearch from '@/hooks/useSearch'
 import { getPaginatedProposalsQuery } from '@/services/api/opengov/query'
 import { cx } from '@/utils/class-names'
 import { useMemo } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
-// const sortProposalOptions = [
-//   'request size',
-//   'newest',
-//   'recent comments',
-//   'total votes',
-// ] as const
-// type SortProposalOption = (typeof sortProposalOptions)[number]
-
-// const sortByStorage = new LocalStorage(() => 'opengov-sort-by')
 export default function OpengovProposalListPage() {
-  // const [sortBy, setSortBy] = useState<SortProposalOption | null>(null)
-  // useEffect(() => {
-  //   const savedSortBy = sortByStorage.get() as SortProposalOption
-  //   if (savedSortBy && sortProposalOptions.includes(savedSortBy)) {
-  //     setSortBy(savedSortBy)
-  //   } else {
-  //     setSortBy('request size')
-  //   }
-  // }, [])
-  // const changeSortBy = (sortBy: SortProposalOption) => {
-  //   setSortBy(sortBy)
-  //   sortByStorage.set(sortBy)
-  // }
   const {
     data: proposals,
     fetchNextPage,
     hasNextPage,
   } = getPaginatedProposalsQuery.useInfiniteQuery()
-
-  const { search, setSearch, getFocusedElementIndex, focusController } =
-    useSearch()
 
   const flattenedPages = useMemo(() => {
     const proposalIds = new Set<number>()
@@ -55,37 +28,8 @@ export default function OpengovProposalListPage() {
   }, [proposals?.pages])
 
   return (
-    <DefaultLayout
-      withSidebar
-      withSidebarBorder={false}
-      navbarProps={{
-        customContent: ({ logoLink, authComponent, notificationBell }) => {
-          return (
-            <NavbarWithSearch
-              customContent={(searchButton) => (
-                <div className='flex w-full items-center justify-between gap-4'>
-                  {logoLink}
-                  <div className='flex items-center gap-0'>
-                    {searchButton}
-                    {notificationBell}
-                    <div className='ml-2.5'>{authComponent}</div>
-                  </div>
-                </div>
-              )}
-              searchProps={{
-                search,
-                setSearch,
-                ...focusController,
-              }}
-            />
-          )
-        },
-      }}
-    >
+    <DefaultLayout withSidebar withSidebarBorder={false}>
       <div className='mx-auto flex flex-1 flex-col'>
-        {/* {sortBy && (
-          <OpengovToolbar sortBy={sortBy} changeSortBy={changeSortBy} />
-        )} */}
         <InfiniteScroll
           hasMore={!!hasNextPage}
           next={fetchNextPage}
