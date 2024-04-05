@@ -26,15 +26,12 @@ export const getStaticProps = getCommonStaticProps<ProposalDetailPageProps>(
     const parsedId = parseInt(id)
     if (!id || isNaN(parsedId)) return undefined
 
-    const [{ data }, chatId] = await Promise.all([
-      getProposalDetailServer({ id: parsedId }),
-      prefetchChat(parsedId),
-    ] as const)
+    const { data } = await getProposalDetailServer({ id: parsedId })
 
     return {
       props: {
         proposal: data,
-        chatId,
+        chatId: data.chatId,
       },
       revalidate: 20,
     }
