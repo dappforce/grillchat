@@ -37,6 +37,7 @@ function getDecisionData(
   proposal: SubsquareProposal
 ): ProposalDecisionPeriod | null {
   const trackInfo = proposal.onchainData.trackInfo
+  if (!trackInfo) return null
 
   const start = getBlockTimeForStatus(
     proposal.onchainData.timeline ?? [],
