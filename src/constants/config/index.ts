@@ -46,8 +46,8 @@ export function getPinnedHubIds() {
 
 export function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
   return (
-    constantsConfig.hubsWithoutJoinButton.includes(hubId) &&
-    !constantsConfig.chatsWithJoinButton.includes(chatId) &&
-    hubId !== env.NEXT_PUBLIC_PROPOSALS_HUB
+    (constantsConfig.hubsWithoutJoinButton.includes(hubId) &&
+      !constantsConfig.chatsWithJoinButton.includes(chatId)) ||
+    hubId === env.NEXT_PUBLIC_PROPOSALS_HUB
   )
 }
