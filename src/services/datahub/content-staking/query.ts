@@ -16,6 +16,7 @@ import {
   GetSuperLikeCountsQueryVariables,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
+import { getDayAndWeekTimestamp } from './utils'
 
 const GET_SUPER_LIKE_COUNTS = gql`
   query GetSuperLikeCounts($postIds: [String!]!) {
@@ -346,4 +347,99 @@ export const getConfirmationMsgQuery = createQuery({
     >('/api/datahub/super-like')
     return res.data.data ?? ''
   },
+})
+
+export type RewardReport = {
+  superLikesCount: number
+  currentRewardAmount: string
+  weeklyReward: string
+
+  creatorReward: string
+  creatorRewardBySource: {
+    fromDirectSuperLikes: string
+    fromCommentSuperLikes: string
+    fromShareSuperLikes: string
+  }
+  receivedLikes: number
+
+  address: string
+}
+const GET_REWARD_REPORT = gql`
+  query GetRewardReport($address: String!, $day: Int!, $week: Int!) {
+    activeStakingDailyStatsByStaker(
+      args: { address: $address, dayTimestamp: $day }
+    ) {
+      superLikesCount
+      currentRewardAmount
+    }
+    activeStakingRewardsByWeek(
+      args: { weeks: [$week], filter: { account: $address } }
+    ) {
+      staker
+      creator {
+        total
+        rewardsBySource {
+          fromDirectSuperLikes
+          fromCommentSuperLikes
+          fromShareSuperLikes
+        }
+        posts {
+          superLikesCount
+        }
+      }
+    }
+  }
+`
+export async function getRewardReport(address: string): Promise<RewardReport> {
+  const res = await datahubQueryRequest<
+    {
+      activeStakingDailyStatsByStaker: {
+        superLikesCount: number
+        currentRewardAmount: string
+      }
+      activeStakingRewardsByWeek: {
+        staker: string
+        creator: {
+          total: string
+          rewardsBySource?: {
+            fromDirectSuperLikes: string
+            fromCommentSuperLikes: string
+            fromShareSuperLikes: string
+          }
+          posts: {
+            superLikesCount: number
+          }[]
+        }
+      }[]
+    },
+    { address: string; day: number; week: number }
+  >({
+    document: GET_REWARD_REPORT,
+    variables: { address, ...getDayAndWeekTimestamp() },
+  })
+  const weekReward = res.activeStakingRewardsByWeek?.[0]
+
+  return {
+    ...res.activeStakingDailyStatsByStaker,
+    weeklyReward: weekReward?.staker ?? '0',
+    creatorReward: weekReward?.creator.total ?? '0',
+    creatorRewardBySource: weekReward?.creator.rewardsBySource ?? {
+      fromDirectSuperLikes: '0',
+      fromCommentSuperLikes: '0',
+      fromShareSuperLikes: '0',
+    },
+    receivedLikes:
+      weekReward?.creator.posts.reduce(
+        (acc, post) => acc + post.superLikesCount,
+        0
+      ) ?? 0,
+    address,
+  }
+}
+export const getRewardReportQuery = createQuery({
+  key: 'getRewardReport',
+  fetcher: getRewardReport,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
 })
