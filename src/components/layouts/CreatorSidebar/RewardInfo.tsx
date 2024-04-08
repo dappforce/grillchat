@@ -41,8 +41,11 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
 
   if (isLoading) {
     return (
-      <div className='p-3'>
-        <Skeleton />
+      <div className='flex flex-col gap-3 p-3 text-sm'>
+        <Skeleton className='w-full' />
+        <Skeleton className='w-full' />
+        <Skeleton className='w-full' />
+        <Skeleton className='w-full' />
       </div>
     )
   }
