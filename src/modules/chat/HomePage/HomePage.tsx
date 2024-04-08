@@ -176,7 +176,7 @@ export default function HomePage(props: HomePageProps) {
         },
       }}
     >
-      <div className='flex flex-1 flex-col md:pr-3'>
+      <div className='flex flex-1 flex-col lg:pr-3'>
         <SearchChannelsWrapper
           search={search}
           getFocusedElementIndex={getFocusedElementIndex}
