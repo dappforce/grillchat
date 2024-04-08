@@ -53,7 +53,7 @@ export default function ProposalPreview({
             <LinkText
               href={`/opengov/${proposal.id}`}
               variant='primary'
-              className='flex-shrink-0 whitespace-nowrap'
+              className='ml-auto flex-shrink-0 whitespace-nowrap'
             >
               Read more
             </LinkText>
@@ -143,7 +143,7 @@ function NoComments({ proposal }: { proposal: Proposal }) {
 
   return (
     <div className='flex items-center justify-between'>
-      <div className='flex items-center gap-2'>
+      <div className='flex items-center gap-3'>
         {myAddress ? (
           <AddressAvatar address={myAddress ?? ''} className='flex-shrink-0' />
         ) : (

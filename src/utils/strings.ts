@@ -45,6 +45,7 @@ export function getUrlFromText(str: string) {
 }
 
 export function summarizeMdAndHtml(text: string) {
+  if (!text) return ''
   const mdText = text.replace(/<[^>]*>?/gm, '')
   return summarizeMd(mdText).summary
 }
