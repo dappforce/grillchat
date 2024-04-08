@@ -176,46 +176,47 @@ export default function HomePage(props: HomePageProps) {
         },
       }}
     >
-      <SearchChannelsWrapper
-        search={search}
-        getFocusedElementIndex={getFocusedElementIndex}
-      >
-        <Tabs
-          className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
-          panelClassName='mt-0 px-0'
-          tabClassName={cx('px-1.5 sm:px-2')}
-          asContainer
-          tabs={tabs}
-          withHashIntegration={false}
-          tabsRightElement={
-            isLoggedIn &&
-            communityHubId && (
-              <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
-                <Button
-                  size='xs'
-                  variant='primary'
-                  className='flex items-center gap-2'
-                  onClick={() => {
-                    setIsOpenNewCommunity(true)
-                    sendEvent('open_community_creation_modal', {
-                      eventSource: 'home',
-                    })
-                  }}
-                >
-                  <CommunityAddIcon className='text-text-muted-on-primary' />
-                  <span>New</span>
-                </Button>
-              </div>
-            )
-          }
-          hideBeforeHashLoaded
-          manualTabControl={{
-            selectedTab: usedSelectedTab,
-            setSelectedTab: usedSetSelectedTab,
-          }}
-        />
-      </SearchChannelsWrapper>
-
+      <div className='flex flex-1 flex-col md:pr-3'>
+        <SearchChannelsWrapper
+          search={search}
+          getFocusedElementIndex={getFocusedElementIndex}
+        >
+          <Tabs
+            className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
+            panelClassName='mt-0 px-0'
+            tabClassName={cx('px-1.5 sm:px-2')}
+            asContainer
+            tabs={tabs}
+            withHashIntegration={false}
+            tabsRightElement={
+              isLoggedIn &&
+              communityHubId && (
+                <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
+                  <Button
+                    size='xs'
+                    variant='primary'
+                    className='flex items-center gap-2'
+                    onClick={() => {
+                      setIsOpenNewCommunity(true)
+                      sendEvent('open_community_creation_modal', {
+                        eventSource: 'home',
+                      })
+                    }}
+                  >
+                    <CommunityAddIcon className='text-text-muted-on-primary' />
+                    <span>New</span>
+                  </Button>
+                </div>
+              )
+            }
+            hideBeforeHashLoaded
+            manualTabControl={{
+              selectedTab: usedSelectedTab,
+              setSelectedTab: usedSetSelectedTab,
+            }}
+          />
+        </SearchChannelsWrapper>
+      </div>
       {communityHubId && (
         <NewCommunityModal
           isOpen={isOpenNewCommunity}
