@@ -4,6 +4,7 @@ import { apiInstance } from '@/services/api/utils'
 import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { AxiosResponse } from 'axios'
+import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import {
   GetAddressLikeCountToPostsQuery,
@@ -439,6 +440,81 @@ export async function getRewardReport(address: string): Promise<RewardReport> {
 export const getRewardReportQuery = createQuery({
   key: 'getRewardReport',
   fetcher: getRewardReport,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+export type RewardHistory = {
+  address: string
+  rewards: {
+    week: number
+    startDate: string
+    endDate: string
+    reward: string
+    creatorReward: string
+  }[]
+}
+const GET_REWARD_HISTORY = gql`
+  query GetRewardHistory($address: String!) {
+    activeStakingRewardsByWeek(args: { filter: { account: $address } }) {
+      staker
+      week
+      creator {
+        total
+      }
+    }
+  }
+`
+export async function getRewardHistory(
+  address: string
+): Promise<RewardHistory> {
+  const res = await datahubQueryRequest<
+    {
+      activeStakingRewardsByWeek: {
+        staker: string
+        week: number
+        creator: {
+          total: string
+        }
+      }[]
+    },
+    { address: string }
+  >({
+    document: GET_REWARD_HISTORY,
+    variables: { address },
+  })
+
+  const rewards = res.activeStakingRewardsByWeek.map(
+    ({ staker, week, creator }) => {
+      const startDate = dayjs
+        .utc()
+        .year(week / 100)
+        .isoWeek(week % 100)
+        .startOf('week')
+      const endDate = startDate.add(1, 'week')
+
+      return {
+        reward: staker,
+        week,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        creatorReward: creator.total,
+      }
+    }
+  )
+  rewards.sort(
+    (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+  )
+
+  return {
+    address,
+    rewards,
+  }
+}
+export const getRewardHistoryQuery = createQuery({
+  key: 'getRewardHistory',
+  fetcher: getRewardHistory,
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
   }),

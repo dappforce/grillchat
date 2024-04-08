@@ -19,6 +19,7 @@ import { AiOutlineLineChart } from 'react-icons/ai'
 import { RiHistoryFill } from 'react-icons/ri'
 import { SlQuestion } from 'react-icons/sl'
 import CustomLink from 'src/components/referral/CustomLink'
+import RewardHistoryModal from './RewardHistoryModal'
 import StakerRewardProgressBar, {
   StakerRewardProgressBarProps,
 } from './StakerRewardProgressBar'
@@ -112,10 +113,10 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
         </CustomLink>
       </div>
 
-      {/* <RewardHistoryModal
-        visible={isOpenRewardHistoryModal}
-        onCancel={() => setIsOpenRewardHistoryModal(false)}
-      /> */}
+      <RewardHistoryModal
+        isOpen={isOpenRewardHistoryModal}
+        closeModal={() => setIsOpenRewardHistoryModal(false)}
+      />
     </div>
   )
 }
