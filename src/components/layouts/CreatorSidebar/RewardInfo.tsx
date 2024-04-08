@@ -294,13 +294,13 @@ function CreatorRewardInfo({
     <div className={clsx('flex flex-col text-sm')}>
       <span
         className={clsx(
-          'pb-1 font-semibold',
+          'pb-2 font-semibold',
           size === 'small' ? 'text-sm' : 'text-base'
         )}
       >
         Creator Rewards
       </span>
-      <div className='flex-column flex gap-2'>
+      <div className='flex flex-col gap-2'>
         <div className='flex items-center justify-between'>
           <div className='flex items-baseline gap-2'>
             <span className='text-text-muted'>Received likes</span>
