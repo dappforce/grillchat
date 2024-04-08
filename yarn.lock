@@ -11759,28 +11759,28 @@ elliptic@6.5.4, elliptic@^6.5.3:
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
 
-embla-carousel-autoplay@^8.0.0-rc23:
-  version "8.0.0-rc23"
-  resolved "https://registry.yarnpkg.com/embla-carousel-autoplay/-/embla-carousel-autoplay-8.0.0-rc23.tgz#21b1e059ef243325073b149c1f46fe25c9fd0329"
-  integrity sha512-1c8+9Qs/kbZAYMInXGUqyXPbR8fY34WgxQ/00RFUIY66HZDBdji2p2YkepTpU9sZyrD+o5NTCNMJ3TIHiRwaUA==
+embla-carousel-autoplay@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/embla-carousel-autoplay/-/embla-carousel-autoplay-8.0.1.tgz#2b6a99f04b7ce37472afafee3ceefda0b7b99a0a"
+  integrity sha512-4zcB6jVSGTJSXL7uroccjak9U+lyyoZTO4NISwdCHNMYVbIra8aZGEz0I/4Ql753do6jqjaRE8MsCBhJbt6u6A==
 
-embla-carousel-react@^8.0.0-rc23:
-  version "8.0.0-rc23"
-  resolved "https://registry.yarnpkg.com/embla-carousel-react/-/embla-carousel-react-8.0.0-rc23.tgz#bd1760f6c0b333fd68d50bf5d9617b8b72dd0dd4"
-  integrity sha512-EmtIx4oYkBAUi9R31Tg1lh2HCw0Q01bOftXRDhIlNfB+gsDRS76AgeYU+mQc9qW6yeI5C/W5BqtPZU+ymR0E2Q==
+embla-carousel-react@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/embla-carousel-react/-/embla-carousel-react-8.0.1.tgz#6c0420e54079a3f47fad1b4e982be782066f5b2c"
+  integrity sha512-cpFQ/HwCsjBjzpu9Z9IHmZ9DaCSf/wo4q+qUTcRW3SsNv+1Q8IY7Y8J2QIyTmz0vOWY7tliu3uE2gqRH7ZDwOQ==
   dependencies:
-    embla-carousel "8.0.0-rc23"
-    embla-carousel-reactive-utils "8.0.0-rc23"
+    embla-carousel "8.0.1"
+    embla-carousel-reactive-utils "8.0.1"
 
-embla-carousel-reactive-utils@8.0.0-rc23:
-  version "8.0.0-rc23"
-  resolved "https://registry.yarnpkg.com/embla-carousel-reactive-utils/-/embla-carousel-reactive-utils-8.0.0-rc23.tgz#9d64577a9bde68e4c4cd4bb76bf4daec7110ea9a"
-  integrity sha512-/NPejNksrw1iWthTtrps5LNj6gJzylvfCuNTh2+P0FLSPbX/+RlT84Ab5qnbSS/vdmEs8daJbVvb5Bol9v0OdQ==
+embla-carousel-reactive-utils@8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/embla-carousel-reactive-utils/-/embla-carousel-reactive-utils-8.0.1.tgz#7fe11dd07bf9f8e95debdc2e4415d608fe8723c6"
+  integrity sha512-KBSkz2h9LwVFkOrwzIJKgXbmEDlIShkreeOHnV8Cph09AdBMzb412nRkcctbeDcuG9x3CVsqLzJrSXnZeYhFPQ==
 
-embla-carousel@8.0.0-rc23:
-  version "8.0.0-rc23"
-  resolved "https://registry.yarnpkg.com/embla-carousel/-/embla-carousel-8.0.0-rc23.tgz#07052fd046d4cfa5cc9809a8003d3e210dd05103"
-  integrity sha512-ybuDHm+udElyH+XpuemS/W+x8ZhB3a/4UzeTBvsoZUxDSty12ch1f2T0CZxGqIs2FfdaofEOmpLMSvuEPVTMCg==
+embla-carousel@8.0.1, embla-carousel@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/embla-carousel/-/embla-carousel-8.0.1.tgz#a9dd052d91a97b15c362723611ba7687193dba99"
+  integrity sha512-RsaMRyBCd144N95gb3XoI+H9zj3RI4y0qcfvKYEh2tIAIEenL9CW9vwzltCeoYkWYipGdkvup+HGT9ewG1YTEw==
 
 emoji-regex@^8.0.0:
   version "8.0.0"

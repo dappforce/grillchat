@@ -6,6 +6,7 @@ import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import BackButton from '../BackButton'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
+import CreatorSidebar from './CreatorSidebar'
 import Sidebar from './Sidebar'
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
@@ -46,8 +47,7 @@ export default function DefaultLayout({
       {withSidebar ? (
         <div
           className={cx(
-            'container-page flex flex-1 items-start border-border-gray !pl-0 !pr-0 md:!pl-4',
-            withSidebarBorder && 'md:border-r'
+            'container-page flex flex-1 items-start border-border-gray !pl-0 !pr-0 md:!pl-4'
           )}
         >
           <div
@@ -59,6 +59,13 @@ export default function DefaultLayout({
             <Sidebar />
           </div>
           <div className='flex-1'>{children}</div>
+          <div
+            className={cx(
+              'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[300px] px-4 py-4 md:block'
+            )}
+          >
+            <CreatorSidebar />
+          </div>
         </div>
       ) : (
         children
