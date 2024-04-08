@@ -192,7 +192,7 @@ function LastCommentItem({
     <div className='flex flex-col gap-2'>
       <span className='text-sm text-text-muted'>Latest comment:</span>
       <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-3'>
           {ownerId ? (
             <AddressAvatar address={proposal.proposer} />
           ) : (
