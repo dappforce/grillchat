@@ -96,7 +96,10 @@ export default function MobileProposalDetailPage({
             className='w-full'
             onClick={() => setIsOpenComment(true)}
           >
-            Comment ({postMetadata?.totalCommentsCount || ''})
+            Comment{' '}
+            {postMetadata?.totalCommentsCount
+              ? `(${postMetadata.totalCommentsCount})`
+              : ''}
           </Button>
         </div>
       </div>
