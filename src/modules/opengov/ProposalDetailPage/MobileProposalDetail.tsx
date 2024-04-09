@@ -117,7 +117,6 @@ export default function MobileProposalDetailPage({
         chatId={usedChatId ?? ''}
         hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
         asContainer
-        withDesktopLeftOffset={416}
         customAction={
           !usedChatId ? (
             <Button size='lg' onClick={createDiscussion} isLoading={isLoading}>

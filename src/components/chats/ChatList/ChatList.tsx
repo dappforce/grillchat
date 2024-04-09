@@ -49,7 +49,6 @@ export type ChatListProps = ComponentProps<'div'> & {
   hubId: string
   chatId: string
   newMessageNoticeClassName?: string
-  withDesktopLeftOffset?: number
 }
 
 export default function ChatList(props: ChatListProps) {
@@ -73,7 +72,6 @@ function ChatListContent({
   chatId,
   scrollContainerRef: _scrollContainerRef,
   newMessageNoticeClassName,
-  withDesktopLeftOffset,
   ...props
 }: ChatListProps) {
   const lgUp = useBreakpointThreshold('lg')
@@ -190,7 +188,6 @@ function ChatListContent({
           scrollToMessage={scrollToMessage}
           chatId={chatId}
           asContainer={asContainer}
-          withDesktopLeftOffset={withDesktopLeftOffset}
         />
         {totalDataCount === 0 && (
           <CenterChatNotice
@@ -201,12 +198,6 @@ function ChatListContent({
                 : undefined
             }
             className='absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2'
-            style={{
-              left:
-                withDesktopLeftOffset && lgUp
-                  ? `calc(50% + ${withDesktopLeftOffset / 2}px)`
-                  : '',
-            }}
           />
         )}
         <ScrollableContainer
@@ -221,12 +212,6 @@ function ChatListContent({
             ref={innerRef}
             className={cx(enableBackButton === false && 'px-0', 'flex')}
           >
-            {!!withDesktopLeftOffset && (
-              <div
-                style={{ width: withDesktopLeftOffset }}
-                className='pointer-events-none hidden flex-shrink-0 lg:block'
-              />
-            )}
             <div className='flex-1'>
               <InfiniteScroll
                 dataLength={renderedMessageIds.length}

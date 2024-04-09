@@ -8,13 +8,11 @@ type PinnedMessageProps = {
   chatId: string
   asContainer?: boolean
   scrollToMessage: ReturnType<typeof useScrollToMessage>
-  withDesktopLeftOffset?: number
 }
 export default function PinnedMessage({
   chatId,
   asContainer,
   scrollToMessage,
-  withDesktopLeftOffset,
 }: PinnedMessageProps) {
   const pinnedMessageId = usePinnedMessage(chatId)
   const { data: message } = getPostQuery.useQuery(pinnedMessageId ?? '', {
@@ -26,12 +24,6 @@ export default function PinnedMessage({
   return (
     <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
       <Component className='flex' onClick={() => scrollToMessage(message.id)}>
-        {withDesktopLeftOffset && (
-          <div
-            style={{ width: withDesktopLeftOffset }}
-            className='pointer-events-none hidden flex-shrink-0 lg:block'
-          />
-        )}
         <div className='flex cursor-pointer items-center gap-4 overflow-hidden py-2'>
           <div className='mr-0.5 flex-shrink-0'>
             <RiPushpinLine className='ml-2 text-lg' />

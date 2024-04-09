@@ -32,7 +32,6 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   customAction?: ReactNode
   chatId: string
   hubId: string
-  withDesktopLeftOffset?: number
 }
 
 export default function ChatRoom({
@@ -42,7 +41,6 @@ export default function ChatRoom({
   customAction,
   chatId,
   hubId,
-  withDesktopLeftOffset,
   ...props
 }: ChatRoomProps) {
   const replyTo = useMessageData((state) => state.replyTo)
@@ -60,7 +58,6 @@ export default function ChatRoom({
         asContainer={asContainer}
         scrollableContainerClassName={scrollableContainerClassName}
         scrollContainerRef={scrollContainerRef}
-        withDesktopLeftOffset={withDesktopLeftOffset}
       />
       <ChatInputWrapper
         customAction={customAction}
@@ -68,7 +65,6 @@ export default function ChatRoom({
         hubId={hubId}
         asContainer={asContainer}
         scrollContainerRef={scrollContainerRef}
-        withDesktopLeftOffset={withDesktopLeftOffset}
       />
     </div>
   )
@@ -79,14 +75,12 @@ type ChatInputWrapperProps = Pick<
   'asContainer' | 'chatId' | 'hubId' | 'customAction'
 > & {
   scrollContainerRef: RefObject<HTMLDivElement>
-  withDesktopLeftOffset?: number
 }
 function ChatInputWrapper({
   asContainer,
   chatId,
   hubId,
   customAction,
-  withDesktopLeftOffset,
   scrollContainerRef,
 }: ChatInputWrapperProps) {
   const clearAction = useMessageData((state) => state.clearAction)
@@ -130,12 +124,6 @@ function ChatInputWrapper({
   return (
     <>
       <Component className={cx('mt-auto flex py-2 pt-0')}>
-        {!!withDesktopLeftOffset && (
-          <div
-            style={{ width: withDesktopLeftOffset }}
-            className='pointer-events-none hidden flex-shrink-0 lg:block'
-          />
-        )}
         <div className='flex flex-1 flex-col'>
           <ActionDetailBar
             chatId={chatId}
