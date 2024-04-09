@@ -92,9 +92,12 @@ export default function DesktopProposalDetail({
                 <Button
                   size='lg'
                   onClick={() => setIsOpenDrawer(true)}
-                  className='mt-auto w-full'
+                  className='mt-4 mt-auto w-full'
                 >
-                  Show all {`${postMetadata?.totalCommentsCount} ` || ' '}
+                  Show all{' '}
+                  {postMetadata?.totalCommentsCount
+                    ? `${postMetadata?.totalCommentsCount} `
+                    : ''}
                   Comments
                 </Button>
               </div>
