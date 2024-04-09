@@ -27,6 +27,13 @@ export default function ProposalPreview({
   proposal: Proposal
   className?: string
 }) {
+  const { data: postMetadata, isFetching } = getPostMetadataQuery.useQuery(
+    proposal.chatId ?? '',
+    {
+      enabled: !!proposal.chatId,
+    }
+  )
+
   return (
     <div className={cx('rounded-2xl bg-background-light p-4', className)}>
       <div className='flex h-full flex-col justify-between'>
@@ -60,7 +67,8 @@ export default function ProposalPreview({
           </div>
         </div>
 
-        <div className='mb-3 mt-4 grid grid-cols-[1fr_1fr_1fr_max-content] items-center gap-4 rounded-2xl bg-background px-4 pb-4 pt-3'>
+        {/* DESKTOP */}
+        <div className='mb-3 mt-4 hidden grid-cols-[1fr_1fr_1fr_max-content] items-center gap-4 rounded-2xl bg-background px-4 pb-4 pt-3 sm:grid'>
           <div className='flex flex-col gap-0.5'>
             <span className='text-text-muted'>Status</span>
             <ProposalStatus proposal={proposal} />
@@ -84,6 +92,52 @@ export default function ProposalPreview({
             </span>
           </div>
           <VoteSummary className='h-14 w-14' proposal={proposal} />
+        </div>
+
+        {/* MOBILE */}
+        <div className='mb-3 mt-4 grid grid-cols-[1fr_2fr] gap-4 rounded-2xl border border-border-gray px-4 pb-4 pt-3 text-sm sm:hidden xl:grid-cols-[2fr_3fr]'>
+          <div className='flex flex-col gap-2 border-r border-border-gray'>
+            <div className='flex flex-col gap-0.5'>
+              <span className='text-text-muted'>Status</span>
+              <ProposalStatus proposal={proposal} />
+            </div>
+            <div className='flex flex-col gap-0.5'>
+              <span className='text-text-muted'>Comments</span>
+              <span className='font-medium'>
+                {isFetching ? (
+                  <Skeleton className='w-12' />
+                ) : (
+                  <span>{postMetadata?.totalCommentsCount ?? 0}</span>
+                )}
+              </span>
+            </div>
+          </div>
+          <div className='flex items-center justify-between gap-8'>
+            <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-text-muted'>Requested</span>
+                <span className='font-medium'>
+                  {formatBalanceWithDecimals(proposal.requested, {
+                    precision: 2,
+                  })}{' '}
+                  DOT
+                </span>
+              </div>
+              <div className='flex flex-col gap-0.5'>
+                <span className='text-text-muted'>Voted</span>
+                <span className='font-medium'>
+                  {formatBalanceWithDecimals(proposal.tally.support, {
+                    precision: 2,
+                  })}{' '}
+                  DOT
+                </span>
+              </div>
+            </div>
+            <VoteSummary
+              className='h-20 w-20 sm:h-24 sm:w-24'
+              proposal={proposal}
+            />
+          </div>
         </div>
         <div>
           <CommentsSection proposal={proposal} />
