@@ -3,9 +3,6 @@ import SupportIcon from '@/assets/icons/support.svg'
 import VoteIcon from '@/assets/icons/vote.svg'
 import ActionCard from '@/components/ActionCard'
 import Card from '@/components/Card'
-import LinkText from '@/components/LinkText'
-import MdRenderer from '@/components/MdRenderer'
-import ProfilePreview from '@/components/ProfilePreview'
 import PopOver from '@/components/floating/PopOver'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
@@ -20,74 +17,14 @@ import dayjs from 'dayjs'
 import { useState } from 'react'
 import { FaCheck, FaXmark } from 'react-icons/fa6'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
-import ProposalDetailModal from './ProposalDetailModal'
 import ProposalMetadataModal from './ProposalMetadataModal'
 import SupportBar, { getCurrentBillPercentage } from './SupportBar'
 
-export default function ProposalDetailSection({
+export default function ProposalStatusCard({
   proposal,
-  className,
 }: {
   proposal: Proposal
-  className?: string
 }) {
-  return (
-    <div className={cx('flex flex-col gap-4', className)}>
-      <div className='flex items-center justify-between gap-6'>
-        <div className='flex flex-shrink-0 items-center gap-2'>
-          <span className='whitespace-nowrap'>
-            {formatBalanceWithDecimals(proposal.requested)} DOT
-          </span>
-          <span className='whitespace-nowrap text-text-muted'>≈$3,567.34</span>
-        </div>
-        <ProfilePreview
-          withPolkadotIdentity
-          address={proposal.proposer}
-          showAddress={false}
-          className='gap-1'
-          nameClassName='text-sm text-text-muted [&_span]:line-clamp-1'
-          avatarClassName='h-5 w-5'
-        />
-      </div>
-      <Summary proposal={proposal} />
-      <Status proposal={proposal} />
-    </div>
-  )
-}
-
-function Summary({ proposal }: { proposal: Proposal }) {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  return (
-    <>
-      <Card className='flex flex-col items-start gap-6 bg-background-light'>
-        <h1 className='font-bold'>
-          #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
-          {proposal.title}
-        </h1>
-        <MdRenderer
-          className='prose-sm line-clamp-6'
-          removeEmptyParagraph
-          source={proposal.content}
-        />
-        <LinkText
-          variant='secondary'
-          href={`/opengov/${proposal.id}#detail`}
-          shallow
-          onClick={() => setIsOpenModal(true)}
-        >
-          Read more
-        </LinkText>
-      </Card>
-      <ProposalDetailModal
-        isOpen={isOpenModal}
-        closeModal={() => setIsOpenModal(false)}
-        proposal={proposal}
-      />
-    </>
-  )
-}
-
-function Status({ proposal }: { proposal: Proposal }) {
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   const currentSupport = getCurrentBillPercentage(proposal)

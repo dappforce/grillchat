@@ -284,9 +284,10 @@ const getPostMetadata = poolQuery<
 export const getPostMetadataQuery = createQuery({
   key: 'post-metadata',
   fetcher: getPostMetadata,
-  defaultConfigGenerator: () => ({
+  defaultConfigGenerator: (params) => ({
     refetchOnWindowFocus: true,
     staleTime: 0,
+    enabled: !!params,
   }),
 })
 

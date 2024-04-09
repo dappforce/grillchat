@@ -35,9 +35,6 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 import BottomPanel from './BottomPanel'
 
-const NetworkStatus = dynamic(() => import('@/components/NetworkStatus'), {
-  ssr: false,
-})
 const AboutChatModal = dynamic(
   () => import('@/components/modals/about/AboutChatModal'),
   {
