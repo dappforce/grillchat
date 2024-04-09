@@ -33,7 +33,10 @@ export default function useLoginOption() {
     const { getPromise, getResolver } = generateManuallyTriggeredPromise()
     waitingLoginResolvers.current.push(getResolver())
     await getPromise()
-    return useMyAccount.getState().address
+    return (
+      useMyAccount.getState().parentProxyAddress ||
+      useMyAccount.getState().address
+    )
   }, [setIsOpen])
 
   return { loginOption, promptUserForLogin }
