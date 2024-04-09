@@ -48,7 +48,7 @@ export default function ProposalPreview({
           />
           <LinkText
             href={`/opengov/${proposal.id}`}
-            className='w-max font-medium'
+            className='line-clamp-1 max-w-max font-medium'
           >
             <span className='text-text-muted'>#</span>
             {proposal.id} &middot; {proposal.title}
