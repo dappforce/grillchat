@@ -41,7 +41,9 @@ export default function DesktopProposalDetail({
               #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
               {proposal.title}
             </h1>
-            <Button>{postMetadata?.totalCommentsCount ?? 0} Comments</Button>
+            <Button className='flex-shrink-0'>
+              {postMetadata?.totalCommentsCount ?? 0} Comments
+            </Button>
           </div>
           <MdRenderer
             className='max-w-full break-words'
