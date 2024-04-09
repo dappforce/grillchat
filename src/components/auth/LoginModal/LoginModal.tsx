@@ -99,7 +99,6 @@ export default function LoginModal({
       title: '🔗 Connect via Polkadot',
       desc: 'Select a wallet to connect to Grill using an existing Polkadot account',
       withBackButton: true,
-      backToStep: loginOption === 'polkadot' ? 'login' : 'new-account',
       withoutDefaultPadding: true,
     },
     'polkadot-js-limited-support': {
