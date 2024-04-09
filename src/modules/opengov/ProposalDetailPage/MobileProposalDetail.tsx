@@ -7,6 +7,7 @@ import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
 import BottomPanel from '@/modules/chat/ChatPage/BottomPanel'
 import { useCreateDiscussion } from '@/services/api/mutation'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
@@ -29,6 +30,8 @@ export default function MobileProposalDetailPage({
   const [isOpenComment, setIsOpenComment] = useState(false)
   const { mutateAsync, error, isLoading } = useCreateDiscussion()
   useToastError(error, 'Failed to create discussion')
+
+  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
 
   useEffect(() => {
     if (getUrlQuery('chat') === 'true') {
@@ -93,7 +96,7 @@ export default function MobileProposalDetailPage({
             className='w-full'
             onClick={() => setIsOpenComment(true)}
           >
-            Comment (6)
+            Comment ({postMetadata?.totalCommentsCount || ''})
           </Button>
         </div>
       </div>

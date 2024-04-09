@@ -42,7 +42,7 @@ export default function DesktopProposalDetail({
               {proposal.title}
             </h1>
             <Button className='flex-shrink-0'>
-              {postMetadata?.totalCommentsCount ?? 0} Comments
+              {postMetadata?.totalCommentsCount || ''} Comments
             </Button>
           </div>
           <MdRenderer
@@ -72,7 +72,7 @@ export default function DesktopProposalDetail({
           )}
         </Card>
       </div>
-      <div>
+      <div className='sticky top-20 self-start'>
         <ProposalStatusCard proposal={proposal} />
       </div>
     </div>
