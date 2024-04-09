@@ -37,7 +37,7 @@ export default function DesktopProposalDetail({
         <ProposerSummary proposal={proposal} />
         <Card className='flex flex-col items-start gap-6 bg-background-light'>
           <div className='flex w-full items-center justify-between gap-4'>
-            <h1 className='line-clamp-1 text-lg font-bold'>
+            <h1 className='text-lg font-bold'>
               #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
               {proposal.title}
             </h1>
