@@ -1,3 +1,4 @@
+import GrillGreyIcon from '@/assets/icons/grill-grey.svg'
 import useIsMounted from '@/hooks/useIsMounted'
 import { getIsLoggedIn, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -60,6 +61,14 @@ export default function Sidebar() {
           title='Energy Station'
           href='/energy'
           forceHardNavigation
+        />
+
+        <div className='border-t border-border-gray' />
+
+        <SidebarItem
+          icon={GrillGreyIcon}
+          title='What is Grill?'
+          href='/landing'
         />
       </ul>
     </aside>
