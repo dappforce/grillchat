@@ -69,6 +69,7 @@ export default function Sidebar() {
           icon={GrillGreyIcon}
           title='What is Grill?'
           href='/landing'
+          iconClassName='[&_path]:fill-current'
         />
       </ul>
     </aside>
@@ -80,11 +81,13 @@ function SidebarItem({
   title,
   href,
   forceHardNavigation,
+  iconClassName,
 }: {
   icon: IconType
   title: string
   href: string
   forceHardNavigation?: boolean
+  iconClassName?: string
 }) {
   const { pathname } = useRouter()
   return (
@@ -97,7 +100,7 @@ function SidebarItem({
         forceHardNavigation={forceHardNavigation}
         href={href}
       >
-        <Icon className='text-xl' />
+        <Icon className={cx('text-xl', iconClassName)} />
         <span className='text-sm font-medium'>{title}</span>
       </CustomLink>
     </li>
