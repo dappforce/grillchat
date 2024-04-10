@@ -36,6 +36,7 @@ export default function ChatItem({
   hubId,
   ...props
 }: ChatItemProps) {
+  console.log(messageBubbleId)
   const setReplyTo = useMessageData((state) => state.setReplyTo)
 
   const messageId = message.id

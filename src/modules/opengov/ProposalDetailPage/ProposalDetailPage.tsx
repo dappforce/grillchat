@@ -2,6 +2,8 @@ import Button from '@/components/Button'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
+import useIsMounted from '@/hooks/useIsMounted'
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
@@ -29,6 +31,9 @@ export function getProposalResourceId(proposalId: number | string) {
 }
 
 export default function ProposalDetailPage(props: ProposalDetailPageProps) {
+  const lgUp = useBreakpointThreshold('lg')
+  const isMounted = useIsMounted()
+
   return (
     <DefaultLayout
       navbarProps={{
@@ -48,8 +53,11 @@ export default function ProposalDetailPage(props: ProposalDetailPageProps) {
         ),
       }}
     >
-      <MobileProposalDetailPage {...props} className='lg:hidden' />
-      <DesktopProposalDetail {...props} className='hidden lg:grid' />
+      {isMounted && lgUp ? (
+        <DesktopProposalDetail {...props} className='hidden lg:grid' />
+      ) : (
+        <MobileProposalDetailPage {...props} className='lg:hidden' />
+      )}
     </DefaultLayout>
   )
 }

@@ -81,6 +81,7 @@ export default function DesktopProposalDetail({
                   if (!data) return
                   return (
                     <ChatItem
+                      enableChatMenu={false}
                       key={data.id}
                       message={data}
                       chatId={chatId}
@@ -92,7 +93,7 @@ export default function DesktopProposalDetail({
                 <Button
                   size='lg'
                   onClick={() => setIsOpenDrawer(true)}
-                  className='mt-4 mt-auto w-full'
+                  className='mt-auto w-full'
                 >
                   Show all{' '}
                   {postMetadata?.totalCommentsCount
@@ -162,7 +163,7 @@ function SidePanel({
 
   return (
     <Drawer.Portal>
-      <Drawer.Content className='fixed right-0 top-0 z-50 flex h-screen w-full max-w-[500px] flex-col bg-[#eceff4] dark:bg-[#11172a]'>
+      <Drawer.Content className='fixed right-0 top-0 z-20 flex h-screen w-full max-w-[500px] flex-col bg-[#eceff4] dark:bg-[#11172a]'>
         <Button
           size='circle'
           variant='white'
@@ -215,7 +216,7 @@ function SidePanel({
           }
         />
       </Drawer.Content>
-      <Drawer.Overlay className='fixed inset-0 z-40 bg-black/70' />
+      <Drawer.Overlay className='fixed inset-0 z-10 bg-black/70' />
     </Drawer.Portal>
   )
 }
