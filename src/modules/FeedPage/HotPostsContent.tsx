@@ -1,3 +1,4 @@
+import PostPreview from '@/components/post/PostPreview'
 import { getHotPosts } from '@/services/datahub/hot-posts/query'
 import { useFeedPagePostsCount } from '@/stores/feed-page-posts-count'
 import { cx } from '@/utils/class-names'
@@ -53,9 +54,7 @@ const HotPostsContent = ({
       scrollThreshold={`${20}px`}
     >
       {postsIds.map((postId) => (
-        <div key={postId} className='h-[100px]'>
-          {postId}
-        </div>
+        <PostPreview key={postId} postId={postId} />
       ))}
     </InfiniteScroll>
   )

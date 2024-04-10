@@ -1,21 +1,14 @@
-import FeedPage from '@/modules/FeedPage'
+import FeedPage, { FeedPageProps } from '@/modules/FeedPage'
 import { getPostQuery } from '@/services/api/query'
 import { getHotPosts } from '@/services/datahub/hot-posts/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 import { AppCommonProps } from './_app'
 
-type FeedPageProps = {
-  initialPostIds: string[]
-  postsCount: number
-}
-
 export const getStaticProps = getCommonStaticProps<
   FeedPageProps & AppCommonProps
 >(
-  () => ({
-    head: { disableZoom: true },
-  }),
+  () => ({}),
   async () => {
     const queryClient = new QueryClient()
 
@@ -28,7 +21,6 @@ export const getStaticProps = getCommonStaticProps<
       (post) => post.persistentPostId
     )
     const postsCount = hotPostsData.total
-
     await getPostQuery.fetchQueries(queryClient, initialPostIds)
 
     return {
