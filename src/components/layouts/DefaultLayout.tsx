@@ -1,4 +1,5 @@
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
+import useIsTouchDevice from '@/hooks/useIsTouchDevice'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import { ComponentProps } from 'react'
@@ -13,6 +14,7 @@ export type DefaultLayoutProps = ComponentProps<'div'> & {
   withBackButton?: LayoutNavbarExtensionProps
   withFixedHeight?: boolean
   withSidebar?: boolean
+  rightElement?: React.ReactNode
 }
 
 export default function DefaultLayout({
@@ -21,11 +23,30 @@ export default function DefaultLayout({
   withBackButton,
   withFixedHeight,
   withSidebar,
+  rightElement,
   ...props
 }: DefaultLayoutProps) {
+  const isTouchDevice = useIsTouchDevice()
+
   if (currentNetwork === 'xsocial') {
     withSidebar = false
   }
+
+  const withRightElementLayout = (
+    <div className='container-page grid grid-cols-[78%,1fr] gap-4 !pl-0 !pr-0 md:!pl-4'>
+      <div className='flex border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
+        <div className='sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[225px] overflow-auto border-r border-border-gray md:block'>
+          <Sidebar />
+        </div>
+        <div className='w-fit'>{children}</div>
+      </div>
+      {!isTouchDevice && (
+        <div className='sticky top-[4.5rem] mt-4 h-[calc(100vh-3.5rem)] overflow-auto'>
+          {rightElement}
+        </div>
+      )}
+    </div>
+  )
 
   return (
     <div
@@ -39,14 +60,16 @@ export default function DefaultLayout({
       <Navbar {...navbarProps} withSidebar={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <div className='container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
-          <div className='border-r border-border-gray '>
-            <div className='sticky top-14 hidden w-[225px] md:block'>
+        rightElement ? (
+          withRightElementLayout
+        ) : (
+          <div className='container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
+            <div className='sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[225px] overflow-auto border-r border-border-gray md:block'>
               <Sidebar />
             </div>
+            <div className='flex-1'>{children}</div>
           </div>
-          <div className='flex-1'>{children}</div>
-        </div>
+        )
       ) : (
         children
       )}

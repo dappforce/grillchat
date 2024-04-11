@@ -2,6 +2,7 @@ import Tabs, { TabsProps } from '@/components/Tabs'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { cx } from '@/utils/class-names'
 import HotPostsContent from './HotPostsContent'
+import SupportCreatorsCard from './SupportCreatorsCard'
 
 export type FeedPageProps = {
   initialPostIds: string[]
@@ -25,6 +26,7 @@ export default function FeedPage(props: FeedPageProps) {
   return (
     <DefaultLayout
       withSidebar
+      rightElement={<SupportCreatorsCard />}
       navbarProps={{
         containerClassName: 'max-w-screen-medium',
         customContent: ({ logoLink, authComponent, notificationBell }) => {
