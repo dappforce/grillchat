@@ -207,11 +207,8 @@ function PolkadotConnectConfirmation({
   )
   const { mutate: setReferrerId } = useSetReferrerId()
 
-  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken({
-    asTemporaryAccount: true,
-  })
+  const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  useToastError(error, 'Create account for polkadot connection failed')
 
   return (
     <PolkadotConnectConfirmationContent
@@ -226,7 +223,7 @@ function PolkadotConnectConfirmation({
         }
       }}
       beforeAddProxy={async () => {
-        await loginAndRequestToken(null)
+        await loginAsTemporaryAccount()
         setReferrerId({ refId: getReferralIdInUrl(), walletType: 'injected' })
         return true
       }}
