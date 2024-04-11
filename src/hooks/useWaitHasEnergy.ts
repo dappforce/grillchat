@@ -55,7 +55,9 @@ export default function useWaitHasEnergy(
 
   return () => {
     // need to use ref because if not it can have stale energy value
-    return !energyRef.current ? generateNewPromise() : Promise.resolve()
+    return !energyRef.current || energyRef.current < ESTIMATED_ENERGY_FOR_ONE_TX
+      ? generateNewPromise()
+      : Promise.resolve()
   }
 }
 
