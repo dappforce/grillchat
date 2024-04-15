@@ -126,20 +126,22 @@ function GrillLatestMessages({
 }) {
   const myAddress = useMyMainAddress()
   return (
-    <div className='flex flex-col gap-2'>
-      {lastThreeMessages.map(({ data }) => {
-        if (!data) return
-        return (
-          <ChatItem
-            enableChatMenu={false}
-            key={data.id}
-            message={data}
-            chatId={chatId}
-            hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
-            isMyMessage={data.struct.ownerId === myAddress}
-          />
-        )
-      })}
+    <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-2 rounded-2xl bg-background p-2'>
+        {lastThreeMessages.map(({ data }) => {
+          if (!data) return
+          return (
+            <ChatItem
+              enableChatMenu={false}
+              key={data.id}
+              message={data}
+              chatId={chatId}
+              hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
+              isMyMessage={data.struct.ownerId === myAddress}
+            />
+          )
+        })}
+      </div>
       <Button
         size='lg'
         onClick={() => setIsOpenDrawer(true)}
@@ -157,7 +159,7 @@ function NoMessagesCard({ onClick }: { onClick: () => void }) {
     <div className='flex flex-col items-center justify-center gap-5'>
       <WriteFirstComment onClick={onClick} />
       <Button size='lg' onClick={onClick} className='mt-auto w-full'>
-        Comment
+        Open Comments
       </Button>
     </div>
   )
