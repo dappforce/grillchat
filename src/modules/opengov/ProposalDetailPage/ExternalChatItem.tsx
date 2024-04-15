@@ -2,6 +2,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import MdRenderer from '@/components/MdRenderer'
 import Name from '@/components/Name'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
+import { scrollToMessageElement } from '@/components/chats/utils'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ProposalComment } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
@@ -11,11 +12,17 @@ import { ComponentProps } from 'react'
 export type ExternalChatItemProps = ComponentProps<'div'> & {
   comment: ProposalComment
   bg?: 'background-light' | 'background'
+  containerRef?: React.RefObject<HTMLDivElement>
+}
+
+export function getExternalMessageItemDOMId(commentId: string) {
+  return `external-message-item-${commentId}`
 }
 
 export default function ExternalChatItem({
   comment,
   bg = 'background-light',
+  containerRef,
   ...props
 }: ExternalChatItemProps) {
   if (!comment.content) return null
@@ -48,6 +55,7 @@ export default function ExternalChatItem({
             'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl px-2.5 py-1.5',
             bg === 'background' ? 'bg-background' : 'bg-background-light'
           )}
+          id={getExternalMessageItemDOMId(comment.id)}
         >
           <div className='flex items-baseline justify-start gap-2 overflow-hidden'>
             <span className='font-medium'>
@@ -62,6 +70,7 @@ export default function ExternalChatItem({
           </div>
           {comment.parentComment && (
             <ExternalChatRepliedMessagePreview
+              containerRef={containerRef}
               parentComment={comment.parentComment}
             />
           )}
@@ -76,8 +85,10 @@ export default function ExternalChatItem({
 
 function ExternalChatRepliedMessagePreview({
   parentComment,
+  containerRef,
 }: {
   parentComment: ProposalComment
+  containerRef?: React.RefObject<HTMLDivElement>
 }) {
   const textColor = useRandomColor(
     parentComment.ownerId || parentComment.username || parentComment.id
@@ -88,15 +99,21 @@ function ExternalChatRepliedMessagePreview({
   return (
     <div
       className={cx(
-        'flex items-center gap-2 overflow-hidden border-l-2 pl-2 text-sm'
+        'flex cursor-pointer items-center gap-2 overflow-hidden border-l-2 pl-2 text-sm'
       )}
       style={{
         borderColor: textColor,
       }}
       onClick={(e) => {
-        e.stopPropagation()
-        // onRepliedMessageClick()
-        // props.onClick?.(e)
+        const element = containerRef?.current?.querySelector(
+          '#' + getExternalMessageItemDOMId(parentComment.id)
+        )
+        if (element && containerRef?.current) {
+          scrollToMessageElement(element as any, containerRef.current, {
+            shouldHighlight: true,
+            smooth: true,
+          })
+        }
       }}
     >
       <div className='flex flex-col overflow-hidden'>

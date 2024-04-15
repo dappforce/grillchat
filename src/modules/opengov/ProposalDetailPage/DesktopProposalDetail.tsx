@@ -18,7 +18,7 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import { Drawer } from 'vaul'
@@ -345,12 +345,21 @@ function ExternalSourceChatRoom({
   comments: ProposalComment[]
   switchToGrillTab: () => void
 }) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
   return (
     <div className='flex flex-1 flex-col overflow-hidden'>
-      <ScrollableContainer className='flex flex-1 flex-col-reverse'>
-        <Container className='flex flex-1 flex-col-reverse gap-2 pt-4'>
+      <ScrollableContainer
+        ref={containerRef}
+        className='flex flex-1 flex-col-reverse'
+      >
+        <Container className='flex flex-1 flex-col-reverse gap-2 pb-2 pt-4'>
           {comments.map((comment) => (
-            <ExternalChatItem comment={comment} key={comment.id} />
+            <ExternalChatItem
+              comment={comment}
+              key={comment.id}
+              containerRef={containerRef}
+            />
           ))}
         </Container>
       </ScrollableContainer>
