@@ -49,40 +49,24 @@ export default function ExternalChatItem({
             bg === 'background' ? 'bg-background' : 'bg-background-light'
           )}
         >
-          <div className='flex items-baseline justify-between gap-2 overflow-hidden font-medium'>
-            <ExternalMessageName comment={comment} />
-          </div>
-          {comment.parentComment && (
-            <ExternalChatRepliedMessagePreview
-              parentComment={comment.parentComment}
-            />
-          )}
-          <div className='break-words text-base [&_ol]:list-inside [&_ol]:list-decimal [&_p]:inline [&_p]:whitespace-pre-wrap [&_ul]:list-inside [&_ul]:list-disc'>
-            <MdRenderer source={comment.content} plain />
-            <span
-              className={cx(
-                'pointer-events-none ml-3 select-none px-1 opacity-0'
-              )}
-            >
-              <ChatRelativeTime
-                createdAtTime={comment.createdAt}
-                className={cx(
-                  'text-xs text-text-muted [&:not(:last-child)]:mr-1'
-                )}
-              />
+          <div className='flex items-baseline justify-start gap-2 overflow-hidden'>
+            <span className='font-medium'>
+              <ExternalMessageName comment={comment} />
             </span>
-          </div>
-          <div
-            className={cx(
-              'absolute bottom-0.5 right-2 z-10 flex items-center self-end rounded-full px-1.5 py-0.5'
-            )}
-          >
             <ChatRelativeTime
               createdAtTime={comment.createdAt}
               className={cx(
                 'text-xs text-text-muted [&:not(:last-child)]:mr-1'
               )}
             />
+          </div>
+          {comment.parentComment && (
+            <ExternalChatRepliedMessagePreview
+              parentComment={comment.parentComment}
+            />
+          )}
+          <div className='prose break-words text-base'>
+            <MdRenderer source={comment.content} plain />
           </div>
         </div>
       </div>
