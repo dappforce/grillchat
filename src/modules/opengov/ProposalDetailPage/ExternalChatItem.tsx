@@ -1,5 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import LinkText from '@/components/LinkText'
+import Name from '@/components/Name'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ProposalComment } from '@/server/opengov/mapper'
@@ -18,10 +19,6 @@ export default function ExternalChatItem({
   bg = 'background-light',
   ...props
 }: ExternalChatItemProps) {
-  const textColor = useRandomColor(
-    comment.ownerId ?? comment.username ?? comment.id
-  )
-
   if (!comment.content) return null
 
   return (
@@ -49,23 +46,18 @@ export default function ExternalChatItem({
       <div className={cx('relative flex flex-col')}>
         <div
           className={cx(
-            'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl bg-background-light px-2.5 py-1.5'
+            'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl px-2.5 py-1.5',
+            bg === 'background' ? 'bg-background' : 'bg-background-light'
           )}
         >
-          <div className='flex items-baseline justify-between gap-2 overflow-hidden'>
-            <span style={{ color: textColor }}>{comment.username}</span>
+          <div className='flex items-baseline justify-between gap-2 overflow-hidden font-medium'>
+            <ExternalMessageName comment={comment} />
           </div>
-          {/* {repliedMessageId && (
-            <RepliedMessagePreview
-              originalMessage={body ?? ''}
-              className='my-1'
-              textColor={theme === 'dark' ? '#fff' : undefined}
-              repliedMessageId={repliedMessageId}
-              scrollToMessage={scrollToMessage}
-              chatId={chatId}
-              hubId={hubId}
+          {comment.parentComment && (
+            <ExternalChatRepliedMessagePreview
+              parentComment={comment.parentComment}
             />
-          )} */}
+          )}
           <p className='whitespace-pre-wrap break-words text-base'>
             <Linkify
               options={{
@@ -124,4 +116,51 @@ export default function ExternalChatItem({
       </div>
     </div>
   )
+}
+
+function ExternalChatRepliedMessagePreview({
+  parentComment,
+}: {
+  parentComment: ProposalComment
+}) {
+  const textColor = useRandomColor(
+    parentComment.ownerId || parentComment.username || parentComment.id
+  )
+
+  if (!parentComment.content) return null
+
+  return (
+    <div
+      className={cx(
+        'flex items-center gap-2 overflow-hidden border-l-2 pl-2 text-sm'
+      )}
+      style={{
+        borderColor: textColor,
+      }}
+      onClick={(e) => {
+        e.stopPropagation()
+        // onRepliedMessageClick()
+        // props.onClick?.(e)
+      }}
+    >
+      <div className='flex flex-col overflow-hidden'>
+        <span className='font-medium'>
+          <ExternalMessageName comment={parentComment} />
+        </span>
+        <span className='line-clamp-1 opacity-75'>{parentComment.content}</span>
+      </div>
+    </div>
+  )
+}
+
+function ExternalMessageName({ comment }: { comment: ProposalComment }) {
+  const textColor = useRandomColorForComment(comment)
+  if (comment.username) {
+    return <span style={{ color: textColor }}>{comment.username}</span>
+  }
+  return <Name address={comment.ownerId} />
+}
+
+function useRandomColorForComment(comment: ProposalComment) {
+  return useRandomColor(comment.ownerId ?? comment.username ?? comment.id)
 }

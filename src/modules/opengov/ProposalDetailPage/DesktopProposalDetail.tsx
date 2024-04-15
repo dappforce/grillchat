@@ -90,7 +90,7 @@ export default function DesktopProposalDetail({
               }
               if (!hasGrillComments && proposal.comments.length) {
                 return (
-                  <LastestCommentFromExternalSources
+                  <LatestCommentFromExternalSources
                     setIsOpenDrawer={setIsOpenDrawer}
                     proposal={proposal}
                   />
@@ -124,7 +124,7 @@ export default function DesktopProposalDetail({
   )
 }
 
-function LastestCommentFromExternalSources({
+function LatestCommentFromExternalSources({
   proposal,
   setIsOpenDrawer,
 }: {
@@ -137,7 +137,13 @@ function LastestCommentFromExternalSources({
       <div className='flex flex-col gap-2'>
         {lastThreeComments.map((comment) => {
           if (!comment.content) return
-          return <ExternalChatItem comment={comment} key={comment.id} />
+          return (
+            <ExternalChatItem
+              bg='background'
+              comment={comment}
+              key={comment.id}
+            />
+          )
         })}
       </div>
       <Button

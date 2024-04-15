@@ -36,7 +36,7 @@ export type CurveType =
     }
 
 export type CommentSource = 'polkassembly' | 'subsquare'
-export type SubsquareComment = {
+type SubsquareCommentWithoutReplies = {
   comment_source: CommentSource
   id: string
   post_index: number
@@ -47,24 +47,9 @@ export type SubsquareComment = {
   profile: {
     image: string
   }
-  replies: [
-    {
-      comment_source: CommentSource
-      content: string
-      created_at: string
-      id: string
-      isDeleted: boolean
-      is_custom_username: boolean
-      post_index: number
-      proposer: string
-      profile: {
-        image: string
-      }
-      updated_at: string
-      user_id: number
-      username: string
-    }
-  ]
+}
+export type SubsquareComment = SubsquareCommentWithoutReplies & {
+  replies: SubsquareCommentWithoutReplies[] | null
 }
 export type SubsquareProposal = {
   title: string
@@ -166,7 +151,7 @@ export type ProposalComment = {
   profile: {
     image: string
   } | null
-  replies: ProposalComment[]
+  parentComment: ProposalComment | null
 }
 export type Proposal = {
   id: number
@@ -232,26 +217,7 @@ export async function mapSubsquareProposalToProposal(
 
   return {
     id: proposal.referendumIndex,
-    comments:
-      comments?.map((c) => ({
-        id: c.id,
-        username: c.username ?? '',
-        content: c.content ?? '',
-        source: c.comment_source ?? 'subsquare',
-        createdAt: c.created_at ?? '',
-        profile: c.profile ?? null,
-        ownerId: c.proposer ?? '',
-        replies: c.replies.map((r) => ({
-          id: r.id,
-          username: r.username ?? '',
-          content: r.content ?? '',
-          profile: r.profile ?? null,
-          source: r.comment_source ?? 'subsquare',
-          createdAt: r.created_at ?? '',
-          ownerId: r.proposer ?? '',
-          replies: [],
-        })),
-      })) ?? [],
+    comments: mapSubsquareComments(comments),
     chatId,
     beneficiary: proposal.onchainData.treasuryInfo?.beneficiary ?? '',
     proposer: toSubsocialAddress(proposal.proposer)!,
@@ -332,4 +298,43 @@ function getEstimatedCurrentHeight(
     indexerHeight +
     Math.floor((Date.now() - indexerTimestamp) / POLKADOT_BLOCK_TIME)
   )
+}
+
+function mapSubsquareComments(
+  comments: SubsquareComment[] | undefined
+): ProposalComment[] {
+  if (!comments) return []
+
+  const flattenedComments: ProposalComment[] = []
+  comments.forEach((c) => {
+    const mappedComment: ProposalComment = {
+      id: c.id,
+      username: c.username ?? '',
+      content: c.content ?? '',
+      source: c.comment_source ?? 'subsquare',
+      createdAt: c.created_at ?? '',
+      profile: c.profile ?? null,
+      ownerId: c.proposer ?? '',
+      parentComment: null,
+    }
+    flattenedComments.push(mappedComment)
+    if (c.replies) {
+      c.replies.forEach((r) => {
+        flattenedComments.push({
+          id: r.id,
+          username: r.username ?? '',
+          content: r.content ?? '',
+          source: r.comment_source ?? 'subsquare',
+          createdAt: r.created_at ?? '',
+          profile: r.profile ?? null,
+          ownerId: r.proposer ?? '',
+          parentComment: mappedComment,
+        })
+      })
+    }
+  })
+  flattenedComments.sort((a, b) => {
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  })
+  return flattenedComments
 }
