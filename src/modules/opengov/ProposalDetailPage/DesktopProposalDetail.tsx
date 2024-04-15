@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import MdRenderer from '@/components/MdRenderer'
+import { Skeleton } from '@/components/SkeletonFallback'
 import ChatItem from '@/components/chats/ChatItem'
 import ChatRoom from '@/components/chats/ChatRoom'
 import usePaginatedMessageIds from '@/components/chats/hooks/usePaginatedMessageIds'
@@ -31,7 +32,6 @@ export default function DesktopProposalDetail({
 }: ProposalDetailPageProps & { className?: string }) {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
 
-  const myAddress = useMyMainAddress()
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
   const { allIds, isLoading } = usePaginatedMessageIds({
     chatId: chatId ?? '',
@@ -77,18 +77,31 @@ export default function DesktopProposalDetail({
           </Card>
           <Card className='flex flex-col gap-4 bg-background-light'>
             <span className='text-lg font-bold'>Latest Comments</span>
-            {!chatId || lastThreeMessages.length === 0 ? (
-              <NoMessagesCard onClick={() => setIsOpenDrawer(true)} />
-            ) : hasGrillComments ? (
-              <GrillLatestMessages
-                lastThreeMessages={lastThreeMessages}
-                chatId={chatId}
-                setIsOpenDrawer={setIsOpenDrawer}
-                totalCommentsCount={postMetadata?.totalCommentsCount || 0}
-              />
-            ) : (
-              <LastestCommentFromExternalSources proposal={proposal} />
-            )}
+            {(() => {
+              if (isLoading) {
+                return (
+                  <div className='flex flex-col gap-2'>
+                    <Skeleton className='w-full' />
+                    <Skeleton className='w-full' />
+                    <Skeleton className='w-full' />
+                  </div>
+                )
+              }
+              if (!chatId || lastThreeMessages.length === 0) {
+                return <NoMessagesCard onClick={() => setIsOpenDrawer(true)} />
+              }
+              if (hasGrillComments) {
+                return (
+                  <GrillLatestMessages
+                    lastThreeMessages={lastThreeMessages}
+                    chatId={chatId}
+                    setIsOpenDrawer={setIsOpenDrawer}
+                    totalCommentsCount={postMetadata?.totalCommentsCount || 0}
+                  />
+                )
+              }
+              return <LastestCommentFromExternalSources proposal={proposal} />
+            })()}
           </Card>
         </div>
         <div className='sticky top-20 self-start'>
