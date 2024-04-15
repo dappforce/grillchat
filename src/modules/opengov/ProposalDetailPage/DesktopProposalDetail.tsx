@@ -18,7 +18,7 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import { Drawer } from 'vaul'
@@ -125,6 +125,9 @@ export default function DesktopProposalDetail({
         hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
         isOpen={isOpenDrawer}
         onClose={() => setIsOpenDrawer(false)}
+        shouldDisplayExternalSourceAsDefault={
+          !hasGrillComments && !!proposal.comments.length
+        }
       />
     </Drawer.Root>
   )
@@ -222,14 +225,23 @@ function SidePanel({
   proposal,
   onClose,
   isOpen,
+  shouldDisplayExternalSourceAsDefault,
 }: {
   chatId: string
   hubId: string
   proposal: Proposal
   onClose?: () => void
   isOpen: boolean
+  shouldDisplayExternalSourceAsDefault?: boolean
 }) {
   const [selectedTab, setSelectedTab] = useState<'grill' | 'others'>('grill')
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedTab(shouldDisplayExternalSourceAsDefault ? 'others' : 'grill')
+    }
+  }, [shouldDisplayExternalSourceAsDefault, isOpen])
+
   const [usedChatId, setUsedChatId] = useState(chatId)
   const { mutateAsync, error, isLoading } = useCreateDiscussion()
   useToastError(error, 'Failed to create discussion')
