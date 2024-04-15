@@ -19,7 +19,6 @@ const handler = handlerWrapper({
   errorLabel: 'proposal-detail',
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
-    console.log('masuk brok')
     const response = await getProposalDetailServer(data)
     res.json({ ...response, message: 'OK', success: true })
   },
