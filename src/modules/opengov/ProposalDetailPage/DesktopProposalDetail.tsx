@@ -1,6 +1,8 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import Container from '@/components/Container'
 import MdRenderer from '@/components/MdRenderer'
+import ScrollableContainer from '@/components/ScrollableContainer'
 import { Skeleton } from '@/components/SkeletonFallback'
 import ChatItem from '@/components/chats/ChatItem'
 import ChatRoom from '@/components/chats/ChatRoom'
@@ -8,14 +10,16 @@ import usePaginatedMessageIds from '@/components/chats/hooks/usePaginatedMessage
 import { WriteFirstComment } from '@/components/opengov/ProposalPreview'
 import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
-import { Proposal } from '@/server/opengov/mapper'
+import { Proposal, ProposalComment } from '@/server/opengov/mapper'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useMyMainAddress } from '@/stores/my-account'
+import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import { Drawer } from 'vaul'
 import ExternalChatItem from './ExternalChatItem'
@@ -40,6 +44,7 @@ export default function DesktopProposalDetail({
   })
   const lastThreeMessageIds = allIds.slice(0, 3)
   const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
+  const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
 
   const hasGrillComments = !isLoading && allIds.length > 0
 
@@ -79,7 +84,7 @@ export default function DesktopProposalDetail({
           <Card className='flex flex-col gap-4 bg-background-light'>
             <span className='text-lg font-bold'>Latest Comments</span>
             {(() => {
-              if (isLoading) {
+              if (isLoading || isLoadingMessages) {
                 return (
                   <div className='flex flex-col gap-2'>
                     <Skeleton className='w-full' />
@@ -118,6 +123,7 @@ export default function DesktopProposalDetail({
         proposal={proposal}
         chatId={chatId ?? ''}
         hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
+        isOpen={isOpenDrawer}
         onClose={() => setIsOpenDrawer(false)}
       />
     </Drawer.Root>
@@ -215,11 +221,13 @@ function SidePanel({
   hubId,
   proposal,
   onClose,
+  isOpen,
 }: {
   chatId: string
   hubId: string
   proposal: Proposal
   onClose?: () => void
+  isOpen: boolean
 }) {
   const [selectedTab, setSelectedTab] = useState<'grill' | 'others'>('grill')
   const [usedChatId, setUsedChatId] = useState(chatId)
@@ -239,9 +247,21 @@ function SidePanel({
     }
   }
 
-  return (
-    <Drawer.Portal>
-      <Drawer.Content className='fixed right-0 top-0 z-30 flex h-screen w-full max-w-[500px] flex-col bg-[#eceff4] dark:bg-[#11172a]'>
+  return createPortal(
+    <>
+      <div
+        className={cx(
+          'pointer-events-none fixed inset-0 z-[25] bg-black/70 opacity-0 transition',
+          isOpen && 'pointer-events-auto opacity-100'
+        )}
+        onClick={onClose}
+      />
+      <div
+        className={cx(
+          'fixed right-0 top-0 z-30 flex h-screen w-full max-w-[500px] translate-x-1/3 flex-col bg-[#eceff4] opacity-0 transition dark:bg-[#11172a]',
+          isOpen && 'translate-x-0 opacity-100'
+        )}
+      >
         <Button
           size='circle'
           variant='white'
@@ -250,7 +270,7 @@ function SidePanel({
         >
           <MdKeyboardDoubleArrowRight />
         </Button>
-        <div className='flex items-center justify-between gap-4 bg-background px-2 py-2'>
+        <div className='flex items-center justify-between gap-4 bg-background-light px-2 py-2'>
           <span className='font-semibold'>Comments</span>
           <div className='flex whitespace-nowrap rounded-md bg-[#eceff4] text-sm font-medium text-text-muted dark:bg-[#11172a]'>
             <Button
@@ -277,24 +297,56 @@ function SidePanel({
             </Button>
           </div>
         </div>
-        <ChatRoom
-          chatId={chatId}
-          hubId={hubId}
-          asContainer
-          customAction={
-            !usedChatId ? (
-              <Button
-                size='lg'
-                onClick={createDiscussion}
-                isLoading={isLoading}
-              >
-                Start Discussion
-              </Button>
-            ) : undefined
-          }
-        />
-      </Drawer.Content>
-      <Drawer.Overlay className='fixed inset-0 z-[25] bg-black/70' />
-    </Drawer.Portal>
+        {selectedTab === 'grill' ? (
+          <ChatRoom
+            chatId={chatId}
+            hubId={hubId}
+            asContainer
+            customAction={
+              !usedChatId ? (
+                <Button
+                  size='lg'
+                  onClick={createDiscussion}
+                  isLoading={isLoading}
+                >
+                  Start Discussion
+                </Button>
+              ) : undefined
+            }
+          />
+        ) : (
+          <ExternalSourceChatRoom
+            comments={proposal.comments}
+            switchToGrillTab={() => setSelectedTab('grill')}
+          />
+        )}
+      </div>
+    </>,
+    document.body
+  )
+}
+
+function ExternalSourceChatRoom({
+  comments,
+  switchToGrillTab,
+}: {
+  comments: ProposalComment[]
+  switchToGrillTab: () => void
+}) {
+  return (
+    <div className='flex flex-1 flex-col overflow-hidden'>
+      <ScrollableContainer className='flex flex-1 flex-col-reverse'>
+        <Container className='flex flex-1 flex-col-reverse gap-2 pt-4'>
+          {comments.map((comment) => (
+            <ExternalChatItem comment={comment} key={comment.id} />
+          ))}
+        </Container>
+      </ScrollableContainer>
+      <div className='p-2'>
+        <Button size='lg' className='w-full' onClick={switchToGrillTab}>
+          Switch to Grill comments
+        </Button>
+      </div>
+    </div>
   )
 }

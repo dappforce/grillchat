@@ -1,11 +1,10 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import LinkText from '@/components/LinkText'
+import MdRenderer from '@/components/MdRenderer'
 import Name from '@/components/Name'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ProposalComment } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
-import Linkify from 'linkify-react'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
 
@@ -25,7 +24,7 @@ export default function ExternalChatItem({
     <div
       {...props}
       className={cx(
-        'relative flex items-start justify-start gap-2',
+        'relative flex w-11/12 items-start justify-start gap-2',
         props.className
       )}
     >
@@ -58,35 +57,8 @@ export default function ExternalChatItem({
               parentComment={comment.parentComment}
             />
           )}
-          <p className='whitespace-pre-wrap break-words text-base'>
-            <Linkify
-              options={{
-                render: ({ content, attributes }) => {
-                  const href = attributes.href || ''
-                  const baseUrl = 'https://grillapp.net'
-                  if (href.startsWith(baseUrl)) {
-                    content = content.replace(/(https?:\/\/)?(www\.)?/, '')
-                  }
-
-                  return (
-                    <LinkText
-                      href={attributes.href}
-                      variant='secondary'
-                      className={cx('underline')}
-                      openInNewTab
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        attributes.onClick?.(e)
-                      }}
-                    >
-                      {content}
-                    </LinkText>
-                  )
-                },
-              }}
-            >
-              {comment.content}
-            </Linkify>
+          <div className='break-words text-base [&_ol]:list-inside [&_ol]:list-decimal [&_p]:inline [&_p]:whitespace-pre-wrap [&_ul]:list-inside [&_ul]:list-disc'>
+            <MdRenderer source={comment.content} plain />
             <span
               className={cx(
                 'pointer-events-none ml-3 select-none px-1 opacity-0'
@@ -99,7 +71,7 @@ export default function ExternalChatItem({
                 )}
               />
             </span>
-          </p>
+          </div>
           <div
             className={cx(
               'absolute bottom-0.5 right-2 z-10 flex items-center self-end rounded-full px-1.5 py-0.5'

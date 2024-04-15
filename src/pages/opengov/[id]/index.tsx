@@ -23,7 +23,7 @@ export const getStaticProps = getCommonStaticProps<ProposalDetailPageProps>(
     return {
       props: {
         proposal: data,
-        chatId: data.chatId,
+        chatId: '54461',
       },
       revalidate: 20,
     }
