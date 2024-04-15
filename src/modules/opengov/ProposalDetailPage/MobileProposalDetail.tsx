@@ -68,7 +68,7 @@ export default function MobileProposalDetailPage({
         <div className='h-[calc(100dvh_-_3.5rem)] overflow-auto px-4 pb-24 pt-4 scrollbar-none'>
           <div className={cx('flex flex-col gap-4', className)}>
             <ProposerSummary proposal={proposal} />
-            <Card className='flex flex-col items-start gap-6 bg-background-light'>
+            <Card className='flex flex-col items-start gap-4 bg-background-light'>
               <h1 className='font-bold'>
                 #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
                 {proposal.title}
