@@ -35,6 +35,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   othersMessage?: OthersMessageConfig
   className?: string
   textColor?: string
+  bg?: 'background' | 'background-light'
 }
 
 const defaultMyMessageConfig: MyMessageConfig = {
@@ -56,6 +57,7 @@ export default function CommonChatItem({
   isMyMessage: _isMyMessage,
   chatId,
   hubId,
+  bg = 'background-light',
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
   const { struct, content } = message
@@ -151,6 +153,8 @@ export default function CommonChatItem({
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
           isMyMessage
             ? 'bg-background-primary-light text-text dark:bg-background-primary/70 dark:text-text-on-primary'
+            : bg === 'background'
+            ? 'bg-background'
             : 'bg-background-light',
           className
         )}
