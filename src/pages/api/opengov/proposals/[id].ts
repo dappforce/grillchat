@@ -2,6 +2,7 @@ import { redisCallWrapper } from '@/server/cache'
 import { handlerWrapper } from '@/server/common'
 import {
   Proposal,
+  SubsquareComment,
   SubsquareProposal,
   mapSubsquareProposalToProposal,
 } from '@/server/opengov/mapper'
@@ -11,13 +12,14 @@ import { z } from 'zod'
 
 const handler = handlerWrapper({
   inputSchema: z.object({
-    id: z.number().int().positive(),
+    id: z.coerce.number().int().positive(),
   }),
   dataGetter: (req) => req.query,
 })<ApiProposalsResponse>({
   errorLabel: 'proposal-detail',
   allowedMethods: ['GET'],
   handler: async (data, _, res) => {
+    console.log('masuk brok')
     const response = await getProposalDetailServer(data)
     res.json({ ...response, message: 'OK', success: true })
   },
@@ -50,6 +52,7 @@ export async function getProposalDetailServer({
 }): Promise<ApiProposalsResponse> {
   let proposal: SubsquareProposal
   let votesData: SubsquareVote[]
+  let comments: SubsquareComment[]
 
   const cachedData = await redisCallWrapper(async (redis) => {
     const data = await redis?.get(getProposalDetailRedisKey(id.toString()))
@@ -57,30 +60,37 @@ export async function getProposalDetailServer({
       ? (JSON.parse(data) as {
           proposal: SubsquareProposal
           votesData: SubsquareVote[]
+          comments: SubsquareComment[]
         })
       : null
   })
   if (cachedData) {
     proposal = cachedData.proposal
     votesData = cachedData.votesData
+    comments = cachedData.comments
   } else {
-    const [res, votesRes] = await Promise.all([
+    const [res, votesRes, commentsRes] = await Promise.all([
       subsquareApi.get(`/gov2/referendums/${id}`),
       subsquareApi.get(`/gov2/referenda/${id}/votes`),
+      subsquareApi.get(
+        `/polkassembly-comments?post_id=${id}&post_type=ReferendumV2`
+      ),
     ] as const)
     proposal = res.data as SubsquareProposal
     votesData = (votesRes.data ?? []) as SubsquareVote[]
+    comments = (commentsRes.data.comments ?? []) as SubsquareComment[]
+
     await redisCallWrapper(async (redis) => {
       return redis?.set(
         getProposalDetailRedisKey(id.toString()),
-        JSON.stringify({ proposal, votesData }),
+        JSON.stringify({ proposal, votesData, comments }),
         'EX',
         PROPOSAL_DETAIL_MAX_AGE
       )
     })
   }
 
-  const mapped = await mapSubsquareProposalToProposal(proposal)
+  const mapped = await mapSubsquareProposalToProposal(proposal, comments)
   const allVotes = votesData
     .reduce((result, vote) => {
       if (vote.isSplit) {

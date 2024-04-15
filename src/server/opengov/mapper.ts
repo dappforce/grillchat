@@ -34,6 +34,29 @@ export type CurveType =
         yOffset: number
       }
     }
+
+export type CommentSource = 'polkassembly' | 'subsquare'
+export type SubsquareComment = {
+  comment_source: CommentSource
+  id: string
+  post_index: number
+  username: string
+  content: string
+  replies: [
+    {
+      comment_source: CommentSource
+      content: string
+      created_at: string
+      id: string
+      isDeleted: boolean
+      is_custom_username: boolean
+      post_index: number
+      updated_at: string
+      user_id: number
+      username: string
+    }
+  ]
+}
 export type SubsquareProposal = {
   title: string
   indexer: {
@@ -124,6 +147,13 @@ type BlockTime = {
   block: number
   time: number
 }
+type Comment = {
+  id: string
+  username: string
+  content: string
+  source: CommentSource
+  replies: Comment[]
+}
 export type Proposal = {
   id: number
   chatId: string | null
@@ -163,10 +193,12 @@ export type Proposal = {
     enact: { block: number } | null
     hash: string
   }
+  comments: Comment[]
 }
 
 export async function mapSubsquareProposalToProposal(
-  proposal: SubsquareProposal
+  proposal: SubsquareProposal,
+  comments?: SubsquareComment[]
 ): Promise<Proposal> {
   const chatId = await getDiscussion(
     getProposalResourceId(proposal.referendumIndex)
@@ -186,6 +218,20 @@ export async function mapSubsquareProposalToProposal(
 
   return {
     id: proposal.referendumIndex,
+    comments:
+      comments?.map((c) => ({
+        id: c.id,
+        username: c.username ?? '',
+        content: c.content ?? '',
+        source: c.comment_source ?? 'subsquare',
+        replies: c.replies.map((r) => ({
+          id: r.id,
+          username: r.username ?? '',
+          content: r.content ?? '',
+          source: r.comment_source ?? 'subsquare',
+          replies: [],
+        })),
+      })) ?? [],
     chatId,
     beneficiary: proposal.onchainData.treasuryInfo?.beneficiary ?? '',
     proposer: toSubsocialAddress(proposal.proposer)!,
