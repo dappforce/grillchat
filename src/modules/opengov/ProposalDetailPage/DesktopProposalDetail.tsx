@@ -4,6 +4,7 @@ import MdRenderer from '@/components/MdRenderer'
 import ChatItem from '@/components/chats/ChatItem'
 import ChatRoom from '@/components/chats/ChatRoom'
 import usePaginatedMessageIds from '@/components/chats/hooks/usePaginatedMessageIds'
+import { WriteFirstComment } from '@/components/opengov/ProposalPreview'
 import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
 import { Proposal } from '@/server/opengov/mapper'
@@ -12,6 +13,7 @@ import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { PostData } from '@subsocial/api/types'
 import { useState } from 'react'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import { Drawer } from 'vaul'
@@ -31,12 +33,14 @@ export default function DesktopProposalDetail({
 
   const myAddress = useMyMainAddress()
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
-  const { allIds } = usePaginatedMessageIds({
+  const { allIds, isLoading } = usePaginatedMessageIds({
     chatId: chatId ?? '',
     hubId: env.NEXT_PUBLIC_PROPOSALS_HUB,
   })
   const lastThreeMessageIds = allIds.slice(0, 3)
   const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
+
+  const hasGrillComments = !isLoading && allIds.length > 0
 
   return (
     <Drawer.Root
@@ -71,37 +75,19 @@ export default function DesktopProposalDetail({
               source={proposal.content}
             />
           </Card>
-          <Card className='flex flex-col gap-6 bg-background-light'>
+          <Card className='flex flex-col gap-4 bg-background-light'>
             <span className='text-lg font-bold'>Latest Comments</span>
             {!chatId || lastThreeMessages.length === 0 ? (
               <NoMessagesCard onClick={() => setIsOpenDrawer(true)} />
+            ) : hasGrillComments ? (
+              <GrillLatestMessages
+                lastThreeMessages={lastThreeMessages}
+                chatId={chatId}
+                setIsOpenDrawer={setIsOpenDrawer}
+                totalCommentsCount={postMetadata?.totalCommentsCount || 0}
+              />
             ) : (
-              <div className='flex flex-col gap-2'>
-                {lastThreeMessages.map(({ data }) => {
-                  if (!data) return
-                  return (
-                    <ChatItem
-                      enableChatMenu={false}
-                      key={data.id}
-                      message={data}
-                      chatId={chatId}
-                      hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
-                      isMyMessage={data.struct.ownerId === myAddress}
-                    />
-                  )
-                })}
-                <Button
-                  size='lg'
-                  onClick={() => setIsOpenDrawer(true)}
-                  className='mt-auto w-full'
-                >
-                  Show all{' '}
-                  {postMetadata?.totalCommentsCount
-                    ? `${postMetadata?.totalCommentsCount} `
-                    : ''}
-                  Comments
-                </Button>
-              </div>
+              <LastestCommentFromExternalSources proposal={proposal} />
             )}
           </Card>
         </div>
@@ -119,12 +105,57 @@ export default function DesktopProposalDetail({
   )
 }
 
+function LastestCommentFromExternalSources({
+  proposal,
+}: {
+  proposal: Proposal
+}) {
+  return <div className='flex flex-col gap-2'>sadfasdf</div>
+}
+
+function GrillLatestMessages({
+  lastThreeMessages,
+  chatId,
+  setIsOpenDrawer,
+  totalCommentsCount,
+}: {
+  lastThreeMessages: { data: PostData | null | undefined }[]
+  chatId: string
+  setIsOpenDrawer: (isOpen: boolean) => void
+  totalCommentsCount: number
+}) {
+  const myAddress = useMyMainAddress()
+  return (
+    <div className='flex flex-col gap-2'>
+      {lastThreeMessages.map(({ data }) => {
+        if (!data) return
+        return (
+          <ChatItem
+            enableChatMenu={false}
+            key={data.id}
+            message={data}
+            chatId={chatId}
+            hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
+            isMyMessage={data.struct.ownerId === myAddress}
+          />
+        )
+      })}
+      <Button
+        size='lg'
+        onClick={() => setIsOpenDrawer(true)}
+        className='mt-auto w-full'
+      >
+        Show all {totalCommentsCount ? `${totalCommentsCount} ` : ''}
+        Comments
+      </Button>
+    </div>
+  )
+}
+
 function NoMessagesCard({ onClick }: { onClick: () => void }) {
   return (
-    <div className='flex h-32 flex-col items-center justify-center'>
-      <div className='rounded-xl bg-background px-4 py-2 text-sm'>
-        <span>No messages yet</span>
-      </div>
+    <div className='flex flex-col items-center justify-center gap-5'>
+      <WriteFirstComment onClick={onClick} />
       <Button size='lg' onClick={onClick} className='mt-auto w-full'>
         Comment
       </Button>
@@ -163,7 +194,7 @@ function SidePanel({
 
   return (
     <Drawer.Portal>
-      <Drawer.Content className='fixed right-0 top-0 z-20 flex h-screen w-full max-w-[500px] flex-col bg-[#eceff4] dark:bg-[#11172a]'>
+      <Drawer.Content className='fixed right-0 top-0 z-30 flex h-screen w-full max-w-[500px] flex-col bg-[#eceff4] dark:bg-[#11172a]'>
         <Button
           size='circle'
           variant='white'
@@ -216,7 +247,7 @@ function SidePanel({
           }
         />
       </Drawer.Content>
-      <Drawer.Overlay className='fixed inset-0 z-10 bg-black/70' />
+      <Drawer.Overlay className='fixed inset-0 z-[25] bg-black/70' />
     </Drawer.Portal>
   )
 }

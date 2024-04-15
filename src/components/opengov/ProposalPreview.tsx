@@ -158,7 +158,7 @@ function CommentsSection({ proposal }: { proposal: Proposal }) {
   })
 
   if (!proposal.chatId) {
-    return <NoComments proposal={proposal} />
+    return <WriteFirstComment href={`/opengov/${proposal.id}?chat=true`} />
   }
   if (isLoadingLatestComment) {
     return (
@@ -179,7 +179,7 @@ function CommentsSection({ proposal }: { proposal: Proposal }) {
     )
   }
   if (!postMetadata?.postId) {
-    return <NoComments proposal={proposal} />
+    return <WriteFirstComment href={`/opengov/${proposal.id}?chat=true`} />
   }
 
   return (
@@ -192,12 +192,18 @@ function CommentsSection({ proposal }: { proposal: Proposal }) {
   )
 }
 
-function NoComments({ proposal }: { proposal: Proposal }) {
+export function WriteFirstComment({
+  onClick,
+  href,
+}: {
+  href?: string
+  onClick?: () => void
+}) {
   const myAddress = useMyMainAddress()
 
   return (
-    <div className='flex items-center justify-between'>
-      <div className='flex items-center gap-3'>
+    <div className='flex w-full items-center justify-between'>
+      <div className='flex w-full items-center gap-3'>
         {myAddress ? (
           <AddressAvatar address={myAddress ?? ''} className='flex-shrink-0' />
         ) : (
@@ -207,7 +213,11 @@ function NoComments({ proposal }: { proposal: Proposal }) {
             className='h-9 w-9 flex-shrink-0'
           />
         )}
-        <LinkText href={`/opengov/${proposal.id}?chat=true`} className='w-full'>
+        <LinkText
+          href={href}
+          onClick={onClick}
+          className='block w-full !no-underline'
+        >
           <span className='text-text-muted'>Write a first comment...</span>
         </LinkText>
       </div>
