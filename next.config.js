@@ -44,8 +44,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/c/:slug',
-        destination: '/x/c/:slug',
+        source: '/x',
+        destination: '/',
         permanent: false,
       },
       {

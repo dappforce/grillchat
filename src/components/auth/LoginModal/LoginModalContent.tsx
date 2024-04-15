@@ -76,6 +76,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
   }, [])
 
   const canUseAnonLogin = !loginRequired
+  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
 
   return (
     <div>
@@ -98,21 +99,27 @@ export const LoginContent = (props: LoginModalContentProps) => {
               </div>
             </Button>
           )}
-          {loginOption === 'polkadot' && (
-            <Button
-              variant='primary'
-              onClick={() => {
-                setCurrentState('polkadot-connect')
-                sendEvent('login_polkadot_account_clicked')
-              }}
-              size='lg'
-            >
-              <div className='flex items-center justify-center gap-2'>
-                <WalletIcon className={cx('text-text-muted-on-primary')} />
-                Connect via Polkadot
-              </div>
-            </Button>
-          )}
+          <Button
+            variant={
+              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
+            }
+            onClick={() => {
+              setCurrentState('polkadot-connect')
+              sendEvent('login_polkadot_account_clicked')
+            }}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <WalletIcon
+                className={cx(
+                  isConnectWalletPrimaryButton
+                    ? 'text-text-muted-on-primary'
+                    : 'text-text-muted'
+                )}
+              />
+              Connect via Polkadot
+            </div>
+          </Button>
           {loginOption === 'all' && canUseAnonLogin && isInIframe && (
             <Button
               type='button'
@@ -200,11 +207,8 @@ function PolkadotConnectConfirmation({
   )
   const { mutate: setReferrerId } = useSetReferrerId()
 
-  const { mutateAsync: loginAndRequestToken, error } = useLoginAndRequestToken({
-    asTemporaryAccount: true,
-  })
+  const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  useToastError(error, 'Create account for polkadot connection failed')
 
   return (
     <PolkadotConnectConfirmationContent
@@ -219,7 +223,7 @@ function PolkadotConnectConfirmation({
         }
       }}
       beforeAddProxy={async () => {
-        await loginAndRequestToken(null)
+        await loginAsTemporaryAccount()
         setReferrerId({ refId: getReferralIdInUrl(), walletType: 'injected' })
         return true
       }}

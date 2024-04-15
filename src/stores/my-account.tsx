@@ -253,7 +253,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         isInitializedAddress: !!isInitialization,
       })
 
-      get()._subscribeEnergy()
       if (asTemporaryAccount) {
         temporaryAccountStorage.set(encodedSecretKey)
       } else saveLoginInfoToStorage()
@@ -292,6 +291,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
           })
         }
       }
+      get()._subscribeEnergy()
     } catch (e) {
       console.error('Failed to login', e)
       if (!isInitialization && withErrorToast) {
@@ -306,7 +306,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       }
       return false
     }
-    return get().address || false
+    return get().parentProxyAddress || get().address || false
   },
   loginAsTemporaryAccount: async () => {
     set({ isTemporaryAccount: true })
@@ -327,10 +327,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     set({ isTemporaryAccount: false })
   },
   _subscribeEnergy: () => {
-    const { address, _unsubscribeEnergy } = get()
+    const { address, parentProxyAddress, _unsubscribeEnergy } = get()
     _unsubscribeEnergy()
+    const usedAddress = parentProxyAddress || address
 
-    const unsub = subscribeEnergy(address, (energy) => {
+    const unsub = subscribeEnergy(usedAddress, (energy) => {
       set({ energy })
     })
     set({ _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()) })
@@ -427,6 +428,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       })
     }
     set({ isInitializedProxy: true })
+    get()._subscribeEnergy()
 
     // if we use parentProxy from storage, then need to check whether the account is linked in datahub or not, and link if not yet
     // this is a background process, so it needs to be done after all other init is done

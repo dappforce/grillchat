@@ -1,6 +1,7 @@
 import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { PAGES_WITH_LARGER_CONTAINER } from '@/constants/layout'
 import { env } from '@/env.mjs'
@@ -161,6 +162,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         />
         <HeadConfig {...head} />
         <GoogleAnalytics trackPageViews gaMeasurementId={getAugmentedGaId()} />
+        <GlobalModals />
         <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>

@@ -17,7 +17,7 @@ import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { Session } from 'next-auth'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
 
 const providerMapper: Record<
@@ -81,6 +81,7 @@ export default function useOauthLogin({
         sendEvent('login_oauth_successful', { provider })
         finalizeTemporaryAccount()
         onSuccess()
+        signOut({ redirect: false })
       },
     },
   })

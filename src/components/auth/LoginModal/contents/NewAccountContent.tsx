@@ -1,4 +1,3 @@
-import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
@@ -22,19 +21,6 @@ export default function NewAccountContent({
     <div className='flex flex-col gap-4'>
       <GoogleButton />
       <XLoginButton />
-      <Button
-        variant='primaryOutline'
-        onClick={() => {
-          setCurrentState('polkadot-connect')
-          sendEvent('login_polkadot_account_clicked')
-        }}
-        size='lg'
-      >
-        <div className='flex items-center justify-center gap-2'>
-          <PolkadotIcon className={cx('text-text-muted')} />
-          Connect via Polkadot
-        </div>
-      </Button>
       <Button
         size='lg'
         variant='primaryOutline'

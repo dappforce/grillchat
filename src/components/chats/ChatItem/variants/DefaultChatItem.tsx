@@ -16,6 +16,7 @@ import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
+import SubTeamLabel from '../SubTeamLabel'
 import { ChatItemContentProps } from './types'
 
 export type DefaultChatItemProps = ChatItemContentProps
@@ -66,7 +67,7 @@ export default function DefaultChatItem({
         )}
       >
         {!isMyMessage && (
-          <div className='flex items-baseline overflow-hidden'>
+          <div className='flex items-baseline justify-between gap-2 overflow-hidden'>
             <ProfilePreviewModalName
               clipText
               showModeratorChip
@@ -75,6 +76,7 @@ export default function DefaultChatItem({
               address={ownerId}
               className={cx('text-sm font-medium text-text-secondary')}
             />
+            <SubTeamLabel address={ownerId} />
           </div>
         )}
         {repliedMessageId && (

@@ -3,14 +3,14 @@ import ModerationForm from './ModerationForm'
 
 export type ModerationModalProps = ModalFunctionalityProps & {
   messageId: string
-  chatId: string
-  hubId: string
+  chatId?: string
+  isFromWidget?: boolean
 }
 
 export default function ModerationModal({
   messageId,
   chatId,
-  hubId,
+  isFromWidget,
   ...props
 }: ModerationModalProps) {
   return (
@@ -24,8 +24,8 @@ export default function ModerationModal({
         <ModerationForm
           onSuccess={() => props.closeModal()}
           chatId={chatId}
-          hubId={hubId}
           messageId={messageId}
+          isFromWidget={isFromWidget}
         />
       </div>
     </Modal>

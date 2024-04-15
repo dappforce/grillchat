@@ -23,8 +23,8 @@ import SelectInput, { ListItem } from '../inputs/SelectInput'
 
 export type ModerationFormProps = ComponentProps<'form'> & {
   messageId: string
-  chatId: string
-  hubId: string
+  chatId?: string
+  isFromWidget?: boolean
   onSuccess?: () => void
 }
 
@@ -56,8 +56,8 @@ const blockingContentOptions = (isOwner?: boolean) => {
 export default function ModerationForm({
   messageId,
   chatId,
-  hubId,
   onSuccess,
+  isFromWidget,
   ...props
 }: ModerationFormProps) {
   const sendEvent = useSendEvent()
@@ -71,7 +71,8 @@ export default function ModerationForm({
     [reasons]
   )
 
-  const { data: message } = getPostQuery.useQuery(messageId)
+  const { data: message, isLoading: isLoadingPost } =
+    getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
 
   const { name } = useName(ownerId)
@@ -85,6 +86,7 @@ export default function ModerationForm({
         const isBlockingOwner = args.resourceId === ownerId
         const undo = () =>
           mutate({
+            withoutRevalidateCurrentPath: isFromWidget,
             callName: 'synth_moderation_unblock_resource',
             args: {
               resourceId: args.resourceId,
@@ -152,7 +154,7 @@ export default function ModerationForm({
 
   if (!myAddress) return null
 
-  const isOwner = ownerId === myAddress
+  const isOwner = ownerId ? ownerId === myAddress : true
 
   return (
     <form
@@ -163,7 +165,7 @@ export default function ModerationForm({
         let resourceId: string
         switch (blockingContent.id) {
           case 'message':
-            resourceId = message?.entityId ?? ''
+            resourceId = messageId
             break
           case 'owner':
             resourceId = ownerId
@@ -175,6 +177,7 @@ export default function ModerationForm({
         const reasonId = reason.id
 
         mutate({
+          withoutRevalidateCurrentPath: isFromWidget,
           callName: 'synth_moderation_block_resource',
           args: {
             reasonId,
@@ -247,6 +250,7 @@ export default function ModerationForm({
         schema={formSchema}
         watch={watch}
         size='lg'
+        disabled={isLoadingPost}
         isLoading={isLoading}
       >
         Moderate

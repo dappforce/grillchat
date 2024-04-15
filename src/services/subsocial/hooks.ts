@@ -1,6 +1,10 @@
 import useLoginOption from '@/hooks/useLoginOption'
 import { useRequestToken } from '@/services/api/mutation'
-import { getHasEnoughEnergy, useMyAccount } from '@/stores/my-account'
+import {
+  getHasEnoughEnergy,
+  useMyAccount,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import {
   SubsocialMutationConfig,
   WalletAccount,
@@ -35,10 +39,8 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
   otherProps?: OtherProps
 ) {
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
-  const grillAddress = useMyAccount((state) => state.address)
-  const address = isUsingConnectedWallet
-    ? connectedWallet?.address
-    : grillAddress
+  const myAddress = useMyMainAddress()
+  const address = isUsingConnectedWallet ? connectedWallet?.address : myAddress
 
   const hasEnoughEnergyGrillAddress = useMyAccount((state) =>
     getHasEnoughEnergy(state.energy)

@@ -265,21 +265,20 @@ export function useResendFailedMessage(
           allowWindowUnload()
 
           const signer = getCurrentWallet().signer
-          notifyRetryStatus(address, data.content, signer, true)
+          notifyRetryStatus(data.content, signer, true)
         },
         onError: ({ data, address }, error, isAfterTxGenerated) => {
           allowWindowUnload()
           const signer = getCurrentWallet().signer
 
           if (isAfterTxGenerated)
-            notifyRetryStatus(address, data.content, signer, false, error)
+            notifyRetryStatus(data.content, signer, false, error)
         },
       },
     }
   )
 }
 function notifyRetryStatus(
-  address: string,
   content: PostContent,
   signer: KeyringPair | null,
   success: boolean,
