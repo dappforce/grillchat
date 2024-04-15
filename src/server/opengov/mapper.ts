@@ -42,6 +42,11 @@ export type SubsquareComment = {
   post_index: number
   username: string
   content: string
+  created_at: string
+  proposer: string
+  profile: {
+    image: string
+  }
   replies: [
     {
       comment_source: CommentSource
@@ -51,6 +56,10 @@ export type SubsquareComment = {
       isDeleted: boolean
       is_custom_username: boolean
       post_index: number
+      proposer: string
+      profile: {
+        image: string
+      }
       updated_at: string
       user_id: number
       username: string
@@ -147,12 +156,17 @@ type BlockTime = {
   block: number
   time: number
 }
-type Comment = {
+export type ProposalComment = {
   id: string
   username: string
   content: string
   source: CommentSource
-  replies: Comment[]
+  createdAt: string
+  ownerId: string
+  profile: {
+    image: string
+  } | null
+  replies: ProposalComment[]
 }
 export type Proposal = {
   id: number
@@ -193,7 +207,7 @@ export type Proposal = {
     enact: { block: number } | null
     hash: string
   }
-  comments: Comment[]
+  comments: ProposalComment[]
 }
 
 export async function mapSubsquareProposalToProposal(
@@ -224,11 +238,17 @@ export async function mapSubsquareProposalToProposal(
         username: c.username ?? '',
         content: c.content ?? '',
         source: c.comment_source ?? 'subsquare',
+        createdAt: c.created_at ?? '',
+        profile: c.profile ?? null,
+        ownerId: c.proposer ?? '',
         replies: c.replies.map((r) => ({
           id: r.id,
           username: r.username ?? '',
           content: r.content ?? '',
+          profile: r.profile ?? null,
           source: r.comment_source ?? 'subsquare',
+          createdAt: r.created_at ?? '',
+          ownerId: r.proposer ?? '',
           replies: [],
         })),
       })) ?? [],

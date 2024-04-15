@@ -18,6 +18,7 @@ import { PostData } from '@subsocial/api/types'
 import { useState } from 'react'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import { Drawer } from 'vaul'
+import ExternalChatItem from './ExternalChatItem'
 import {
   ProposalDetailPageProps,
   getProposalResourceId,
@@ -87,10 +88,15 @@ export default function DesktopProposalDetail({
                   </div>
                 )
               }
-              if (!chatId || lastThreeMessages.length === 0) {
-                return <NoMessagesCard onClick={() => setIsOpenDrawer(true)} />
+              if (!hasGrillComments && proposal.comments.length) {
+                return (
+                  <LastestCommentFromExternalSources
+                    setIsOpenDrawer={setIsOpenDrawer}
+                    proposal={proposal}
+                  />
+                )
               }
-              if (hasGrillComments) {
+              if (hasGrillComments && chatId) {
                 return (
                   <GrillLatestMessages
                     lastThreeMessages={lastThreeMessages}
@@ -100,7 +106,7 @@ export default function DesktopProposalDetail({
                   />
                 )
               }
-              return <LastestCommentFromExternalSources proposal={proposal} />
+              return <NoMessagesCard onClick={() => setIsOpenDrawer(true)} />
             })()}
           </Card>
         </div>
@@ -120,10 +126,29 @@ export default function DesktopProposalDetail({
 
 function LastestCommentFromExternalSources({
   proposal,
+  setIsOpenDrawer,
 }: {
   proposal: Proposal
+  setIsOpenDrawer: (isOpen: boolean) => void
 }) {
-  return <div className='flex flex-col gap-2'>sadfasdf</div>
+  const lastThreeComments = proposal.comments.slice(-3)
+  return (
+    <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-2'>
+        {lastThreeComments.map((comment) => {
+          if (!comment.content) return
+          return <ExternalChatItem comment={comment} key={comment.id} />
+        })}
+      </div>
+      <Button
+        size='lg'
+        onClick={() => setIsOpenDrawer(true)}
+        className='mt-auto w-full'
+      >
+        Open Comments
+      </Button>
+    </div>
+  )
 }
 
 function GrillLatestMessages({
@@ -140,11 +165,12 @@ function GrillLatestMessages({
   const myAddress = useMyMainAddress()
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex flex-col gap-2 rounded-2xl bg-background p-2'>
+      <div className='flex flex-col gap-2'>
         {lastThreeMessages.map(({ data }) => {
           if (!data) return
           return (
             <ChatItem
+              bg='background'
               enableChatMenu={false}
               key={data.id}
               message={data}
