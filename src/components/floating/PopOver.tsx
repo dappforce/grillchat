@@ -15,6 +15,7 @@ import {
   useHover,
   useInteractions,
   useRole,
+  useTransitionStyles,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
@@ -123,6 +124,7 @@ export default function PopOver({
     click,
     role,
   ])
+  const { isMounted } = useTransitionStyles(context, { duration: 100 })
 
   // create custom background if needed
   const color = panelColors[panelColor]
@@ -142,6 +144,7 @@ export default function PopOver({
         {trigger}
       </TriggerElement>
       {mounted &&
+        isMounted &&
         createPortal(
           <FloatingFocusManager
             initialFocus={initialFocus}
