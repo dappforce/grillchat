@@ -1,4 +1,3 @@
-import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import {
   invalidatePostServerCache,
   saveFile,
@@ -30,7 +29,6 @@ export type JoinChatParams = {
 }
 export function useJoinChat(config?: SubsocialMutationConfig<JoinChatParams>) {
   const client = useQueryClient()
-  const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<JoinChatParams>(
     {
@@ -40,9 +38,6 @@ export function useJoinChat(config?: SubsocialMutationConfig<JoinChatParams>) {
         data: { chatId },
         apis: { substrateApi },
       }) => {
-        console.log('waiting energy...')
-        await waitHasEnergy()
-
         return {
           tx: substrateApi.tx.postFollows.followPost(chatId),
           summary: 'Joining chat',
@@ -82,8 +77,6 @@ export function useLeaveChat(
 ) {
   const client = useQueryClient()
 
-  const waitHasEnergy = useWaitHasEnergy()
-
   return useSubsocialMutation<JoinChatParams>(
     {
       getWallet: getCurrentWallet,
@@ -92,9 +85,6 @@ export function useLeaveChat(
         data: { chatId },
         apis: { substrateApi },
       }) => {
-        console.log('waiting energy...')
-        await waitHasEnergy()
-
         return {
           tx: substrateApi.tx.postFollows.unfollowPost(chatId),
           summary: 'Leaving chat',
@@ -182,7 +172,6 @@ export function useUpsertPost(
 ) {
   const client = useQueryClient()
 
-  const waitHasEnergy = useWaitHasEnergy()
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
   const router = useRouter()
 
@@ -196,9 +185,6 @@ export function useUpsertPost(
         context: { content },
       }) => {
         const { payload, action } = checkAction(params)
-
-        console.log('waiting energy...')
-        await waitHasEnergy()
 
         const res = await saveFile(content)
         const cid = res.cid
@@ -324,8 +310,6 @@ export function useHideUnhidePost(
 ) {
   const client = useQueryClient()
 
-  const waitHasEnergy = useWaitHasEnergy()
-
   return useSubsocialMutation<HideUnhidePostParams>(
     {
       getWallet: getCurrentWallet,
@@ -334,9 +318,6 @@ export function useHideUnhidePost(
         data: { action, postId },
         apis: { substrateApi },
       }) => {
-        console.log('waiting energy...')
-        await waitHasEnergy()
-
         await datahubMutation.updatePostData({
           ...getCurrentWallet(),
           args: {
@@ -394,8 +375,6 @@ export function useHideMessage(
 ) {
   const client = useQueryClient()
 
-  const waitHasEnergy = useWaitHasEnergy()
-
   return useSubsocialMutation<HideMessageParams>(
     {
       getWallet: getCurrentWallet,
@@ -404,9 +383,6 @@ export function useHideMessage(
         data: params,
         apis: { substrateApi },
       }) => {
-        console.log('waiting energy...')
-        await waitHasEnergy()
-
         await datahubMutation.updatePostData({
           ...getCurrentWallet(),
           args: { postId: params.messageId, changes: { hidden: true } },
@@ -468,8 +444,6 @@ export function usePinMessage(
 ) {
   const client = useQueryClient()
 
-  const waitHasEnergy = useWaitHasEnergy()
-
   return useSubsocialMutation<PinMessageParams>(
     {
       getWallet: getCurrentWallet,
@@ -478,9 +452,6 @@ export function usePinMessage(
         data: params,
         apis: { substrateApi },
       }) => {
-        console.log('waiting energy...')
-        await waitHasEnergy()
-
         const newContent = await getUpdatedPinPostContent(client, params)
         const { success, cid } = await saveFile(newContent)
         if (!success || !cid) throw new Error('Failed to save file')

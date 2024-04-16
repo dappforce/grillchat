@@ -1,5 +1,4 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { isPersistentId } from '@/services/datahub/posts/fetcher'
@@ -51,7 +50,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const client = useQueryClient()
 
   const { mutateAsync: saveFile } = useSaveFile()
-  const waitHasEnergy = useWaitHasEnergy()
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
 
   return useSubsocialMutation<
@@ -75,8 +73,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
         const res = await saveFile(content)
         const cid = res.cid
         if (!cid) throw new Error('Failed to save file')
-        console.log('waiting energy...')
-        await waitHasEnergy()
 
         if (data.messageIdToEdit) {
           await datahubMutation.updatePostData({
@@ -218,7 +214,6 @@ export function useResendFailedMessage(
   config?: MutationConfig<ResendFailedMessageParams>
 ) {
   const { mutateAsync: saveFile } = useSaveFile()
-  const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation<ResendFailedMessageParams>(
     {
@@ -239,8 +234,6 @@ export function useResendFailedMessage(
         const res = await saveFile(content)
         const cid = res.cid
         if (!cid) throw new Error('Failed to save file')
-
-        await waitHasEnergy()
 
         return {
           tx: substrateApi.tx.posts.createPost(

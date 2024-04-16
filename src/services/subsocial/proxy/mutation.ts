@@ -1,4 +1,3 @@
-import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useMyAccount } from '@/stores/my-account'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
@@ -9,15 +8,12 @@ import { getProxiesQuery } from './query'
 
 export function useAddProxy(config?: SubsocialMutationConfig<null>) {
   const client = useQueryClient()
-  const waitHasEnergy = useWaitHasEnergy(true)
 
   return useSubsocialMutation(
     {
       getWallet: () => getCurrentWallet('injected'),
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi } }) => {
-        console.log('waiting energy...')
-        await waitHasEnergy()
         const currentGrillAddress = useMyAccount.getState().address
         if (!currentGrillAddress)
           throw new Error('No address connected to use proxy')
@@ -77,15 +73,12 @@ export const AddProxyWrapper = createMutationWrapper(
 
 export function useRemoveProxy(config?: SubsocialMutationConfig<null>) {
   const client = useQueryClient()
-  const waitHasEnergy = useWaitHasEnergy()
 
   return useSubsocialMutation(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi } }) => {
-        console.log('waiting energy...')
-        await waitHasEnergy()
         const removeProxyTx = substrateApi.tx.proxy.removeProxies()
 
         return {

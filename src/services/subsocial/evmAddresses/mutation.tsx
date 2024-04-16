@@ -1,4 +1,3 @@
-import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { AccountData } from '@/pages/api/accounts-data'
 import { apiInstance } from '@/services/api/utils'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -34,8 +33,6 @@ export function useLinkEvmAddress({
   const client = useQueryClient()
   const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 
-  const waitHasBalance = useWaitHasEnergy()
-
   const mutation = useSubsocialMutation<LinkEvmAddressMutationProps>(
     {
       getWallet: getCurrentWallet,
@@ -44,8 +41,6 @@ export function useLinkEvmAddress({
         data: params,
         apis: { substrateApi },
       }) => {
-        await waitHasBalance()
-
         const { evmAddress, evmSignature } = params
 
         const linkEvmAddressTx = substrateApi.tx[
@@ -102,8 +97,6 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
   const { disconnect } = useDisconnect()
   const [onCallbackLoading, setOnCallbackLoading] = useState(false)
 
-  const waitHasBalance = useWaitHasEnergy()
-
   const mutation = useSubsocialMutation<UnlinkEvmAddress>(
     {
       getWallet: getCurrentWallet,
@@ -112,8 +105,6 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
         data: params,
         apis: { substrateApi },
       }) => {
-        await waitHasBalance()
-
         const { evmAddress } = params
 
         return {

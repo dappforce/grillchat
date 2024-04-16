@@ -1,4 +1,3 @@
-import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { invalidateProfileServerCache, saveFile } from '@/services/api/mutation'
 import { getProfileQuery } from '@/services/api/query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
@@ -33,8 +32,6 @@ export function useUpsertProfile(
 ) {
   const client = useQueryClient()
 
-  const waitHasEnergy = useWaitHasEnergy()
-
   return useSubsocialMutation<UpsertProfileParams>(
     {
       getWallet: getCurrentWallet,
@@ -44,8 +41,6 @@ export function useUpsertProfile(
         apis: { substrateApi },
       }) => {
         const { content } = params
-        console.log('waiting energy...')
-        await waitHasEnergy()
 
         const { payload, action } = checkAction(params)
         if (action === 'update' && payload.spaceId === OPTIMISTIC_PROFILE_ID)
