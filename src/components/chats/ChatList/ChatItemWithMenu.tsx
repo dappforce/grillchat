@@ -21,7 +21,6 @@ function InnerChatItemWithMenu({
   hubId,
   scrollToMessage,
 }: ChatItemWithMenuProps) {
-  console.trace('klepanggil kahb?')
   return message ? (
     <ChatItemMenus
       chatId={chatId}

@@ -19,6 +19,8 @@ import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { replaceUrl } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -36,10 +38,20 @@ export default function DesktopProposalDetail({
   proposal,
   className,
 }: ProposalDetailPageProps & { className?: string }) {
-  const lgUp = useBreakpointThreshold('lg')
-  const isMounted = useIsMounted()
-
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+  useEffect(() => {
+    const shouldOpenDrawer = getUrlQuery('chat') === 'true'
+    if (shouldOpenDrawer) {
+      setIsOpenDrawer(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isOpenDrawer && getUrlQuery('chat') === 'true') {
+      replaceUrl(getCurrentUrlWithoutQuery('chat'))
+    }
+  }, [isOpenDrawer])
+
   useEffect(() => {
     if (isOpenDrawer) {
       document.documentElement.style.overflow = 'hidden'
@@ -127,6 +139,7 @@ export default function DesktopProposalDetail({
         </div>
       </div>
       <SidePanel
+        isLoading={isLoading}
         proposal={proposal}
         chatId={chatId ?? ''}
         hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
@@ -235,6 +248,7 @@ function SidePanel({
   onClose,
   isOpen,
   shouldDisplayExternalSourceAsDefault,
+  isLoading,
 }: {
   chatId: string
   hubId: string
@@ -242,19 +256,25 @@ function SidePanel({
   onClose?: () => void
   isOpen: boolean
   shouldDisplayExternalSourceAsDefault?: boolean
+  isLoading: boolean
 }) {
   const isMounted = useIsMounted()
   const lgUp = useBreakpointThreshold('lg')
   const [selectedTab, setSelectedTab] = useState<'grill' | 'others'>('grill')
 
   useEffect(() => {
-    if (isOpen) {
+    const isDirectlyOpeningSidePanel = getUrlQuery('chat') === 'true'
+    if (isOpen && !isLoading && !isDirectlyOpeningSidePanel) {
       setSelectedTab(shouldDisplayExternalSourceAsDefault ? 'others' : 'grill')
     }
-  }, [shouldDisplayExternalSourceAsDefault, isOpen])
+  }, [shouldDisplayExternalSourceAsDefault, isOpen, isLoading])
 
   const [usedChatId, setUsedChatId] = useState(chatId)
-  const { mutateAsync, error, isLoading } = useCreateDiscussion()
+  const {
+    mutateAsync,
+    error,
+    isLoading: isLoadingCreation,
+  } = useCreateDiscussion()
   useToastError(error, 'Failed to create discussion')
 
   const createDiscussion = async function () {
@@ -333,7 +353,7 @@ function SidePanel({
                 <Button
                   size='lg'
                   onClick={createDiscussion}
-                  isLoading={isLoading}
+                  isLoading={isLoadingCreation}
                 >
                   Start Discussion
                 </Button>
