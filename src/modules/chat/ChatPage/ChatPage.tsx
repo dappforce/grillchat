@@ -187,7 +187,7 @@ export default function ChatPage({
             forceUseDefaultBackLink: false,
           },
           customContent: ({ backButton, authComponent, notificationBell }) => (
-            <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
+            <div className='flex w-full items-center justify-between gap-4'>
               <NavbarChatInfo
                 backButton={backButton}
                 image={content?.image ? getIpfsContentUrl(content.image) : ''}
@@ -272,14 +272,14 @@ function NavbarChatInfo({
   const chatTitle = chatMetadata?.title || chatMetadata?.summary || 'Untitled'
 
   return (
-    <div className='flex flex-1 items-center overflow-hidden'>
+    <div className='flex flex-1 items-center'>
       {enableBackButton && backButton}
       <Button
         variant='transparent'
         interactive='none'
         size='noPadding'
         className={cx(
-          'flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left',
+          'flex flex-1 items-center gap-2 rounded-none text-left',
           !chatId && 'cursor-pointer'
         )}
         onClick={() => setIsOpenAboutChatModal(true)}
@@ -290,17 +290,15 @@ function NavbarChatInfo({
           image={image}
           chatTitle={chatTitle}
         />
-        <div className='flex flex-col overflow-hidden'>
-          <div className='flex items-center gap-2 overflow-hidden'>
-            <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-              {chatTitle}
-            </span>
+        <div className='flex flex-col'>
+          <div className='flex items-center gap-2'>
+            <span className='line-clamp-1 font-medium'>{chatTitle}</span>
             <ChatModerateChip chatId={chatId} />
             {chat?.struct.hidden && (
               <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
             )}
           </div>
-          <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
+          <span className='line-clamp-1 text-xs text-text-muted'>
             {`${messageCount} ${getPluralText({
               count: messageCount,
               plural: 'messages',

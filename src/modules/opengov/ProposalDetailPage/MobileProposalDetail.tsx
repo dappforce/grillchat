@@ -109,17 +109,39 @@ export default function MobileProposalDetailPage({
         </div>
       </div>
 
-      <div className='w-full border-b border-border-gray bg-background-light lg:hidden'>
+      <div className='grid w-full grid-cols-2 gap-2 border-b border-border-gray bg-background-light px-2 py-1.5'>
         <Button
           size='noPadding'
           variant='transparent'
-          className='flex h-10 w-full items-center justify-center gap-2 text-sm text-text-muted'
+          className='flex items-center justify-center gap-1 rounded-lg bg-background-primary py-1 text-sm text-white'
           interactive='none'
           onClick={() => setIsOpenComment(false)}
         >
-          <span>Back to proposal</span>
-          <HiChevronUp />
+          <span>Grill</span>
         </Button>
+        <Button
+          size='noPadding'
+          variant='transparent'
+          className='flex items-center justify-center gap-2 rounded-lg text-sm text-text-muted'
+          interactive='none'
+          onClick={() => setIsOpenComment(false)}
+        >
+          <span>Other Sources</span>
+        </Button>
+      </div>
+      <div className='relative w-full'>
+        <div className='absolute left-1/2 top-2 -translate-x-1/2'>
+          <Button
+            size='noPadding'
+            variant='transparent'
+            className='flex items-center justify-center gap-2 bg-background-light p-1.5 px-4 text-sm text-text-muted'
+            interactive='none'
+            onClick={() => setIsOpenComment(false)}
+          >
+            <span>Back to proposal</span>
+            <HiChevronUp />
+          </Button>
+        </div>
       </div>
       {/* To not render double chat rooms with the desktop, which can cause issue with chat item menu */}
       {isMounted && !lgUp && (

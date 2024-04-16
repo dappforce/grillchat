@@ -38,7 +38,7 @@ export default function ProposalDetailPage(props: ProposalDetailPageProps) {
           forceUseDefaultBackLink: false,
         },
         customContent: ({ backButton, authComponent, notificationBell }) => (
-          <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
+          <div className='flex w-full items-center justify-between gap-4'>
             <NavbarChatInfo backButton={backButton} proposal={props.proposal} />
             <div className='flex items-center gap-3'>
               {notificationBell}
@@ -64,27 +64,25 @@ function NavbarChatInfo({
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   return (
-    <div className='flex flex-1 items-center overflow-hidden'>
+    <div className='-ml-2 flex flex-1 items-center'>
       {backButton}
       <Button
         variant='transparent'
         interactive='none'
         size='noPadding'
         className={cx(
-          'flex flex-1 cursor-pointer items-center gap-2 overflow-hidden rounded-none text-left'
+          'flex flex-1 cursor-pointer items-center gap-2 rounded-none text-left'
         )}
         onClick={() => {
           setIsOpenModal(true)
         }}
       >
         <VoteSummary proposal={proposal} className='h-10 w-10' type='small' />
-        <div className='flex flex-col overflow-hidden'>
-          <div className='flex items-center gap-2 overflow-hidden'>
-            <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-              {proposal.title}
-            </span>
+        <div className='flex flex-col'>
+          <div className='flex items-center gap-2'>
+            <span className='line-clamp-1 font-medium'>{proposal.title}</span>
           </div>
-          <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
+          <span className='line-clamp-1 text-xs text-text-muted'>
             {formatBalanceWithDecimals(proposal.requested)} DOT &middot;{' '}
             <ProposalStatus proposal={proposal} />
           </span>
