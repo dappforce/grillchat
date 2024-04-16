@@ -1,8 +1,11 @@
+import PolkassemblyIcon from '@/assets/icons/polkassembly.svg'
+import SubsquareIcon from '@/assets/icons/subsquare.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import MdRenderer from '@/components/MdRenderer'
 import Name from '@/components/Name'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import { scrollToMessageElement } from '@/components/chats/utils'
+import PopOver from '@/components/floating/PopOver'
 import useRandomColor from '@/hooks/useRandomColor'
 import { ProposalComment } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
@@ -57,16 +60,39 @@ export default function ExternalChatItem({
           )}
           id={getExternalMessageItemDOMId(comment.id)}
         >
-          <div className='flex items-baseline justify-start gap-2 overflow-hidden'>
-            <span className='font-medium'>
-              <ExternalMessageName comment={comment} />
-            </span>
-            <ChatRelativeTime
-              createdAtTime={comment.createdAt}
-              className={cx(
-                'text-xs text-text-muted [&:not(:last-child)]:mr-1'
-              )}
-            />
+          <div className='flex items-center justify-between gap-4'>
+            <div className='flex items-baseline justify-start gap-2 overflow-hidden'>
+              <span className='font-medium'>
+                <ExternalMessageName comment={comment} />
+              </span>
+              <ChatRelativeTime
+                createdAtTime={comment.createdAt}
+                className={cx(
+                  'text-xs text-text-muted [&:not(:last-child)]:mr-1'
+                )}
+              />
+            </div>
+            <PopOver
+              triggerClassName='ml-auto text-text-muted'
+              panelSize='sm'
+              placement='top'
+              yOffset={6}
+              triggerOnHover
+              trigger={
+                comment.source === 'polkassembly' ? (
+                  <PolkassemblyIcon />
+                ) : (
+                  <SubsquareIcon />
+                )
+              }
+            >
+              <p>
+                Comment from{' '}
+                {comment.source === 'polkassembly'
+                  ? 'Polkassembly'
+                  : 'Subsquare'}
+              </p>
+            </PopOver>
           </div>
           {comment.parentComment && (
             <ExternalChatRepliedMessagePreview
