@@ -1,4 +1,5 @@
 import { cx } from '@/utils/class-names'
+import { sanitizeHtmlPlugin } from '@osn/previewer'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
@@ -41,15 +42,24 @@ export default function MdRenderer({
         },
       }}
     >
-      {source}
+      {sanitizeHtml(source ?? '')}
     </ReactMarkdown>
   )
   if (plain) {
     return parsed
   }
   return (
-    <div className={cx('prose max-w-full dark:prose-invert', className)}>
+    <div
+      className={cx(
+        'prose max-w-full dark:prose-invert [&_*]:max-w-full',
+        className
+      )}
+    >
       {parsed}
     </div>
   )
+}
+
+function sanitizeHtml(html: string) {
+  return sanitizeHtmlPlugin().transformHtml?.(html) ?? html
 }
