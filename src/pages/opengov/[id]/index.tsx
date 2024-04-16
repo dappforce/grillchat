@@ -1,8 +1,10 @@
+import { env } from '@/env.mjs'
 import ProposalDetailPage, {
   ProposalDetailPageProps,
 } from '@/modules/opengov/ProposalDetailPage'
 import { getProposalDetailServer } from '@/pages/api/opengov/proposals/[id]'
 import { getPostsServer } from '@/pages/api/posts'
+import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
 import { getPaginatedPostsByPostIdFromDatahubQuery } from '@/services/datahub/posts/query'
 import { getCommonStaticProps } from '@/utils/page'
@@ -34,7 +36,14 @@ export const getStaticProps = getCommonStaticProps<ProposalDetailPageProps>(
         queryClient,
         data.chatId
       )
-      const messages = await getPostsServer(res.data)
+      const [messages] = await Promise.all([
+        getPostsServer(res.data),
+        prefetchBlockedEntities(
+          queryClient,
+          [env.NEXT_PUBLIC_PROPOSALS_HUB],
+          [data.chatId]
+        ),
+      ] as const)
       messages.forEach((message) => {
         getPostQuery.setQueryData(queryClient, message.id, message)
       })
