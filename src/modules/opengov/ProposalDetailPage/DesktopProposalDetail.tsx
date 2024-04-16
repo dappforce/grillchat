@@ -4,7 +4,7 @@ import Container from '@/components/Container'
 import MdRenderer from '@/components/MdRenderer'
 import ScrollableContainer from '@/components/ScrollableContainer'
 import { Skeleton } from '@/components/SkeletonFallback'
-import ChatItem from '@/components/chats/ChatItem'
+import ChatItemContainer from '@/components/chats/ChatList/ChatItemContainer'
 import ChatRoom from '@/components/chats/ChatRoom'
 import usePaginatedMessageIds from '@/components/chats/hooks/usePaginatedMessageIds'
 import { WriteFirstComment } from '@/components/opengov/ProposalPreview'
@@ -16,7 +16,6 @@ import { Proposal, ProposalComment } from '@/server/opengov/mapper'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
-import { useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
@@ -199,21 +198,19 @@ function GrillLatestMessages({
   setIsOpenDrawer: (isOpen: boolean) => void
   totalCommentsCount: number
 }) {
-  const myAddress = useMyMainAddress()
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-2'>
         {lastThreeMessages.map(({ data }) => {
           if (!data) return
           return (
-            <ChatItem
+            <ChatItemContainer
               bg='background'
-              enableChatMenu={false}
               key={data.id}
-              message={data}
+              enableChatMenu={false}
               chatId={chatId}
               hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
-              isMyMessage={data.struct.ownerId === myAddress}
+              message={data}
             />
           )
         })}

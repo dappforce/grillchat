@@ -3,7 +3,7 @@ import useRerender from '@/hooks/useRerender'
 import { cx } from '@/utils/class-names'
 import { formatDate, getTimeRelativeToNow } from '@/utils/date'
 import { ComponentProps, useEffect, useState } from 'react'
-import { useChatListContext } from '../ChatList'
+import { useChatListContext } from '../ChatList/provider'
 
 export type ChatRelativeTimeProps = ComponentProps<'span'> & {
   createdAtTime: string | number

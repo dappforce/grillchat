@@ -15,9 +15,6 @@ import { sendMessageToParentWindow } from '@/utils/window'
 import {
   ComponentProps,
   Fragment,
-  RefObject,
-  createContext,
-  useContext,
   useEffect,
   useId,
   useMemo,
@@ -36,11 +33,7 @@ import PinnedMessage from './PinnedMessage'
 import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
 import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
-
-const ChatListContext = createContext<RefObject<HTMLDivElement> | null>(null)
-export function useChatListContext() {
-  return useContext(ChatListContext)
-}
+import { ChatListContext } from './provider'
 
 export type ChatListProps = ComponentProps<'div'> & {
   asContainer?: boolean
