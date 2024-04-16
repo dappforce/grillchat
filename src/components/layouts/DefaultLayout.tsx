@@ -32,12 +32,13 @@ export default function DefaultLayout({
 
   return (
     <div
+      {...props}
       className={cx(
         'flex flex-col bg-background text-text',
-        withFixedHeight && 'h-screen'
+        withFixedHeight && 'h-screen',
+        props.className
       )}
       style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
-      {...props}
     >
       <Navbar
         {...navbarProps}

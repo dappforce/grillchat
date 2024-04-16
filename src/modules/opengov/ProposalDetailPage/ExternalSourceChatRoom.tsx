@@ -1,0 +1,40 @@
+import Button from '@/components/Button'
+import Container from '@/components/Container'
+import ScrollableContainer from '@/components/ScrollableContainer'
+import { ProposalComment } from '@/server/opengov/mapper'
+import { useRef } from 'react'
+import ExternalChatItem from './ExternalChatItem'
+
+export default function ExternalSourceChatRoom({
+  comments,
+  switchToGrillTab,
+}: {
+  comments: ProposalComment[]
+  switchToGrillTab: () => void
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  return (
+    <div className='flex flex-1 flex-col overflow-hidden'>
+      <ScrollableContainer
+        ref={containerRef}
+        className='flex flex-1 flex-col-reverse'
+      >
+        <Container className='flex flex-1 flex-col-reverse gap-2 pb-2 pt-4'>
+          {comments.map((comment) => (
+            <ExternalChatItem
+              comment={comment}
+              key={comment.id}
+              containerRef={containerRef}
+            />
+          ))}
+        </Container>
+      </ScrollableContainer>
+      <div className='p-2'>
+        <Button size='lg' className='w-full' onClick={switchToGrillTab}>
+          Switch to Grill comments
+        </Button>
+      </div>
+    </div>
+  )
+}

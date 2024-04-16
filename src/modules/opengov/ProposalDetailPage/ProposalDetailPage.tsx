@@ -31,6 +31,7 @@ export function getProposalResourceId(proposalId: number | string) {
 export default function ProposalDetailPage(props: ProposalDetailPageProps) {
   return (
     <DefaultLayout
+      className='h-[100dvh] h-screen lg:h-auto'
       navbarProps={{
         withLargerContainer: true,
         backButtonProps: {

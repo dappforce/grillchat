@@ -15,6 +15,7 @@ import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import { useEffect, useState } from 'react'
 import { HiChevronUp } from 'react-icons/hi2'
+import ExternalSourceChatRoom from './ExternalSourceChatRoom'
 import ProposalDetailModal from './ProposalDetailModal'
 import {
   ProposalDetailPageProps,
@@ -30,6 +31,7 @@ export default function MobileProposalDetailPage({
 }: ProposalDetailPageProps & { className?: string }) {
   const isMounted = useIsMounted()
   const lgUp = useBreakpointThreshold('lg')
+  const [selectedTab, setSelectedTab] = useState<'grill' | 'others'>('grill')
 
   const [isOpenDetailModal, setIsOpenDetailModal] = useState(false)
   const [isOpenComment, setIsOpenComment] = useState(false)
@@ -95,7 +97,7 @@ export default function MobileProposalDetailPage({
             <ProposalStatusCard proposal={proposal} />
           </div>
         </div>
-        <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4 lg:hidden'>
+        <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4'>
           <Button
             size='lg'
             className='w-full'
@@ -113,23 +115,29 @@ export default function MobileProposalDetailPage({
         <Button
           size='noPadding'
           variant='transparent'
-          className='flex items-center justify-center gap-1 rounded-lg bg-background-primary py-1 text-sm text-white'
+          className={cx(
+            'flex items-center justify-center gap-1 rounded-lg py-1 text-sm',
+            selectedTab === 'grill' && 'bg-background-primary text-white'
+          )}
           interactive='none'
-          onClick={() => setIsOpenComment(false)}
+          onClick={() => setSelectedTab('grill')}
         >
           <span>Grill</span>
         </Button>
         <Button
           size='noPadding'
           variant='transparent'
-          className='flex items-center justify-center gap-2 rounded-lg text-sm text-text-muted'
+          className={cx(
+            'flex items-center justify-center gap-1 rounded-lg py-1 text-sm',
+            selectedTab === 'others' && 'bg-background-primary text-white'
+          )}
           interactive='none'
-          onClick={() => setIsOpenComment(false)}
+          onClick={() => setSelectedTab('others')}
         >
           <span>Other Sources</span>
         </Button>
       </div>
-      <div className='relative w-full'>
+      <div className='relative z-10 w-full'>
         <div className='absolute left-1/2 top-2 -translate-x-1/2'>
           <Button
             size='noPadding'
@@ -144,7 +152,7 @@ export default function MobileProposalDetailPage({
         </div>
       </div>
       {/* To not render double chat rooms with the desktop, which can cause issue with chat item menu */}
-      {isMounted && !lgUp && (
+      {isMounted && !lgUp && selectedTab === 'grill' ? (
         <ChatRoom
           chatId={usedChatId ?? ''}
           hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
@@ -160,6 +168,11 @@ export default function MobileProposalDetailPage({
               </Button>
             ) : undefined
           }
+        />
+      ) : (
+        <ExternalSourceChatRoom
+          comments={proposal.comments}
+          switchToGrillTab={() => setSelectedTab('grill')}
         />
       )}
       <BottomPanel />

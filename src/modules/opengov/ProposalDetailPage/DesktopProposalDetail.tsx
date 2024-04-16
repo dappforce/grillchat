@@ -1,8 +1,6 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
-import Container from '@/components/Container'
 import MdRenderer from '@/components/MdRenderer'
-import ScrollableContainer from '@/components/ScrollableContainer'
 import { Skeleton } from '@/components/SkeletonFallback'
 import ChatItemContainer from '@/components/chats/ChatList/ChatItemContainer'
 import ChatRoom from '@/components/chats/ChatRoom'
@@ -12,7 +10,7 @@ import { env } from '@/env.mjs'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useIsMounted from '@/hooks/useIsMounted'
 import useToastError from '@/hooks/useToastError'
-import { Proposal, ProposalComment } from '@/server/opengov/mapper'
+import { Proposal } from '@/server/opengov/mapper'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
@@ -21,10 +19,11 @@ import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import ExternalChatItem from './ExternalChatItem'
+import ExternalSourceChatRoom from './ExternalSourceChatRoom'
 import {
   ProposalDetailPageProps,
   getProposalResourceId,
@@ -366,39 +365,5 @@ function SidePanel({
       </div>
     </>,
     document.body
-  )
-}
-
-function ExternalSourceChatRoom({
-  comments,
-  switchToGrillTab,
-}: {
-  comments: ProposalComment[]
-  switchToGrillTab: () => void
-}) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-
-  return (
-    <div className='flex flex-1 flex-col overflow-hidden'>
-      <ScrollableContainer
-        ref={containerRef}
-        className='flex flex-1 flex-col-reverse'
-      >
-        <Container className='flex flex-1 flex-col-reverse gap-2 pb-2 pt-4'>
-          {comments.map((comment) => (
-            <ExternalChatItem
-              comment={comment}
-              key={comment.id}
-              containerRef={containerRef}
-            />
-          ))}
-        </Container>
-      </ScrollableContainer>
-      <div className='p-2'>
-        <Button size='lg' className='w-full' onClick={switchToGrillTab}>
-          Switch to Grill comments
-        </Button>
-      </div>
-    </div>
   )
 }
