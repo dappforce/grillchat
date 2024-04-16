@@ -4,6 +4,8 @@ import LinkText from '@/components/LinkText'
 import MdRenderer from '@/components/MdRenderer'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { env } from '@/env.mjs'
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
+import useIsMounted from '@/hooks/useIsMounted'
 import useToastError from '@/hooks/useToastError'
 import BottomPanel from '@/modules/chat/ChatPage/BottomPanel'
 import { useCreateDiscussion } from '@/services/api/mutation'
@@ -26,6 +28,9 @@ export default function MobileProposalDetailPage({
   chatId,
   className,
 }: ProposalDetailPageProps & { className?: string }) {
+  const isMounted = useIsMounted()
+  const lgUp = useBreakpointThreshold('lg')
+
   const [isOpenDetailModal, setIsOpenDetailModal] = useState(false)
   const [isOpenComment, setIsOpenComment] = useState(false)
   const { mutateAsync, error, isLoading } = useCreateDiscussion()
@@ -129,11 +134,14 @@ export default function MobileProposalDetailPage({
         }
       />
       <BottomPanel />
-      <ProposalDetailModal
-        isOpen={isOpenDetailModal}
-        closeModal={() => setIsOpenDetailModal(false)}
-        proposal={proposal}
-      />
+      {/* To not render double chat rooms with the desktop, which can cause issue with chat item menu */}
+      {isMounted && !lgUp && (
+        <ProposalDetailModal
+          isOpen={isOpenDetailModal}
+          closeModal={() => setIsOpenDetailModal(false)}
+          proposal={proposal}
+        />
+      )}
     </div>
   )
 }

@@ -9,6 +9,8 @@ import ChatRoom from '@/components/chats/ChatRoom'
 import usePaginatedMessageIds from '@/components/chats/hooks/usePaginatedMessageIds'
 import { WriteFirstComment } from '@/components/opengov/ProposalPreview'
 import { env } from '@/env.mjs'
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
+import useIsMounted from '@/hooks/useIsMounted'
 import useToastError from '@/hooks/useToastError'
 import { Proposal, ProposalComment } from '@/server/opengov/mapper'
 import { useCreateDiscussion } from '@/services/api/mutation'
@@ -34,6 +36,9 @@ export default function DesktopProposalDetail({
   proposal,
   className,
 }: ProposalDetailPageProps & { className?: string }) {
+  const lgUp = useBreakpointThreshold('lg')
+  const isMounted = useIsMounted()
+
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   useEffect(() => {
     if (isOpenDrawer) {
@@ -238,6 +243,8 @@ function SidePanel({
   isOpen: boolean
   shouldDisplayExternalSourceAsDefault?: boolean
 }) {
+  const isMounted = useIsMounted()
+  const lgUp = useBreakpointThreshold('lg')
   const [selectedTab, setSelectedTab] = useState<'grill' | 'others'>('grill')
 
   useEffect(() => {
@@ -262,6 +269,9 @@ function SidePanel({
       setUsedChatId(data.postId)
     }
   }
+
+  // Should not render multiple chat rooms (along with the mobile one), because it will cause issue with chat item menu
+  if (!isMounted || !lgUp) return null
 
   return createPortal(
     <>
