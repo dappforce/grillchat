@@ -5,7 +5,7 @@ import { ERRORS } from '@/constants/error'
 import { env } from '@/env.mjs'
 import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
-import useSendMessageWithLoginFlow from '@/hooks/useRequestTokenAndSendMessage'
+import useSendMessageWithLoginFlow from '@/hooks/useSendMessageWithLoginFlow'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
@@ -116,7 +116,7 @@ export default function ChatForm({
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
 
-  const { mutate: requestTokenAndSendMessage } = useSendMessageWithLoginFlow({
+  const { mutate: loginAndSendMessage } = useSendMessageWithLoginFlow({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
@@ -235,7 +235,7 @@ export default function ChatForm({
     } else if (shouldSendMessage) {
       sendMessage(messageParams)
     } else {
-      requestTokenAndSendMessage(messageParams)
+      loginAndSendMessage(messageParams)
     }
 
     // // TODO: wrap it into hook

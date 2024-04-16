@@ -11,7 +11,7 @@ export default function useLogin(
     (state) => state.loginAsTemporaryAccount
   )
 
-  const loginAndRequestToken = async () => {
+  const handler = async () => {
     const loginFunc = config?.asTemporaryAccount
       ? loginAsTemporaryAccount
       : login
@@ -24,5 +24,5 @@ export default function useLogin(
     return address
   }
 
-  return useMutation(loginAndRequestToken, config)
+  return useMutation(handler, config)
 }
