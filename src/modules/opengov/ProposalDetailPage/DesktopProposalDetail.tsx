@@ -21,7 +21,6 @@ import { PostData } from '@subsocial/api/types'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
-import { Drawer } from 'vaul'
 import ExternalChatItem from './ExternalChatItem'
 import {
   ProposalDetailPageProps,
@@ -36,6 +35,13 @@ export default function DesktopProposalDetail({
   className,
 }: ProposalDetailPageProps & { className?: string }) {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+  useEffect(() => {
+    if (isOpenDrawer) {
+      document.documentElement.style.overflow = 'hidden'
+    } else {
+      document.documentElement.style.overflow = 'visible'
+    }
+  }, [isOpenDrawer])
 
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
   const { allIds, isLoading } = usePaginatedMessageIds({
@@ -49,11 +55,7 @@ export default function DesktopProposalDetail({
   const hasGrillComments = !isLoading && allIds.length > 0
 
   return (
-    <Drawer.Root
-      direction='right'
-      open={isOpenDrawer}
-      onOpenChange={setIsOpenDrawer}
-    >
+    <>
       <div
         className={cx(
           'container-page grid grid-cols-[3fr_2fr] gap-6 pt-4',
@@ -129,7 +131,7 @@ export default function DesktopProposalDetail({
           !hasGrillComments && !!proposal.comments.length
         }
       />
-    </Drawer.Root>
+    </>
   )
 }
 
@@ -270,8 +272,8 @@ function SidePanel({
       />
       <div
         className={cx(
-          'fixed right-0 top-0 z-30 flex h-screen w-full max-w-[500px] translate-x-1/3 flex-col bg-[#eceff4] opacity-0 transition dark:bg-[#11172a]',
-          isOpen && 'translate-x-0 opacity-100'
+          'pointer-events-none fixed right-0 top-0 z-30 flex h-screen w-full max-w-[500px] translate-x-1/3 flex-col bg-[#eceff4] opacity-0 transition dark:bg-[#11172a]',
+          isOpen && 'pointer-events-auto translate-x-0 opacity-100'
         )}
       >
         <Button
