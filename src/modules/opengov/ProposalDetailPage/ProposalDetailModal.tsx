@@ -13,7 +13,7 @@ export default function ProposalDetailModal({
   return (
     <Modal {...props} size='screen-md' withCloseButton>
       <div className='flex flex-col gap-4'>
-        <h1 className='text-2xl font-bold'>
+        <h1 className='mr-8 text-2xl font-bold'>
           #{proposal.id} &middot; {proposal.title}
         </h1>
         <MdRenderer
