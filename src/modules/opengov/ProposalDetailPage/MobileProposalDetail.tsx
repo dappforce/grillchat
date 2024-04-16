@@ -121,27 +121,31 @@ export default function MobileProposalDetailPage({
           <HiChevronUp />
         </Button>
       </div>
-      <ChatRoom
-        chatId={usedChatId ?? ''}
-        hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
-        asContainer
-        customAction={
-          !usedChatId ? (
-            <Button size='lg' onClick={createDiscussion} isLoading={isLoading}>
-              Start Discussion
-            </Button>
-          ) : undefined
-        }
-      />
-      <BottomPanel />
       {/* To not render double chat rooms with the desktop, which can cause issue with chat item menu */}
       {isMounted && !lgUp && (
-        <ProposalDetailModal
-          isOpen={isOpenDetailModal}
-          closeModal={() => setIsOpenDetailModal(false)}
-          proposal={proposal}
+        <ChatRoom
+          chatId={usedChatId ?? ''}
+          hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
+          asContainer
+          customAction={
+            !usedChatId ? (
+              <Button
+                size='lg'
+                onClick={createDiscussion}
+                isLoading={isLoading}
+              >
+                Start Discussion
+              </Button>
+            ) : undefined
+          }
         />
       )}
+      <BottomPanel />
+      <ProposalDetailModal
+        isOpen={isOpenDetailModal}
+        closeModal={() => setIsOpenDetailModal(false)}
+        proposal={proposal}
+      />
     </div>
   )
 }
