@@ -162,7 +162,9 @@ function LatestCommentFromExternalSources({
         onClick={() => setIsOpenDrawer(true)}
         className='mt-auto w-full'
       >
-        Open Comments
+        Show all{' '}
+        {proposal.comments.length ? `${proposal.comments.length} ` : ''}{' '}
+        Comments
       </Button>
     </div>
   )
