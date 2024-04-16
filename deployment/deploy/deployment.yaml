@@ -27,6 +27,12 @@ spec:
                 name: grillchat-<BRANCH>-env
             - secretRef:
                 name: grillchat-secret
+          resources:
+            requests:
+              memory: '500Mi'
+              cpu: '50m'
+            limits:
+              memory: '768Mi'
       imagePullSecrets:
         - name: dockerhub
       restartPolicy: Always

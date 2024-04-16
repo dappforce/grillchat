@@ -28,7 +28,7 @@
     "@dicebear/bottts": "^5.3.4",
     "@dicebear/core": "^5.3.4",
     "@ethersproject/hash": "^5.7.0",
-    "@floating-ui/react": "^0.22.2",
+    "@floating-ui/react": "^0.26.0",
     "@headlessui/react": "^1.7.11",
     "@hookform/resolvers": "^3.1.1",
     "@khmyznikov/pwa-install": "^0.2.5",
