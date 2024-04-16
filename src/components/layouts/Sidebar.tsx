@@ -9,7 +9,6 @@ import { LuCompass } from 'react-icons/lu'
 import { MdOutlineLeaderboard } from 'react-icons/md'
 import { RiLineChartLine } from 'react-icons/ri'
 import { TbCoins, TbWorld } from 'react-icons/tb'
-import { TiFlashOutline } from 'react-icons/ti'
 import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
@@ -54,12 +53,6 @@ export default function Sidebar() {
           icon={TbWorld}
           title='Usernames'
           href='/dd'
-          forceHardNavigation
-        />
-        <SidebarItem
-          icon={TiFlashOutline}
-          title='Energy Station'
-          href='/energy'
           forceHardNavigation
         />
 

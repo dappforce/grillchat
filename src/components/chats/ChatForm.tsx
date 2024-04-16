@@ -5,7 +5,7 @@ import { ERRORS } from '@/constants/error'
 import { env } from '@/env.mjs'
 import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
-import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
+import useSendMessageWithLoginFlow from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
@@ -19,7 +19,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import {
-  getHasEnoughEnergy,
   hasSentMessageStorage,
   useMyAccount,
   useMyMainAddress,
@@ -116,12 +115,8 @@ export default function ChatForm({
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
-  const hasEnoughEnergy = useMyAccount((state) =>
-    getHasEnoughEnergy(state.energy)
-  )
-  const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
-  const { mutate: requestTokenAndSendMessage } = useRequestTokenAndSendMessage({
+  const { mutate: requestTokenAndSendMessage } = useSendMessageWithLoginFlow({
     onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
@@ -172,12 +167,7 @@ export default function ChatForm({
     if (replyTo || messageToEdit) textAreaRef.current?.focus()
   }, [replyTo, messageToEdit])
 
-  useEffect(() => {
-    setIsRequestingEnergy(false)
-  }, [hasEnoughEnergy])
-
-  const shouldSendMessage =
-    isLoggedIn && (isRequestingEnergy || hasEnoughEnergy)
+  const shouldSendMessage = isLoggedIn
 
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
@@ -246,7 +236,6 @@ export default function ChatForm({
       sendMessage(messageParams)
     } else {
       requestTokenAndSendMessage(messageParams)
-      setIsRequestingEnergy(true)
     }
 
     // // TODO: wrap it into hook

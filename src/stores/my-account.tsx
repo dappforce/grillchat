@@ -1,7 +1,6 @@
 import Toast from '@/components/Toast'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { linkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
@@ -9,9 +8,7 @@ import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
-import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useParentData } from '@/stores/parent'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   Signer,
   decodeSecretKey,
@@ -21,9 +18,6 @@ import {
   loginWithSecretKey,
   validateAddress,
 } from '@/utils/account'
-import { waitNewBlock } from '@/utils/blockchain'
-import { currentNetwork } from '@/utils/network'
-import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import { toSubsocialAddress } from '@subsocial/utils'
@@ -54,17 +48,13 @@ type State = {
     | {
         address: string
         signer: Signer | null
-        energy?: number
-        _unsubscribeEnergy?: () => void
       }
     | undefined
   parentProxyAddress: string | undefined
 
   address: string | null
   signer: Signer | null
-  energy: number | null
   encodedSecretKey: string | null
-  _unsubscribeEnergy: () => void
 }
 
 type Actions = {
@@ -83,8 +73,6 @@ type Actions = {
   connectWallet: (address: string, signer: Signer | null) => Promise<void>
   saveProxyAddress: () => void
   disconnectProxy: () => void
-  _subscribeEnergy: () => void
-  _subscribeConnectedWalletEnergy: () => void
   _readPreferredWalletFromStorage: () => Wallet | undefined
 }
 
@@ -98,9 +86,7 @@ const initialState: State = {
   parentProxyAddress: undefined,
   address: null,
   signer: null,
-  energy: null,
   encodedSecretKey: null,
-  _unsubscribeEnergy: () => undefined,
 }
 
 export const accountAddressStorage = new LocalStorageAndForage(
@@ -176,29 +162,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     if (!wallet) preferredWalletStorage.remove()
     else preferredWalletStorage.set(wallet.title)
   },
-  _subscribeConnectedWalletEnergy: () => {
-    const { connectedWallet } = get()
-    if (!connectedWallet) return
-
-    const { address } = connectedWallet
-    const unsub = subscribeEnergy(address, (energy) => {
-      const wallet = get().connectedWallet
-      if (!wallet) return
-      set({ connectedWallet: { ...wallet, energy } })
-    })
-    set({
-      connectedWallet: {
-        ...connectedWallet,
-        _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()),
-      },
-    })
-  },
   connectWallet: async (address, signer) => {
     const { toSubsocialAddress } = await import('@subsocial/utils')
     const parsedAddress = toSubsocialAddress(address)!
 
     set({ connectedWallet: { address: parsedAddress, signer } })
-    get()._subscribeConnectedWalletEnergy()
   },
   saveProxyAddress: () => {
     const { connectedWallet } = get()
@@ -207,7 +175,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     set({ parentProxyAddress: connectedWallet.address })
   },
   disconnectProxy: () => {
-    get().connectedWallet?._unsubscribeEnergy?.()
     set({ connectedWallet: undefined, parentProxyAddress: undefined })
     parentProxyAddressStorage.remove()
   },
@@ -265,18 +232,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
           await validateParentProxyAddress({
             grillAddress: address,
             parentProxyAddress,
-            signer,
-            onAnyProxyRemoved: () => {
-              get().logout()
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  type='error'
-                  title='Login failed'
-                  subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
-                />
-              ))
-            },
             onInvalidProxy: () => {
               get().logout()
               toast.custom((t) => (
@@ -291,7 +246,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
           })
         }
       }
-      get()._subscribeEnergy()
     } catch (e) {
       console.error('Failed to login', e)
       if (!isInitialization && withErrorToast) {
@@ -326,19 +280,8 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     temporaryAccountStorage.remove()
     set({ isTemporaryAccount: false })
   },
-  _subscribeEnergy: () => {
-    const { address, parentProxyAddress, _unsubscribeEnergy } = get()
-    _unsubscribeEnergy()
-    const usedAddress = parentProxyAddress || address
-
-    const unsub = subscribeEnergy(usedAddress, (energy) => {
-      set({ energy })
-    })
-    set({ _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()) })
-  },
   logout: () => {
-    const { _unsubscribeEnergy, address } = get()
-    _unsubscribeEnergy()
+    const { address } = get()
 
     accountStorage.remove()
     accountAddressStorage.remove()
@@ -402,18 +345,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       await validateParentProxyAddress({
         grillAddress: get().address!,
         parentProxyAddress,
-        signer: get().signer!,
-        onAnyProxyRemoved: () => {
-          get().logout()
-          toast.custom((t) => (
-            <Toast
-              t={t}
-              type='error'
-              title='Logged out'
-              subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
-            />
-          ))
-        },
         onInvalidProxy: () => {
           get().logout()
           toast.custom((t) => (
@@ -428,7 +359,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       })
     }
     set({ isInitializedProxy: true })
-    get()._subscribeEnergy()
 
     // if we use parentProxy from storage, then need to check whether the account is linked in datahub or not, and link if not yet
     // this is a background process, so it needs to be done after all other init is done
@@ -470,38 +400,16 @@ async function linkPolkadotIfNotLinked(
 async function validateParentProxyAddress({
   grillAddress,
   parentProxyAddress,
-  signer,
-  onAnyProxyRemoved,
   onInvalidProxy,
 }: {
   parentProxyAddress: string
   grillAddress: string
-  signer: Signer
   onInvalidProxy: () => void
-  onAnyProxyRemoved: () => void
 }) {
   try {
     // Remove proxy with type 'Any'
-    const proxies = await getProxiesQuery.fetchQuery(queryClient, {
-      address: parentProxyAddress,
-    })
-    const currentProxy = proxies.find(({ address }) => address === grillAddress)
-    if (currentProxy?.proxyType === 'Any') {
-      async function removeProxy() {
-        const api = await getSubsocialApi()
-        const substrateApi = await api.substrateApi
-        await substrateApi.tx.proxy
-          .proxy(
-            parentProxyAddress!,
-            null,
-            substrateApi.tx.proxy.removeProxies()
-          )
-          .signAndSend(signer)
-      }
-      removeProxy()
-
-      onAnyProxyRemoved()
-    } else if (!currentProxy) {
+    const currentProxy = await getParentProxyAddress(grillAddress)
+    if (!currentProxy || currentProxy !== parentProxyAddress) {
       onInvalidProxy()
     }
   } catch (err) {
@@ -528,58 +436,6 @@ async function getParentProxyAddress(grillAddress: string) {
   }
 }
 
-async function subscribeEnergy(
-  address: string | null,
-  onEnergyUpdate: (energy: number) => void,
-  isRetrying?: boolean
-): Promise<undefined | (() => void)> {
-  if (!address) return
-
-  const { getSubsocialApi } = await import(
-    '@/subsocial-query/subsocial/connection'
-  )
-
-  const subsocialApi = await getSubsocialApi()
-  const substrateApi = await subsocialApi.substrateApi
-  if (!substrateApi.isConnected && !isRetrying) {
-    await substrateApi.disconnect()
-    await substrateApi.connect()
-  }
-
-  if (!substrateApi.isConnected) {
-    // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
-    // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
-    // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
-    await wait(500)
-    return subscribeEnergy(address, onEnergyUpdate, true)
-  }
-
-  let prev: null | number = null
-  const unsub = substrateApi.query.energy.energyBalance(
-    address,
-    async (energyAmount) => {
-      let parsedEnergy: unknown = energyAmount
-      if (typeof energyAmount.toPrimitive === 'function') {
-        parsedEnergy = energyAmount.toPrimitive()
-      }
-
-      const energy = parseFloat(parsedEnergy + '')
-      if (
-        prev !== null &&
-        prev < ESTIMATED_ENERGY_FOR_ONE_TX &&
-        currentNetwork === 'subsocial'
-      )
-        await waitNewBlock()
-
-      prev = energy
-
-      console.log('Current energy: ', address, energy)
-      onEnergyUpdate(energy)
-    }
-  )
-  return unsub
-}
-
 function saveLoginInfoToStorage() {
   const { address, encodedSecretKey, signer } = useMyAccount.getState()
   if (!address || !encodedSecretKey || !signer) return
@@ -598,10 +454,6 @@ export function useMyMainAddress() {
   const address = useMyAccount((state) => state.address)
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   return parentProxyAddress || address
-}
-
-export function getHasEnoughEnergy(energy: number | undefined | null) {
-  return (energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
 }
 
 export async function enableWallet({

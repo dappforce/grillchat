@@ -1,12 +1,10 @@
-import { useRequestToken } from '@/services/api/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { useMutation } from '@tanstack/react-query'
 
-export default function useLoginAndRequestToken(
+export default function useLogin(
   config?: MutationConfig<any> & { asTemporaryAccount?: boolean }
 ) {
-  const { mutateAsync: requestToken } = useRequestToken()
   const login = useMyAccount((state) => state.login)
   const currentAddress = useMyAccount((state) => state.address)
   const loginAsTemporaryAccount = useMyAccount(
@@ -22,8 +20,6 @@ export default function useLoginAndRequestToken(
       address = await loginFunc()
       if (!address) throw new Error('Failed to login')
     }
-
-    await requestToken({ address })
 
     return address
   }

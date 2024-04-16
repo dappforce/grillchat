@@ -1,6 +1,6 @@
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
+import login from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -41,7 +41,7 @@ export default function useOauthLogin({
   const { providerId: identity, name } =
     (provider && providerMapper[provider]) || {}
 
-  const { mutateAsync: loginAsTemporaryAccount } = useLoginAndRequestToken({
+  const { mutateAsync: loginAsTemporaryAccount } = login({
     asTemporaryAccount: true,
   })
 

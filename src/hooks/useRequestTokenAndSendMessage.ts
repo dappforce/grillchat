@@ -1,23 +1,21 @@
-import { useRequestToken } from '@/services/api/mutation'
 import {
   SendMessageParams,
   useSendMessage,
 } from '@/services/subsocial/commentIds'
 import { useMyMainAddress } from '@/stores/my-account'
-import { useMutation, UseMutationOptions } from '@tanstack/react-query'
+import { UseMutationOptions, useMutation } from '@tanstack/react-query'
 import useLoginOption from './useLoginOption'
 
 type Params = SendMessageParams
-export default function useRequestTokenAndSendMessage(
+export default function useSendMessageWithLoginFlow(
   options?: UseMutationOptions<void, unknown, Params, unknown>
 ) {
   const address = useMyMainAddress()
   const { promptUserForLogin } = useLoginOption()
 
-  const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
 
-  const requestTokenAndSendMessage = async (params: Params) => {
+  const handler = async (params: Params) => {
     let usedAddress: string = address ?? ''
     if (!address) {
       const loginAddress = await promptUserForLogin()
@@ -25,11 +23,8 @@ export default function useRequestTokenAndSendMessage(
       usedAddress = loginAddress
     }
 
-    const promises: Promise<any>[] = [sendMessage(params)]
-    promises.push(requestToken({ address: usedAddress }))
-
-    await Promise.all(promises)
+    await sendMessage(params)
   }
 
-  return useMutation(requestTokenAndSendMessage, options)
+  return useMutation(handler, options)
 }

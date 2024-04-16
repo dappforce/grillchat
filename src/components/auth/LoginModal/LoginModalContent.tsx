@@ -9,11 +9,10 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
+import useLogin from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
 import useToastError from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
-import { useRequestToken } from '@/services/api/mutation'
 import { getProfileQuery } from '@/services/api/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
@@ -57,11 +56,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
   const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
 
-  const {
-    mutateAsync: loginAndRequestToken,
-    isLoading,
-    error,
-  } = useLoginAndRequestToken()
+  const { mutateAsync: login, isLoading, error } = useLogin()
   useToastError(error, 'Login failed')
 
   const { loginRequired } = useConfigContext()
@@ -129,7 +124,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
               isLoading={isLoading}
               onClick={async () => {
                 sendEvent('login_anonymously')
-                const newAddress = await loginAndRequestToken(null)
+                const newAddress = await login(null)
                 if (newAddress) {
                   setCurrentState('account-created')
                 }
@@ -270,12 +265,10 @@ export function EvmLoginStep({
 }
 function useLoginBeforeSignEvm() {
   const [isCreatingAcc, setIsCreatingAcc] = useState(false)
-  const { mutate: requestToken, error } = useRequestToken()
   const loginAsTemporaryAccount = useMyAccount(
     (state) => state.loginAsTemporaryAccount
   )
   const myAddress = useMyMainAddress()
-  useToastError(error, 'Retry linking EVM address failed')
 
   return {
     mutate: async () => {
@@ -285,7 +278,6 @@ function useLoginBeforeSignEvm() {
       try {
         const address = await loginAsTemporaryAccount()
         if (!address) throw new Error('Login failed')
-        requestToken({ address })
       } finally {
         setIsCreatingAcc(false)
       }

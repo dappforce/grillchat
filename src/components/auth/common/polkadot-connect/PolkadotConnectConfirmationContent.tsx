@@ -3,7 +3,6 @@ import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button from '@/components/Button'
 import Notice from '@/components/Notice'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { AddProxyWrapper } from '@/services/subsocial/proxy/mutation'
 import { getProxiesQuery } from '@/services/subsocial/proxy/query'
@@ -30,13 +29,6 @@ export default function PolkadotConnectConfirmationContent({
   const [isProcessing, setIsProcessing] = useState(false)
   const [isSent, setIsSent] = useState(false)
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
-  const isLoadingEnergy = useMyAccount(
-    (state) => state.connectedWallet?.energy === undefined
-  )
-  const hasEnoughEnergy = useMyAccount(
-    (state) =>
-      (state.connectedWallet?.energy ?? 0) >= ESTIMATED_ENERGY_FOR_ONE_TX
-  )
   const saveProxyAddress = useMyAccount((state) => state.saveProxyAddress)
   const { mutateAsync: linkIdentity } = useLinkIdentity()
   const { data: proxies } = getProxiesQuery.useQuery(
@@ -72,10 +64,6 @@ export default function PolkadotConnectConfirmationContent({
             let loadingText: string | undefined
             if (isSent) {
               loadingText = `It may take up to ${estimatedWaitTime} seconds`
-            } else if (isLoadingEnergy) {
-              loadingText = 'Connecting to Subsocial...'
-            } else if (!hasEnoughEnergy) {
-              loadingText = 'Waiting for energy...'
             } else if (isAddingProxy) {
               loadingText = 'Pending Confirmation...'
             } else if (isProcessing) {
@@ -151,7 +139,7 @@ export default function PolkadotConnectConfirmationContent({
                       )
                     }
                   }}
-                  isLoading={isAddingProxy || isLoadingEnergy || isProcessing}
+                  isLoading={isAddingProxy || isProcessing}
                   loadingText={loadingText}
                 >
                   Confirm
