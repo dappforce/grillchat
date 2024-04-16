@@ -303,7 +303,7 @@ function SidePanel({
               size='noPadding'
               variant='transparent'
               className={cx(
-                'rounded-md px-3 py-1.5',
+                'rounded-md rounded-r-none px-3 py-1.5',
                 selectedTab === 'grill' && 'bg-background-primary text-white'
               )}
               onClick={() => setSelectedTab('grill')}
@@ -314,7 +314,7 @@ function SidePanel({
               size='noPadding'
               variant='transparent'
               className={cx(
-                'rounded-md px-3 py-1.5',
+                'rounded-md rounded-l-none px-3 py-1.5',
                 selectedTab === 'others' && 'bg-background-primary text-white'
               )}
               onClick={() => setSelectedTab('others')}
