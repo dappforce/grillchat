@@ -1,5 +1,5 @@
 import { HOVER_MENU_DELAY_OPT } from '@/constants/interaction'
-import useMounted from '@/hooks/useMounted'
+import useIsMounted from '@/hooks/useIsMounted'
 import { cx } from '@/utils/class-names'
 import {
   arrow,
@@ -89,7 +89,7 @@ export default function PopOver({
   const isOpen = manualTrigger?.isOpen ?? _isOpen
   const setIsOpen = manualTrigger?.setIsOpen ?? _setIsOpen
 
-  const mounted = useMounted()
+  const mounted = useIsMounted()
 
   const arrowRef = useRef(null)
   const { x, y, strategy, refs, middlewareData, context } = useFloating({
