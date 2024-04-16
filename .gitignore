@@ -46,5 +46,3 @@ next-env.d.ts
 /public/worker-*.txt
 
 /public/fallback-*.js
-
-/storybook-static
