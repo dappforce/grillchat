@@ -4,7 +4,6 @@ import MdRenderer from '@/components/MdRenderer'
 import { Skeleton } from '@/components/SkeletonFallback'
 import ChatItemContainer from '@/components/chats/ChatList/ChatItemContainer'
 import ChatRoom from '@/components/chats/ChatRoom'
-import usePaginatedMessageIds from '@/components/chats/hooks/usePaginatedMessageIds'
 import { WriteFirstComment } from '@/components/opengov/ProposalPreview'
 import { env } from '@/env.mjs'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
@@ -16,8 +15,6 @@ import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
-import { replaceUrl } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -30,39 +27,25 @@ import {
 } from './ProposalDetailPage'
 import ProposalStatusCard from './ProposalStatusCard'
 import ProposerSummary from './ProposerSummary'
+import useCommentDrawer, { CommentDrawerTab } from './hooks/useCommentDrawer'
 
 export default function DesktopProposalDetail({
   chatId,
   proposal,
   className,
 }: ProposalDetailPageProps & { className?: string }) {
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false)
-  useEffect(() => {
-    const shouldOpenDrawer = getUrlQuery('chat') === 'true'
-    if (shouldOpenDrawer) {
-      setIsOpenDrawer(true)
-    }
-  }, [])
+  const { allIds, isOpen, isLoading, selectedTab, setIsOpen, setSelectedTab } =
+    useCommentDrawer(proposal)
 
   useEffect(() => {
-    if (!isOpenDrawer && getUrlQuery('chat') === 'true') {
-      replaceUrl(getCurrentUrlWithoutQuery('chat'))
-    }
-  }, [isOpenDrawer])
-
-  useEffect(() => {
-    if (isOpenDrawer) {
+    if (isOpen) {
       document.documentElement.style.overflow = 'hidden'
     } else {
       document.documentElement.style.overflow = 'visible'
     }
-  }, [isOpenDrawer])
+  }, [isOpen])
 
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
-  const { allIds, isLoading } = usePaginatedMessageIds({
-    chatId: chatId ?? '',
-    hubId: env.NEXT_PUBLIC_PROPOSALS_HUB,
-  })
   const lastThreeMessageIds = allIds.slice(0, 3)
   const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
   const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
@@ -85,10 +68,7 @@ export default function DesktopProposalDetail({
                 #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
                 {proposal.title}
               </h1>
-              <Button
-                className='flex-shrink-0'
-                onClick={() => setIsOpenDrawer(true)}
-              >
+              <Button className='flex-shrink-0' onClick={() => setIsOpen(true)}>
                 {postMetadata?.totalCommentsCount || ''} Comments
               </Button>
             </div>
@@ -113,7 +93,7 @@ export default function DesktopProposalDetail({
               if (!hasGrillComments && proposal.comments.length) {
                 return (
                   <LatestCommentFromExternalSources
-                    setIsOpenDrawer={setIsOpenDrawer}
+                    setIsOpenDrawer={setIsOpen}
                     proposal={proposal}
                   />
                 )
@@ -123,12 +103,12 @@ export default function DesktopProposalDetail({
                   <GrillLatestMessages
                     lastThreeMessages={lastThreeMessages}
                     chatId={chatId}
-                    setIsOpenDrawer={setIsOpenDrawer}
+                    setIsOpenDrawer={setIsOpen}
                     totalCommentsCount={postMetadata?.totalCommentsCount || 0}
                   />
                 )
               }
-              return <NoMessagesCard onClick={() => setIsOpenDrawer(true)} />
+              return <NoMessagesCard onClick={() => setIsOpen(true)} />
             })()}
           </Card>
         </div>
@@ -141,11 +121,10 @@ export default function DesktopProposalDetail({
         proposal={proposal}
         chatId={chatId ?? ''}
         hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
-        isOpen={isOpenDrawer}
-        onClose={() => setIsOpenDrawer(false)}
-        shouldDisplayExternalSourceAsDefault={
-          !hasGrillComments && !!proposal.comments.length
-        }
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
       />
     </>
   )
@@ -243,8 +222,8 @@ function SidePanel({
   proposal,
   onClose,
   isOpen,
-  shouldDisplayExternalSourceAsDefault,
-  isLoading,
+  setSelectedTab,
+  selectedTab,
 }: {
   chatId: string
   hubId: string
@@ -253,17 +232,11 @@ function SidePanel({
   isOpen: boolean
   shouldDisplayExternalSourceAsDefault?: boolean
   isLoading: boolean
+  selectedTab: CommentDrawerTab
+  setSelectedTab: (tab: CommentDrawerTab) => void
 }) {
   const isMounted = useIsMounted()
   const lgUp = useBreakpointThreshold('lg')
-  const [selectedTab, setSelectedTab] = useState<'grill' | 'others'>('grill')
-
-  useEffect(() => {
-    const isDirectlyOpeningSidePanel = getUrlQuery('chat') === 'true'
-    if (isOpen && !isLoading && !isDirectlyOpeningSidePanel) {
-      setSelectedTab(shouldDisplayExternalSourceAsDefault ? 'others' : 'grill')
-    }
-  }, [shouldDisplayExternalSourceAsDefault, isOpen, isLoading])
 
   const [usedChatId, setUsedChatId] = useState(chatId)
   const {

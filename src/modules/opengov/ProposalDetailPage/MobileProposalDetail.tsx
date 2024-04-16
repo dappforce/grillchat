@@ -11,9 +11,7 @@ import BottomPanel from '@/modules/chat/ChatPage/BottomPanel'
 import { useCreateDiscussion } from '@/services/api/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
-import { replaceUrl } from '@/utils/window'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { HiChevronUp } from 'react-icons/hi2'
 import ExternalSourceChatRoom from './ExternalSourceChatRoom'
 import ProposalDetailModal from './ProposalDetailModal'
@@ -23,6 +21,7 @@ import {
 } from './ProposalDetailPage'
 import ProposalStatusCard from './ProposalStatusCard'
 import ProposerSummary from './ProposerSummary'
+import useCommentDrawer from './hooks/useCommentDrawer'
 
 export default function MobileProposalDetailPage({
   proposal,
@@ -31,21 +30,15 @@ export default function MobileProposalDetailPage({
 }: ProposalDetailPageProps & { className?: string }) {
   const isMounted = useIsMounted()
   const lgUp = useBreakpointThreshold('lg')
-  const [selectedTab, setSelectedTab] = useState<'grill' | 'others'>('grill')
 
   const [isOpenDetailModal, setIsOpenDetailModal] = useState(false)
-  const [isOpenComment, setIsOpenComment] = useState(false)
   const { mutateAsync, error, isLoading } = useCreateDiscussion()
   useToastError(error, 'Failed to create discussion')
 
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
 
-  useEffect(() => {
-    if (getUrlQuery('chat') === 'true') {
-      setIsOpenComment(true)
-      replaceUrl(getCurrentUrlWithoutQuery('chat'))
-    }
-  }, [])
+  const { selectedTab, setSelectedTab, isOpen, setIsOpen } =
+    useCommentDrawer(proposal)
 
   const [usedChatId, setUsedChatId] = useState(chatId)
 
@@ -69,7 +62,7 @@ export default function MobileProposalDetailPage({
       <div
         className={cx(
           'absolute left-0 z-20 w-full bg-background transition',
-          isOpenComment && 'pointer-events-none -translate-y-1/4 opacity-0'
+          isOpen && 'pointer-events-none -translate-y-1/4 opacity-0'
         )}
       >
         <div className='h-[calc(100dvh_-_3.5rem)] overflow-auto px-4 pb-24 pt-4 scrollbar-none'>
@@ -98,11 +91,7 @@ export default function MobileProposalDetailPage({
           </div>
         </div>
         <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4'>
-          <Button
-            size='lg'
-            className='w-full'
-            onClick={() => setIsOpenComment(true)}
-          >
+          <Button size='lg' className='w-full' onClick={() => setIsOpen(true)}>
             Comment{' '}
             {postMetadata?.totalCommentsCount
               ? `(${postMetadata.totalCommentsCount})`
@@ -144,7 +133,7 @@ export default function MobileProposalDetailPage({
             variant='transparent'
             className='flex items-center justify-center gap-2 bg-background-light p-1.5 px-4 text-sm text-text-muted'
             interactive='none'
-            onClick={() => setIsOpenComment(false)}
+            onClick={() => setIsOpen(false)}
           >
             <span>Back to proposal</span>
             <HiChevronUp />
