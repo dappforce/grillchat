@@ -1,5 +1,5 @@
 import { HOVER_MENU_DELAY_OPT } from '@/constants/interaction'
-import useMounted from '@/hooks/useMounted'
+import useIsMounted from '@/hooks/useIsMounted'
 import { cx } from '@/utils/class-names'
 import {
   arrow,
@@ -15,6 +15,7 @@ import {
   useHover,
   useInteractions,
   useRole,
+  useTransitionStyles,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
@@ -89,7 +90,7 @@ export default function PopOver({
   const isOpen = manualTrigger?.isOpen ?? _isOpen
   const setIsOpen = manualTrigger?.setIsOpen ?? _setIsOpen
 
-  const mounted = useMounted()
+  const mounted = useIsMounted()
 
   const arrowRef = useRef(null)
   const { x, y, strategy, refs, middlewareData, context } = useFloating({
@@ -123,6 +124,7 @@ export default function PopOver({
     click,
     role,
   ])
+  const { isMounted } = useTransitionStyles(context, { duration: 100 })
 
   // create custom background if needed
   const color = panelColors[panelColor]
@@ -142,6 +144,7 @@ export default function PopOver({
         {trigger}
       </TriggerElement>
       {mounted &&
+        isMounted &&
         createPortal(
           <FloatingFocusManager
             initialFocus={initialFocus}

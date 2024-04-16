@@ -12,6 +12,7 @@ import {
   useFloating,
   useHover,
   useInteractions,
+  useTransitionStyles,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
 import { MouseEvent, MouseEventHandler, useRef, useState } from 'react'
@@ -84,6 +85,9 @@ export default function FloatingWrapper({
     dismiss,
     hover,
   ])
+  const { isMounted } = useTransitionStyles(context, {
+    duration: 100,
+  })
 
   const toggleDisplay = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
     if (!open && e && useClickPointAsAnchor) {
@@ -110,29 +114,31 @@ export default function FloatingWrapper({
           onClick,
         }),
       })}
-      <FloatingPortal>
-        <Transition
-          ref={refs.setFloating}
-          style={{
-            position: strategy,
-            top: y ?? 0,
-            left: x ?? 0,
-            backfaceVisibility: 'hidden',
-          }}
-          {...getFloatingProps()}
-          appear
-          show={open}
-          className='z-30 transition-opacity'
-          enter='ease-out duration-150'
-          enterFrom='opacity-0'
-          enterTo='opacity-100'
-          leave='ease-in duration-100'
-          leaveFrom='opacity-100'
-          leaveTo='opacity-0'
-        >
-          {panel(closeMenu)}
-        </Transition>
-      </FloatingPortal>
+      {isMounted && (
+        <FloatingPortal>
+          <Transition
+            ref={refs.setFloating}
+            style={{
+              position: strategy,
+              top: y ?? 0,
+              left: x ?? 0,
+              backfaceVisibility: 'hidden',
+            }}
+            {...getFloatingProps()}
+            appear
+            show={open}
+            className='z-30 transition-opacity'
+            enter='ease-out duration-150'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-100'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            {panel(closeMenu)}
+          </Transition>
+        </FloatingPortal>
+      )}
     </>
   )
 }
