@@ -14,7 +14,6 @@ export type HubPageNavbarProps = {
   auth: ReactNode
   hamburgerMenu: ReactNode
   backButton: ReactNode
-  notificationBell: ReactNode
   newPostButton: ReactNode
   searchProps: NavbarWithSearchProps['searchProps']
   hubId: string
@@ -23,7 +22,6 @@ export type HubPageNavbarProps = {
 
 export default function HubPageNavbar({
   auth,
-  notificationBell,
   backButton,
   hamburgerMenu,
   logo,
@@ -81,7 +79,6 @@ export default function HubPageNavbar({
             {leftSection}
             <div className='flex items-center gap-1 text-text-muted dark:text-text'>
               {searchButton}
-              {notificationBell}
               <div className='ml-2'>{auth}</div>
             </div>
           </div>

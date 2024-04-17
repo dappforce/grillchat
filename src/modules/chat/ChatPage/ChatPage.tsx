@@ -190,7 +190,7 @@ export default function ChatPage({
             defaultBackLink: getHubPageLink(router),
             forceUseDefaultBackLink: false,
           },
-          customContent: ({ backButton, authComponent, notificationBell }) => (
+          customContent: ({ backButton, authComponent }) => (
             <div className='flex w-full items-center justify-between gap-4 overflow-hidden'>
               <NavbarChatInfo
                 backButton={backButton}
@@ -200,7 +200,7 @@ export default function ChatPage({
                 chatId={chatId}
               />
               <div className='flex items-center gap-3'>
-                {notificationBell}
+                {}
                 {authComponent}
               </div>
             </div>

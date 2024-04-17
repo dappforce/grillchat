@@ -59,7 +59,6 @@ export default function HubPage({ hubId }: HubPageProps) {
           backButton,
           logoLink,
           authComponent,
-          notificationBell,
           hamburgerMenu,
           newPostButton,
         }) => {
@@ -69,7 +68,6 @@ export default function HubPage({ hubId }: HubPageProps) {
               chatsCount={allChatIds.length}
               auth={authComponent}
               newPostButton={newPostButton}
-              notificationBell={notificationBell}
               backButton={backButton}
               logo={logoLink}
               hubId={hubId}

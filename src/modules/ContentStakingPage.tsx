@@ -7,12 +7,11 @@ const ContentStakingPage = () => {
       withSidebar
       navbarProps={{
         containerClassName: 'max-w-screen-medium',
-        customContent: ({ logoLink, authComponent, notificationBell }) => {
+        customContent: ({ logoLink, authComponent }) => {
           return (
             <div className='flex w-full items-center justify-between gap-4'>
               {logoLink}
               <div className='flex items-center gap-1'>
-                {notificationBell}
                 <div className='ml-2'>{authComponent}</div>
               </div>
             </div>

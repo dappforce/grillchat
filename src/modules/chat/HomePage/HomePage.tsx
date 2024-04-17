@@ -143,12 +143,7 @@ export default function HomePage(props: HomePageProps) {
     <DefaultLayout
       withSidebar
       navbarProps={{
-        customContent: ({
-          logoLink,
-          authComponent,
-          notificationBell,
-          newPostButton,
-        }) => {
+        customContent: ({ logoLink, authComponent, newPostButton }) => {
           return (
             <NavbarWithSearch
               customContent={(searchButton) => (
@@ -157,7 +152,6 @@ export default function HomePage(props: HomePageProps) {
                   <div className='flex items-center gap-0'>
                     {newPostButton}
                     {searchButton}
-                    {notificationBell}
                     <div className='ml-2.5'>{authComponent}</div>
                   </div>
                 </div>
