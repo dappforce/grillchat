@@ -22,7 +22,6 @@ export type HubPageNavbarProps = {
 
 export default function HubPageNavbar({
   auth,
-  backButton,
   hamburgerMenu,
   logo,
   hubId,

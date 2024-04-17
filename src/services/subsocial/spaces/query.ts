@@ -1,12 +1,8 @@
-import { poolQuery } from '@/subsocial-query'
+import { datahubQueryRequest } from '@/services/datahub/utils'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
 import { SpaceData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
-import { SPACE_FRAGMENT } from '../squid/fragments'
-import { GetSpacesQuery, GetSpacesQueryVariables } from '../squid/generated'
-import { mapSpaceFragment } from '../squid/mappers'
-import { squidRequest } from '../squid/utils'
-import { createDynamicSubsocialQuery } from '../utils/query'
 
 const getSpaceFromBlockchain = poolQuery<SubsocialQueryData<string>, SpaceData>(
   {
@@ -26,6 +22,17 @@ const getSpaceFromBlockchain = poolQuery<SubsocialQueryData<string>, SpaceData>(
   }
 )
 
+// TODO: update this with correct fragment
+const SPACE_FRAGMENT = gql`
+  fragment SpaceFragment on Space {
+    id
+    name
+    content {
+      image
+      name
+    }
+  }
+`
 export const GET_SPACES = gql`
   ${SPACE_FRAGMENT}
   query getSpaces($ids: [String!]) {
@@ -34,11 +41,12 @@ export const GET_SPACES = gql`
     }
   }
 `
-const getSpaceFromSquid = poolQuery<string, SpaceData>({
+const getSpaces = poolQuery<string, SpaceData>({
   name: 'getSpaceFromSquid',
   multiCall: async (spaceIds) => {
     if (spaceIds.length === 0) return []
-    const res = await squidRequest<GetSpacesQuery, GetSpacesQueryVariables>({
+    // TODO: update this with correct type
+    const res = await datahubQueryRequest({
       document: GET_SPACES,
       variables: { ids: spaceIds },
     })
@@ -50,7 +58,10 @@ const getSpaceFromSquid = poolQuery<string, SpaceData>({
   },
 })
 
-export const getSpaceQuery = createDynamicSubsocialQuery('space', {
-  blockchain: getSpaceFromBlockchain,
-  squid: getSpaceFromSquid,
+export const getSpaceQuery = createQuery({
+  key: 'space',
+  fetcher: getSpaces,
+  defaultConfigGenerator: (spaceId) => ({
+    enabled: !!spaceId,
+  }),
 })

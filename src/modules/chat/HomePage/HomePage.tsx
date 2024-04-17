@@ -3,10 +3,8 @@ import Button from '@/components/Button'
 import Tabs, { TabsProps } from '@/components/Tabs'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
-import useSearch from '@/hooks/useSearch'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
@@ -16,7 +14,6 @@ import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import urlJoin from 'url-join'
-import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
@@ -39,11 +36,6 @@ export const homePageAdditionalTabs: {
   //   text: 'AI Experts',
   //   hubId: '1031',
   // },
-  // {
-  //   id: 'ai-bots',
-  //   text: 'AI Bots',
-  //   hubId: '1031',
-  // },
 ]
 
 const pathnameTabIdMapper: Record<string, number> = {
@@ -58,8 +50,6 @@ export default function HomePage(props: HomePageProps) {
   const router = useRouter()
   const sendEvent = useSendEvent()
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
-  const { search, setSearch, getFocusedElementIndex, focusController } =
-    useSearch()
 
   const refSearchParam = useReferralSearchParam()
 
@@ -136,71 +126,41 @@ export default function HomePage(props: HomePageProps) {
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
 
   return (
-    <DefaultLayout
-      withSidebar
-      navbarProps={{
-        customContent: ({ logoLink, authComponent, newPostButton }) => {
-          return (
-            <NavbarWithSearch
-              customContent={(searchButton) => (
-                <div className='flex w-full items-center justify-between gap-4'>
-                  {logoLink}
-                  <div className='flex items-center gap-0'>
-                    {newPostButton}
-                    {searchButton}
-                    <div className='ml-2.5'>{authComponent}</div>
-                  </div>
-                </div>
-              )}
-              searchProps={{
-                search,
-                setSearch,
-                ...focusController,
-              }}
-            />
+    <DefaultLayout withSidebar>
+      <Tabs
+        className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
+        panelClassName='mt-0 px-0'
+        tabClassName={cx('px-1.5 sm:px-2')}
+        asContainer
+        tabs={tabs}
+        withHashIntegration={false}
+        tabsRightElement={
+          isLoggedIn &&
+          communityHubId && (
+            <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
+              <Button
+                size='xs'
+                variant='primary'
+                className='flex items-center gap-2'
+                onClick={() => {
+                  setIsOpenNewCommunity(true)
+                  sendEvent('open_community_creation_modal', {
+                    eventSource: 'home',
+                  })
+                }}
+              >
+                <CommunityAddIcon className='text-text-muted-on-primary' />
+                <span>New</span>
+              </Button>
+            </div>
           )
-        },
-      }}
-    >
-      <SearchChannelsWrapper
-        search={search}
-        getFocusedElementIndex={getFocusedElementIndex}
-      >
-        <Tabs
-          className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
-          panelClassName='mt-0 px-0'
-          tabClassName={cx('px-1.5 sm:px-2')}
-          asContainer
-          tabs={tabs}
-          withHashIntegration={false}
-          tabsRightElement={
-            isLoggedIn &&
-            communityHubId && (
-              <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
-                <Button
-                  size='xs'
-                  variant='primary'
-                  className='flex items-center gap-2'
-                  onClick={() => {
-                    setIsOpenNewCommunity(true)
-                    sendEvent('open_community_creation_modal', {
-                      eventSource: 'home',
-                    })
-                  }}
-                >
-                  <CommunityAddIcon className='text-text-muted-on-primary' />
-                  <span>New</span>
-                </Button>
-              </div>
-            )
-          }
-          hideBeforeHashLoaded
-          manualTabControl={{
-            selectedTab: usedSelectedTab,
-            setSelectedTab: usedSetSelectedTab,
-          }}
-        />
-      </SearchChannelsWrapper>
+        }
+        hideBeforeHashLoaded
+        manualTabControl={{
+          selectedTab: usedSelectedTab,
+          setSelectedTab: usedSetSelectedTab,
+        }}
+      />
 
       {communityHubId && (
         <NewCommunityModal
