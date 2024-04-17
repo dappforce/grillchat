@@ -135,7 +135,10 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
 
         <div className={cx('relative h-full w-full')}>
-          <IdenticonAvatar value={address} className='h-full w-full' />
+          <IdenticonAvatar
+            value={address}
+            className='h-full w-full !cursor-[inherit]'
+          />
         </div>
       </LinkOrText>
     )

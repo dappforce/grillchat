@@ -1,6 +1,7 @@
 import PolkassemblyIcon from '@/assets/icons/polkassembly.svg'
 import SubsquareIcon from '@/assets/icons/subsquare.svg'
 import AddressAvatar from '@/components/AddressAvatar'
+import LinkText from '@/components/LinkText'
 import MdRenderer from '@/components/MdRenderer'
 import Name from '@/components/Name'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
@@ -10,7 +11,8 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { ProposalComment } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
-import { ComponentProps } from 'react'
+import Link from 'next/link'
+import { ComponentProps, useCallback, useState } from 'react'
 
 export type ExternalChatItemProps = ComponentProps<'div'> & {
   comment: ProposalComment
@@ -28,7 +30,17 @@ export default function ExternalChatItem({
   containerRef,
   ...props
 }: ExternalChatItemProps) {
+  const [isImageError, setIsImageError] = useState(false)
+  const onError = useCallback(() => {
+    setIsImageError(true)
+  }, [])
   if (!comment.content) return null
+
+  let userLink: string = ''
+  if (comment.username)
+    userLink = `https://polkassembly.io/user/${comment.username}`
+  else if (comment.ownerId)
+    userLink = `https://polkadot.subsquare.io/user/${comment.ownerId}/votes`
 
   return (
     <div
@@ -38,20 +50,28 @@ export default function ExternalChatItem({
         props.className
       )}
     >
-      {comment.profile?.image ? (
-        <Image
-          src={comment.profile.image}
-          alt=''
-          width={50}
-          height={50}
-          className='h-9 w-9 flex-shrink-0 rounded-full object-cover'
-        />
-      ) : (
-        <AddressAvatar
-          address={comment.ownerId}
-          className='flex-shrink-0 cursor-pointer'
-        />
-      )}
+      <Link
+        href={userLink}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='cursor-pointer'
+      >
+        {comment.profile?.image && !isImageError ? (
+          <Image
+            src={comment.profile.image}
+            alt=''
+            width={50}
+            height={50}
+            onError={onError}
+            className='h-9 w-9 flex-shrink-0 rounded-full object-cover'
+          />
+        ) : (
+          <AddressAvatar
+            address={comment.ownerId}
+            className='flex-shrink-0 cursor-pointer'
+          />
+        )}
+      </Link>
       <div className={cx('relative flex flex-col')}>
         <div
           className={cx(
@@ -63,7 +83,9 @@ export default function ExternalChatItem({
           <div className='flex items-center justify-between gap-4'>
             <div className='flex items-baseline justify-start gap-2 overflow-hidden'>
               <span className='font-medium'>
-                <ExternalMessageName comment={comment} />
+                <LinkText href={userLink} openInNewTab>
+                  <ExternalMessageName comment={comment} />
+                </LinkText>
               </span>
               <ChatRelativeTime
                 createdAtTime={comment.createdAt}
