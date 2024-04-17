@@ -1,6 +1,6 @@
 import PolkassemblyIcon from '@/assets/icons/polkassembly.svg'
 import SubsquareIcon from '@/assets/icons/subsquare.svg'
-import AddressAvatar from '@/components/AddressAvatar'
+import AddressAvatar, { IdenticonAvatar } from '@/components/AddressAvatar'
 import LinkText from '@/components/LinkText'
 import MdRenderer from '@/components/MdRenderer'
 import Name from '@/components/Name'
@@ -42,8 +42,6 @@ export default function ExternalChatItem({
   else if (comment.ownerId)
     userLink = `https://polkadot.subsquare.io/user/${comment.ownerId}/votes`
 
-  const addressOrUsername = comment.ownerId || comment.username
-
   return (
     <div
       {...props}
@@ -65,12 +63,14 @@ export default function ExternalChatItem({
             width={50}
             height={50}
             onError={onError}
-            className='h-9 w-9 flex-shrink-0 rounded-full object-cover'
+            className='h-9 w-9 rounded-full object-cover'
           />
+        ) : comment.ownerId ? (
+          <AddressAvatar address={comment.ownerId} className='cursor-pointer' />
         ) : (
-          <AddressAvatar
-            address={addressOrUsername}
-            className='flex-shrink-0 cursor-pointer'
+          <IdenticonAvatar
+            value={comment.username || comment.id}
+            className='h-9 w-9 !cursor-[inherit] rounded-full'
           />
         )}
       </Link>
