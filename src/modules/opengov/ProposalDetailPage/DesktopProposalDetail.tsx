@@ -66,7 +66,10 @@ export default function DesktopProposalDetail({
                 {proposal.title}
               </h1>
               <Button className='flex-shrink-0' onClick={() => setIsOpen(true)}>
-                {postMetadata?.totalCommentsCount || ''} Comments
+                {postMetadata?.totalCommentsCount ||
+                  proposal.comments.length ||
+                  ''}{' '}
+                Comments
               </Button>
             </div>
             <MdRenderer
