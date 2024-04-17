@@ -6,7 +6,6 @@ import { linkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { useParentData } from '@/stores/parent'
 import {
@@ -122,7 +121,6 @@ const sendLaunchEvent = async (
   } else {
     const [
       // linkedTgAccData,
-      evmLinkedAddress,
       ownedPostIds,
       linkedIdentity,
       referrerId,
@@ -130,7 +128,6 @@ const sendLaunchEvent = async (
       // getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
       //   address,
       // }),
-      getAccountDataQuery.fetchQuery(queryClient, address),
       getOwnedPostIdsQuery.fetchQuery(queryClient, address),
       getLinkedIdentityQuery.fetchQuery(queryClient, address),
       getReferrerIdQuery.fetchQuery(queryClient, address),
@@ -139,8 +136,6 @@ const sendLaunchEvent = async (
     // if (linkedTgAccData.status === 'fulfilled')
     //   userProperties.tgNotifsConnected =
     //     (linkedTgAccData.value?.length || 0) > 0
-    if (evmLinkedAddress.status === 'fulfilled')
-      userProperties.evmLinked = !!evmLinkedAddress.value
     if (ownedPostIds.status === 'fulfilled')
       userProperties.ownedChat = (ownedPostIds.value?.length || 0) > 0
     if (linkedIdentity.status === 'fulfilled')

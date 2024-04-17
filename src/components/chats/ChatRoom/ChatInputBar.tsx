@@ -3,7 +3,6 @@ import { constantsConfig } from '@/constants/config'
 import { env } from '@/env.mjs'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import { getCanUserDoDatahubActionQuery } from '@/services/api/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
@@ -37,15 +36,10 @@ export default function ChatInputBar({
     }
   )
 
-  const { data: accountData } = getAccountDataQuery.useQuery(myAddress ?? '')
-  const myEvmAddress = accountData?.evmAddress
-
   const whitelistedAddresses =
     constantsConfig.whitelistedAddressesInChatId[chatId]
 
-  const isWhitelisted =
-    whitelistedAddresses?.includes(myAddress ?? '') ||
-    whitelistedAddresses?.includes(myEvmAddress?.toLowerCase() ?? '')
+  const isWhitelisted = whitelistedAddresses?.includes(myAddress ?? '')
 
   if (whitelistedAddresses && (!myAddress || !isWhitelisted)) {
     return null

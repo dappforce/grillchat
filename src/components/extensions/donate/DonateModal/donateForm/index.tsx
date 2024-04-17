@@ -1,12 +1,10 @@
 import ProfilePreview from '@/components/ProfilePreview'
 import CommonExtensionModal from '@/components/extensions/common/CommonExtensionModal'
 import SelectInput from '@/components/inputs/SelectInput'
-import { getPostQuery } from '@/services/api/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDonateModalContext } from '../../DonateModalContext'
 import { useBuildDonationMessage } from '../../hooks/useBuildDonationMessage'
 import { DonateProps } from '../types'
@@ -66,16 +64,7 @@ const DonateForm = ({
       setAmount('')
       setSelectedChain(chainItems[0])
     }
-  }, [isOpen])
-
-  const { data: message } = getPostQuery.useQuery(messageId)
-
-  const { ownerId } = message?.struct || {}
-
-  const { data: messageOwnerAccountData } = getAccountDataQuery.useQuery(
-    ownerId ?? ''
-  )
-  const { evmAddress: messageOwnerEvmAddress } = messageOwnerAccountData || {}
+  }, [isOpen, setSelectedChain])
 
   const amountPreview = getAmountPreview(amount, selectedToken.label)
 
@@ -92,18 +81,7 @@ const DonateForm = ({
     setSelectedToken: setSelectedToken,
   }
 
-  const chainsItemsArray = useMemo(
-    () =>
-      !messageOwnerEvmAddress
-        ? chainItems.map((item) => {
-            return {
-              disabledItem: item.chainKind === 'evm',
-              ...item,
-            }
-          })
-        : chainItems,
-    [messageOwnerEvmAddress]
-  )
+  const chainsItemsArray = chainItems
 
   return (
     <CommonExtensionModal

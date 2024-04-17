@@ -2,7 +2,6 @@ import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getHubIdFromAlias } from '@/constants/config'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { AppCommonProps } from '@/pages/_app'
-import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPricesFromCache } from '@/pages/api/prices'
 import { getProfilesServer } from '@/pages/api/profiles'
@@ -16,7 +15,6 @@ import {
 } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import {
   coingeckoTokenIds,
   getPriceQuery,
@@ -52,24 +50,13 @@ async function getChatsData(client: QueryClient, chatId: string) {
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
 
-  const [accountsDataPromise, profilesPromise, prices] =
-    await Promise.allSettled([
-      getAccountsDataFromCache(chatPageOwnerIds, 'GET'),
-      getProfilesServer(chatPageOwnerIds),
-      getPricesFromCache(Object.values(coingeckoTokenIds)),
-      ...chatPageOwnerIds.map((ownerId) =>
-        getLinkedIdentityQuery.fetchQuery(client, ownerId)
-      ),
-    ] as const)
-  if (accountsDataPromise.status === 'fulfilled') {
-    accountsDataPromise.value.forEach((accountAddresses) => {
-      getAccountDataQuery.setQueryData(
-        client,
-        accountAddresses.grillAddress,
-        accountAddresses
-      )
-    })
-  }
+  const [profilesPromise, prices] = await Promise.allSettled([
+    getProfilesServer(chatPageOwnerIds),
+    getPricesFromCache(Object.values(coingeckoTokenIds)),
+    ...chatPageOwnerIds.map((ownerId) =>
+      getLinkedIdentityQuery.fetchQuery(client, ownerId)
+    ),
+  ] as const)
   if (profilesPromise.status === 'fulfilled') {
     profilesPromise.value.forEach((profile) => {
       getProfileQuery.setQueryData(

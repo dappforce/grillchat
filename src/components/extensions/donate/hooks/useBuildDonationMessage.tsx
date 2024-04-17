@@ -1,6 +1,5 @@
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useExtensionModalState } from '@/stores/extension'
 import { useMyMainAddress } from '@/stores/my-account'
 import { DonateProperies } from '@subsocial/api/types'
@@ -47,13 +46,11 @@ export function useBuildEvmDonationMessage({
     'subsocial-donations'
   )
   const { address: myEvmAddress } = useAccount()
-  const { data: recipientAccountData } = getAccountDataQuery.useQuery(
-    initialData.recipient
-  )
 
   const { decimals } = useGetBalance(selectedToken.id, selectedChain.id, false)
 
-  const { evmAddress: evmRecipientAddress } = recipientAccountData || {}
+  // TODO: update way to get recipient evm address
+  const { evmAddress: evmRecipientAddress } = { evmAddress: '' }
 
   return async ({
     amount,

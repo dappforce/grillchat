@@ -5,7 +5,6 @@ import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
-import { getAccountDataQuery, getAccountsData } from '../evmAddresses'
 import { commentIdsOptimisticEncoder } from './optimistic'
 import { getCommentIdsQueryKey } from './query'
 
@@ -77,18 +76,6 @@ const subscription = (
         getPostQuery.setQueryData(queryClient, post.id, post)
       })
 
-      async function updateAccountData() {
-        const accountData = await getAccountsData(Array.from(addressesSet))
-
-        accountData.forEach((accountAddresses) => {
-          getAccountDataQuery.setQueryData(
-            queryClient,
-            accountAddresses.grillAddress,
-            accountAddresses
-          )
-        })
-      }
-
       queryClient.setQueryData<string[]>(
         getCommentIdsQueryKey(postId),
         (oldIds) => {
@@ -101,7 +88,6 @@ const subscription = (
           ]
         }
       )
-      updateAccountData()
     })
   })()
 

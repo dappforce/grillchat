@@ -1,9 +1,6 @@
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
-import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import { getProfileQuery } from '@/services/api/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
@@ -11,7 +8,6 @@ import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
 import { useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useState } from 'react'
-import CommonEvmSetProfileContent from '../common/evm/CommonEvmSetProfileContent'
 import LimitedPolkadotJsSupportContent, {
   LimitedPolkadotJsSupportExplanation,
 } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
@@ -26,9 +22,6 @@ import PrivateKeyContent from './contents/PrivateKeyContent'
 import SimpleProfileSettingsContent from './contents/ProfileSettingsContent/SimpleProfileSettingsContent'
 import ShareSessionContent from './contents/ShareSessionContent'
 import WalletActionRequiredContent from './contents/WalletActionRequired'
-import EvmLoginError from './contents/evm-linking/EvmLoginError'
-import LinkEvmAddressContent from './contents/evm-linking/LinkEvmAddressContent'
-import UnlinkEvmConfirmationContent from './contents/evm-linking/UnlinkEvmConfirmationContent'
 import NotificationContent from './contents/notifications/NotificationContent'
 import PushNotificationContent, {
   getPushNotificationUsableStatus,
@@ -51,21 +44,6 @@ const modalContents: {
   logout: LogoutContent,
   'share-session': ShareSessionContent,
   about: AboutContent,
-  'link-evm-address': LinkEvmAddressContent,
-  'evm-linking-error': EvmLoginError,
-  'unlink-evm-confirmation': UnlinkEvmConfirmationContent,
-  'evm-address-linked': CommonEvmAddressLinked,
-  'evm-set-profile-suggestion': ({ closeModal }) => (
-    <CommonEvmSetProfileContent
-      onSkipClick={closeModal}
-      onSetEvmIdentityClick={() => {
-        useProfileModal.getState().openModal({
-          defaultOpenState: 'profile-settings',
-          customInternalStepProps: { defaultTab: 'evm' },
-        })
-      }}
-    />
-  ),
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
@@ -156,10 +134,7 @@ export default function ProfileModal({
     []
   )
 
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
   const sendEvent = useSendEvent()
-
-  const { evmAddress: linkedEvmAddress, ensNames } = accountData || {}
 
   useEffect(() => {
     if (isOpen) {
@@ -217,30 +192,6 @@ export default function ProfileModal({
       title: 'About app',
       desc: null,
       withBackButton: true,
-    },
-    'link-evm-address': {
-      title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Connect EVM',
-      desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
-      withBackButton: 'linked-addresses',
-    },
-    'evm-linking-error': {
-      title: '😕 Something went wrong',
-      desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
-      withBackButton: false,
-    },
-    'unlink-evm-confirmation': {
-      title: '🤔 Unlink EVM address?',
-      desc: undefined,
-      withBackButton: false,
-    },
-    'evm-address-linked': {
-      title: '🎉 EVM address linked',
-      desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
-      withBackButton: false,
-    },
-    'evm-set-profile-suggestion': {
-      title: '🤔 Set as default identity?',
-      desc: 'Do you want to set your EVM as your default address?',
     },
     notifications: {
       title: '🔔 Notifications',
@@ -348,9 +299,7 @@ export default function ProfileModal({
 
   const augmentedCloseModal = () => {
     if (disableOutsideClickClose) return
-    if (currentState === 'evm-address-linked' && (ensNames?.length ?? 0) > 0) {
-      setCurrentStateAugmented('evm-set-profile-suggestion')
-    } else closeModal()
+    closeModal()
   }
   const Content = modalContents[currentState]
 
@@ -371,20 +320,8 @@ export default function ProfileModal({
       <Content
         address={address}
         setCurrentState={setCurrentStateAugmented}
-        evmAddress={linkedEvmAddress}
         closeModal={augmentedCloseModal}
       />
     </Modal>
   )
-}
-
-function useHasPreviousGrillIdentity() {
-  const grillAddress = useMyAccount((state) => state.address)
-  const { data: grillAccountData } = getAccountDataQuery.useQuery(
-    grillAddress ?? ''
-  )
-  const { data: grillProfile } = getProfileQuery.useQuery(grillAddress ?? '')
-  const hasPreviousIdentity =
-    grillAccountData?.evmAddress || grillProfile?.profileSpace?.content?.name
-  return !!hasPreviousIdentity
 }

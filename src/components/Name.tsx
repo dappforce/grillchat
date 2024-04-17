@@ -3,7 +3,6 @@ import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
@@ -201,20 +200,15 @@ export function useName(
 ) {
   const { data: profile, isLoading: isLoadingProfile } =
     getProfileQuery.useQuery(address)
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
   const textColor = useRandomColor(address, { isAddress: true })
 
   const userProfileSource = profile?.profileSpace?.content?.profileSource
 
-  const { ensNames, evmAddress } = accountData || {}
   const randomSeed = useAddressIdentityId(address)
   let name = generateRandomName(randomSeed)
 
   function getNameFromSource(profileSource?: ProfileSource, content?: string) {
     switch (profileSource) {
-      case 'ens':
-        if (ensNames?.includes(content ?? '')) return content
-        return undefined
       case 'subsocial-profile':
         return content || profile?.profileSpace?.content?.name
     }
@@ -238,11 +232,8 @@ export function useName(
   return {
     name,
     profileSource,
-    accountData,
     profile,
-    evmAddress,
     isLoading: isLoadingProfile,
     textColor,
-    ensNames,
   }
 }

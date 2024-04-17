@@ -1,6 +1,5 @@
 import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getUserProfileLink } from '@/utils/links'
@@ -43,10 +42,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     const [isAvatarError, setIsAvatarError] = useState(false)
     const onImageError = useCallback(() => setIsAvatarError(true), [])
 
-    const { data: accountData } = getAccountDataQuery.useQuery(address)
-
     const { data: profile, isLoading } = getProfileQuery.useQuery(address)
-    const { ensNames } = accountData || {}
 
     const avatar = useMemo(() => {
       return createAvatar(bottts, {
@@ -63,13 +59,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
 
       const { source, content } = decodeProfileSource(profileSource)
       const usedProfileSource = forceProfileSource?.profileSource || source
-      const usedName = forceProfileSource?.content?.name || content
       switch (usedProfileSource) {
-        case 'ens':
-          const hasSelectedEns = ensNames?.includes(usedName ?? '')
-          return hasSelectedEns
-            ? resolveEnsAvatarSrc(usedName ?? '')
-            : undefined
         case 'subsocial-profile':
           return subsocialProfileImage
             ? getIpfsContentUrl(subsocialProfileImage)
@@ -80,7 +70,6 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       forceProfileSource?.profileSource,
       forceProfileSource?.content,
       subsocialProfileImage,
-      ensNames,
     ])
 
     useEffect(() => {

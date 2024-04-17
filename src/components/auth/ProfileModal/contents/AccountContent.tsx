@@ -288,20 +288,6 @@ function useColorModeOptions(): MenuListProps['menus'] {
   return []
 }
 
-// function useLinkedAccountCount() {
-//   const myAddress = useMyMainAddress()
-//   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
-//   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
-//     myAddress ?? ''
-//   )
-
-//   let count = 0
-//   if (hasProxy) count++
-//   if (accountData?.evmAddress) count++
-
-//   return { count, maxCount: 2, isLoading }
-// }
-
 function useActivatedNotificationCount() {
   const myAddress = useMyMainAddress()
   const { data: linkedAccounts, isLoading } =

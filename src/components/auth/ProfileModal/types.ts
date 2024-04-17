@@ -13,11 +13,6 @@ export type ProfileModalState =
   | 'logout'
   | 'share-session'
   | 'about'
-  | 'link-evm-address'
-  | 'evm-linking-error'
-  | 'unlink-evm-confirmation'
-  | 'evm-address-linked'
-  | 'evm-set-profile-suggestion'
   | 'notifications'
   | 'telegram-notifications'
   | 'push-notifications'
@@ -32,5 +27,4 @@ export type ProfileModalContentProps = {
     forceFlowBackTo?: ProfileModalState
   ) => void
   closeModal: () => void
-  evmAddress?: string | null
 }
