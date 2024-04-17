@@ -46,3 +46,5 @@ next-env.d.ts
 /public/worker-*.txt
 
 /public/fallback-*.js
+.env.epic
+.env.subsocial

@@ -34,8 +34,6 @@ const nextConfig = {
       { source: '/hubs', destination: '/' },
       { source: '/my-chats', destination: '/' },
       { source: '/hot-chats', destination: '/' },
-      // { source: '/ai-bots', destination: '/' },
-      { source: '/creators', destination: '/' },
 
       { source: '/ask', destination: '/featured/54469' },
       { source: '/discuss', destination: '/featured/54469' },
@@ -43,16 +41,6 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: '/x',
-        destination: '/',
-        permanent: false,
-      },
-      {
-        source: '/:hubId/c/:slug',
-        destination: '/:hubId/:slug',
-        permanent: false,
-      },
       {
         source: '/report',
         destination: 'https://forms.gle/Gjh3ELaNHTBotiwN7',
