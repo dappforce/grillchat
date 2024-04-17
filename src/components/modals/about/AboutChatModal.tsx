@@ -12,12 +12,7 @@ import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
-import {
-  HideUnhideChatWrapper,
-  JoinChatParams,
-  JoinChatWrapper,
-  LeaveChatWrapper,
-} from '@/services/subsocial/posts/mutation'
+import { HideUnhideChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -113,10 +108,7 @@ export default function AboutChatModal({
     })
   }
 
-  const getActionMenu = (
-    joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
-    isJoiningChat?: boolean
-  ) => {
+  const getActionMenu = () => {
     const actionMenu: AboutModalProps['actionMenu'] = [
       {
         text: 'Show QR code',
@@ -204,55 +196,31 @@ export default function AboutChatModal({
 
   return (
     <>
-      <JoinChatWrapper>
-        {({ mutateAsync, isLoading }) => {
-          return (
-            <AboutModal
-              {...props}
-              id={chat.id}
-              isOpen={props.isOpen && openedModalType === null}
-              entityTitle={content?.title}
-              modalTitle={
-                <span>
-                  <span>{content?.title}</span>
-                  {chat.struct.hidden && (
-                    <ChatHiddenChip
-                      popOverProps={{
-                        triggerClassName: 'inline ml-2',
-                        placement: 'top-end',
-                      }}
-                      className='inline-flex'
-                    />
-                  )}
-                </span>
-              }
-              subtitle={subtitle}
-              actionMenu={getActionMenu(mutateAsync, isLoading)}
-              contentList={contentList}
-              image={content?.image}
-            />
-          )
-        }}
-      </JoinChatWrapper>
+      <AboutModal
+        {...props}
+        id={chat.id}
+        isOpen={props.isOpen && openedModalType === null}
+        entityTitle={content?.title}
+        modalTitle={
+          <span>
+            <span>{content?.title}</span>
+            {chat.struct.hidden && (
+              <ChatHiddenChip
+                popOverProps={{
+                  triggerClassName: 'inline ml-2',
+                  placement: 'top-end',
+                }}
+                className='inline-flex'
+              />
+            )}
+          </span>
+        }
+        subtitle={subtitle}
+        actionMenu={getActionMenu()}
+        contentList={contentList}
+        image={content?.image}
+      />
 
-      <LeaveChatWrapper>
-        {({ isLoading, mutateAsync }) => (
-          <ConfirmationModal
-            isOpen={openedModalType === 'confirmation-leave'}
-            closeModal={closeModal}
-            title='🤔 Are you sure you want to leave this chat?'
-            primaryButtonProps={{ children: 'No, stay here' }}
-            secondaryButtonProps={{
-              children: 'Yes, leave chat',
-              onClick: async () => {
-                await mutateAsync({ chatId })
-                props.closeModal()
-              },
-              isLoading,
-            }}
-          />
-        )}
-      </LeaveChatWrapper>
       <MetadataModal
         onBackClick={closeModal}
         closeModal={closeModal}
