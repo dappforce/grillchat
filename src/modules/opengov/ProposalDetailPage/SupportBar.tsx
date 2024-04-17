@@ -21,7 +21,6 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
   )
 
   const currentBill = getSupportPercentage(supportPerBill)
-  console.log(markThreshold)
 
   return (
     <div className='flex flex-col gap-2 text-sm'>
