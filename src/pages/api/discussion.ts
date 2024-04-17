@@ -9,6 +9,7 @@ import { getIpfsApi } from '@/server/ipfs'
 import { WalletManager } from '@/server/wallet-client'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { wait } from '@/utils/promise'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
 import { asAccountId } from '@subsocial/api'
@@ -212,11 +213,14 @@ export async function getDiscussion(resourceId: string) {
   }
 }
 
-export async function getOrCreateDiscussion({
-  resourceId,
-  spaceId,
-  content,
-}: ApiDiscussionInput): Promise<ApiDiscussionResponse> {
+const MUTATION_MAX_AGE = 18 // 18 secs
+const getDiscussionMutationKey = (id: string) => {
+  return `discussion-mutation:${id}`
+}
+export async function getOrCreateDiscussion(
+  data: ApiDiscussionInput
+): Promise<ApiDiscussionResponse> {
+  const { resourceId, spaceId, content } = data
   let existingDiscussionId: string | null = null
   try {
     existingDiscussionId = await getDiscussion(resourceId)
@@ -230,18 +234,38 @@ export async function getOrCreateDiscussion({
           postId: existingDiscussionId,
         },
       }
+
+    const isCreatingInAnotherSession = await redisCallWrapper((redis) => {
+      return redis?.get(getDiscussionMutationKey(resourceId)) as Promise<string>
+    })
+    if (isCreatingInAnotherSession) {
+      await wait(20 * 1000)
+      return getOrCreateDiscussion(data)
+    }
+    redisCallWrapper((redis) =>
+      redis?.set(
+        getDiscussionRedisKey(resourceId),
+        'true',
+        'EX',
+        MUTATION_MAX_AGE
+      )
+    )
     const contentCid = await saveDiscussionContent(content as IpfsPostContent)
 
     if (!contentCid.success && !contentCid.cid) {
-      throw new Error()
+      throw new Error('Failed to save content to IPFS')
     }
 
-    return createDiscussionAndGetPostId({
+    const res = await createDiscussionAndGetPostId({
       resourceId,
       spaceId,
       contentCid: contentCid.cid!,
       api: subsocialApi,
     })
+    await redisCallWrapper((redis) =>
+      redis?.del(getDiscussionRedisKey(resourceId))
+    )
+    return res
   } catch (e) {
     return {
       success: false,
