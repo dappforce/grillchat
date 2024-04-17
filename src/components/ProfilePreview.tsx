@@ -11,7 +11,6 @@ import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
 import AddressAvatar from './AddressAvatar'
-import AllIdentityIcons from './AllIdentityIcons'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import Name, { useName } from './Name'
@@ -31,7 +30,6 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   showAddress?: boolean
   nameClassName?: string
   onEditClick?: () => void
-  showAllIdentity?: boolean
   asLink?: boolean
 }
 
@@ -45,7 +43,6 @@ const ProfilePreview = ({
   asLink,
   onEditClick,
   showAddress = true,
-  showAllIdentity,
   ...props
 }: ProfilePreviewProps) => {
   const mdUp = useBreakpointThreshold('md')
@@ -161,9 +158,6 @@ const ProfilePreview = ({
               </div>
             )}
           </div>
-        )}
-        {showAllIdentity && (
-          <AllIdentityIcons className='mt-1' address={address} />
         )}
       </div>
     </div>

@@ -2,14 +2,13 @@ import {
   ApiDatahubPostGetResponse,
   DatahubPostQueryInput,
 } from '@/pages/api/datahub/post'
-import { Identities } from '@/pages/api/identities'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
 import { SubsocialProfile } from '../subsocial/profiles/fetcher'
-import { getIdentities, getPosts, getProfiles } from './fetcher'
+import { getPosts, getProfiles } from './fetcher'
 import { apiInstance } from './utils'
 
 const getPost = poolQuery<string, PostData>({
@@ -119,25 +118,6 @@ const getProfile = poolQuery<string, SubsocialProfile>({
 export const getProfileQuery = createQuery({
   key: 'profile',
   fetcher: getProfile,
-  defaultConfigGenerator: (data) => ({
-    enabled: !!data,
-  }),
-})
-
-const getIdentity = poolQuery<string, Identities>({
-  name: 'getIdentity',
-  multiCall: async (addresses) => {
-    if (addresses.length === 0) return []
-    return getIdentities(addresses)
-  },
-  resultMapper: {
-    paramToKey: (address) => address,
-    resultToKey: (result) => result?.address ?? '',
-  },
-})
-export const getIdentityQuery = createQuery({
-  key: 'identities',
-  fetcher: getIdentity,
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),

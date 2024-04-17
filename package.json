@@ -15,7 +15,6 @@
     "lint": "next lint",
     "prepare": "husky install",
     "codegen:moderation": "graphql-codegen --require dotenv/config --config codegen-moderation.ts",
-    "codegen:squid": "graphql-codegen --require dotenv/config --config codegen-squid.ts",
     "codegen:notifications": "graphql-codegen --require dotenv/config --config codegen-notifications.ts",
     "codegen:datahub-query": "graphql-codegen --require dotenv/config --config codegen-datahub-query.ts",
     "codegen:datahub-queue": "graphql-codegen --require dotenv/config --config codegen-datahub-queue.ts"

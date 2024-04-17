@@ -1,6 +1,6 @@
 import useAddressIdentityId from '@/hooks/useAddressIdentityId'
 import useRandomColor from '@/hooks/useRandomColor'
-import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
+import { getProfileQuery } from '@/services/api/query'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -206,22 +206,6 @@ export function useName(
 
   const userProfileSource = profile?.profileSpace?.content?.profileSource
 
-  const { source } = decodeProfileSource(userProfileSource)
-  const identitiesNeededInSources: ProfileSource[] = [
-    'kilt-w3n',
-    'kusama-identity',
-    'polkadot-identity',
-    'subsocial-username',
-  ]
-  const isIdentitiesNeeded = identitiesNeededInSources.includes(
-    forceProfileSource?.profileSource || source
-  )
-  const { data: identities, isFetching: isFetchingIdentities } =
-    getIdentityQuery.useQuery(address ?? '', {
-      enabled: isIdentitiesNeeded,
-    })
-  const isLoadingIdentities = isFetchingIdentities && isIdentitiesNeeded
-
   const { ensNames, evmAddress } = accountData || {}
   const randomSeed = useAddressIdentityId(address)
   let name = generateRandomName(randomSeed)
@@ -230,15 +214,6 @@ export function useName(
     switch (profileSource) {
       case 'ens':
         if (ensNames?.includes(content ?? '')) return content
-        return undefined
-      case 'polkadot-identity':
-        return identities?.polkadot
-      case 'kusama-identity':
-        return identities?.kusama
-      case 'kilt-w3n':
-        return identities?.kilt
-      case 'subsocial-username':
-        if (identities?.subsocial?.includes(content ?? '')) return content
         return undefined
       case 'subsocial-profile':
         return content || profile?.profileSpace?.content?.name
@@ -266,7 +241,7 @@ export function useName(
     accountData,
     profile,
     evmAddress,
-    isLoading: isLoadingProfile || isLoadingIdentities,
+    isLoading: isLoadingProfile,
     textColor,
     ensNames,
   }
