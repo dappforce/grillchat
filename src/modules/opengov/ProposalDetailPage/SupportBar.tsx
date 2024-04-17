@@ -21,17 +21,12 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
   )
 
   const currentBill = getSupportPercentage(supportPerBill)
+  console.log(markThreshold)
 
   return (
     <div className='flex flex-col gap-2 text-sm'>
       <div className='relative grid grid-cols-2 justify-between gap-2 whitespace-nowrap'>
         <span>0.0%</span>
-        <span
-          className='absolute -translate-x-1/2 text-center'
-          style={{ left: `${markThreshold}%` }}
-        >
-          {getSupportPercentage(threshold)}
-        </span>
         <span className='text-right'>{getSupportPercentage(progressMax)}</span>
       </div>
       <PopOver
@@ -59,13 +54,17 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
         <span>Support: {currentBill}</span>
       </PopOver>
       <div className='relative'>
-        <span
-          className='absolute -translate-x-1/2 text-xs text-text-muted'
+        <div
+          className='absolute flex -translate-x-1/2 flex-col items-center justify-center text-center text-xs text-text-muted'
           style={{ left: `${markThreshold}%` }}
         >
-          Threshold
+          <span>{getSupportPercentage(threshold)}</span>
+          <span>Threshold</span>
+        </div>
+        <span className='pointer-events-none flex flex-col text-xs opacity-0'>
+          <span>0</span>
+          <span>Threshold</span>
         </span>
-        <span className='pointer-events-none text-xs opacity-0'>Threshold</span>
       </div>
     </div>
   )
