@@ -1,5 +1,6 @@
 import PopOver from '@/components/floating/PopOver'
 import { CurveType, Proposal } from '@/server/opengov/mapper'
+import { cx } from '@/utils/class-names'
 
 export default function SupportBar({ proposal }: { proposal: Proposal }) {
   const supportThreshold = getSupportThreshold(proposal)
@@ -21,6 +22,7 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
   )
 
   const currentBill = getSupportPercentage(supportPerBill)
+  const parsedMarkThreshold = parseFloat(markThreshold)
 
   return (
     <div className='flex flex-col gap-2 text-sm'>
@@ -54,8 +56,12 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
       </PopOver>
       <div className='relative'>
         <div
-          className='absolute flex -translate-x-1/2 flex-col items-center justify-center text-center text-xs text-text-muted'
-          style={{ left: `${markThreshold}%` }}
+          className={cx(
+            'absolute flex -translate-x-1/2 flex-col items-center justify-center text-center text-xs text-text-muted',
+            parsedMarkThreshold <= 6 && 'items-start text-left',
+            parsedMarkThreshold >= 94 && 'items-end text-right'
+          )}
+          style={{ left: `${Math.max(Math.min(parsedMarkThreshold, 94), 6)}%` }}
         >
           <span>{getSupportPercentage(threshold)}</span>
           <span>Threshold</span>
