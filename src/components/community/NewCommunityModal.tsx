@@ -4,13 +4,14 @@ import {
 } from '@/stores/create-chat-modal'
 import Modal from '../modals/Modal'
 
+import { communityHubId } from '@/modules/chat/HomePage'
 import { getPostQuery } from '@/services/api/query'
 import { useSubscriptionState } from '@/stores/subscription'
 import { getChatPageLink, getWidgetChatPageLink } from '@/utils/links'
 import { sendMessageToParentWindow } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import urlJoin from 'url-join'
 import ChooseCommunityTypeContent from './content/ChooseCommunityType'
 import LoadingContent from './content/LoadingContent'
@@ -25,12 +26,12 @@ const chatContentByStep: {
   loading: LoadingContent,
 }
 
-const modalConfigByStep = {
+const getModalConfigByStep = (isWidget: boolean) => ({
   'new-comunity': {
     title: '💭 New Community',
   },
   'create-chat': {
-    title: '💬 New Group Chat',
+    title: isWidget ? '💬 Your Community Chat' : '💬 New Group Chat',
   },
   'update-chat': {
     title: '✏️ Edit chat',
@@ -38,7 +39,7 @@ const modalConfigByStep = {
   loading: {
     title: 'Creating chat',
   },
-}
+})
 
 export type NewCommunityModalProps = {
   chat?: PostData
@@ -49,15 +50,22 @@ export type NewCommunityModalProps = {
 }
 
 const NewCommunityModal = ({
-  hubId,
+  hubId = communityHubId,
   withBackButton = true,
   chat,
   customOnClose,
   onBackClick: customOnBackClick,
 }: NewCommunityModalProps) => {
-  const { openModal, isOpen, defaultOpenState, newChatId, closeModal } =
-    useCreateChatModal()
+  const {
+    openModal,
+    isOpen,
+    defaultOpenState,
+    newChatId,
+    closeModal,
+    onBackClick: storeOnBackClick,
+  } = useCreateChatModal()
   const router = useRouter()
+  const [isWidget, setIsWidget] = useState(false)
 
   // even after the tx succeed, datahub needs some time to process the data from squid, so there is some kind of delay before the post is ready to be fetched
   // if we don't use this hack, the user will be redirected to chat page with empty data
@@ -69,6 +77,12 @@ const NewCommunityModal = ({
   const setSubscriptionState = useSubscriptionState(
     (state) => state.setSubscriptionState
   )
+
+  useEffect(() => {
+    const isWidget = window.location.pathname.includes('/widget')
+
+    setIsWidget(isWidget)
+  }, [])
 
   useEffect(() => {
     if (newChat) {
@@ -89,13 +103,15 @@ const NewCommunityModal = ({
       }
       onSuccessChatCreation()
       setSubscriptionState('post', 'dynamic')
+      closeModal()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newChat, hubId, router])
 
   const Content = chatContentByStep[defaultOpenState || 'new-comunity']
 
-  const { title } = modalConfigByStep[defaultOpenState || 'new-comunity']
+  const { title } =
+    getModalConfigByStep(isWidget)[defaultOpenState || 'new-comunity']
 
   const augmentedFormProps: UpsertChatFormProps = {
     hubId,
@@ -112,7 +128,10 @@ const NewCommunityModal = ({
       isOpen={isOpen}
       title={title}
       withCloseButton
-      onBackClick={customOnBackClick ? customOnBackClick : onBackClick}
+      onBackClick={
+        storeOnBackClick ||
+        (customOnBackClick ? customOnBackClick : onBackClick)
+      }
       closeModal={
         customOnClose
           ? () => {

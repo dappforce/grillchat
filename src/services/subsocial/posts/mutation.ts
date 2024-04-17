@@ -160,9 +160,9 @@ async function generateMessageContent(
     image,
     title,
     body,
-    ...(isChat ? { isChat } : {}),
+    isChat: !!isChat,
     optimisticId: crypto.randomUUID(),
-  } as PostContent & { optimisticId: string }
+  } as PostContent & { optimisticId: string; isChat?: boolean }
 
   return { content }
 }

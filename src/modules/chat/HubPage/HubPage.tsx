@@ -1,4 +1,3 @@
-import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
@@ -183,11 +182,12 @@ function CommunityHubToolbar({
           )}
           onClick={() => {
             openModal({ defaultOpenState: 'new-comunity' })
-            sendEvent('open_community_creation_modal', { eventSource: 'hub' })
+            sendEvent('create_chat_clicked', { eventSource: 'hub' })
           }}
         >
-          <CommunityAddIcon className='text-text-muted-on-primary' />
-          <span>New</span>
+          {/* <CommunityAddIcon className='text-text-muted-on-primary' /> */}
+          {/* <span>New</span> */}
+          Create Chat
         </Button>
       </Container>
       <NewCommunityModal hubId={hubId} />

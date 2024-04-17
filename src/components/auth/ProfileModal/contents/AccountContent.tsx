@@ -18,7 +18,9 @@ import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
+import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import {
@@ -28,6 +30,7 @@ import {
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
+import { useRouter } from 'next/router'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { useDisconnect } from 'wagmi'
@@ -39,11 +42,12 @@ export default function AccountContent({
   address,
   setCurrentState,
 }: ProfileModalContentProps) {
-  // const { showNotification, closeNotification } =
-  //   useFirstVisitNotification('notification-menu')
-
   const canUseGrillKey = useCanUseGrillKey()
   const isInIframe = useIsInIframe()
+  const { closeModal, openModal } = useProfileModal()
+  const { openModal: openCreateChatModal, closeModal: closeCreateChatModal } =
+    useCreateChatModal()
+  const router = useRouter()
 
   const {
     data: balance,
@@ -68,66 +72,32 @@ export default function AccountContent({
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
+  const chatId = (
+    profile?.profileSpace?.content?.experimental?.chats?.[0] as any
+  )?.id
+
+  const haveChat = !!chatId
+
   const colorModeOptions = useColorModeOptions()
 
-  // const {
-  //   count: linkedAddressesCount,
-  //   maxCount: maxLinkedCount,
-  //   isLoading: isLoadingLinkedAcccountCount,
-  // } = useLinkedAccountCount()
   const {
     count: activatedNotificationCount,
     maxCount: maxNotificationCount,
     isLoading: isLoadingActivatedNotificationCount,
   } = useActivatedNotificationCount()
 
-  // const onLinkedAddressesClick = () => {
-  //   sendEvent('open_linked_addresses', commonEventProps)
-  //   setCurrentState('linked-addresses')
-  // }
   const onPrivacySecurityKeyClick = () => {
     sendEvent('open_privacy_security_modal', commonEventProps)
     setCurrentState('privacy-security')
   }
-  // const onShareSessionClick = () => {
-  //   sendEvent('open_share_session_modal', commonEventProps)
-  //   setCurrentState('share-session')
-  // }
+
   const onLogoutClick = () => {
     disconnect()
     sendEvent('open_log_out_modal', commonEventProps)
     setCurrentState('logout')
   }
-  // const onAboutClick = () => {
-  //   sendEvent('open_about_app_info', commonEventProps)
-  //   setCurrentState('about')
-  // }
 
   const menus: MenuListProps['menus'] = [
-    // {
-    //   text: (
-    //     <span className='flex items-center gap-2'>
-    //       <span>Linked Addresses</span>
-    //       {!isLoadingLinkedAcccountCount && (
-    //         <Notice size='sm' noticeType='grey'>
-    //           {linkedAddressesCount} / {maxLinkedCount}
-    //         </Notice>
-    //       )}
-    //     </span>
-    //   ),
-    //   icon: LinkedAddressesIcon,
-    //   onClick: onLinkedAddressesClick,
-    // },
-    // ...(isInstallAvailable()
-    //   ? [
-    //       {
-    //         text: 'Install app',
-    //         icon: FiDownload,
-    //         onClick: installApp,
-    //         iconClassName: 'text-text-muted text-xl',
-    //       },
-    //     ]
-    //   : []),
     ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
       ? [
           {
@@ -147,6 +117,36 @@ export default function AccountContent({
           },
         ]
       : []),
+    ...(haveChat
+      ? [
+          {
+            text: 'Creator Chat',
+            icon: FaRegUser,
+            onClick: () => {
+              closeModal()
+              router.replace(`/${profile?.profileSpace?.id}/${chatId}`)
+            },
+          },
+        ]
+      : [
+          {
+            text: 'Create Chat',
+            icon: FaRegUser,
+            onClick: () => {
+              closeModal()
+
+              openCreateChatModal({
+                defaultOpenState: 'create-chat',
+                onBackClick: () => {
+                  closeCreateChatModal()
+
+                  openModal()
+                  setCurrentState('account')
+                },
+              })
+            },
+          },
+        ]),
     ...(canUseGrillKey
       ? [
           {
@@ -185,11 +185,6 @@ export default function AccountContent({
         }
       },
     },
-    // {
-    //   text: 'About App',
-    //   icon: InfoIcon,
-    //   onClick: onAboutClick,
-    // },
     ...(!isInIframe ? colorModeOptions : []),
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
@@ -287,20 +282,6 @@ function useColorModeOptions(): MenuListProps['menus'] {
 
   return []
 }
-
-// function useLinkedAccountCount() {
-//   const myAddress = useMyMainAddress()
-//   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
-//   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
-//     myAddress ?? ''
-//   )
-
-//   let count = 0
-//   if (hasProxy) count++
-//   if (accountData?.evmAddress) count++
-
-//   return { count, maxCount: 2, isLoading }
-// }
 
 function useActivatedNotificationCount() {
   const myAddress = useMyMainAddress()

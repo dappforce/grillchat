@@ -19,6 +19,7 @@ import {
   JoinChatWrapper,
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -63,6 +64,7 @@ export default function AboutChatModal({
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
   })
+  const { data: space } = getSpaceQuery.useQuery(chat?.struct.spaceId || '')
   const { openModal, closeModal: closeCreateChatModal } = useCreateChatModal()
   const sendEvent = useSendEvent()
   const refSearchParam = useReferralSearchParam()
@@ -231,6 +233,27 @@ export default function AboutChatModal({
         <span className='mx-1'>·</span> {subtitle}
       </span>
     )
+  }
+
+  if (space) {
+    const { content: spaceContent } = space || {}
+
+    const chats =
+      ((spaceContent as any)?.experimental.chats as { id: string }[]) ||
+      undefined
+
+    const isProfileChat = chats?.[0]?.id === chatId
+
+    if (isProfileChat && spaceContent) {
+      const title = spaceContent.name
+
+      subtitle = (
+        <span className='font-normal leading-normal'>
+          <span className='text-text-muted'>by</span>{' '}
+          <span className='text-text'>{title}</span>
+        </span>
+      )
+    }
   }
 
   return (

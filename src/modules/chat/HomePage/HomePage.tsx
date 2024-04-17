@@ -1,4 +1,3 @@
-import CommunityAddIcon from '@/assets/icons/community-add.svg'
 import Button from '@/components/Button'
 import Tabs, { TabsProps } from '@/components/Tabs'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
@@ -198,13 +197,14 @@ export default function HomePage(props: HomePageProps) {
                   className='flex items-center gap-2'
                   onClick={() => {
                     openModal({ defaultOpenState: 'new-comunity' })
-                    sendEvent('open_community_creation_modal', {
+                    sendEvent('create_chat_clicked', {
                       eventSource: 'home',
                     })
                   }}
                 >
-                  <CommunityAddIcon className='text-text-muted-on-primary' />
-                  <span>New</span>
+                  Create Chat
+                  {/* <CommunityAddIcon className='text-text-muted-on-primary' /> */}
+                  {/* <span>New</span> */}
                 </Button>
               </div>
             )
