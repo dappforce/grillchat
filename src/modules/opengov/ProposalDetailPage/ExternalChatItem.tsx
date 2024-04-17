@@ -42,6 +42,8 @@ export default function ExternalChatItem({
   else if (comment.ownerId)
     userLink = `https://polkadot.subsquare.io/user/${comment.ownerId}/votes`
 
+  const addressOrUsername = comment.ownerId || comment.username
+
   return (
     <div
       {...props}
@@ -54,7 +56,7 @@ export default function ExternalChatItem({
         href={userLink}
         target='_blank'
         rel='noopener noreferrer'
-        className='cursor-pointer'
+        className='flex-shrink-0 cursor-pointer'
       >
         {comment.profile?.image && !isImageError ? (
           <Image
@@ -67,7 +69,7 @@ export default function ExternalChatItem({
           />
         ) : (
           <AddressAvatar
-            address={comment.ownerId}
+            address={addressOrUsername}
             className='flex-shrink-0 cursor-pointer'
           />
         )}

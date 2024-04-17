@@ -137,7 +137,7 @@ function LatestCommentFromExternalSources({
   proposal: Proposal
   setIsOpenDrawer: (isOpen: boolean) => void
 }) {
-  const lastThreeComments = proposal.comments.slice(-3)
+  const lastThreeComments = proposal.comments.slice(0, 3).toReversed()
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-2'>
