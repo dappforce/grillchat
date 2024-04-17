@@ -1,7 +1,7 @@
 import useLoginOption from '@/hooks/useLoginOption'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import {
-  SubsocialMutationConfig,
+  TransactionMutationConfig,
   WalletAccount,
 } from '@/subsocial-query/subsocial/types'
 import { UseMutationResult, useMutation } from '@tanstack/react-query'
@@ -26,10 +26,10 @@ export function getCurrentWallet(
 
 export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
   useMutationHook: (
-    config?: SubsocialMutationConfig<Data>,
+    config?: TransactionMutationConfig<Data>,
     otherProps?: OtherProps
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
-  config?: SubsocialMutationConfig<Data>,
+  config?: TransactionMutationConfig<Data>,
   isUsingConnectedWallet?: boolean,
   otherProps?: OtherProps
 ) {

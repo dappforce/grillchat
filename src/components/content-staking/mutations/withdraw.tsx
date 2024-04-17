@@ -8,17 +8,17 @@ import {
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
+import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
 
-export function useWithdrawTx(config?: SubsocialMutationConfig<{}>) {
+export function useWithdrawTx(config?: TransactionMutationConfig<{}>) {
   const client = useQueryClient()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const sendEvent = useSendEvent()
   useConnectWallet()
 
-  return useSubsocialMutation(
+  return useTransactionMutation(
     {
       getWallet: () =>
         getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),

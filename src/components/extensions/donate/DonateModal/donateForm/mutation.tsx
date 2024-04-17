@@ -6,7 +6,7 @@ import { createMutationWrapper } from '@/services/subsocial/utils/mutation'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useLazySubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
@@ -26,7 +26,7 @@ type OtherProps = {
 }
 
 export function useSubstrateDonation(
-  config?: SubsocialMutationConfig<SubstrateDonationProps>,
+  config?: TransactionMutationConfig<SubstrateDonationProps>,
   otherProps?: OtherProps
 ) {
   const {

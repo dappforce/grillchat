@@ -14,14 +14,15 @@ export type CallbackData<Data, Context> = {
   address: string
   context: Context
 }
-export interface SubsocialMutationConfig<Data, Context = undefined>
-  extends MutationConfig<Data> {
+export interface TransactionMutationConfig<
+  Data,
+  Context = undefined,
+  Return = void
+> extends MutationConfig<Data, Return> {
   useHttp?: boolean
   supressSendingTxError?: boolean
   txCallbacks?: {
     onStart?: (data: CallbackData<Data, Context>) => void
-    onSend?: (data: CallbackData<Data, Context>) => void
-    onBroadcast?: (data: CallbackData<Data, Context>) => void
     onError?: (
       data: CallbackData<Data, Context>,
       error: string,

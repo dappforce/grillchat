@@ -1,5 +1,5 @@
 import useToastError from '@/hooks/useToastError'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { UseMutationResult } from '@tanstack/react-query'
 import { useState } from 'react'
 import useCommonTxSteps from '../hooks'
@@ -13,7 +13,7 @@ export type Status =
   | 'error'
 export function createMutationWrapper<Data, ReturnValue, OtherProps>(
   useMutationHook: (
-    config?: SubsocialMutationConfig<Data, any>,
+    config?: TransactionMutationConfig<Data, any>,
     otherProps?: OtherProps
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
   errorMessage: string,
@@ -31,7 +31,7 @@ export function createMutationWrapper<Data, ReturnValue, OtherProps>(
       status: Status
       loadingText: string | undefined
     }) => JSX.Element
-    config?: SubsocialMutationConfig<Data>
+    config?: TransactionMutationConfig<Data>
     loadingUntilTxSuccess?: boolean
     otherProps?: OtherProps
   }) {

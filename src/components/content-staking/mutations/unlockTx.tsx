@@ -19,8 +19,8 @@ import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
+import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal, isDef } from '@subsocial/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { useGetMyCreatorsIds } from '../hooks/useGetMyCreatorsIds'
@@ -33,7 +33,7 @@ type MutationProps = {
   myCreatorsIds: string[]
 }
 
-export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
+export function useUnlockTx(config?: TransactionMutationConfig<MutationProps>) {
   const currentGrillAddress = useMyMainAddress()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const { data: backerLedger } = getBackerLedgerQuery.useQuery(
@@ -58,7 +58,7 @@ export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
   const sendEvent = useSendEvent()
   useConnectWallet()
 
-  return useSubsocialMutation(
+  return useTransactionMutation(
     {
       getWallet: () =>
         getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),

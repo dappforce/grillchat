@@ -1,18 +1,15 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
-import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { MutationConfig } from '@/subsocial-query'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { IpfsWrapper, ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
+import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
-import { KeyringPair } from '@polkadot/keyring/types'
 import { PostContent } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { getCurrentWallet } from '../hooks'
-import { createMutationWrapper } from '../utils/mutation'
 import { addOptimisticData, deleteOptimisticData } from './optimistic'
 import { SendMessageParams } from './types'
 
@@ -52,18 +49,14 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
   const { mutateAsync: saveFile } = useSaveFile()
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
 
-  return useSubsocialMutation<
+  return useTransactionMutation<
     SendMessageParams,
     Awaited<ReturnType<typeof generateMessageContent>>
   >(
     {
       getWallet: getCurrentWallet,
       generateContext: (data) => generateMessageContent(data, client),
-      transactionGenerator: async ({
-        apis: { substrateApi },
-        data,
-        context: { content },
-      }) => {
+      transactionGenerator: async ({ data, context: { content } }) => {
         const maxLength = getMaxMessageLength(data.chatId)
         if (data.message && data.message.length > maxLength)
           throw new Error(
@@ -88,13 +81,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             },
           })
           revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
-
-          return {
-            tx: substrateApi.tx.posts.updatePost(data.messageIdToEdit, {
-              content: IpfsWrapper(cid),
-            }),
-            summary: 'Updating message',
-          }
         } else {
           await datahubMutation.createPostData({
             ...getCurrentWallet(),
@@ -107,27 +93,11 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             },
           })
           revalidateChatPage({ chatId: data.chatId, hubId: data.hubId })
-
-          return {
-            tx: substrateApi.tx.posts.createPost(
-              null,
-              {
-                Comment: {
-                  parentId: ParentPostIdWrapper(data.replyTo) || null,
-                  rootPostId: data.chatId,
-                },
-              },
-              IpfsWrapper(cid)
-            ),
-            summary: 'Sending message',
-          }
         }
       },
     },
     config,
     {
-      // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
-      supressSendingTxError: isDatahubAvailable,
       txCallbacks: {
         onStart: ({ address, context, data }) => {
           preventWindowUnload()
@@ -159,8 +129,8 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
             })
           }
         },
-        onSend: allowWindowUnload,
-        onError: ({ data, context, address }, error, isAfterTxGenerated) => {
+        onSuccess: () => allowWindowUnload(),
+        onError: ({ data, context }, error, isAfterTxGenerated) => {
           allowWindowUnload()
           const content = context.content
           const optimisticId = content.optimisticId
@@ -204,93 +174,3 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     }
   )
 }
-
-type ResendFailedMessageParams = {
-  chatId: string
-  replyTo?: string
-  content: PostContent
-}
-export function useResendFailedMessage(
-  config?: MutationConfig<ResendFailedMessageParams>
-) {
-  const { mutateAsync: saveFile } = useSaveFile()
-
-  return useSubsocialMutation<ResendFailedMessageParams>(
-    {
-      getWallet: getCurrentWallet,
-      generateContext: undefined,
-      transactionGenerator: async ({ apis: { substrateApi }, data }) => {
-        const replyToPersistentId =
-          data.replyTo && isPersistentId(data.replyTo)
-            ? data.replyTo
-            : undefined
-        const content = {
-          body: data.content.body,
-          inReplyTo: data.content.inReplyTo,
-          extensions: data.content.extensions,
-          optimisticId: data.content.optimisticId,
-        } as PostContent & { optimisticId: string }
-
-        const res = await saveFile(content)
-        const cid = res.cid
-        if (!cid) throw new Error('Failed to save file')
-
-        return {
-          tx: substrateApi.tx.posts.createPost(
-            null,
-            {
-              Comment: {
-                parentId: replyToPersistentId || null,
-                rootPostId: data.chatId,
-              },
-            },
-            IpfsWrapper(cid)
-          ),
-          summary: 'Retrying sending message',
-        }
-      },
-    },
-    config,
-    {
-      txCallbacks: {
-        onStart: () => preventWindowUnload(),
-        onSend: ({ address, data }) => {
-          allowWindowUnload()
-
-          const signer = getCurrentWallet().signer
-          notifyRetryStatus(data.content, signer, true)
-        },
-        onError: ({ data, address }, error, isAfterTxGenerated) => {
-          allowWindowUnload()
-          const signer = getCurrentWallet().signer
-
-          if (isAfterTxGenerated)
-            notifyRetryStatus(data.content, signer, false, error)
-        },
-      },
-    }
-  )
-}
-function notifyRetryStatus(
-  content: PostContent,
-  signer: KeyringPair | null,
-  success: boolean,
-  reason?: string
-) {
-  if (!signer || !content.optimisticId) return
-
-  datahubMutation.notifyCreatePostFailedOrRetryStatus({
-    ...getCurrentWallet(),
-    args: {
-      optimisticId: content.optimisticId,
-      reason,
-      isRetrying: { success },
-    },
-    timestamp: Date.now(),
-  })
-}
-
-export const ResendFailedMessageWrapper = createMutationWrapper(
-  useResendFailedMessage,
-  'resend failed message'
-)

@@ -4,7 +4,7 @@ import { makeCombinedCallback } from '../base'
 import { getConnectionConfig } from './config'
 import { getSubstrateChainApi } from './connection'
 import { generateTxCallbacks, sendTransaction } from './mutation'
-import { SubsocialMutationConfig, Transaction, WalletAccount } from './types'
+import { Transaction, TransactionMutationConfig, WalletAccount } from './types'
 
 type LazyApis = {
   substrateApi: ApiPromise
@@ -30,8 +30,8 @@ export function useLazySubstrateMutation<Data, Context = undefined>(
       : (data: Data, wallet: WalletAccount) => Promise<Context> | Context
     transactionGenerator: TransactionGenerator<Data, Context>
   },
-  config?: SubsocialMutationConfig<Data, Context>,
-  defaultConfig?: SubsocialMutationConfig<Data, Context>
+  config?: TransactionMutationConfig<Data, Context>,
+  defaultConfig?: TransactionMutationConfig<Data, Context>
 ): UseMutationResult<string, Error, Data, unknown> {
   const workerFunc = async (data: Data) => {
     const wallet = await getWallet()

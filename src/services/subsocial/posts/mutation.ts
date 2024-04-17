@@ -7,8 +7,8 @@ import { getPostQuery } from '@/services/api/query'
 import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
+import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
@@ -72,14 +72,14 @@ function checkAction(data: UpsertPostParams) {
   return { payload: data, action: 'invalid' } as const
 }
 export function useUpsertPost(
-  config?: SubsocialMutationConfig<UpsertPostParams, GeneratedMessageContent>
+  config?: TransactionMutationConfig<UpsertPostParams, GeneratedMessageContent>
 ) {
   const client = useQueryClient()
 
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
   const router = useRouter()
 
-  return useSubsocialMutation<UpsertPostParams, GeneratedMessageContent>(
+  return useTransactionMutation<UpsertPostParams, GeneratedMessageContent>(
     {
       getWallet: getCurrentWallet,
       generateContext: (params) => generateMessageContent(params, client),
@@ -210,11 +210,11 @@ export const UpsertPostWrapper = createMutationWrapper(
 
 export type HideUnhidePostParams = { postId: string; action: 'hide' | 'unhide' }
 export function useHideUnhidePost(
-  config?: SubsocialMutationConfig<HideUnhidePostParams>
+  config?: TransactionMutationConfig<HideUnhidePostParams>
 ) {
   const client = useQueryClient()
 
-  return useSubsocialMutation<HideUnhidePostParams>(
+  return useTransactionMutation<HideUnhidePostParams>(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
@@ -275,11 +275,11 @@ export type HideMessageParams = {
   messageId: string
 }
 export function useHideMessage(
-  config?: SubsocialMutationConfig<HideMessageParams>
+  config?: TransactionMutationConfig<HideMessageParams>
 ) {
   const client = useQueryClient()
 
-  return useSubsocialMutation<HideMessageParams>(
+  return useTransactionMutation<HideMessageParams>(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
@@ -344,11 +344,11 @@ export type PinMessageParams = {
   action: 'pin' | 'unpin'
 }
 export function usePinMessage(
-  config?: SubsocialMutationConfig<PinMessageParams>
+  config?: TransactionMutationConfig<PinMessageParams>
 ) {
   const client = useQueryClient()
 
-  return useSubsocialMutation<PinMessageParams>(
+  return useTransactionMutation<PinMessageParams>(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,

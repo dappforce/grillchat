@@ -1,7 +1,7 @@
 import { invalidateProfileServerCache, saveFile } from '@/services/api/mutation'
 import { getProfileQuery } from '@/services/api/query'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
+import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
@@ -28,11 +28,11 @@ function checkAction(data: UpsertProfileParams) {
 }
 const OPTIMISTIC_PROFILE_ID = 'optimistic-id'
 export function useUpsertProfile(
-  config?: SubsocialMutationConfig<UpsertProfileParams>
+  config?: TransactionMutationConfig<UpsertProfileParams>
 ) {
   const client = useQueryClient()
 
-  return useSubsocialMutation<UpsertProfileParams>(
+  return useTransactionMutation<UpsertProfileParams>(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,

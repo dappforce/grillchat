@@ -4,8 +4,8 @@ export type QueryConfig<Data = any, ReturnValue = any> = Omit<
   UseQueryOptions<ReturnValue, unknown, ReturnValue, (string | Data)[]>,
   'queryFn' | 'queryKey'
 >
-export type MutationConfig<Data> = UseMutationOptions<
-  string,
+export type MutationConfig<Data, Return = void> = UseMutationOptions<
+  Return,
   Error,
   Data,
   unknown
