@@ -11,7 +11,6 @@ import { isCommunityHubId } from '@/constants/config'
 import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import { getPostQuery } from '@/services/api/query'
 import {
   HideUnhideChatWrapper,
@@ -28,7 +27,6 @@ import { useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash, HiQrCode } from 'react-icons/hi2'
 import { LuPencil, LuShield } from 'react-icons/lu'
 import { RiDatabase2Line } from 'react-icons/ri'
-import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
 import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
@@ -68,7 +66,6 @@ export default function AboutChatModal({
   const [openedModalType, setOpenedModalType] = useState<InnerModalType>(null)
 
   const isInIframe = useIsInIframe()
-  const { isJoined, isLoading } = useIsJoinedToChat(chatId)
 
   const content = chat?.content
   if (!content) return null
@@ -180,33 +177,7 @@ export default function AboutChatModal({
 
     actionMenu.unshift(...additionalMenus)
 
-    if (isLoading || isInIframe) return actionMenu
-
-    if (isJoined) {
-      actionMenu.push({
-        text: 'Leave Chat',
-        icon: RxExit,
-        onClick: () => setOpenedModalType('confirmation-leave'),
-        className: cx('text-text-red'),
-      })
-    } else {
-      actionMenu.push({
-        text: 'Join Chat',
-        icon: RxEnter,
-        disabled: isJoiningChat,
-        className: cx('text-text-secondary'),
-        onClick: async () => {
-          await joinChat({ chatId })
-          sendEvent(
-            'join_chat',
-            { chatId, eventSource: 'chat_modal' },
-            { hasJoinedChats: true }
-          )
-          props.closeModal()
-        },
-      })
-    }
-
+    if (isInIframe) return actionMenu
     return actionMenu
   }
 

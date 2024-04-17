@@ -4,11 +4,8 @@ import LinkText from '@/components/LinkText'
 import { Skeleton } from '@/components/SkeletonFallback'
 import ExtensionModals from '@/components/extensions'
 import TextArea from '@/components/inputs/TextArea'
-import { getIsHubWithoutJoinButton } from '@/constants/config'
-import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import useLoginOption from '@/hooks/useLoginOption'
 import { getHasUserStakedQuery, getPostQuery } from '@/services/api/query'
-import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
@@ -110,9 +107,6 @@ function ChatInputWrapper({
     }
   }
 
-  const { isJoined, isLoading: isLoadingJoinedChat } = useIsJoinedToChat(chatId)
-  const isHubWithoutJoinButton = getIsHubWithoutJoinButton(hubId, chatId)
-
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
   })
@@ -178,46 +172,17 @@ function ChatInputWrapper({
               />
             )
 
-          if (isJoined || isHubWithoutJoinButton)
-            return (
-              <ChatInputBar
-                formProps={{
-                  hubId,
-                  chatId,
-                  onSubmit: (isEditing) => {
-                    if (!isEditing) scrollToBottom()
-                  },
-                  isPrimary: true,
-                }}
-              />
-            )
-
           return (
-            <JoinChatWrapper>
-              {({ isLoading, mutateAsync }) => {
-                const isButtonLoading = isLoading || isLoadingJoinedChat
-                return (
-                  <Button
-                    size='lg'
-                    className={cx(
-                      isButtonLoading && 'bg-background-light text-text-muted'
-                    )}
-                    disabledStyle='subtle'
-                    isLoading={isButtonLoading}
-                    onClick={async () => {
-                      await mutateAsync({ chatId })
-                      sendEvent(
-                        'join_chat',
-                        { chatId, hubId, eventSource: 'chat_required_btn' },
-                        { hasJoinedChats: true }
-                      )
-                    }}
-                  >
-                    Join
-                  </Button>
-                )
+            <ChatInputBar
+              formProps={{
+                hubId,
+                chatId,
+                onSubmit: (isEditing) => {
+                  if (!isEditing) scrollToBottom()
+                },
+                isPrimary: true,
               }}
-            </JoinChatWrapper>
+            />
           )
         })()}
       </Component>

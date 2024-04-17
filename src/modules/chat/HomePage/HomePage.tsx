@@ -7,7 +7,6 @@ import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
-import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import {
@@ -95,9 +94,6 @@ export default function HomePage(props: HomePageProps) {
   ]
 
   const myAddress = useMyMainAddress()
-  const { data: followedPostIds } = getFollowedPostIdsByAddressQuery.useQuery(
-    myAddress ?? addressFromStorage ?? ''
-  )
 
   // If user is accessing page for the first time, we can't use the `asPath` because it will cause hydration error because of rewrites
   const currentTabId = isFirstAccessed

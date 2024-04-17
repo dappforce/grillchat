@@ -3,7 +3,7 @@ import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
+import { getPosts } from '@/services/subsocial/posts/fetcher'
 import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
@@ -76,7 +76,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
   'posts',
-  getPostsFromSubsocial,
+  getPosts,
   { paramToId: (param) => param, responseToId: (post) => post.id },
   {
     blockchainResponse: (post) => {
@@ -93,7 +93,7 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   let posts: PostData[]
   if (isDatahubAvailable) {
     // to bypass the invalidation cache for squid
-    posts = await getPostsFromSubsocial(validIds)
+    posts = await getPosts(validIds)
   } else {
     posts = await getPostsData(validIds)
   }

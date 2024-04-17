@@ -6,7 +6,7 @@ import HomePage, {
 } from '@/modules/chat/HomePage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
-import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
+import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts/query'
 import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'

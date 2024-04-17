@@ -6,10 +6,7 @@ import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
-import {
-  getFollowedPostIdsByAddressQuery,
-  getOwnedPostIdsQuery,
-} from '@/services/subsocial/posts'
+import { getOwnedPostIdsQuery } from '@/services/subsocial/posts/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
@@ -25,7 +22,7 @@ export type MyChatsContentProps = {
 }
 
 const filterStorage = new LocalStorage(() => 'my-chats-filter')
-const filters = ['all', 'created', 'joined', 'hidden'] as const
+const filters = ['all', 'created', 'hidden'] as const
 type Filter = (typeof filters)[number]
 
 export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
@@ -46,25 +43,18 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     }
   }, [])
 
-  const {
-    data: followedChatIds,
-    isLoading,
-    isPlaceholderData,
-  } = getFollowedPostIdsByAddressQuery.useQuery(address ?? '')
   const { data: ownedChatIds } = getOwnedPostIdsQuery.useQuery(address ?? '')
 
   const { allChatIds, filteredChatIds } = useMemo(() => {
     const owned = ownedChatIds ?? []
-    const followed = followedChatIds ?? []
-    const allChatIds = Array.from(new Set([...owned, ...followed]))
+    const allChatIds = Array.from(new Set([...owned]))
     let filteredChatIds: string[] = []
 
     if (filter === 'all') filteredChatIds = allChatIds
     if (filter === 'created' || filter === 'hidden') filteredChatIds = owned
-    if (filter === 'joined') filteredChatIds = followed
 
     return { filteredChatIds, allChatIds }
-  }, [ownedChatIds, followedChatIds, filter])
+  }, [ownedChatIds, filter])
 
   const sortedIds = useSortChatIdsByLatestMessage(filteredChatIds)
 
@@ -109,12 +99,7 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
         </Container>
       )}
       {(() => {
-        if (
-          !isInitialized ||
-          isLoading ||
-          isPlaceholderData ||
-          filter === null
-        ) {
+        if (!isInitialized || filter === null) {
           return <ChatPreviewSkeleton.SkeletonList />
         } else if (!address || filteredChats.length === 0) {
           return <NoChats changeTab={changeTab} />
