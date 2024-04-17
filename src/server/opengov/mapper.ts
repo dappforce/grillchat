@@ -1,5 +1,5 @@
 import ProposalStatus from '@/components/opengov/ProposalStatus'
-import { getProposalResourceId } from '@/modules/opengov/ProposalDetailPage'
+import { getProposalResourceId } from '@/modules/opengov/ProposalDetailPage/context'
 import { getDiscussion } from '@/pages/api/discussion'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { POLKADOT_BLOCK_TIME, getProposalPeriods } from './data'

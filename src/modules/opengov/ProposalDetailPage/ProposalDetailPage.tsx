@@ -5,27 +5,14 @@ import VoteSummary from '@/components/opengov/VoteSummary'
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
-import { Resource } from '@subsocial/resource-discussions'
 import { ReactNode, useState } from 'react'
 import DesktopProposalDetail from './DesktopProposalDetail'
 import MobileProposalDetailPage from './MobileProposalDetail'
 import ProposalDetailModal from './ProposalDetailModal'
+import { ProposalDetailContextProvider } from './context'
 
 export type ProposalDetailPageProps = {
   proposal: Proposal
-  chatId: string | null
-}
-
-export function getProposalResourceId(proposalId: number | string) {
-  return new Resource({
-    chainName: 'polkadot',
-    chainType: 'substrate',
-    resourceType: 'proposal',
-    resourceValue: {
-      id: proposalId.toString(),
-    },
-    schema: 'chain',
-  }).toResourceId()
 }
 
 export default function ProposalDetailPage(props: ProposalDetailPageProps) {
@@ -49,8 +36,10 @@ export default function ProposalDetailPage(props: ProposalDetailPageProps) {
         ),
       }}
     >
-      <DesktopProposalDetail {...props} className='hidden lg:grid' />
-      <MobileProposalDetailPage {...props} className='lg:hidden' />
+      <ProposalDetailContextProvider proposal={props.proposal}>
+        <DesktopProposalDetail {...props} className='hidden lg:grid' />
+        <MobileProposalDetailPage {...props} className='lg:hidden' />
+      </ProposalDetailContextProvider>
     </DefaultLayout>
   )
 }

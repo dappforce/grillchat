@@ -6,54 +6,34 @@ import ChatRoom from '@/components/chats/ChatRoom'
 import { env } from '@/env.mjs'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useIsMounted from '@/hooks/useIsMounted'
-import useToastError from '@/hooks/useToastError'
 import BottomPanel from '@/modules/chat/ChatPage/BottomPanel'
-import { useCreateDiscussion } from '@/services/api/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
+import { estimatedWaitTime } from '@/utils/network'
 import { useState } from 'react'
 import { HiChevronUp } from 'react-icons/hi2'
 import ExternalSourceChatRoom from './ExternalSourceChatRoom'
 import ProposalDetailModal from './ProposalDetailModal'
-import {
-  ProposalDetailPageProps,
-  getProposalResourceId,
-} from './ProposalDetailPage'
+import { ProposalDetailPageProps } from './ProposalDetailPage'
 import ProposalStatusCard from './ProposalStatusCard'
 import ProposerSummary from './ProposerSummary'
+import { useProposalDetailContext } from './context'
 import useCommentDrawer from './hooks/useCommentDrawer'
 
 export default function MobileProposalDetailPage({
   proposal,
-  chatId,
   className,
 }: ProposalDetailPageProps & { className?: string }) {
+  const { chatId, createDiscussion, isLoading } = useProposalDetailContext()
   const isMounted = useIsMounted()
   const lgUp = useBreakpointThreshold('lg')
 
   const [isOpenDetailModal, setIsOpenDetailModal] = useState(false)
-  const { mutateAsync, error, isLoading } = useCreateDiscussion()
-  useToastError(error, 'Failed to create discussion')
 
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
 
   const { selectedTab, setSelectedTab, isOpen, setIsOpen } =
     useCommentDrawer(proposal)
-
-  const [usedChatId, setUsedChatId] = useState(chatId)
-
-  const createDiscussion = async function () {
-    const { data } = await mutateAsync({
-      spaceId: env.NEXT_PUBLIC_PROPOSALS_HUB,
-      content: {
-        title: proposal.title,
-      },
-      resourceId: getProposalResourceId(proposal.id),
-    })
-    if (data?.postId) {
-      setUsedChatId(data.postId)
-    }
-  }
 
   return (
     <div
@@ -143,14 +123,15 @@ export default function MobileProposalDetailPage({
       {/* To not render double chat rooms with the desktop, which can cause issue with chat item menu */}
       {isMounted && !lgUp && selectedTab === 'grill' ? (
         <ChatRoom
-          chatId={usedChatId ?? ''}
+          chatId={chatId ?? ''}
           hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
           asContainer
           customAction={
-            !usedChatId ? (
+            !chatId ? (
               <Button
                 size='lg'
                 onClick={createDiscussion}
+                loadingText={`Please wait, it may take up to ${estimatedWaitTime} seconds`}
                 isLoading={isLoading}
               >
                 Start Discussion

@@ -8,32 +8,29 @@ import { WriteFirstComment } from '@/components/opengov/ProposalPreview'
 import { env } from '@/env.mjs'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useIsMounted from '@/hooks/useIsMounted'
-import useToastError from '@/hooks/useToastError'
 import { Proposal } from '@/server/opengov/mapper'
-import { useCreateDiscussion } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
+import { estimatedWaitTime } from '@/utils/network'
 import { PostData } from '@subsocial/api/types'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import ExternalChatItem from './ExternalChatItem'
 import ExternalSourceChatRoom from './ExternalSourceChatRoom'
-import {
-  ProposalDetailPageProps,
-  getProposalResourceId,
-} from './ProposalDetailPage'
+import { ProposalDetailPageProps } from './ProposalDetailPage'
 import ProposalStatusCard from './ProposalStatusCard'
 import ProposerSummary from './ProposerSummary'
+import { useProposalDetailContext } from './context'
 import useCommentDrawer, { CommentDrawerTab } from './hooks/useCommentDrawer'
 
 export default function DesktopProposalDetail({
-  chatId,
   proposal,
   className,
 }: ProposalDetailPageProps & { className?: string }) {
+  const { chatId } = useProposalDetailContext()
   const { allIds, isOpen, isLoading, selectedTab, setIsOpen, setSelectedTab } =
     useCommentDrawer(proposal)
 
@@ -119,7 +116,6 @@ export default function DesktopProposalDetail({
       <SidePanel
         isLoading={isLoading}
         proposal={proposal}
-        chatId={chatId ?? ''}
         hubId={env.NEXT_PUBLIC_PROPOSALS_HUB}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
@@ -217,7 +213,6 @@ function NoMessagesCard({ onClick }: { onClick: () => void }) {
 }
 
 function SidePanel({
-  chatId,
   hubId,
   proposal,
   onClose,
@@ -225,7 +220,6 @@ function SidePanel({
   setSelectedTab,
   selectedTab,
 }: {
-  chatId: string
   hubId: string
   proposal: Proposal
   onClose?: () => void
@@ -238,27 +232,7 @@ function SidePanel({
   const isMounted = useIsMounted()
   const lgUp = useBreakpointThreshold('lg')
 
-  const [usedChatId, setUsedChatId] = useState(chatId)
-  const {
-    mutateAsync,
-    error,
-    isLoading: isLoadingCreation,
-  } = useCreateDiscussion()
-  useToastError(error, 'Failed to create discussion')
-
-  const createDiscussion = async function () {
-    const { data } = await mutateAsync({
-      spaceId: env.NEXT_PUBLIC_PROPOSALS_HUB,
-      content: {
-        title: proposal.title,
-      },
-      resourceId: getProposalResourceId(proposal.id),
-    })
-    if (data?.postId) {
-      setUsedChatId(data.postId)
-    }
-  }
-
+  const { chatId, isLoading, createDiscussion } = useProposalDetailContext()
   // Should not render multiple chat rooms (along with the mobile one), because it will cause issue with chat item menu
   if (!isMounted || !lgUp) return null
 
@@ -318,11 +292,12 @@ function SidePanel({
             hubId={hubId}
             asContainer
             customAction={
-              !usedChatId ? (
+              !chatId ? (
                 <Button
                   size='lg'
                   onClick={createDiscussion}
-                  isLoading={isLoadingCreation}
+                  isLoading={isLoading}
+                  loadingText={`Please wait, it may take up to ${estimatedWaitTime} seconds`}
                 >
                   Start Discussion
                 </Button>
