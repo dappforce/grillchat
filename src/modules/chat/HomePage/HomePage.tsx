@@ -10,11 +10,7 @@ import useSearch from '@/hooks/useSearch'
 import { getOwnedPostIdsQuery } from '@/services/subsocial/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
-import {
-  accountAddressStorage,
-  useMyAccount,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
@@ -31,8 +27,6 @@ export type HomePageProps = {
 
 const hotChatsHubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
 const communityHubId = env.NEXT_PUBLIC_COMMUNITY_HUB_ID
-
-const addressFromStorage = accountAddressStorage.get()
 
 export const homePageAdditionalTabs: {
   id: string
