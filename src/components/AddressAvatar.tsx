@@ -144,7 +144,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   }
 )
 
-function IdenticonAvatar({
+export function IdenticonAvatar({
   value,
   className,
 }: {

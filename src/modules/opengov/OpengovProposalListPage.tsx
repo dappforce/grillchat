@@ -40,7 +40,7 @@ export default function OpengovProposalListPage() {
             />
           }
           dataLength={flattenedPages?.length ?? 0}
-          className='flex flex-col gap-2 p-3'
+          className='flex flex-col gap-4 px-3 py-4'
         >
           {flattenedPages.map((proposal) => (
             <div key={proposal.id}>
@@ -52,60 +52,3 @@ export default function OpengovProposalListPage() {
     </DefaultLayout>
   )
 }
-
-// type OpengovToolbarProps = {
-//   sortBy: SortProposalOption
-//   changeSortBy: (sortBy: SortProposalOption) => void
-// }
-// function OpengovToolbar({ sortBy, changeSortBy }: OpengovToolbarProps) {
-//   return (
-//     <div
-//       className={cx(
-//         'flex items-center justify-between border-b border-border-gray px-2 py-3'
-//       )}
-//     >
-//       <div className='flex items-center gap-2 text-sm'>
-//         <span className='text-text-muted'>Sort by:</span>
-//         <FloatingMenus
-//           menus={[
-//             {
-//               text: 'Request size',
-//               onClick: () => changeSortBy('request size'),
-//             },
-//             {
-//               text: 'Newest',
-//               onClick: () => changeSortBy('newest'),
-//             },
-//             {
-//               text: 'Recent comments',
-//               onClick: () => changeSortBy('recent comments'),
-//             },
-//             {
-//               text: 'Total votes',
-//               onClick: () => changeSortBy('total votes'),
-//             },
-//           ]}
-//           allowedPlacements={['bottom-start']}
-//           mainAxisOffset={4}
-//           panelSize='xs'
-//         >
-//           {(config) => {
-//             const { referenceProps, toggleDisplay, isOpen } = config || {}
-//             return (
-//               <div
-//                 {...referenceProps}
-//                 onClick={toggleDisplay}
-//                 className='flex cursor-pointer items-center gap-1 font-medium text-text-primary'
-//               >
-//                 <span className='capitalize'>{sortBy}</span>
-//                 <HiChevronDown
-//                   className={cx('transition-transform', isOpen && 'rotate-180')}
-//                 />
-//               </div>
-//             )
-//           }}
-//         </FloatingMenus>
-//       </div>
-//     </div>
-//   )
-// }
