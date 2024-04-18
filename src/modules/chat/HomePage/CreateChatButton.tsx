@@ -17,7 +17,9 @@ const CreateChatButton = () => {
 
   const chatId = chats?.[0]?.id
 
-  const { data: chat } = getPostQuery.useQuery(chatId || '')
+  const { data: chat } = getPostQuery.useQuery(chatId || '', {
+    showHiddenPost: { type: 'all' },
+  })
 
   const commonProps: Partial<ButtonProps> = {
     size: 'xs',

@@ -74,9 +74,13 @@ export default function AccountContent({
     profile?.profileSpace?.content?.experimental?.chats?.[0] as any
   )?.id
 
-  const { data: chat } = getPostQuery.useQuery(chatId || '')
+  const { data: chat } = getPostQuery.useQuery(chatId || '', {
+    showHiddenPost: { type: 'all' },
+  })
 
   const haveChat = !!chatId && chat?.struct.spaceId
+
+  console.log(haveChat, chatId, chat)
 
   const colorModeOptions = useColorModeOptions()
 
