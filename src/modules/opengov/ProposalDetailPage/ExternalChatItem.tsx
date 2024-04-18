@@ -1,6 +1,6 @@
 import PolkassemblyIcon from '@/assets/icons/polkassembly.svg'
 import SubsquareIcon from '@/assets/icons/subsquare.svg'
-import AddressAvatar, { IdenticonAvatar } from '@/components/AddressAvatar'
+import AddressAvatar from '@/components/AddressAvatar'
 import LinkText from '@/components/LinkText'
 import MdRenderer from '@/components/MdRenderer'
 import Name from '@/components/Name'
@@ -42,6 +42,10 @@ export default function ExternalChatItem({
   else if (comment.ownerId)
     userLink = `https://polkadot.subsquare.io/user/${comment.ownerId}/votes`
 
+  if (comment.username === 'none') {
+    console.log(comment)
+  }
+
   return (
     <div
       {...props}
@@ -68,9 +72,9 @@ export default function ExternalChatItem({
         ) : comment.ownerId ? (
           <AddressAvatar address={comment.ownerId} className='cursor-pointer' />
         ) : (
-          <IdenticonAvatar
+          <DefaultAvatar
             value={comment.username || comment.id}
-            className='h-9 w-9 !cursor-[inherit] rounded-full'
+            username={comment.username}
           />
         )}
       </Link>
@@ -124,7 +128,7 @@ export default function ExternalChatItem({
               parentComment={comment.parentComment}
             />
           )}
-          <div className='prose break-words text-base'>
+          <div className='prose break-words text-base dark:prose-invert'>
             <MdRenderer source={comment.content} plain />
           </div>
         </div>
@@ -154,7 +158,7 @@ function ExternalChatRepliedMessagePreview({
       style={{
         borderColor: textColor,
       }}
-      onClick={(e) => {
+      onClick={() => {
         const element = containerRef?.current?.querySelector(
           '#' + getExternalMessageItemDOMId(parentComment.id)
         )
@@ -186,4 +190,33 @@ function ExternalMessageName({ comment }: { comment: ProposalComment }) {
 
 function useRandomColorForComment(comment: ProposalComment) {
   return useRandomColor(comment.ownerId ?? comment.username ?? comment.id)
+}
+
+function DefaultAvatar({
+  username,
+  value,
+}: {
+  username: string
+  value: string
+}) {
+  const backgroundColor = useRandomColor(value, {
+    isAddress: true,
+  })
+  let initial = username?.charAt(0)
+  if (username?.includes(' ')) {
+    const [, secondWord] = username.split(' ')
+    if (secondWord && secondWord.length > 0) {
+      initial += secondWord.charAt(0)
+    }
+  }
+  initial = initial.toUpperCase()
+
+  return (
+    <div
+      className='flex h-9 w-9 !cursor-[inherit] items-center justify-center rounded-full'
+      style={{ backgroundColor }}
+    >
+      <span className='text-white'>{initial}</span>
+    </div>
+  )
 }

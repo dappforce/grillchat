@@ -36,7 +36,6 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   ) {
     const backgroundColor = useRandomColor(address, {
       isAddress: true,
-      theme: 'dark',
     })
 
     const [isAvatarError, setIsAvatarError] = useState(false)
@@ -145,7 +144,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   }
 )
 
-export function IdenticonAvatar({
+function IdenticonAvatar({
   value,
   className,
 }: {
