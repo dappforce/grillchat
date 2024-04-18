@@ -111,7 +111,7 @@ export default function MobileProposalDetailPage({
           <Button
             size='noPadding'
             variant='transparent'
-            className='flex items-center justify-center gap-2 bg-background-light p-1.5 px-4 text-sm text-text-muted'
+            className='flex items-center justify-center gap-2 border border-border-gray bg-background-light p-1.5 px-4 text-sm text-text-muted shadow-lg'
             interactive='none'
             onClick={() => setIsOpen(false)}
           >
