@@ -6,8 +6,8 @@ import HomePage, {
 } from '@/modules/chat/HomePage'
 import { AppCommonProps } from '@/pages/_app'
 import { prefetchChatPreviewsData } from '@/server/chats'
+import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
-import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 
@@ -33,9 +33,10 @@ export const getStaticProps = getCommonStaticProps<
           prefetchChatPreviewsData(queryClient, hubId)
         ),
         ...hubIds.map(async (hubId) => {
-          const res = await getPostIdsBySpaceIdQuery.fetchQuery(null, hubId)
+          const res = await getPostsBySpaceIdQuery.fetchQuery(null, hubId)
           const linkedChats = constantsConfig.linkedChatsForHubId[hubId] ?? []
-          hubsChatCount[hubId] = (res?.postIds.length ?? 0) + linkedChats.length
+          hubsChatCount[hubId] =
+            (res?.map((chat) => chat.id).length ?? 0) + linkedChats.length
         }),
       ])
     } catch (err) {

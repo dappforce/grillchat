@@ -119,7 +119,7 @@ export function isPersistentId(id: string) {
   return !isNaN(+id) && !id.startsWith('0x')
 }
 
-export async function getPostsFromDatahub(postIds: string[]) {
+export async function getPosts(postIds: string[]) {
   if (postIds.length === 0) return []
 
   const persistentIds: string[] = []
@@ -142,7 +142,7 @@ export async function getPostsFromDatahub(postIds: string[]) {
     if (datahubResPromise.status !== 'fulfilled') {
       throw new Error(datahubResPromise.reason)
     }
-    persistentPosts = datahubResPromise.value.findPosts.data.map((post) => {
+    persistentPosts = datahubResPromise.value.posts.data.map((post) => {
       return {
         ...mapDatahubPostFragment(post),
         requestedId: post.persistentId ?? undefined,
@@ -158,7 +158,7 @@ export async function getPostsFromDatahub(postIds: string[]) {
       document: GET_OPTIMISTIC_POSTS,
       variables: { ids: entityIds },
     })
-    optimisticPosts = res.findPosts.data.map((post) => {
+    optimisticPosts = res.posts.data.map((post) => {
       return { ...mapDatahubPostFragment(post), requestedId: post.id }
     })
   }

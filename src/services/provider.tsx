@@ -5,6 +5,7 @@ import {
 } from '@/subsocial-query/subsocial/config'
 import {
   Hydrate,
+  isServer,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
@@ -30,7 +31,7 @@ setupTxCallbacks({
   },
 })
 
-export const queryClient = new QueryClient({
+export let queryClient: QueryClient | null = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: Infinity,
@@ -38,6 +39,9 @@ export const queryClient = new QueryClient({
     },
   },
 })
+if (isServer) {
+  queryClient = null
+}
 
 export function QueryProvider({
   dehydratedState,
@@ -49,7 +53,7 @@ export function QueryProvider({
   const [client] = useState(() => queryClient)
 
   return (
-    <QueryClientProvider client={client}>
+    <QueryClientProvider client={client || new QueryClient()}>
       <Hydrate state={dehydratedState}>{children}</Hydrate>
     </QueryClientProvider>
   )

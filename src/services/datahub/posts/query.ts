@@ -54,9 +54,10 @@ async function getPaginatedPostsByRootPostId({
 }: {
   postId: string
   page: number
-  client?: QueryClient
+  client?: QueryClient | null
 }): Promise<PaginatedPostsData> {
-  if (!postId) return { data: [], page, hasMore: false, totalData: 0 }
+  if (!postId || !client)
+    return { data: [], page, hasMore: false, totalData: 0 }
 
   const oldIds = getPaginatedPostsByPostIdFromDatahubQuery.getFirstPageData(
     client,
@@ -386,7 +387,7 @@ async function getOwnedPosts(address: string) {
   })
   return res.posts.data.map((post) => {
     const mapped = mapDatahubPostFragment(post)
-    getPostQuery.setQueryData(queryClient, post.id, mapped)
+    if (queryClient) getPostQuery.setQueryData(queryClient, post.id, mapped)
     return mapped
   })
 }
@@ -415,7 +416,7 @@ async function getPostsBySpaceId(spaceId: string) {
   })
   const mappedPosts = res.posts.data.map((post) => {
     const mapped = mapDatahubPostFragment(post)
-    getPostQuery.setQueryData(queryClient, post.id, mapped)
+    if (queryClient) getPostQuery.setQueryData(queryClient, post.id, mapped)
     return mapped
   })
   return mappedPosts

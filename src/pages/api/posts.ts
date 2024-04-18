@@ -2,8 +2,7 @@ import { canRenderEmbed } from '@/components/chats/ChatItem/Embed'
 import { redisCallWrapper } from '@/server/cache'
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getPosts } from '@/services/subsocial/posts/fetcher'
+import { getPosts } from '@/services/datahub/posts/fetcher'
 import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { toSubsocialAddress } from '@subsocial/utils'
@@ -90,13 +89,7 @@ const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
 )
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id && !id.startsWith('optimistic-'))
-  let posts: PostData[]
-  if (isDatahubAvailable) {
-    // to bypass the invalidation cache for squid
-    posts = await getPosts(validIds)
-  } else {
-    posts = await getPostsData(validIds)
-  }
+  const posts = await getPosts(validIds)
 
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {

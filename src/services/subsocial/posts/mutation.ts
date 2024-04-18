@@ -6,10 +6,13 @@ import {
 import { getPostQuery } from '@/services/api/query'
 import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
+import {
+  getOwnedPostsQuery,
+  getPostsBySpaceIdQuery,
+} from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
 import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
-import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
@@ -17,7 +20,6 @@ import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils/mutation'
-import { getOwnedPostIdsQuery, getPostIdsBySpaceIdQuery } from './query'
 
 type Content = {
   image: string
@@ -168,12 +170,8 @@ export function useUpsertPost(
         onSuccess: async ({ data, address }, txResult) => {
           const { payload, action } = checkAction(data)
           if (action === 'create') {
-            getPostIdsBySpaceIdQuery.invalidate(client, payload.spaceId)
-            const newId = await getNewIdFromTxResult(txResult)
-            getOwnedPostIdsQuery.setQueryData(client, address, (ids) => {
-              if (!ids) return ids
-              return [...ids, newId]
-            })
+            getPostsBySpaceIdQuery.invalidate(client, payload.spaceId)
+            getOwnedPostsQuery.invalidate(client, address)
           } else if ('postId' in data && data.postId) {
             await invalidatePostServerCache(data.postId)
             getPostQuery.invalidate(client, data.postId)
