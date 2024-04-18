@@ -96,7 +96,7 @@ export const DATAHUB_POST_FRAGMENT = gql`
 const GET_POSTS = gql`
   ${DATAHUB_POST_FRAGMENT}
   query GetPosts($ids: [String!], $pageSize: Int!) {
-    findPosts(where: { persistentIds: $ids, pageSize: $pageSize }) {
+    posts(args: { filter: { persistentIds: $ids }, pageSize: $pageSize }) {
       data {
         ...DatahubPostFragment
       }
@@ -107,7 +107,7 @@ const GET_POSTS = gql`
 const GET_OPTIMISTIC_POSTS = gql`
   ${DATAHUB_POST_FRAGMENT}
   query GetOptimisticPosts($ids: [String!]) {
-    findPosts(where: { ids: $ids }) {
+    posts(args: { filter: { ids: $ids } }) {
       data {
         ...DatahubPostFragment
       }

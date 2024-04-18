@@ -5,11 +5,11 @@ import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { env } from '@/env.mjs'
-import { getPostQuery } from '@/services/api/query'
-import { getOwnedPostIdsQuery } from '@/services/subsocial/posts/query'
+import { getOwnedPostsQuery } from '@/services/datahub/posts/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
+import { PostData } from '@subsocial/api/types'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { HiOutlineEyeSlash } from 'react-icons/hi2'
@@ -43,40 +43,30 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
     }
   }, [])
 
-  const { data: ownedChatIds } = getOwnedPostIdsQuery.useQuery(address ?? '')
-
-  const { allChatIds, filteredChatIds } = useMemo(() => {
-    const owned = ownedChatIds ?? []
-    const allChatIds = Array.from(new Set([...owned]))
-    let filteredChatIds: string[] = []
-
-    if (filter === 'all') filteredChatIds = allChatIds
-    if (filter === 'created' || filter === 'hidden') filteredChatIds = owned
-
-    return { filteredChatIds, allChatIds }
-  }, [ownedChatIds, filter])
-
-  const sortedIds = useSortChatIdsByLatestMessage(filteredChatIds)
-
-  const allChatQueries = getPostQuery.useQueries(allChatIds, {
-    showHiddenPost: { type: 'owner', owner: address ?? '' },
-  })
-  const chatQueries = getPostQuery.useQueries(sortedIds, {
-    showHiddenPost: { type: 'owner', owner: address ?? '' },
-  })
-  const chats = chatQueries.map((query) => query.data)
+  const { data: ownedChats } = getOwnedPostsQuery.useQuery(address ?? '')
+  const ownedChatIds = useMemo(() => {
+    return ownedChats?.map((chat) => chat.id) ?? []
+  }, [ownedChats])
+  const sortedIds = useSortChatIdsByLatestMessage(ownedChatIds)
 
   const filteredChats = useMemo(() => {
+    if (filter === 'all') return ownedChats
     if (filter === 'hidden') {
-      return chats.filter((chat) => chat?.struct.hidden)
+      return ownedChats?.filter((chat) => chat?.struct.hidden)
     }
-    return chats.filter((chat) => !chat?.struct.hidden)
-  }, [chats, filter])
+    return ownedChats?.filter((chat) => !chat?.struct.hidden)
+  }, [ownedChats, filter])
 
-  const hasAnyHiddenChats = allChatQueries.some(
-    ({ data: chat }) => chat?.struct.hidden
-  )
-  const hasAnyMyChat = !!allChatIds.length
+  const sortedChats = useMemo(() => {
+    const chatsMap = new Map<string, PostData>()
+    filteredChats?.forEach((chat) => {
+      chatsMap.set(chat.id, chat)
+    })
+    return sortedIds.map((id) => chatsMap.get(id)).filter(Boolean) as PostData[]
+  }, [filteredChats, sortedIds])
+
+  const hasAnyHiddenChats = ownedChats?.some((chat) => chat?.struct.hidden)
+  const hasAnyMyChat = !!ownedChats?.length
 
   return (
     <div className='flex flex-col'>
@@ -101,10 +91,10 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
       {(() => {
         if (!isInitialized || filter === null) {
           return <ChatPreviewSkeleton.SkeletonList />
-        } else if (!address || filteredChats.length === 0) {
+        } else if (!address || !sortedChats?.length) {
           return <NoChats changeTab={changeTab} />
         }
-        return <ChatPreviewList chats={filteredChats} />
+        return <ChatPreviewList chats={sortedChats} />
       })()}
     </div>
   )

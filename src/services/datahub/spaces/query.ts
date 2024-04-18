@@ -1,28 +1,9 @@
-import { datahubQueryRequest } from '@/services/datahub/utils'
-import { createQuery, poolQuery } from '@/subsocial-query'
-import { SubsocialQueryData } from '@/subsocial-query/subsocial/query'
+import { poolQuery } from '@/subsocial-query'
 import { SpaceData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
+import { datahubQueryRequest } from '../utils'
 
-const getSpaceFromBlockchain = poolQuery<SubsocialQueryData<string>, SpaceData>(
-  {
-    name: 'getSpaceFromBlockchain',
-    multiCall: async (allParams) => {
-      if (allParams.length === 0) return []
-      const [{ api }] = allParams
-      const spaceIds = allParams.map(({ data }) => data).filter((id) => !!id)
-      if (spaceIds.length === 0) return []
-
-      return await api.findSpaces({ ids: spaceIds, visibility: 'onlyPublic' })
-    },
-    resultMapper: {
-      paramToKey: (param) => param.data,
-      resultToKey: (result) => result?.id ?? '',
-    },
-  }
-)
-
-// TODO: update this with correct fragment
+// TODO: update this with correct fragment and change to datahub query, also change imports for the usages
 const SPACE_FRAGMENT = gql`
   fragment SpaceFragment on Space {
     id

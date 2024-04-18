@@ -15,17 +15,23 @@ import {
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
+  GetOwnedPostsQuery,
+  GetOwnedPostsQueryVariables,
   GetPostMetadataQuery,
   GetPostMetadataQueryVariables,
+  GetPostsBySpaceIdQuery,
+  GetPostsBySpaceIdQueryVariables,
   GetUnreadCountQuery,
   GetUnreadCountQueryVariables,
   QueryOrder,
 } from '../generated-query'
+import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
+import { DATAHUB_POST_FRAGMENT } from './fetcher'
 
 const GET_COMMENT_IDS_IN_POST_ID = gql`
-  query GetCommentIdsInPostId($where: FindPostsArgs!) {
-    findPosts(where: $where) {
+  query GetCommentIdsInPostId($args: FindPostsWithFilterArgs!) {
+    posts(args: $args) {
       data {
         id
         persistentId
@@ -71,8 +77,10 @@ async function getPaginatedPostsByRootPostId({
   >({
     document: GET_COMMENT_IDS_IN_POST_ID,
     variables: {
-      where: {
-        rootPostPersistentId: postId,
+      args: {
+        filter: {
+          rootPostPersistentId: postId,
+        },
         orderBy: 'createdAtTime',
         orderDirection: QueryOrder.Desc,
         pageSize: CHAT_PER_PAGE,
@@ -81,13 +89,13 @@ async function getPaginatedPostsByRootPostId({
     },
   })
   const optimisticIds = new Set<string>()
-  const ids = res.findPosts.data.map((post) => {
+  const ids = res.posts.data.map((post) => {
     optimisticIds.add(post.optimisticId ?? '')
 
     const id = post.persistentId || post.id
     return id
   })
-  const totalData = res.findPosts.total ?? 0
+  const totalData = res.posts.total ?? 0
   const hasMore = offset + ids.length < totalData
 
   const idsSet = new Set<string>(ids)
@@ -353,5 +361,69 @@ export const getUnreadCountQuery = createQuery({
   defaultConfigGenerator: () => ({
     refetchOnWindowFocus: true,
     staleTime: 0,
+  }),
+})
+
+export const GET_OWNED_POSTS = gql`
+  ${DATAHUB_POST_FRAGMENT}
+  query GetOwnedPosts($address: String!) {
+    posts(args: { filter: { ownedByAccountAddress: $address } }) {
+      data {
+        ...DatahubPostFragment
+      }
+    }
+  }
+`
+async function getOwnedPosts(address: string) {
+  if (!address) return []
+
+  const res = await datahubQueryRequest<
+    GetOwnedPostsQuery,
+    GetOwnedPostsQueryVariables
+  >({
+    document: GET_OWNED_POSTS,
+    variables: { address },
+  })
+  return res.posts.data.map((post) => {
+    const mapped = mapDatahubPostFragment(post)
+    getPostQuery.setQueryData(queryClient, post.id, mapped)
+    return mapped
+  })
+}
+export const getOwnedPostsQuery = createQuery({
+  key: 'ownedPosts',
+  fetcher: getOwnedPosts,
+})
+
+export const GET_POSTS_BY_SPACE_ID = gql`
+  ${DATAHUB_POST_FRAGMENT}
+  query GetPostsBySpaceId($id: String!) {
+    posts(args: { filter: { spaceId: $id } }) {
+      data {
+        ...DatahubPostFragment
+      }
+    }
+  }
+`
+async function getPostsBySpaceId(spaceId: string) {
+  const res = await datahubQueryRequest<
+    GetPostsBySpaceIdQuery,
+    GetPostsBySpaceIdQueryVariables
+  >({
+    document: GET_POSTS_BY_SPACE_ID,
+    variables: { id: spaceId },
+  })
+  const mappedPosts = res.posts.data.map((post) => {
+    const mapped = mapDatahubPostFragment(post)
+    getPostQuery.setQueryData(queryClient, post.id, mapped)
+    return mapped
+  })
+  return mappedPosts
+}
+export const getPostsBySpaceIdQuery = createQuery({
+  key: 'postsBySpaceId',
+  fetcher: getPostsBySpaceId,
+  defaultConfigGenerator: (id) => ({
+    enabled: !!id,
   }),
 })

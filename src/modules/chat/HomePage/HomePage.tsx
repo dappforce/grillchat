@@ -5,11 +5,16 @@ import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
-import { getOwnedPostIdsQuery } from '@/services/subsocial/posts/query'
+import { getOwnedPostsQuery } from '@/services/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import {
+  accountAddressStorage,
+  useMyAccount,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { LocalStorage } from '@/utils/storage'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -45,6 +50,11 @@ const pathnameTabIdMapper: Record<string, number> = {
   '/hubs': 2,
 }
 
+const hasOwnedPostsStorage = new LocalStorage(
+  (address: string) => `hasOwnedPosts-${address}`
+)
+const addressFromStorage = accountAddressStorage.get()
+
 export default function HomePage(props: HomePageProps) {
   const isLoggedIn = useMyAccount((state) => !!state.address)
   const router = useRouter()
@@ -79,7 +89,19 @@ export default function HomePage(props: HomePageProps) {
   ]
 
   const myAddress = useMyMainAddress()
-  const { data: ownedChatIds } = getOwnedPostIdsQuery.useQuery(myAddress ?? '')
+  const usedAddress = myAddress || addressFromStorage || ''
+  const { data: ownedPosts, isLoading } = getOwnedPostsQuery.useQuery(
+    myAddress || addressFromStorage || ''
+  )
+
+  useEffect(() => {
+    if (isLoading) return
+    if (ownedPosts?.length) {
+      hasOwnedPostsStorage.set('true', usedAddress)
+    } else {
+      hasOwnedPostsStorage.remove(usedAddress)
+    }
+  }, [ownedPosts, isLoading, usedAddress])
 
   // If user is accessing page for the first time, we can't use the `asPath` because it will cause hydration error because of rewrites
   const currentTabId = isFirstAccessed
@@ -97,7 +119,7 @@ export default function HomePage(props: HomePageProps) {
       .replace(new RegExp(`^${env.NEXT_PUBLIC_BASE_PATH}`), '')
       .substring(1)
     if (!currentPathname) {
-      if (ownedChatIds?.length) {
+      if (hasOwnedPostsStorage.get(usedAddress)) {
         setSelectedTab(0)
         replaceUrl('/my-chats')
       } else {

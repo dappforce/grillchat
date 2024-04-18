@@ -3,7 +3,7 @@ import { env } from '@/env.mjs'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
-import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts/query'
+import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
 import { useMemo } from 'react'
 import useSortChatIdsByConfig from './useSortChatIdsByConfig'
 import useSortChatIdsByLatestMessage from './useSortChatIdsByLatestMessage'
@@ -28,13 +28,16 @@ export default function useSortedChats(
   const blockedChatIdsInHub = moderationDataInHub?.blockedResources.postId
   const blockedChatIdsInApp = moderationDataInApp?.blockedResources.postId
 
-  const { data } = getPostIdsBySpaceIdQuery.useQuery(hubId)
+  const { data } = getPostsBySpaceIdQuery.useQuery(hubId)
+  const chatIds = useMemo(() => {
+    return data?.map((chat) => chat.id) ?? []
+  }, [data])
   const allChatIds = useMemo(() => {
     return [
-      ...(data?.postIds ?? []),
+      ...(chatIds ?? []),
       ...(constantsConfig.linkedChatsForHubId[hubId] ?? []),
     ]
-  }, [data, hubId])
+  }, [chatIds, hubId])
 
   const filteredChatIds = useMemo(() => {
     const filteredWithChannels = allChatIds.filter(
@@ -68,10 +71,7 @@ export default function useSortedChats(
   const sortedByPinned = useSortChatIdsByPinned(hubId, sortedByOrder)
 
   const chatQueries = getPostQuery.useQueries(sortedByPinned)
-  const chats = useMemo(
-    () => chatQueries.map(({ data }) => data),
-    [chatQueries]
-  )
+  const chats = chatQueries.map(({ data }) => data).filter(Boolean)
 
   return { chats, allChatIds }
 }

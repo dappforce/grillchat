@@ -37,6 +37,7 @@ export type Account = {
   /** is off-chain data CID backed up in blockchain */
   backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   dataType: DataType
+  domains: Array<Domain>
   extensions: Array<ContentExtension>
   followers: Array<AccountFollowers>
   followersCount?: Maybe<Scalars['Int']['output']>
@@ -82,6 +83,27 @@ export type AccountFollowers = {
   id: Scalars['String']['output']
 }
 
+export type AccountServiceMessageInput = {
+  msg: SubscriptionServiceAccountTokenMessage
+  sig: Scalars['String']['input']
+}
+
+export type AccountServiceMessageToTargetMeta = {
+  __typename?: 'AccountServiceMessageToTargetMeta'
+  callId?: Maybe<Scalars['String']['output']>
+  callName?: Maybe<SocialCallName>
+  code: ServiceMessageStatusCode
+  extension?: Maybe<Scalars['JSON']['output']>
+  msg?: Maybe<Scalars['String']['output']>
+  targetAddress: Scalars['String']['output']
+}
+
+export type AccountServiceMessageToTargetResponse = {
+  __typename?: 'AccountServiceMessageToTargetResponse'
+  event: DataHubSubscriptionEventEnum
+  meta: AccountServiceMessageToTargetMeta
+}
+
 export enum ActiveStakingAccountRole {
   Creator = 'CREATOR',
   Staker = 'STAKER',
@@ -115,7 +137,7 @@ export type ActiveStakingSuperLike = {
   createdAtTime: Scalars['DateTime']['output']
   creatorAddress?: Maybe<Scalars['String']['output']>
   date: Scalars['BigInt']['output']
-  era: Scalars['Int']['output']
+  era?: Maybe<Scalars['Int']['output']>
   id: Scalars['String']['output']
   kind: Scalars['String']['output']
   likedPostId?: Maybe<Scalars['String']['output']>
@@ -188,6 +210,14 @@ export type AddressesRankedBySuperLikesForPeriodInput = {
   limit?: InputMaybe<Scalars['Int']['input']>
   order?: InputMaybe<ActiveStakingListOrder>
   toTime?: InputMaybe<Scalars['String']['input']>
+}
+
+export type BalancesInput = {
+  where: BalancesInputWhereArgs
+}
+
+export type BalancesInputWhereArgs = {
+  address: Scalars['String']['input']
 }
 
 export type BlockedResourceIdsBatchItem = {
@@ -333,6 +363,9 @@ export enum DataHubSubscriptionEventEnum {
   PostFollowStateUpdated = 'POST_FOLLOW_STATE_UPDATED',
   PostStateUpdated = 'POST_STATE_UPDATED',
   ServiceAccountErrorEvent = 'SERVICE_ACCOUNT_ERROR_EVENT',
+  ServiceAccountInfoEvent = 'SERVICE_ACCOUNT_INFO_EVENT',
+  ServiceAccountSuccessEvent = 'SERVICE_ACCOUNT_SUCCESS_EVENT',
+  ServiceAccountWarningEvent = 'SERVICE_ACCOUNT_WARNING_EVENT',
 }
 
 export enum DataType {
@@ -347,6 +380,41 @@ export type DateTimeDetailsResponseDto = {
   dayWithoutTime: Scalars['Int']['output']
   timestamp?: Maybe<Scalars['String']['output']>
   week?: Maybe<Scalars['Int']['output']>
+}
+
+export type Domain = {
+  __typename?: 'Domain'
+  createdAtBlock?: Maybe<Scalars['Int']['output']>
+  createdAtDate: Scalars['DateTime']['output']
+  id: Scalars['String']['output']
+  ownedByAccount: Account
+  ownershipTransfers?: Maybe<Array<DomainOwnershipTransferDetails>>
+  updatedAtBlock?: Maybe<Scalars['Int']['output']>
+  updatedAtDate?: Maybe<Scalars['DateTime']['output']>
+  value: Scalars['String']['output']
+}
+
+export type DomainOwnershipTransferDetails = {
+  __typename?: 'DomainOwnershipTransferDetails'
+  acceptedAtBlock?: Maybe<Scalars['Int']['output']>
+  acceptedAtDateTimestamp: Scalars['String']['output']
+  fromAddress: Scalars['String']['output']
+  toAddress: Scalars['String']['output']
+}
+
+export type DomainsInput = {
+  where: DomainsInputWhereArgs
+}
+
+export type DomainsInputWhereArgs = {
+  ownedByAddress?: InputMaybe<Array<Scalars['String']['input']>>
+  values?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type DomainsResponse = {
+  __typename?: 'DomainsResponse'
+  data: Array<Domain>
+  total: Scalars['Int']['output']
 }
 
 export type EvmAccount = {
@@ -377,6 +445,7 @@ export type ExtensionPinnedResource = {
 
 export type FindPostsArgs = {
   activeStaking?: InputMaybe<Scalars['Boolean']['input']>
+  createdByAccountAddress?: InputMaybe<Scalars['String']['input']>
   dataType?: InputMaybe<SocialEventDataType>
   ids?: InputMaybe<Array<Scalars['String']['input']>>
   lowValue?: InputMaybe<Scalars['Boolean']['input']>
@@ -384,7 +453,24 @@ export type FindPostsArgs = {
   optimisticIds?: InputMaybe<Array<Scalars['String']['input']>>
   orderBy?: InputMaybe<Scalars['String']['input']>
   orderDirection?: InputMaybe<QueryOrder>
+  ownedByAccountAddress?: InputMaybe<Scalars['String']['input']>
   pageSize?: InputMaybe<Scalars['Int']['input']>
+  parentPostId?: InputMaybe<Scalars['String']['input']>
+  parentPostPersistentId?: InputMaybe<Scalars['String']['input']>
+  persistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+  rootPostId?: InputMaybe<Scalars['String']['input']>
+  rootPostPersistentId?: InputMaybe<Scalars['String']['input']>
+  spaceId?: InputMaybe<Scalars['String']['input']>
+}
+
+export type FindPostsFilter = {
+  activeStaking?: InputMaybe<Scalars['Boolean']['input']>
+  createdByAccountAddress?: InputMaybe<Scalars['String']['input']>
+  dataType?: InputMaybe<SocialEventDataType>
+  ids?: InputMaybe<Array<Scalars['String']['input']>>
+  lowValue?: InputMaybe<Scalars['Boolean']['input']>
+  optimisticIds?: InputMaybe<Array<Scalars['String']['input']>>
+  ownedByAccountAddress?: InputMaybe<Scalars['String']['input']>
   parentPostId?: InputMaybe<Scalars['String']['input']>
   parentPostPersistentId?: InputMaybe<Scalars['String']['input']>
   persistentIds?: InputMaybe<Array<Scalars['String']['input']>>
@@ -399,6 +485,14 @@ export type FindPostsResponseDto = {
   offset?: Maybe<Scalars['Int']['output']>
   pageSize?: Maybe<Scalars['Int']['output']>
   total?: Maybe<Scalars['Int']['output']>
+}
+
+export type FindPostsWithFilterArgs = {
+  filter: FindPostsFilter
+  offset?: InputMaybe<Scalars['Int']['input']>
+  orderBy?: InputMaybe<Scalars['String']['input']>
+  orderDirection?: InputMaybe<QueryOrder>
+  pageSize?: InputMaybe<Scalars['Int']['input']>
 }
 
 export type GetModeratorByInput = {
@@ -433,6 +527,16 @@ export type InitModeratorInputDto = {
   ctxSpaceIds?: InputMaybe<Array<Scalars['String']['input']>>
   substrateAddress: Scalars['String']['input']
   withOrganization?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type IsBalanceSufficientForSocialActionInput = {
+  address: Scalars['String']['input']
+  socialAction: SocialAction
+}
+
+export type IsBalanceSufficientForSocialActionResponse = {
+  __typename?: 'IsBalanceSufficientForSocialActionResponse'
+  sufficient: Scalars['Boolean']['output']
 }
 
 export type LikedPostsCountByDayItem = {
@@ -819,7 +923,9 @@ export type Query = {
   activeStakingSuperLikes: SuperLikesResponseDto
   activeStakingSuperLikesNumberGoal: Scalars['Int']['output']
   activeStakingTotalActivityMetricsForFixedPeriod: TotalActivityMetricsForFixedPeriodResponseDto
+  domains: DomainsResponse
   findPosts: FindPostsResponseDto
+  isBalanceSufficientForSocialAction: IsBalanceSufficientForSocialActionResponse
   linkedIdentities: Array<LinkedIdentity>
   moderationBlockedResourceIds: Array<Scalars['String']['output']>
   moderationBlockedResourceIdsBatch: BlockedResourceIdsBatchResponse
@@ -833,6 +939,7 @@ export type Query = {
   postMetadata: Array<PostMetadataResponse>
   posts: FindPostsResponseDto
   postsViewsCounts: Array<PostViewsCountResponse>
+  socialProfileBalances?: Maybe<SocialProfileBalances>
   socialProfiles: SocialProfilesResponse
   unreadMessages: Array<UnreadPostsCountResponse>
 }
@@ -905,8 +1012,16 @@ export type QueryActiveStakingTotalActivityMetricsForFixedPeriodArgs = {
   args: TotalActivityMetricsForFixedPeriodInput
 }
 
+export type QueryDomainsArgs = {
+  args: DomainsInput
+}
+
 export type QueryFindPostsArgs = {
   where: FindPostsArgs
+}
+
+export type QueryIsBalanceSufficientForSocialActionArgs = {
+  args: IsBalanceSufficientForSocialActionInput
 }
 
 export type QueryLinkedIdentitiesArgs = {
@@ -968,11 +1083,15 @@ export type QueryPostMetadataArgs = {
 }
 
 export type QueryPostsArgs = {
-  where: FindPostsArgs
+  args: FindPostsWithFilterArgs
 }
 
 export type QueryPostsViewsCountsArgs = {
   where: PostsViewsCountsInput
+}
+
+export type QuerySocialProfileBalancesArgs = {
+  args: BalancesInput
 }
 
 export type QuerySocialProfilesArgs = {
@@ -1089,6 +1208,88 @@ export type RewardsReportItem = {
   trialCreatorAmount?: Maybe<Scalars['String']['output']>
 }
 
+export enum ServiceMessageStatusCode {
+  BadRequest = 'BAD_REQUEST',
+  Created = 'CREATED',
+  EntityNotFound = 'ENTITY_NOT_FOUND',
+  Forbidden = 'FORBIDDEN',
+  Info = 'INFO',
+  InsufficientBalance = 'INSUFFICIENT_BALANCE',
+  InternalServerError = 'INTERNAL_SERVER_ERROR',
+  Moved = 'MOVED',
+  PaymentRequired = 'PAYMENT_REQUIRED',
+  Processed = 'PROCESSED',
+  ServiceUnavailable = 'SERVICE_UNAVAILABLE',
+  TooManyRequests = 'TOO_MANY_REQUESTS',
+  Unauthorized = 'UNAUTHORIZED',
+  UnprocessableEntity = 'UNPROCESSABLE_ENTITY',
+  Updated = 'UPDATED',
+  Warning = 'WARNING',
+}
+
+export enum SocialAction {
+  CreateComment = 'CREATE_COMMENT',
+  CreateRegularPost = 'CREATE_REGULAR_POST',
+  CreateReply = 'CREATE_REPLY',
+  CreateSpace = 'CREATE_SPACE',
+  ShareComment = 'SHARE_COMMENT',
+  ShareRegularPost = 'SHARE_REGULAR_POST',
+  UpdateComment = 'UPDATE_COMMENT',
+  UpdateRegularPost = 'UPDATE_REGULAR_POST',
+  UpdateReply = 'UPDATE_REPLY',
+  UpdateSpace = 'UPDATE_SPACE',
+}
+
+export enum SocialCallName {
+  CreatePost = 'create_post',
+  CreatePostReaction = 'create_post_reaction',
+  CreateSpace = 'create_space',
+  CreateSpaceAsProfile = 'create_space_as_profile',
+  DeletePostReaction = 'delete_post_reaction',
+  ForceCreatePost = 'force_create_post',
+  ForceCreatePostReaction = 'force_create_post_reaction',
+  ForceCreateSpace = 'force_create_space',
+  ForceDeletePostReaction = 'force_delete_post_reaction',
+  ForceRegisterDomain = 'force_register_domain',
+  ForceSetInnerValue = 'force_set_inner_value',
+  ForceSetSpaceAsProfile = 'force_set_space_as_profile',
+  MovePost = 'move_post',
+  OwnershipAcceptPendingOwnership = 'ownership_accept_pending_ownership',
+  OwnershipRejectPendingOwnership = 'ownership_reject_pending_ownership',
+  OwnershipTransferOwnership = 'ownership_transfer_ownership',
+  RegisterDomain = 'register_domain',
+  ResetProfile = 'reset_profile',
+  SetDomainContent = 'set_domain_content',
+  SetInnerValue = 'set_inner_value',
+  SetOuterValue = 'set_outer_value',
+  SetPaymentBeneficiary = 'set_payment_beneficiary',
+  SetProfile = 'set_profile',
+  SynthActiveStakingCreateSuperLike = 'synth_active_staking_create_super_like',
+  SynthActiveStakingDeleteSuperLike = 'synth_active_staking_delete_super_like',
+  SynthAddPostView = 'synth_add_post_view',
+  SynthAddPostViewsBatch = 'synth_add_post_views_batch',
+  SynthCreateLinkedIdentity = 'synth_create_linked_identity',
+  SynthCreatePostTxFailed = 'synth_create_post_tx_failed',
+  SynthCreatePostTxRetry = 'synth_create_post_tx_retry',
+  SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
+  SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
+  SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
+  SynthModerationBlockResource = 'synth_moderation_block_resource',
+  SynthModerationForceAddCtxToOrganization = 'synth_moderation_force_add_ctx_to_organization',
+  SynthModerationForceAddDefaultCtxToModerator = 'synth_moderation_force_add_default_ctx_to_moderator',
+  SynthModerationForceBlockResource = 'synth_moderation_force_block_resource',
+  SynthModerationForceInitModerator = 'synth_moderation_force_init_moderator',
+  SynthModerationForceUnblockResource = 'synth_moderation_force_unblock_resource',
+  SynthModerationInitModerator = 'synth_moderation_init_moderator',
+  SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
+  SynthSocialProfileAddReferrerId = 'synth_social_profile_add_referrer_id',
+  SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
+  SynthUpdatePostTxRetry = 'synth_update_post_tx_retry',
+  UpdatePost = 'update_post',
+  UpdatePostReaction = 'update_post_reaction',
+  UpdateSpace = 'update_space',
+}
+
 export enum SocialEventDataType {
   OffChain = 'offChain',
   Optimistic = 'optimistic',
@@ -1101,10 +1302,19 @@ export type SocialProfile = {
   activeStakingTrial: Scalars['Boolean']['output']
   activeStakingTrialFinishedAtTime?: Maybe<Scalars['DateTime']['output']>
   activeStakingTrialStartedAtTime?: Maybe<Scalars['DateTime']['output']>
+  balances?: Maybe<SocialProfileBalances>
   id: Scalars['String']['output']
   notificationsAccountLinks?: Maybe<Array<NotificationsAccountsLink>>
   notificationsSettings?: Maybe<NotificationsSettings>
   referrersList?: Maybe<Array<UserReferrerDetail>>
+}
+
+export type SocialProfileBalances = {
+  __typename?: 'SocialProfileBalances'
+  activeStakingTempReward: Scalars['String']['output']
+  activeStakingTempToken: Scalars['String']['output']
+  activeStakingTempTokenInitial: Scalars['String']['output']
+  id: Scalars['String']['output']
 }
 
 export type SocialProfileInput = {
@@ -1129,6 +1339,7 @@ export type Space = {
   createdAtBlock?: Maybe<Scalars['Int']['output']>
   createdAtTime?: Maybe<Scalars['DateTime']['output']>
   createdByAccount: Account
+  dataType: DataType
   email?: Maybe<Scalars['String']['output']>
   experimental?: Maybe<Scalars['JSON']['output']>
   followers: Array<SpaceFollowers>
@@ -1142,7 +1353,9 @@ export type Space = {
   isShowMore: Scalars['Boolean']['output']
   linksOriginal?: Maybe<Scalars['String']['output']>
   name?: Maybe<Scalars['String']['output']>
+  optimisticId?: Maybe<Scalars['String']['output']>
   ownedByAccount: Account
+  persistentId?: Maybe<Scalars['String']['output']>
   pinnedByExtensions?: Maybe<Array<ExtensionPinnedResource>>
   posts?: Maybe<Post>
   postsCount?: Maybe<Scalars['Int']['output']>
@@ -1197,6 +1410,16 @@ export type Subscription = {
   moderationModerator: ModeratorSubscriptionPayload
   moderationOrganization: ModerationOrganizationSubscriptionPayload
   post: PostSubscriptionPayload
+  serviceMessageToTarget: AccountServiceMessageToTargetResponse
+}
+
+export type SubscriptionServiceMessageToTargetArgs = {
+  args: AccountServiceMessageInput
+}
+
+export type SubscriptionServiceAccountTokenMessage = {
+  address: Scalars['String']['input']
+  timestamp: Scalars['String']['input']
 }
 
 export type SuperLikeCountByDateResponseDto = {
@@ -1710,7 +1933,7 @@ export type GetPostsQueryVariables = Exact<{
 
 export type GetPostsQuery = {
   __typename?: 'Query'
-  findPosts: {
+  posts: {
     __typename?: 'FindPostsResponseDto'
     data: Array<{
       __typename?: 'Post'
@@ -1790,7 +2013,7 @@ export type GetOptimisticPostsQueryVariables = Exact<{
 
 export type GetOptimisticPostsQuery = {
   __typename?: 'Query'
-  findPosts: {
+  posts: {
     __typename?: 'FindPostsResponseDto'
     data: Array<{
       __typename?: 'Post'
@@ -1863,12 +2086,12 @@ export type GetOptimisticPostsQuery = {
 }
 
 export type GetCommentIdsInPostIdQueryVariables = Exact<{
-  where: FindPostsArgs
+  args: FindPostsWithFilterArgs
 }>
 
 export type GetCommentIdsInPostIdQuery = {
   __typename?: 'Query'
-  findPosts: {
+  posts: {
     __typename?: 'FindPostsResponseDto'
     total?: number | null
     data: Array<{
@@ -1910,6 +2133,162 @@ export type GetUnreadCountQuery = {
     id: string
     unreadCount: number
   }>
+}
+
+export type GetOwnedPostsQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetOwnedPostsQuery = {
+  __typename?: 'Query'
+  posts: {
+    __typename?: 'FindPostsResponseDto'
+    data: Array<{
+      __typename?: 'Post'
+      id: string
+      optimisticId?: string | null
+      dataType: DataType
+      content?: string | null
+      createdAtBlock?: number | null
+      createdAtTime?: any | null
+      title?: string | null
+      body?: string | null
+      summary?: string | null
+      isShowMore: boolean
+      image?: string | null
+      link?: string | null
+      hidden: boolean
+      persistentId?: string | null
+      blockchainSyncFailed: boolean
+      isComment: boolean
+      kind: PostKind
+      updatedAtTime?: any | null
+      canonical?: string | null
+      tagsOriginal?: string | null
+      followersCount?: number | null
+      inReplyToKind?: InReplyToKind | null
+      createdByAccount: { __typename?: 'Account'; id: string }
+      ownedByAccount: { __typename?: 'Account'; id: string }
+      space?: { __typename?: 'Space'; id: string } | null
+      rootPost?: {
+        __typename?: 'Post'
+        persistentId?: string | null
+        space?: { __typename?: 'Space'; id: string } | null
+      } | null
+      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
+      inReplyToPost?: {
+        __typename?: 'Post'
+        persistentId?: string | null
+      } | null
+      extensions: Array<{
+        __typename?: 'ContentExtension'
+        image?: string | null
+        amount?: string | null
+        chain?: string | null
+        collectionId?: string | null
+        decimals?: number | null
+        extensionSchemaId: ContentExtensionSchemaId
+        id: string
+        nftId?: string | null
+        token?: string | null
+        txHash?: string | null
+        message?: string | null
+        nonce?: string | null
+        url?: string | null
+        recipient?: { __typename?: 'Account'; id: string } | null
+        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
+        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
+        fromSubstrate?: { __typename?: 'Account'; id: string } | null
+        toSubstrate?: { __typename?: 'Account'; id: string } | null
+        pinnedResources?: Array<{
+          __typename?: 'ExtensionPinnedResource'
+          post?: {
+            __typename?: 'Post'
+            id: string
+            persistentId?: string | null
+          } | null
+        }> | null
+      }>
+    }>
+  }
+}
+
+export type GetPostsBySpaceIdQueryVariables = Exact<{
+  id: Scalars['String']['input']
+}>
+
+export type GetPostsBySpaceIdQuery = {
+  __typename?: 'Query'
+  posts: {
+    __typename?: 'FindPostsResponseDto'
+    data: Array<{
+      __typename?: 'Post'
+      id: string
+      optimisticId?: string | null
+      dataType: DataType
+      content?: string | null
+      createdAtBlock?: number | null
+      createdAtTime?: any | null
+      title?: string | null
+      body?: string | null
+      summary?: string | null
+      isShowMore: boolean
+      image?: string | null
+      link?: string | null
+      hidden: boolean
+      persistentId?: string | null
+      blockchainSyncFailed: boolean
+      isComment: boolean
+      kind: PostKind
+      updatedAtTime?: any | null
+      canonical?: string | null
+      tagsOriginal?: string | null
+      followersCount?: number | null
+      inReplyToKind?: InReplyToKind | null
+      createdByAccount: { __typename?: 'Account'; id: string }
+      ownedByAccount: { __typename?: 'Account'; id: string }
+      space?: { __typename?: 'Space'; id: string } | null
+      rootPost?: {
+        __typename?: 'Post'
+        persistentId?: string | null
+        space?: { __typename?: 'Space'; id: string } | null
+      } | null
+      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
+      inReplyToPost?: {
+        __typename?: 'Post'
+        persistentId?: string | null
+      } | null
+      extensions: Array<{
+        __typename?: 'ContentExtension'
+        image?: string | null
+        amount?: string | null
+        chain?: string | null
+        collectionId?: string | null
+        decimals?: number | null
+        extensionSchemaId: ContentExtensionSchemaId
+        id: string
+        nftId?: string | null
+        token?: string | null
+        txHash?: string | null
+        message?: string | null
+        nonce?: string | null
+        url?: string | null
+        recipient?: { __typename?: 'Account'; id: string } | null
+        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
+        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
+        fromSubstrate?: { __typename?: 'Account'; id: string } | null
+        toSubstrate?: { __typename?: 'Account'; id: string } | null
+        pinnedResources?: Array<{
+          __typename?: 'ExtensionPinnedResource'
+          post?: {
+            __typename?: 'Post'
+            id: string
+            persistentId?: string | null
+          } | null
+        }> | null
+      }>
+    }>
+  }
 }
 
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
@@ -2265,7 +2644,7 @@ export const SubscribeBlockedResources = gql`
 `
 export const GetPosts = gql`
   query GetPosts($ids: [String!], $pageSize: Int!) {
-    findPosts(where: { persistentIds: $ids, pageSize: $pageSize }) {
+    posts(args: { filter: { persistentIds: $ids }, pageSize: $pageSize }) {
       data {
         ...DatahubPostFragment
       }
@@ -2275,7 +2654,7 @@ export const GetPosts = gql`
 `
 export const GetOptimisticPosts = gql`
   query GetOptimisticPosts($ids: [String!]) {
-    findPosts(where: { ids: $ids }) {
+    posts(args: { filter: { ids: $ids } }) {
       data {
         ...DatahubPostFragment
       }
@@ -2284,8 +2663,8 @@ export const GetOptimisticPosts = gql`
   ${DatahubPostFragment}
 `
 export const GetCommentIdsInPostId = gql`
-  query GetCommentIdsInPostId($where: FindPostsArgs!) {
-    findPosts(where: $where) {
+  query GetCommentIdsInPostId($args: FindPostsWithFilterArgs!) {
+    posts(args: $args) {
       data {
         id
         persistentId
@@ -2315,6 +2694,26 @@ export const GetUnreadCount = gql`
       unreadCount
     }
   }
+`
+export const GetOwnedPosts = gql`
+  query GetOwnedPosts($address: String!) {
+    posts(args: { filter: { ownedByAccountAddress: $address } }) {
+      data {
+        ...DatahubPostFragment
+      }
+    }
+  }
+  ${DatahubPostFragment}
+`
+export const GetPostsBySpaceId = gql`
+  query GetPostsBySpaceId($id: String!) {
+    posts(args: { filter: { spaceId: $id } }) {
+      data {
+        ...DatahubPostFragment
+      }
+    }
+  }
+  ${DatahubPostFragment}
 `
 export const SubscribePost = gql`
   subscription SubscribePost {

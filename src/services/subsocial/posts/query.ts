@@ -1,5 +1,4 @@
 import { createQuery, poolQuery } from '@/subsocial-query'
-import { gql } from 'graphql-request'
 import { getPostIdsBySpaceIds } from './fetcher'
 
 const getPostIdsBySpaceId = poolQuery<
@@ -19,29 +18,4 @@ const getPostIdsBySpaceId = poolQuery<
 export const getPostIdsBySpaceIdQuery = createQuery({
   key: 'postIdsBySpaceId',
   fetcher: getPostIdsBySpaceId,
-})
-
-// TODO: change impl to datahub
-export const GET_OWNED_POST_IDS = gql`
-  query GetOwnedPostIds($address: String!) {
-    posts(where: { ownedByAccount: { id_eq: $address }, isComment_eq: false }) {
-      id
-    }
-  }
-`
-async function getOwnedPostIds(address: string) {
-  if (!address) return []
-
-  const res = await squidRequest<
-    GetOwnedPostIdsQuery,
-    GetOwnedPostIdsQueryVariables
-  >({
-    document: GET_OWNED_POST_IDS,
-    variables: { address },
-  })
-  return res.posts.map(({ id }) => id)
-}
-export const getOwnedPostIdsQuery = createQuery({
-  key: 'ownedPostIds',
-  fetcher: getOwnedPostIds,
 })

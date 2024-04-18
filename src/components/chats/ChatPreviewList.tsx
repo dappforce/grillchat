@@ -11,7 +11,7 @@ import ChatPreview, { ChatPreviewProps } from './ChatPreview'
 
 export type ChatPreviewListProps = ComponentProps<'div'> &
   Pick<ChatPreviewProps, 'chatInfo' | 'hubId'> & {
-    chats: (PostData | undefined | null)[]
+    chats: PostData[]
     focusedElementIndex?: number
   }
 
