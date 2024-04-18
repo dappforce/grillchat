@@ -31,15 +31,15 @@ export default function ProposalStatusCard({
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>
       <div className='flex items-center justify-between gap-4'>
-        <span className='font-medium'>Status</span>
-        <ProposalStatus withBg className='text-sm' proposal={proposal} />
+        <span className='text-lg font-medium'>Status</span>
+        <ProposalStatus withBg proposal={proposal} />
       </div>
       <div className='flex items-center gap-6'>
-        <VoteSummary className='h-20 w-20' proposal={proposal} />
+        <VoteSummary size='large' className='h-20 w-20' proposal={proposal} />
         <div className='flex w-full flex-col'>
-          <div className='flex items-center justify-between gap-2 text-sm'>
+          <div className='flex items-center justify-between gap-2'>
             <div className='flex items-center gap-1'>
-              <FaCheck className='text-base text-[#5EC269]' />
+              <FaCheck className='relative top-px text-base text-[#5EC269]' />
               <span>
                 Aye{' '}
                 <span className='text-text-muted'>
@@ -50,9 +50,9 @@ export default function ProposalStatusCard({
             <span>{formatBalanceWithDecimals(proposal.tally.ayes)} DOT</span>
           </div>
           <div className='my-3 w-full border-b border-border-gray/70' />
-          <div className='flex items-center justify-between gap-2 text-sm'>
+          <div className='flex items-center justify-between gap-2'>
             <div className='flex items-center gap-1'>
-              <FaXmark className='text-base text-text-red' />
+              <FaXmark className='relative top-px text-base text-text-red' />
               <span>
                 Nay{' '}
                 <span className='text-text-muted'>
@@ -73,7 +73,7 @@ export default function ProposalStatusCard({
         <SupportBar proposal={proposal} />
       </div>
       <div className='flex flex-col gap-2.5'>
-        <div className='flex items-center justify-between gap-4 text-sm'>
+        <div className='flex items-center justify-between gap-4'>
           <div className='flex items-center gap-2'>
             <SupportIcon className='text-text-muted' />
             <span>Support</span>
@@ -84,7 +84,7 @@ export default function ProposalStatusCard({
           <span>≈ {formatBalanceWithDecimals(proposal.tally.support)} DOT</span>
         </div>
         <div className='w-full border-b border-border-gray/70' />
-        <div className='flex items-center justify-between gap-4 text-sm'>
+        <div className='flex items-center justify-between gap-4'>
           <div className='flex items-center gap-2'>
             <IssuanceIcon className='text-text-muted' />
             <span>Issuance</span>
@@ -95,7 +95,7 @@ export default function ProposalStatusCard({
         </div>
       </div>
       <ActionCard
-        className='p-0 text-sm'
+        className='p-0'
         actions={[
           {
             icon: (className) => (
@@ -162,7 +162,7 @@ function StatusProgressBar({
 
   return (
     <div className='flex flex-col gap-2'>
-      <div className='flex items-center justify-between gap-4 text-sm'>
+      <div className='flex items-center justify-between gap-4'>
         <span className='text-text-muted'>{title}</span>
         <span>
           <span className='text-text-muted'>{currentDayElapsed} / </span>

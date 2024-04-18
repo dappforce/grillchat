@@ -25,7 +25,7 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
   const parsedMarkThreshold = parseFloat(markThreshold)
 
   return (
-    <div className='flex flex-col gap-2 text-sm'>
+    <div className='flex flex-col gap-2'>
       <div className='relative grid grid-cols-2 justify-between gap-2 whitespace-nowrap'>
         <span>0.0%</span>
         <span className='text-right'>{getSupportPercentage(progressMax)}</span>

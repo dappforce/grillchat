@@ -67,7 +67,7 @@ function NavbarChatInfo({
           setIsOpenModal(true)
         }}
       >
-        <VoteSummary proposal={proposal} className='h-10 w-10' type='small' />
+        <VoteSummary proposal={proposal} className='h-10 w-10' size='small' />
         <div className='flex flex-col'>
           <div className='flex items-center gap-2'>
             <span className='line-clamp-1 font-medium'>{proposal.title}</span>

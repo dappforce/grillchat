@@ -8,11 +8,11 @@ Chart.register(ArcElement)
 export default function VoteSummary({
   proposal,
   className,
-  type = 'default',
+  size = 'default',
 }: {
   proposal: Proposal
   className?: string
-  type?: 'default' | 'small'
+  size?: 'large' | 'default' | 'small'
 }) {
   let ayePercentage = 0
   let nayPercentage = 0
@@ -49,12 +49,13 @@ export default function VoteSummary({
           <span
             className={cx(
               'text-sm font-medium text-black dark:text-white',
-              type === 'small' && 'text-xs'
+              size === 'small' && 'text-xs',
+              size === 'large' && 'text-base'
             )}
           >
             {displayedPercentage}%
           </span>
-          {type === 'default' && (
+          {size === 'default' && (
             <span className='text-xs text-text-muted'>
               {isAye ? 'Aye' : 'Nay'}
             </span>
