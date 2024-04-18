@@ -30,6 +30,9 @@ export type UpsertChatFormProps = ComponentProps<'form'> &
   (InsertAdditionalProps | UpdateAdditionalProps) & {
     onSuccess?: () => void
     onTxSuccess?: () => void
+    customModalStates?: {
+      onLoading: () => void
+    }
   }
 
 const formSchema = z.object({
@@ -49,9 +52,15 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     (state) => state.setSubscriptionState
   )
 
-  const { chat, hubId, onSuccess, onTxSuccess, ...otherProps } =
-    props as UpsertChatFormProps &
-      Partial<InsertAdditionalProps & UpdateAdditionalProps>
+  const {
+    chat,
+    hubId,
+    onSuccess,
+    onTxSuccess,
+    customModalStates,
+    ...otherProps
+  } = props as UpsertChatFormProps &
+    Partial<InsertAdditionalProps & UpdateAdditionalProps>
 
   const { data } = getSpaceQuery.useQuery(hubId || '')
 
@@ -85,7 +94,9 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
           config={{
             txCallbacks: {
               onStart: () => {
-                openModal({ defaultOpenState: 'loading' })
+                customModalStates
+                  ? customModalStates.onLoading()
+                  : openModal({ defaultOpenState: 'loading' })
               },
               onSuccess: async (_data, txResult) => {
                 if (isUpdating || !myAddress) return
@@ -97,7 +108,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
                 const spaceContent = data?.content
 
                 if (spaceContent && hubId) {
-                  const chats = (spaceContent as any).chats ?? []
+                  const chats = (spaceContent as any)?.chats ?? []
 
                   const { name, about, links, image, tags } = spaceContent
 

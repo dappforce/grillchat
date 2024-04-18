@@ -5,17 +5,12 @@ import {
 import Modal from '../modals/Modal'
 
 import { communityHubId } from '@/modules/chat/HomePage'
-import { getPostQuery } from '@/services/api/query'
-import { useSubscriptionState } from '@/stores/subscription'
-import { getChatPageLink, getWidgetChatPageLink } from '@/utils/links'
-import { sendMessageToParentWindow } from '@/utils/window'
 import { PostData } from '@subsocial/api/types'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import urlJoin from 'url-join'
 import ChooseCommunityTypeContent from './content/ChooseCommunityType'
 import LoadingContent from './content/LoadingContent'
 import UpsertChatForm, { UpsertChatFormProps } from './content/UpsertChatForm'
+import useRedirectToNewChatPage from './useRedirectToNewChatPage'
 
 const chatContentByStep: {
   [key in CreateChatModalState]: (props: UpsertChatFormProps) => JSX.Element
@@ -51,7 +46,7 @@ export type NewCommunityModalProps = {
 
 const NewCommunityModal = ({
   hubId = communityHubId,
-  withBackButton = true,
+  withBackButton,
   chat,
   customOnClose,
   onBackClick: customOnBackClick,
@@ -60,23 +55,14 @@ const NewCommunityModal = ({
     openModal,
     isOpen,
     defaultOpenState,
-    newChatId,
     closeModal,
     onBackClick: storeOnBackClick,
   } = useCreateChatModal()
-  const router = useRouter()
   const [isWidget, setIsWidget] = useState(false)
 
   // even after the tx succeed, datahub needs some time to process the data from squid, so there is some kind of delay before the post is ready to be fetched
   // if we don't use this hack, the user will be redirected to chat page with empty data
   // so we need to wait for the post to be ready and then redirect the user
-  const { data: newChat } = getPostQuery.useQuery(newChatId || '', {
-    enabled: !!newChatId,
-  })
-
-  const setSubscriptionState = useSubscriptionState(
-    (state) => state.setSubscriptionState
-  )
 
   useEffect(() => {
     const isWidget = window.location.pathname.includes('/widget')
@@ -84,29 +70,7 @@ const NewCommunityModal = ({
     setIsWidget(isWidget)
   }, [])
 
-  useEffect(() => {
-    if (newChat) {
-      const chatId = newChat.id
-      async function onSuccessChatCreation() {
-        const isWidget = window.location.pathname.includes('/widget')
-
-        if (isWidget) {
-          sendMessageToParentWindow(
-            'redirect-hard',
-            `${getWidgetChatPageLink({ query: {} }, chatId, hubId)}/?new=true`
-          )
-        } else {
-          await router.push(
-            urlJoin(getChatPageLink({ query: {} }, chatId, hubId), '?new=true')
-          )
-        }
-      }
-      onSuccessChatCreation()
-      setSubscriptionState('post', 'dynamic')
-      closeModal()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newChat, hubId, router])
+  useRedirectToNewChatPage(hubId, closeModal)
 
   const Content = chatContentByStep[defaultOpenState || 'new-comunity']
 
@@ -123,15 +87,18 @@ const NewCommunityModal = ({
       ? () => openModal({ defaultOpenState: 'new-comunity' })
       : undefined
 
+  const onBack = withBackButton
+    ? customOnBackClick
+      ? customOnBackClick
+      : onBackClick
+    : undefined
+
   return (
     <Modal
       isOpen={isOpen}
       title={title}
       withCloseButton
-      onBackClick={
-        storeOnBackClick ||
-        (customOnBackClick ? customOnBackClick : onBackClick)
-      }
+      onBackClick={storeOnBackClick || onBack}
       closeModal={
         customOnClose
           ? () => {

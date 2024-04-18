@@ -1,6 +1,4 @@
-import Button from '@/components/Button'
 import Tabs, { TabsProps } from '@/components/Tabs'
-import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
@@ -8,7 +6,6 @@ import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useSendEvent } from '@/stores/analytics'
-import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useLocation } from '@/stores/location'
 import {
   accountAddressStorage,
@@ -21,6 +18,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import urlJoin from 'url-join'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
+import CreateChatButton from './CreateChatButton'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
@@ -141,8 +139,6 @@ export default function HomePage(props: HomePageProps) {
       })
   }
 
-  const { openModal } = useCreateChatModal()
-
   return (
     <DefaultLayout
       withSidebar
@@ -191,21 +187,7 @@ export default function HomePage(props: HomePageProps) {
             isLoggedIn &&
             communityHubId && (
               <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
-                <Button
-                  size='xs'
-                  variant='primary'
-                  className='flex items-center gap-2'
-                  onClick={() => {
-                    openModal({ defaultOpenState: 'new-comunity' })
-                    sendEvent('create_chat_clicked', {
-                      eventSource: 'home',
-                    })
-                  }}
-                >
-                  Create Chat
-                  {/* <CommunityAddIcon className='text-text-muted-on-primary' /> */}
-                  {/* <span>New</span> */}
-                </Button>
+                <CreateChatButton />
               </div>
             )
           }
@@ -216,8 +198,6 @@ export default function HomePage(props: HomePageProps) {
           }}
         />
       </SearchChannelsWrapper>
-
-      {communityHubId && <NewCommunityModal hubId={communityHubId} />}
     </DefaultLayout>
   )
 }

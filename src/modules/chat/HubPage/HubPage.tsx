@@ -1,7 +1,5 @@
-import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
-import NewCommunityModal from '@/components/community/NewCommunityModal'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { isCommunityHubId } from '@/constants/config'
@@ -18,6 +16,7 @@ import {
   HiOutlineClock,
   HiOutlineUsers,
 } from 'react-icons/hi2'
+import CreateChatButton from '../HomePage/CreateChatButton'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import useSortedChats, {
   SortChatOption,
@@ -173,24 +172,8 @@ function CommunityHubToolbar({
             }}
           </FloatingMenus>
         </div>
-        <Button
-          size='xs'
-          variant='primary'
-          className={cx(
-            'flex items-center gap-2 text-sm',
-            !isLoggedIn && 'pointer-events-none select-none opacity-0'
-          )}
-          onClick={() => {
-            openModal({ defaultOpenState: 'new-comunity' })
-            sendEvent('create_chat_clicked', { eventSource: 'hub' })
-          }}
-        >
-          {/* <CommunityAddIcon className='text-text-muted-on-primary' /> */}
-          {/* <span>New</span> */}
-          Create Chat
-        </Button>
+        <CreateChatButton />
       </Container>
-      <NewCommunityModal hubId={hubId} />
     </>
   )
 }

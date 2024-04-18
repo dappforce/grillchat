@@ -9,16 +9,16 @@ import MenuList, { MenuListProps } from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import { getProfileQuery } from '@/services/api/query'
+import { getPostQuery, getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
@@ -44,9 +44,7 @@ export default function AccountContent({
 }: ProfileModalContentProps) {
   const canUseGrillKey = useCanUseGrillKey()
   const isInIframe = useIsInIframe()
-  const { closeModal, openModal } = useProfileModal()
-  const { openModal: openCreateChatModal, closeModal: closeCreateChatModal } =
-    useCreateChatModal()
+  const { closeModal } = useProfileModal()
   const router = useRouter()
 
   const {
@@ -76,7 +74,9 @@ export default function AccountContent({
     profile?.profileSpace?.content?.experimental?.chats?.[0] as any
   )?.id
 
-  const haveChat = !!chatId
+  const { data: chat } = getPostQuery.useQuery(chatId || '')
+
+  const haveChat = !!chatId && chat?.struct.spaceId
 
   const colorModeOptions = useColorModeOptions()
 
@@ -122,9 +122,19 @@ export default function AccountContent({
           {
             text: 'Creator Chat',
             icon: FaRegUser,
-            onClick: () => {
+            onClick: (e: any) => {
               closeModal()
-              router.replace(`/${profile?.profileSpace?.id}/${chatId}`)
+
+              const createChatLink = `/${profile?.profileSpace?.id}/${chatId}`
+              if (getIsAnIframeInSameOrigin()) {
+                e.preventDefault()
+                sendMessageToParentWindow(
+                  'redirect-hard',
+                  `/c${createChatLink}`
+                )
+              } else {
+                router.push(createChatLink)
+              }
             },
           },
         ]
@@ -133,17 +143,7 @@ export default function AccountContent({
             text: 'Create Chat',
             icon: FaRegUser,
             onClick: () => {
-              closeModal()
-
-              openCreateChatModal({
-                defaultOpenState: 'create-chat',
-                onBackClick: () => {
-                  closeCreateChatModal()
-
-                  openModal()
-                  setCurrentState('account')
-                },
-              })
+              setCurrentState('create-chat')
             },
           },
         ]),
@@ -252,6 +252,7 @@ export default function AccountContent({
           </div>
         </div>
         <MenuList menus={menus} />
+        <NewCommunityModal hubId={profile?.profileSpace?.id} />
       </div>
     </>
   )

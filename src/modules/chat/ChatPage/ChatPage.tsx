@@ -311,7 +311,7 @@ function NavbarChatInfo({
     const { content: spaceContent } = space || {}
 
     const chats =
-      ((spaceContent as any)?.experimental.chats as { id: string }[]) ||
+      ((spaceContent as any)?.experimental?.chats as { id: string }[]) ||
       undefined
 
     const isProfileChat = chats?.[0]?.id === chatId
