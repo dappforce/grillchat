@@ -257,7 +257,7 @@ function SidePanel({
       >
         <Button
           size='circle'
-          variant='white'
+          variant='bgLighter'
           className='absolute -left-2 top-2 -translate-x-full rounded-md'
           onClick={onClose}
         >
