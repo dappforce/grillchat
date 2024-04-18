@@ -15,6 +15,8 @@ const CreateChatButton = () => {
 
   const chats = profile?.profileSpace?.content?.experimental?.chats
 
+  console.log('Profile', profile)
+
   const chatId = chats?.[0]?.id
 
   const { data: chat } = getPostQuery.useQuery(chatId || '', {
