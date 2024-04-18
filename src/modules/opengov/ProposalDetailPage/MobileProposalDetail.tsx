@@ -141,6 +141,7 @@ export default function MobileProposalDetailPage({
         />
       ) : (
         <ExternalSourceChatRoom
+          proposal={proposal}
           comments={proposal.comments}
           switchToGrillTab={() => setSelectedTab('grill')}
         />

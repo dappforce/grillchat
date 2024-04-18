@@ -1,6 +1,7 @@
 import { redisCallWrapper } from '@/server/cache'
 import { handlerWrapper } from '@/server/common'
 import {
+  PolkassemblyComment,
   Proposal,
   SubsquareComment,
   SubsquareProposal,
@@ -51,7 +52,8 @@ export async function getProposalDetailServer({
 }): Promise<ApiProposalsResponse> {
   let proposal: SubsquareProposal
   let votesData: SubsquareVote[]
-  let comments: SubsquareComment[]
+  let polkassemblyComments: PolkassemblyComment[]
+  let subsquareComments: SubsquareComment[]
 
   const cachedData = await redisCallWrapper(async (redis) => {
     const data = await redis?.get(getProposalDetailRedisKey(id.toString()))
@@ -59,37 +61,47 @@ export async function getProposalDetailServer({
       ? (JSON.parse(data) as {
           proposal: SubsquareProposal
           votesData: SubsquareVote[]
-          comments: SubsquareComment[]
+          polkassemblyComments: PolkassemblyComment[]
+          subsquareComments: SubsquareComment[]
         })
       : null
   })
   if (cachedData) {
     proposal = cachedData.proposal
     votesData = cachedData.votesData
-    comments = cachedData.comments
+    polkassemblyComments = cachedData.polkassemblyComments
+    subsquareComments = cachedData.subsquareComments
   } else {
-    const [res, votesRes, commentsRes] = await Promise.all([
-      subsquareApi.get(`/gov2/referendums/${id}`),
-      subsquareApi.get(`/gov2/referenda/${id}/votes`),
-      subsquareApi.get(
-        `/polkassembly-comments?post_id=${id}&post_type=ReferendumV2`
-      ),
-    ] as const)
+    const [res, votesRes, polkassemblyCommentsRes, subsquareCommentsRes] =
+      await Promise.all([
+        subsquareApi.get(`/gov2/referendums/${id}`),
+        subsquareApi.get(`/gov2/referenda/${id}/votes`),
+        subsquareApi.get(
+          `/polkassembly-comments?post_id=${id}&post_type=ReferendumV2`
+        ),
+        subsquareApi.get(`/gov2/referendums/${id}/comments`),
+      ] as const)
     proposal = res.data as SubsquareProposal
     votesData = (votesRes.data ?? []) as SubsquareVote[]
-    comments = (commentsRes.data.comments ?? []) as SubsquareComment[]
+    polkassemblyComments = (polkassemblyCommentsRes.data.comments ??
+      []) as PolkassemblyComment[]
+    subsquareComments = (subsquareCommentsRes.data.items ??
+      []) as SubsquareComment[]
 
     await redisCallWrapper(async (redis) => {
       return redis?.set(
         getProposalDetailRedisKey(id.toString()),
-        JSON.stringify({ proposal, votesData, comments }),
+        JSON.stringify({ proposal, votesData, polkassemblyComments }),
         'EX',
         PROPOSAL_DETAIL_MAX_AGE
       )
     })
   }
 
-  const mapped = await mapSubsquareProposalToProposal(proposal, comments)
+  const mapped = await mapSubsquareProposalToProposal(proposal, {
+    polkassembly: polkassemblyComments,
+    subsquare: subsquareComments,
+  })
   const allVotes = votesData
     .reduce((result, vote) => {
       if (vote.isSplit) {

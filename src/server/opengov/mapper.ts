@@ -36,7 +36,7 @@ export type CurveType =
     }
 
 export type CommentSource = 'polkassembly' | 'subsquare'
-type SubsquareCommentWithoutReplies = {
+type PolkassemblyCommentWithoutReplies = {
   comment_source: CommentSource
   id: string
   post_index: number
@@ -48,8 +48,20 @@ type SubsquareCommentWithoutReplies = {
     image: string
   }
 }
-export type SubsquareComment = SubsquareCommentWithoutReplies & {
-  replies: SubsquareCommentWithoutReplies[] | null
+export type PolkassemblyComment = PolkassemblyCommentWithoutReplies & {
+  replies: PolkassemblyCommentWithoutReplies[] | null
+}
+
+export type SubsquareComment = {
+  _id: string
+  content: string
+  author: {
+    address: '16aaWd4vq3qyrrQKRXDs6VueMrJttjGg8wfs2wmWFKshc5BM'
+  }
+  height: 1
+  createdAt: '2024-03-21T17:41:43.801Z'
+  updatedAt: '2024-03-21T17:41:43.801Z'
+  replies: SubsquareComment[]
 }
 export type SubsquareProposal = {
   title: string
@@ -148,6 +160,7 @@ export type ProposalComment = {
   source: CommentSource
   createdAt: string
   ownerId: string
+  redirectLink: string
   profile: {
     image: string
   } | null
@@ -197,7 +210,10 @@ export type Proposal = {
 
 export async function mapSubsquareProposalToProposal(
   proposal: SubsquareProposal,
-  comments?: SubsquareComment[]
+  comments?: {
+    polkassembly: PolkassemblyComment[]
+    subsquare: SubsquareComment[]
+  }
 ): Promise<Proposal> {
   const chatId = await getDiscussion(
     getProposalResourceId(proposal.referendumIndex)
@@ -217,7 +233,7 @@ export async function mapSubsquareProposalToProposal(
 
   return {
     id: proposal.referendumIndex,
-    comments: mapSubsquareComments(comments),
+    comments: mapComments(proposal, comments),
     chatId,
     beneficiary: proposal.onchainData.treasuryInfo?.beneficiary ?? '',
     proposer: toSubsocialAddress(proposal.proposer)!,
@@ -300,13 +316,16 @@ function getEstimatedCurrentHeight(
   )
 }
 
-function mapSubsquareComments(
-  comments: SubsquareComment[] | undefined
+function mapComments(
+  proposal: SubsquareProposal,
+  comments:
+    | { polkassembly: PolkassemblyComment[]; subsquare: SubsquareComment[] }
+    | undefined
 ): ProposalComment[] {
   if (!comments) return []
 
   const flattenedComments: ProposalComment[] = []
-  comments.forEach((c) => {
+  comments.polkassembly.forEach((c) => {
     const mappedComment: ProposalComment = {
       id: c.id,
       username: c.username ?? '',
@@ -316,6 +335,7 @@ function mapSubsquareComments(
       profile: c.profile ?? null,
       ownerId: c.proposer ?? '',
       parentComment: null,
+      redirectLink: getPolkassemblyCommentRedirectLink(proposal, c),
     }
     flattenedComments.push(mappedComment)
     if (c.replies) {
@@ -329,12 +349,54 @@ function mapSubsquareComments(
           profile: r.profile ?? null,
           ownerId: r.proposer ?? '',
           parentComment: mappedComment,
+          redirectLink: getPolkassemblyCommentRedirectLink(proposal, r),
         })
       })
     }
   })
+
+  comments.subsquare.forEach((c) => {
+    const mappedComment: ProposalComment = {
+      id: c._id,
+      username: '',
+      content: c.content ?? '',
+      source: 'subsquare',
+      createdAt: c.createdAt ?? '',
+      profile: null,
+      ownerId: c.author.address ?? '',
+      parentComment: null,
+      redirectLink: `https://polkadot.subsquare.io/referenda/${proposal.referendumIndex}#${c.height}`,
+    }
+    flattenedComments.push(mappedComment)
+    c.replies.forEach((r) => {
+      flattenedComments.push({
+        id: r._id,
+        username: r.author.address ?? '',
+        content: r.content ?? '',
+        source: 'subsquare',
+        createdAt: r.createdAt ?? '',
+        profile: null,
+        ownerId: r.author.address ?? '',
+        parentComment: mappedComment,
+        redirectLink: `https://polkadot.subsquare.io/referenda/${
+          proposal.referendumIndex
+        }#${c.height ?? ''}`,
+      })
+    })
+  })
+
   flattenedComments.sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
   return flattenedComments
+}
+
+function getPolkassemblyCommentRedirectLink(
+  proposal: SubsquareProposal,
+  comment: PolkassemblyCommentWithoutReplies
+) {
+  if (comment.comment_source === 'polkassembly') {
+    return `https://polkadot.polkassembly.io/referenda/${proposal.referendumIndex}#${comment.id}`
+  }
+  return `https://polkadot.subsquare.io/referenda/${proposal.referendumIndex}`
 }

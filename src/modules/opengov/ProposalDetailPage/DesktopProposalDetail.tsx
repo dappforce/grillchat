@@ -145,6 +145,7 @@ function LatestCommentFromExternalSources({
           return (
             <ExternalChatItem
               bg='background'
+              proposal={proposal}
               comment={comment}
               key={comment.id}
             />
@@ -309,6 +310,7 @@ function SidePanel({
           />
         ) : (
           <ExternalSourceChatRoom
+            proposal={proposal}
             comments={proposal.comments}
             switchToGrillTab={() => setSelectedTab('grill')}
           />

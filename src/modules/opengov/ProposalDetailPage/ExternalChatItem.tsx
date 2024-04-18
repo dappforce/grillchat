@@ -8,7 +8,7 @@ import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import { scrollToMessageElement } from '@/components/chats/utils'
 import PopOver from '@/components/floating/PopOver'
 import useRandomColor from '@/hooks/useRandomColor'
-import { ProposalComment } from '@/server/opengov/mapper'
+import { Proposal, ProposalComment } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,6 +16,7 @@ import { ComponentProps, useCallback, useState } from 'react'
 
 export type ExternalChatItemProps = ComponentProps<'div'> & {
   comment: ProposalComment
+  proposal: Proposal
   bg?: 'background-light' | 'background'
   containerRef?: React.RefObject<HTMLDivElement>
 }
@@ -26,6 +27,7 @@ export function getExternalMessageItemDOMId(commentId: string) {
 
 export default function ExternalChatItem({
   comment,
+  proposal,
   bg = 'background-light',
   containerRef,
   ...props
@@ -41,10 +43,6 @@ export default function ExternalChatItem({
     userLink = `https://polkassembly.io/user/${comment.username}`
   else if (comment.ownerId)
     userLink = `https://polkadot.subsquare.io/user/${comment.ownerId}/votes`
-
-  if (comment.username === 'none') {
-    console.log(comment)
-  }
 
   return (
     <div
@@ -107,11 +105,13 @@ export default function ExternalChatItem({
               yOffset={6}
               triggerOnHover
               trigger={
-                comment.source === 'polkassembly' ? (
-                  <PolkassemblyIcon />
-                ) : (
-                  <SubsquareIcon />
-                )
+                <LinkText openInNewTab href={comment.redirectLink}>
+                  {comment.source === 'polkassembly' ? (
+                    <PolkassemblyIcon />
+                  ) : (
+                    <SubsquareIcon />
+                  )}
+                </LinkText>
               }
             >
               <p>
