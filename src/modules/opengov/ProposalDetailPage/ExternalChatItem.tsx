@@ -99,7 +99,7 @@ export default function ExternalChatItem({
             <PopOver
               triggerClassName='ml-auto text-text-muted'
               panelSize='sm'
-              placement='top'
+              placement='top-end'
               yOffset={6}
               triggerOnHover
               trigger={
