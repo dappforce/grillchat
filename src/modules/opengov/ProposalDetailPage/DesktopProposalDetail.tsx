@@ -42,7 +42,8 @@ export default function DesktopProposalDetail({
     }
   }, [isOpen])
 
-  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
+  const { data: postMetadata, isLoading: isLoadingMetadata } =
+    getPostMetadataQuery.useQuery(chatId ?? '')
   const lastThreeMessageIds = allIds.slice(0, 3)
   const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
   const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
@@ -66,9 +67,11 @@ export default function DesktopProposalDetail({
                 {proposal.title}
               </h1>
               <Button className='flex-shrink-0' onClick={() => setIsOpen(true)}>
-                {postMetadata?.totalCommentsCount ||
-                  proposal.comments.length ||
-                  ''}{' '}
+                {isLoadingMetadata
+                  ? ''
+                  : postMetadata?.totalCommentsCount ||
+                    proposal.comments.length ||
+                    ''}{' '}
                 Comments
               </Button>
             </div>
