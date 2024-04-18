@@ -17,7 +17,6 @@ import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -86,12 +85,6 @@ export default function ChatPage({
   const { data: chatMetadata } = getPostMetadataQuery.useQuery(chatId, {
     enabled: isDatahubAvailable,
   })
-  const { data: commentIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
-    chatId,
-    {
-      enabled: !isDatahubAvailable,
-    }
-  )
 
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
@@ -178,8 +171,7 @@ export default function ChatPage({
   }
 
   const content = chat?.content ?? stubMetadata
-  const messageCount =
-    chatMetadata?.totalCommentsCount ?? commentIds?.length ?? 0
+  const messageCount = chatMetadata?.totalCommentsCount ?? 0
 
   return (
     <>

@@ -20,7 +20,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import urlJoin from 'url-join'
 import HotChatsContent from './HotChatsContent'
-import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
 
 export type HomePageProps = {
@@ -81,11 +80,11 @@ export default function HomePage(props: HomePageProps) {
       text,
       content: () => <HotChatsContent hubId={hubId} />,
     })),
-    {
-      id: 'hubs',
-      text: 'Hubs',
-      content: () => <HubsContent hubsChatCount={props.hubsChatCount} />,
-    },
+    // {
+    //   id: 'hubs',
+    //   text: 'Hubs',
+    //   content: () => <HubsContent hubsChatCount={props.hubsChatCount} />,
+    // },
   ]
 
   const myAddress = useMyMainAddress()

@@ -1,12 +1,10 @@
 import { getPostQuery } from '@/services/api/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
 } from '../../datahub/posts/query'
-import { getCommentIdsByPostIdFromChainQuery } from './query'
 import { SendMessageParams } from './types'
 
 export const commentIdsOptimisticEncoder = {
@@ -43,31 +41,21 @@ export function addOptimisticData({
     },
     content: ipfsContent,
   } as unknown as PostData)
-  if (isDatahubAvailable) {
-    getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
-      client,
-      params.chatId,
-      (oldData) => {
-        return [tempId, ...(oldData ?? [])]
-      }
-    )
-    getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
-      if (!oldData) return oldData
-      return {
-        ...oldData,
-        totalCommentsCount: oldData.totalCommentsCount + 1,
-        lastCommentId: tempId,
-      }
-    })
-  } else {
-    getCommentIdsByPostIdFromChainQuery.setQueryData(
-      client,
-      params.chatId,
-      (ids) => {
-        return [...(ids ?? []), tempId]
-      }
-    )
-  }
+  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
+    client,
+    params.chatId,
+    (oldData) => {
+      return [tempId, ...(oldData ?? [])]
+    }
+  )
+  getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
+    if (!oldData) return oldData
+    return {
+      ...oldData,
+      totalCommentsCount: oldData.totalCommentsCount + 1,
+      lastCommentId: tempId,
+    }
+  })
 }
 export function deleteOptimisticData({
   client,
@@ -80,19 +68,13 @@ export function deleteOptimisticData({
 }) {
   const tempId = commentIdsOptimisticEncoder.encode(idToDelete)
 
-  if (isDatahubAvailable) {
-    getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
-      client,
-      chatId,
-      (oldData) => {
-        return oldData?.filter((id) => id !== tempId)
-      }
-    )
-  } else {
-    getCommentIdsByPostIdFromChainQuery.setQueryData(client, chatId, (ids) => {
-      return ids?.filter((id) => id !== tempId)
-    })
-  }
+  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
+    client,
+    chatId,
+    (oldData) => {
+      return oldData?.filter((id) => id !== tempId)
+    }
+  )
 
   getPostMetadataQuery.invalidate(client, chatId)
 }

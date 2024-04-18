@@ -1,13 +1,9 @@
-import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   PaginatedPostsData,
 } from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { useMemo } from 'react'
-import useInfiniteScrollData from '../ChatList/hooks/useInfiniteScrollData'
 import usePauseableLoadMore from '../ChatList/hooks/usePausableLoadMore'
 
 type PaginatedData = {
@@ -25,17 +21,7 @@ type PaginatedConfig = {
   chatId: string
 }
 
-export default function usePaginatedMessageIds(config: PaginatedConfig) {
-  return isDatahubAvailable
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      usePaginatedMessageIdsFromDatahub(config)
-    : // eslint-disable-next-line react-hooks/rules-of-hooks
-      usePaginatedMessageIdsFromChain(config)
-}
-
-const EMPTY_ARRAY: string[] = []
-
-export function usePaginatedMessageIdsFromDatahub({
+export default function usePaginatedMessageIds({
   chatId,
   hubId,
   isPausedLoadMore,
@@ -70,46 +56,6 @@ export function usePaginatedMessageIdsFromDatahub({
     loadMore,
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore ?? true,
-    isLoading,
-  }
-}
-
-export function usePaginatedMessageIdsFromChain({
-  chatId,
-  hubId,
-  isPausedLoadMore,
-}: PaginatedConfig): PaginatedData {
-  const { data: rawMessageIds, isLoading } =
-    getCommentIdsByPostIdFromChainQuery.useQuery(chatId, {
-      subscribe: true,
-    })
-  const messageIds = rawMessageIds || EMPTY_ARRAY
-
-  const {
-    currentPage,
-    currentData: currentPageMessageIds,
-    loadMore,
-    hasMore,
-  } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
-
-  // TODO: improve this when datahub is integrated with moderation
-  const filteredMessageIds = useFilterBlockedMessageIds(
-    hubId,
-    chatId,
-    messageIds
-  )
-  const filteredCurrentPageIds = useFilterBlockedMessageIds(
-    hubId,
-    chatId,
-    currentPageMessageIds
-  )
-
-  return {
-    currentPageMessageIds: filteredCurrentPageIds,
-    currentPage,
-    loadMore,
-    hasMore,
-    totalDataCount: filteredMessageIds.length,
     isLoading,
   }
 }

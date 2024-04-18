@@ -11,8 +11,6 @@ import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   getPostMetadataQuery,
 } from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
 import { removeUndefinedValues } from '@/utils/general'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
@@ -63,13 +61,7 @@ async function getChatsMessagesData(client: QueryClient, chatId: string) {
   }
 }
 
-async function getMessageIds(client: QueryClient, postId: string) {
-  return isDatahubAvailable
-    ? getMessageIdsFromDatahub(client, postId)
-    : getMessageIdsFromChain(client, postId)
-}
-
-async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
+async function getMessageIds(client: QueryClient, chatId: string) {
   const res =
     await getPaginatedPostsByPostIdFromDatahubQuery.fetchFirstPageQuery(
       client,
@@ -93,31 +85,8 @@ async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
     messages: messages.status === 'fulfilled' ? messages.value : [],
   }
 }
-async function getMessageIdsFromChain(client: QueryClient, chatId: string) {
-  const messageIds = await getCommentIdsByPostIdFromChainQuery.fetchQuery(
-    client,
-    chatId
-  )
-
-  const preloadedPostCount = CHAT_PER_PAGE * 2
-  const startSlice = Math.max(0, messageIds.length - preloadedPostCount)
-  const endSlice = messageIds.length
-  const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
-
-  const messages = await getPostsServer(prefetchedMessageIds)
-  messages.forEach((message) => {
-    getPostQuery.setQueryData(client, message.id, message)
-  })
-
-  return { messageIds: prefetchedMessageIds, messages }
-}
-
 async function prefetchPostMetadata(queryClient: QueryClient, chatId: string) {
-  if (isDatahubAvailable) {
-    await getPostMetadataQuery.fetchQuery(queryClient, chatId)
-  } else {
-    await getCommentIdsByPostIdFromChainQuery.fetchQuery(queryClient, chatId)
-  }
+  await getPostMetadataQuery.fetchQuery(queryClient, chatId)
 }
 
 async function prefetchChatAndBlockedEntities(

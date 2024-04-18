@@ -6,7 +6,6 @@ import { linkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
-import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
 import { useParentData } from '@/stores/parent'
 import {
   Signer,
@@ -121,14 +120,12 @@ const sendLaunchEvent = async (
   } else {
     const [
       // linkedTgAccData,
-      ownedPostIds,
       linkedIdentity,
       referrerId,
     ] = await Promise.allSettled([
       // getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
       //   address,
       // }),
-      getOwnedPostIdsQuery.fetchQuery(queryClient, address),
       getLinkedIdentityQuery.fetchQuery(queryClient, address),
       getReferrerIdQuery.fetchQuery(queryClient, address),
     ] as const)
@@ -136,8 +133,6 @@ const sendLaunchEvent = async (
     // if (linkedTgAccData.status === 'fulfilled')
     //   userProperties.tgNotifsConnected =
     //     (linkedTgAccData.value?.length || 0) > 0
-    if (ownedPostIds.status === 'fulfilled')
-      userProperties.ownedChat = (ownedPostIds.value?.length || 0) > 0
     if (linkedIdentity.status === 'fulfilled')
       userProperties.twitterLinked =
         linkedIdentity.value?.provider === IdentityProvider.Twitter
