@@ -33,7 +33,9 @@ const SubstrateWithdrawButton = ({
       loadingUntilTxSuccess
       otherProps={{
         chainName: selectedChain.id,
-        toDonateForm: () => setCurrentState('withdraw-tokens'),
+        // TODO: implement these function if withdraw is added back
+        toDonateForm: () => undefined,
+        // setCurrentState('withdraw-tokens'),
         toWalletActionRequired: () => setCurrentState('wallet-action-required'),
         toLoading: () => setCurrentState('loading-tx'),
         onSuccessAction: () => setCurrentState('account'),
@@ -48,9 +50,9 @@ const SubstrateWithdrawButton = ({
               amount: amountValue.toString(),
               recipient: recipient,
             })
-            setCurrentState('withdraw-tokens')
+            // setCurrentState('withdraw-tokens')
           } catch {
-            setCurrentState('withdraw-tokens')
+            // setCurrentState('withdraw-tokens')
             return
           }
         }

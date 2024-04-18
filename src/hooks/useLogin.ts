@@ -3,7 +3,7 @@ import { MutationConfig } from '@/subsocial-query'
 import { useMutation } from '@tanstack/react-query'
 
 export default function useLogin(
-  config?: MutationConfig<any> & { asTemporaryAccount?: boolean }
+  config?: MutationConfig<any, string> & { asTemporaryAccount?: boolean }
 ) {
   const login = useMyAccount((state) => state.login)
   const currentAddress = useMyAccount((state) => state.address)

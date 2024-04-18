@@ -1,7 +1,6 @@
-import { poolQuery } from '@/subsocial-query'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import { SpaceData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
-import { datahubQueryRequest } from '../utils'
 
 // TODO: update this with correct fragment and change to datahub query, also change imports for the usages
 const SPACE_FRAGMENT = gql`
@@ -23,15 +22,16 @@ export const GET_SPACES = gql`
   }
 `
 const getSpaces = poolQuery<string, SpaceData>({
-  name: 'getSpaceFromSquid',
+  name: 'getSpaces',
   multiCall: async (spaceIds) => {
     if (spaceIds.length === 0) return []
+    return []
     // TODO: update this with correct type
-    const res = await datahubQueryRequest({
-      document: GET_SPACES,
-      variables: { ids: spaceIds },
-    })
-    return res.spaces.map((space) => mapSpaceFragment(space))
+    // const res = await datahubQueryRequest({
+    //   document: GET_SPACES,
+    //   variables: { ids: spaceIds },
+    // })
+    // return res.spaces.map((space) => mapSpaceFragment(space))
   },
   resultMapper: {
     paramToKey: (param) => param,

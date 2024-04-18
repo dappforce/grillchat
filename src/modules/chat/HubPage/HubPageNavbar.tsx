@@ -6,7 +6,7 @@ import NavbarWithSearch, {
 } from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import { getSpaceQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { ReactNode, useState } from 'react'
 
 export type HubPageNavbarProps = {

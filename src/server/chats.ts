@@ -5,7 +5,7 @@ import {
   getPostMetadataQuery,
   getPostsBySpaceIdQuery,
 } from '@/services/datahub/posts/query'
-import { getSpaceQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { removeUndefinedValues } from '@/utils/general'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'

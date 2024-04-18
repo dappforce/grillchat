@@ -1,13 +1,12 @@
 import React from 'react'
-import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 
 export type ProfileModalState =
-  | PolkadotConnectSteps
+  // | PolkadotConnectSteps
   | 'account'
   | 'linked-addresses'
   | 'profile-settings'
-  | 'polkadot-connect-unlink'
-  | 'polkadot-connect-identity-removed'
+  // | 'polkadot-connect-unlink'
+  // | 'polkadot-connect-identity-removed'
   | 'privacy-security'
   | 'private-key'
   | 'logout'
@@ -16,7 +15,7 @@ export type ProfileModalState =
   | 'notifications'
   | 'telegram-notifications'
   | 'push-notifications'
-  | 'withdraw-tokens'
+  // | 'withdraw-tokens'
   | 'wallet-action-required'
   | 'loading-tx'
 

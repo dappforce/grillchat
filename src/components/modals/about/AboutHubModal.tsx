@@ -1,7 +1,7 @@
 import TruncatedText from '@/components/TruncatedText'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
-import { getSpaceQuery } from '@/services/subsocial/spaces'
+import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlOrigin, getHubPageLink } from '@/utils/links'
 import { useRouter } from 'next/router'

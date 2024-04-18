@@ -8,11 +8,6 @@ import { cx } from '@/utils/class-names'
 import { SessionStorage } from '@/utils/storage'
 import { useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useState } from 'react'
-import LimitedPolkadotJsSupportContent, {
-  LimitedPolkadotJsSupportExplanation,
-} from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
-import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
-import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
 import LinkedAddressesContent from './contents/LinkedAddressesContent'
@@ -27,10 +22,6 @@ import PushNotificationContent, {
   getPushNotificationUsableStatus,
 } from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
-import PolkadotConnectContent from './contents/polkadot-connect/PolkadotConnectContent'
-import PolkadotConnectIdentityRemovedContent from './contents/polkadot-connect/PolkadotConnectIdentityRemovedContent'
-import PolkadotConnectUnlink from './contents/polkadot-connect/PolkadotConnectUnlink'
-import WithdrawContent from './contents/withdraw/WithdrawContent'
 import { ProfileModalContentProps, ProfileModalState } from './types'
 
 const modalContents: {
@@ -47,13 +38,14 @@ const modalContents: {
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
-  'polkadot-connect': PolkadotConnectContent,
-  'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
-  'polkadot-connect-account': PolkadotConnectAccountContent,
-  'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
-  'polkadot-connect-unlink': PolkadotConnectUnlink,
-  'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
-  'withdraw-tokens': WithdrawContent,
+  // 'polkadot-connect': PolkadotConnectContent,
+  // 'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
+  // 'polkadot-connect-account': PolkadotConnectAccountContent,
+  // 'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
+  // 'polkadot-connect-unlink': PolkadotConnectUnlink,
+  // 'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
+  // TODO: change impl of withdraw
+  // 'withdraw-tokens': WithdrawContent,
   'wallet-action-required': WalletActionRequiredContent,
   'loading-tx': () => (
     <div className='py-8'>
@@ -212,54 +204,54 @@ export default function ProfileModal({
       desc: pushNotificationDesc[pushNotificationUsableStatus],
       withBackButton: 'notifications',
     },
-    'polkadot-connect': {
-      title: '🔗 Connect Polkadot',
-      desc: hasProxy
-        ? 'Use your Polkadot identity and enable donations, NFTs, and more.'
-        : 'Choose a wallet to connect to Grill',
-      withBackButton: () => {
-        if (!hasProxy) setPreferredWallet(null)
-        return 'linked-addresses'
-      },
-      withoutDefaultPadding: true,
-    },
-    'polkadot-js-limited-support': {
-      title: '🔗 Limited Polkadot.js Support',
-      desc: (
-        <LimitedPolkadotJsSupportExplanation
-          goToWalletSelection={() => setCurrentState('polkadot-connect')}
-        />
-      ),
-      withBackButton: 'polkadot-connect',
-    },
-    'polkadot-connect-account': {
-      title: '🔗 Select an account',
-      desc: 'Select an account to connect to Grill',
-      withBackButton: () => {
-        setPreferredWallet(null)
-        return 'polkadot-connect'
-      },
-      withoutDefaultPadding: true,
-    },
-    'polkadot-connect-confirmation': {
-      title: '🔑 Link Confirmation',
-      desc: 'Please confirm the connection in your Polkadot wallet.',
-      withBackButton: 'polkadot-connect-account',
-    },
-    'polkadot-connect-unlink': {
-      title: '🤔 Unlink Polkadot address?',
-      desc: undefined,
-      withBackButton: false,
-    },
-    'polkadot-connect-identity-removed': {
-      title: '😕 Your previous identity was removed',
-      desc: 'You will need to reset your nickname or reconnect your EVM address to continue using them.',
-      withBackButton: false,
-    },
-    'withdraw-tokens': {
-      title: '💰 Withdraw',
-      withBackButton: false,
-    },
+    // 'polkadot-connect': {
+    //   title: '🔗 Connect Polkadot',
+    //   desc: hasProxy
+    //     ? 'Use your Polkadot identity and enable donations, NFTs, and more.'
+    //     : 'Choose a wallet to connect to Grill',
+    //   withBackButton: () => {
+    //     if (!hasProxy) setPreferredWallet(null)
+    //     return 'linked-addresses'
+    //   },
+    //   withoutDefaultPadding: true,
+    // },
+    // 'polkadot-js-limited-support': {
+    //   title: '🔗 Limited Polkadot.js Support',
+    //   desc: (
+    //     <LimitedPolkadotJsSupportExplanation
+    //       goToWalletSelection={() => setCurrentState('polkadot-connect')}
+    //     />
+    //   ),
+    //   withBackButton: 'polkadot-connect',
+    // },
+    // 'polkadot-connect-account': {
+    //   title: '🔗 Select an account',
+    //   desc: 'Select an account to connect to Grill',
+    //   withBackButton: () => {
+    //     setPreferredWallet(null)
+    //     return 'polkadot-connect'
+    //   },
+    //   withoutDefaultPadding: true,
+    // },
+    // 'polkadot-connect-confirmation': {
+    //   title: '🔑 Link Confirmation',
+    //   desc: 'Please confirm the connection in your Polkadot wallet.',
+    //   withBackButton: 'polkadot-connect-account',
+    // },
+    // 'polkadot-connect-unlink': {
+    //   title: '🤔 Unlink Polkadot address?',
+    //   desc: undefined,
+    //   withBackButton: false,
+    // },
+    // 'polkadot-connect-identity-removed': {
+    //   title: '😕 Your previous identity was removed',
+    //   desc: 'You will need to reset your nickname or reconnect your EVM address to continue using them.',
+    //   withBackButton: false,
+    // },
+    // 'withdraw-tokens': {
+    //   title: '💰 Withdraw',
+    //   withBackButton: false,
+    // },
     'wallet-action-required': {
       title: '🔐 Wallet Action Required',
       desc: 'Please open your wallet to continue',
