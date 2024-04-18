@@ -35,7 +35,12 @@ export default function ProposalPreview({
   )
 
   return (
-    <div className={cx('rounded-2xl bg-background-light p-4', className)}>
+    <div
+      className={cx(
+        'rounded-2xl bg-background-light p-4 !no-underline ring-text-muted/30 transition hover:ring-1 focus-visible:ring-1',
+        className
+      )}
+    >
       <div className='flex h-full flex-col justify-between'>
         <div className='flex flex-col gap-2'>
           <ProfilePreview
@@ -226,6 +231,7 @@ export function WriteFirstComment({
         variant='mutedOutline'
         disabled
         disabledStyle='subtle'
+        className='flex-shrink-0'
       >
         <Send />
       </Button>
