@@ -1,3 +1,4 @@
+import { SubsocialProfile } from '@/services/subsocial/profiles/fetcher'
 import { PostData } from '@subsocial/api/types'
 import Router from 'next/router'
 import { getIdFromSlug } from './slug'
@@ -38,4 +39,12 @@ export function getCurrentPageChatId() {
   const { query } = Router
   const slug = query?.slug as string
   return getIdFromSlug(slug)
+}
+
+export function getCreatorChatIdFromProfile(profile?: SubsocialProfile | null) {
+  const chats =
+    profile?.profileSpace?.content?.experimental?.chats ||
+    (profile?.profileSpace?.content as any)?.chats
+
+  return chats?.[0]?.id as string | undefined
 }

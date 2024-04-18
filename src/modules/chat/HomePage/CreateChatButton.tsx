@@ -4,6 +4,7 @@ import { getPostQuery, getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
+import { getCreatorChatIdFromProfile } from '@/utils/chat'
 import { communityHubId } from './HomePage'
 
 const CreateChatButton = () => {
@@ -13,17 +14,13 @@ const CreateChatButton = () => {
 
   const { data: profile } = getProfileQuery.useQuery(myAddress || '')
 
-  const chats = profile?.profileSpace?.content?.experimental?.chats
-
-  console.log('Profile', profile)
-
-  const chatId = chats?.[0]?.id
+  const chatId = getCreatorChatIdFromProfile(profile)
 
   const { data: chat } = getPostQuery.useQuery(chatId || '', {
     showHiddenPost: { type: 'all' },
   })
 
-  console.log('Creator chat', chat, chatId)
+  console.log('Chat id and chat struct', chatId, chat)
 
   const commonProps: Partial<ButtonProps> = {
     size: 'xs',

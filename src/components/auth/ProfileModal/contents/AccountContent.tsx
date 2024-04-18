@@ -21,6 +21,7 @@ import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
+import { getCreatorChatIdFromProfile } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import {
@@ -70,9 +71,7 @@ export default function AccountContent({
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
-  const chatId = (
-    profile?.profileSpace?.content?.experimental?.chats?.[0] as any
-  )?.id
+  const chatId = getCreatorChatIdFromProfile(profile)
 
   const { data: chat } = getPostQuery.useQuery(chatId || '', {
     showHiddenPost: { type: 'all' },
