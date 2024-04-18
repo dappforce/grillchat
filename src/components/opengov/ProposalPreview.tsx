@@ -8,6 +8,7 @@ import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import { summarizeMdAndHtml } from '@/utils/strings'
+import Link from 'next/link'
 import { FaRegComment } from 'react-icons/fa6'
 import AddressAvatar, { IdenticonAvatar } from '../AddressAvatar'
 import Button from '../Button'
@@ -37,11 +38,15 @@ export default function ProposalPreview({
   return (
     <div
       className={cx(
-        'rounded-2xl bg-background-light p-4 !no-underline ring-text-muted/30 transition hover:ring-1 focus-visible:ring-1',
+        'relative rounded-2xl bg-background-light p-4 !no-underline ring-text-muted/30 transition hover:ring-1 focus-visible:ring-1 [&_*]:pointer-events-none [&_a]:pointer-events-auto',
         className
       )}
     >
-      <div className='flex h-full flex-col justify-between'>
+      <Link
+        href={`/opengov/${proposal.id}`}
+        className='absolute inset-0 z-0 h-full w-full'
+      />
+      <div className='relative z-10 flex h-full flex-col justify-between'>
         <div className='flex flex-col gap-2'>
           <ProfilePreview
             withPolkadotIdentity
