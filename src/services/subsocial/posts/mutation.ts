@@ -10,7 +10,6 @@ import { isDatahubAvailable } from '@/services/datahub/utils'
 import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
 import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getNewIdFromTxResult } from '@/utils/blockchain'
-import { IpfsWrapper } from '@/utils/ipfs'
 import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
@@ -83,11 +82,7 @@ export function useUpsertPost(
     {
       getWallet: getCurrentWallet,
       generateContext: (params) => generateMessageContent(params, client),
-      transactionGenerator: async ({
-        data: params,
-        apis: { substrateApi },
-        context: { content },
-      }) => {
+      transactionGenerator: async ({ data: params, context: { content } }) => {
         const { payload, action } = checkAction(params)
 
         const res = await saveFile(content)
@@ -108,13 +103,6 @@ export function useUpsertPost(
             },
           })
           revalidateChatPage({ pathname: getChatPageLink(router) })
-
-          return {
-            tx: substrateApi.tx.posts.updatePost(payload.postId, {
-              content: IpfsWrapper(cid),
-            }),
-            summary: 'Updating post',
-          }
         } else if (action === 'create') {
           await datahubMutation.createPostData({
             ...getCurrentWallet(),
@@ -124,14 +112,6 @@ export function useUpsertPost(
               spaceId: payload.spaceId,
             },
           })
-          return {
-            tx: substrateApi.tx.posts.createPost(
-              payload.spaceId,
-              { RegularPost: null },
-              IpfsWrapper(cid)
-            ),
-            summary: 'Creating post',
-          }
         }
 
         throw new Error('Invalid params')
@@ -142,7 +122,7 @@ export function useUpsertPost(
       // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
       supressSendingTxError: isDatahubAvailable,
       txCallbacks: {
-        onSend: ({ data }) => {
+        onStart: ({ data }) => {
           if (isDatahubAvailable) return
 
           const { payload, action } = checkAction(data)
@@ -218,10 +198,7 @@ export function useHideUnhidePost(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
-      transactionGenerator: async ({
-        data: { action, postId },
-        apis: { substrateApi },
-      }) => {
+      transactionGenerator: async ({ data: { action, postId } }) => {
         await datahubMutation.updatePostData({
           ...getCurrentWallet(),
           args: {
@@ -231,19 +208,12 @@ export function useHideUnhidePost(
             },
           },
         })
-
-        return {
-          tx: substrateApi.tx.posts.updatePost(postId, {
-            hidden: action === 'hide',
-          }),
-          summary: 'Hide/Unhide chat',
-        }
       },
     },
     config,
     {
       txCallbacks: {
-        onSend: ({ data }) => {
+        onStart: ({ data }) => {
           getPostQuery.setQueryData(client, data.postId, (post) => {
             if (!post) return post
             return {
@@ -283,10 +253,7 @@ export function useHideMessage(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
-      transactionGenerator: async ({
-        data: params,
-        apis: { substrateApi },
-      }) => {
+      transactionGenerator: async ({ data: params }) => {
         await datahubMutation.updatePostData({
           ...getCurrentWallet(),
           args: { postId: params.messageId, changes: { hidden: true } },
@@ -296,13 +263,6 @@ export function useHideMessage(
           throw new Error(
             'Hiding offchain message, this error is expected to be supresssed'
           )
-        }
-
-        return {
-          tx: substrateApi.tx.posts.updatePost(params.messageId, {
-            hidden: true,
-          }),
-          summary: 'Hiding message',
         }
       },
     },
@@ -324,12 +284,12 @@ export function useHideMessage(
             }
           })
         },
-        onSend: () => allowWindowUnload(),
         onError: async ({ data }) => {
           allowWindowUnload()
           getPostQuery.invalidate(client, data.messageId)
         },
         onSuccess: async ({ data }) => {
+          allowWindowUnload()
           await invalidatePostServerCache(data.messageId)
           getPostQuery.invalidate(client, data.messageId)
         },
@@ -352,10 +312,7 @@ export function usePinMessage(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
-      transactionGenerator: async ({
-        data: params,
-        apis: { substrateApi },
-      }) => {
+      transactionGenerator: async ({ data: params }) => {
         const newContent = await getUpdatedPinPostContent(client, params)
         const { success, cid } = await saveFile(newContent)
         if (!success || !cid) throw new Error('Failed to save file')
@@ -372,13 +329,6 @@ export function usePinMessage(
             },
           },
         })
-
-        return {
-          tx: substrateApi.tx.posts.updatePost(params.chatId, {
-            content: IpfsWrapper(cid),
-          }),
-          summary: 'Pinning message',
-        }
       },
     },
     config,
@@ -401,12 +351,12 @@ export function usePinMessage(
             }
           })
         },
-        onSend: () => allowWindowUnload(),
         onError: async ({ data }) => {
           allowWindowUnload()
           getPostQuery.invalidate(client, data.chatId)
         },
         onSuccess: async ({ data }) => {
+          allowWindowUnload()
           await invalidatePostServerCache(data.chatId)
           getPostQuery.invalidate(client, data.chatId)
         },

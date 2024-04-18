@@ -2,7 +2,6 @@ import { invalidateProfileServerCache, saveFile } from '@/services/api/mutation'
 import { getProfileQuery } from '@/services/api/query'
 import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
 import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
-import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
@@ -36,10 +35,7 @@ export function useUpsertProfile(
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
-      transactionGenerator: async ({
-        data: params,
-        apis: { substrateApi },
-      }) => {
+      transactionGenerator: async ({ data: params }) => {
         const { content } = params
 
         const { payload, action } = checkAction(params)
@@ -51,18 +47,9 @@ export function useUpsertProfile(
         const { success, cid } = await saveFile(content)
         if (!success || !cid) throw new Error('Failed to save file')
 
+        // TODO: datahub mutation for profile update
         if (action === 'update') {
-          return {
-            tx: substrateApi.tx.spaces.updateSpace(payload.spaceId, {
-              content: IpfsWrapper(cid),
-            }),
-            summary: 'Updating profile',
-          }
         } else if (action === 'create') {
-          return {
-            tx: substrateApi.tx.profiles.createSpaceAsProfile(IpfsWrapper(cid)),
-            summary: 'Creating profile',
-          }
         }
 
         throw new Error('Invalid params')
@@ -91,13 +78,11 @@ export function useUpsertProfile(
             }
           })
         },
-        onSend: () => {
-          allowWindowUnload()
-        },
         onError: async ({ address }) => {
           getProfileQuery.invalidate(client, address)
         },
         onSuccess: async ({ address }) => {
+          allowWindowUnload()
           await invalidateProfileServerCache(address)
           // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
           // getProfileQuery.invalidate(client, address)

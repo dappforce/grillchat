@@ -13,7 +13,7 @@ export function useAddProxy(config?: TransactionMutationConfig<null>) {
     {
       getWallet: () => getCurrentWallet('injected'),
       generateContext: undefined,
-      transactionGenerator: async ({ apis: { substrateApi } }) => {
+      transactionGenerator: async () => {
         const currentGrillAddress = useMyAccount.getState().address
         if (!currentGrillAddress)
           throw new Error('No address connected to use proxy')
@@ -78,7 +78,7 @@ export function useRemoveProxy(config?: TransactionMutationConfig<null>) {
     {
       getWallet: getCurrentWallet,
       generateContext: undefined,
-      transactionGenerator: async ({ apis: { substrateApi } }) => {
+      transactionGenerator: async () => {
         const removeProxyTx = substrateApi.tx.proxy.removeProxies()
 
         return {
