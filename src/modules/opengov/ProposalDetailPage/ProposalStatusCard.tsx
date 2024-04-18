@@ -34,7 +34,7 @@ export default function ProposalStatusCard({
         <span className='text-lg font-medium'>Status</span>
         <ProposalStatus withBg proposal={proposal} />
       </div>
-      <div className='flex items-center gap-6'>
+      <div className='flex items-center gap-4'>
         <VoteSummary size='large' className='h-20 w-20' proposal={proposal} />
         <div className='flex w-full flex-col'>
           <div className='flex items-center justify-between gap-2'>
