@@ -112,7 +112,7 @@ export default function DesktopProposalDetail({
             })()}
           </Card>
         </div>
-        <div className='sticky top-20 self-start'>
+        <div className='sticky top-[4.5rem] self-start'>
           <ProposalStatusCard proposal={proposal} />
         </div>
       </div>
