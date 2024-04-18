@@ -55,7 +55,7 @@ export default function VoteSummary({
           >
             {displayedPercentage}%
           </span>
-          {size === 'default' && (
+          {size !== 'small' && (
             <span className='text-xs text-text-muted'>
               {isAye ? 'Aye' : 'Nay'}
             </span>
