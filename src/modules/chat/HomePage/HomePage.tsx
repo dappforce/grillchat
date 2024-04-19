@@ -172,32 +172,34 @@ export default function HomePage(props: HomePageProps) {
         },
       }}
     >
-      <SearchChannelsWrapper
-        search={search}
-        getFocusedElementIndex={getFocusedElementIndex}
-      >
-        <Tabs
-          className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
-          panelClassName='mt-0 px-0'
-          tabClassName={cx('px-1.5 sm:px-2')}
-          asContainer
-          tabs={tabs}
-          withHashIntegration={false}
-          tabsRightElement={
-            isLoggedIn &&
-            communityHubId && (
-              <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
-                <CreateChatButton />
-              </div>
-            )
-          }
-          hideBeforeHashLoaded
-          manualTabControl={{
-            selectedTab: usedSelectedTab,
-            setSelectedTab: usedSetSelectedTab,
-          }}
-        />
-      </SearchChannelsWrapper>
+      <div className='flex flex-1 flex-col lg:pr-3'>
+        <SearchChannelsWrapper
+          search={search}
+          getFocusedElementIndex={getFocusedElementIndex}
+        >
+          <Tabs
+            className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
+            panelClassName='mt-0 px-0'
+            tabClassName={cx('px-1.5 sm:px-2')}
+            asContainer
+            tabs={tabs}
+            withHashIntegration={false}
+            tabsRightElement={
+              isLoggedIn &&
+              communityHubId && (
+                <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
+                  <CreateChatButton />
+                </div>
+              )
+            }
+            hideBeforeHashLoaded
+            manualTabControl={{
+              selectedTab: usedSelectedTab,
+              setSelectedTab: usedSetSelectedTab,
+            }}
+          />
+        </SearchChannelsWrapper>
+      </div>
     </DefaultLayout>
   )
 }

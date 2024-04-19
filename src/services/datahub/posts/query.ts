@@ -240,6 +240,7 @@ const GET_POST_METADATA = gql`
         persistentId
         rootPostPersistentId
         createdAtTime
+        summary
       }
     }
   }
@@ -251,6 +252,7 @@ const getPostMetadata = poolQuery<
     totalCommentsCount: number
     postId: string
     createdAtTime: number
+    summary: string
   }
 >({
   name: 'getPostMetadata',
@@ -274,6 +276,7 @@ const getPostMetadata = poolQuery<
         totalCommentsCount: parseInt(metadata.totalCommentsCount),
         postId: comment?.rootPostPersistentId || '',
         createdAtTime: comment?.createdAtTime || 0,
+        summary: comment?.summary || '',
       }
     })
   },
@@ -281,9 +284,10 @@ const getPostMetadata = poolQuery<
 export const getPostMetadataQuery = createQuery({
   key: 'post-metadata',
   fetcher: getPostMetadata,
-  defaultConfigGenerator: () => ({
+  defaultConfigGenerator: (params) => ({
     refetchOnWindowFocus: true,
     staleTime: 0,
+    enabled: !!params,
   }),
 })
 

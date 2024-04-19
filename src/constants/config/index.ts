@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import { currentNetwork } from '@/utils/network'
 import subsocialConfig from './subsocial'
 import xsocialConfig from './xsocial'
@@ -45,7 +46,8 @@ export function getPinnedHubIds() {
 
 export function getIsHubWithoutJoinButton(hubId: string, chatId: string) {
   return (
-    constantsConfig.hubsWithoutJoinButton.includes(hubId) &&
-    !constantsConfig.chatsWithJoinButton.includes(chatId)
+    (constantsConfig.hubsWithoutJoinButton.includes(hubId) &&
+      !constantsConfig.chatsWithJoinButton.includes(chatId)) ||
+    hubId === env.NEXT_PUBLIC_PROPOSALS_HUB
   )
 }

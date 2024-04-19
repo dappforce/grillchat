@@ -1,4 +1,5 @@
 import { getTxSubDispatchErrorMessage } from '@/server/blockchain'
+import { redisCallWrapper } from '@/server/cache'
 import {
   ApiResponse,
   getCommonErrorMessage,
@@ -8,6 +9,7 @@ import { getIpfsApi } from '@/server/ipfs'
 import { WalletManager } from '@/server/wallet-client'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { IpfsWrapper } from '@/utils/ipfs'
+import { wait } from '@/utils/promise'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'
 import { stringToHex } from '@polkadot/util'
 import { asAccountId } from '@subsocial/api'
@@ -93,74 +95,96 @@ async function createDiscussionAndGetPostId({
   contentCid: string
   api: ApiPromise
 }): Promise<ApiDiscussionResponse> {
-  return new Promise(async (resolve) => {
-    const unsub = await api.tx.resourceDiscussions
-      .createResourceDiscussion(resourceId, spaceId, IpfsWrapper(contentCid))
-      .signAndSend(
-        (
-          await WalletManager.getInstance()
-        ).account.discussionCreator,
-        async (resp: SubmittableResult) => {
-          const { status, events, dispatchError, isCompleted } = resp
+  return new Promise(async (resolve, reject) => {
+    try {
+      const unsub = await api.tx.resourceDiscussions
+        .createResourceDiscussion(resourceId, spaceId, IpfsWrapper(contentCid))
+        .signAndSend(
+          (
+            await WalletManager.getInstance()
+          ).account.discussionCreator,
+          async (resp: SubmittableResult) => {
+            const { status, events, dispatchError, isCompleted } = resp
 
-          if (dispatchError) {
-            resolve({
-              success: false,
-              message: getTxSubDispatchErrorMessage(dispatchError, api),
-            })
-            unsub()
-            return
-          }
-
-          if (status.isFinalized || status.isInBlock) {
-            for (const { event, phase } of events) {
-              try {
-                if (
-                  phase.isApplyExtrinsic &&
-                  event.section === 'resourceDiscussions' &&
-                  event.method === 'ResourceDiscussionLinked'
-                ) {
-                  const [resourceIdHex, , postId] = event.data.toJSON() as [
-                    string,
-                    string,
-                    number
-                  ]
-
-                  if (stringToHex(resourceId) === resourceIdHex) {
-                    resolve({
-                      message: 'OK',
-                      success: true,
-                      data: {
-                        postId: postId.toString(),
-                      },
-                    })
-                    unsub()
-                  }
-                }
-              } catch (e) {
-                resolve({
-                  success: false,
-                  message: getCommonErrorMessage(e),
-                  errors: [e],
-                })
-              }
+            if (dispatchError) {
+              resolve({
+                success: false,
+                message: getTxSubDispatchErrorMessage(dispatchError, api),
+              })
+              unsub()
+              return
             }
 
-            unsub()
-            return
-          } else {
-            console.error(`Status of sending: ${status.type}`)
-          }
+            if (status.isFinalized || status.isInBlock) {
+              for (const { event, phase } of events) {
+                try {
+                  if (
+                    phase.isApplyExtrinsic &&
+                    event.section === 'resourceDiscussions' &&
+                    event.method === 'ResourceDiscussionLinked'
+                  ) {
+                    const [resourceIdHex, , postId] = event.data.toJSON() as [
+                      string,
+                      string,
+                      number
+                    ]
 
-          if (isCompleted) {
-            unsub()
+                    if (stringToHex(resourceId) === resourceIdHex) {
+                      const id = postId.toString()
+                      await redisCallWrapper((redis) =>
+                        redis?.set(
+                          getDiscussionRedisKey(resourceId),
+                          id,
+                          'EX',
+                          MAX_AGE
+                        )
+                      )
+                      resolve({
+                        message: 'OK',
+                        success: true,
+                        data: {
+                          postId: id,
+                        },
+                      })
+                      unsub()
+                    }
+                  }
+                } catch (e) {
+                  resolve({
+                    success: false,
+                    message: getCommonErrorMessage(e),
+                    errors: [e],
+                  })
+                }
+              }
+
+              unsub()
+              return
+            } else {
+              console.error(`Status of sending: ${status.type}`)
+            }
+
+            if (isCompleted) {
+              unsub()
+            }
           }
-        }
-      )
+        )
+    } catch (err) {
+      reject(err)
+    }
   })
 }
 
+const MAX_AGE = 24 * 60 * 60 // 24 hour
+const getDiscussionRedisKey = (id: string) => {
+  return `discussion:${id}`
+}
 export async function getDiscussion(resourceId: string) {
+  const cachedData = await redisCallWrapper((redis) => {
+    return redis?.get(getDiscussionRedisKey(resourceId))
+  })
+  if (typeof cachedData === 'string') return cachedData
+
   try {
     const subsocialApi = await (await getSubsocialApi()).substrateApi
     const existingDiscussionId = (
@@ -174,17 +198,29 @@ export async function getDiscussion(resourceId: string) {
       )
     ).toString()
 
+    await redisCallWrapper((redis) =>
+      redis?.set(
+        getDiscussionRedisKey(resourceId),
+        existingDiscussionId,
+        'EX',
+        MAX_AGE
+      )
+    )
+
     return existingDiscussionId
   } catch (err) {
     return null
   }
 }
 
-export async function getOrCreateDiscussion({
-  resourceId,
-  spaceId,
-  content,
-}: ApiDiscussionInput): Promise<ApiDiscussionResponse> {
+const MUTATION_MAX_AGE = 18 // 18 secs
+const getDiscussionMutationKey = (id: string) => {
+  return `discussion-mutation:${id}`
+}
+export async function getOrCreateDiscussion(
+  data: ApiDiscussionInput
+): Promise<ApiDiscussionResponse> {
+  const { resourceId, spaceId, content } = data
   let existingDiscussionId: string | null = null
   try {
     existingDiscussionId = await getDiscussion(resourceId)
@@ -198,18 +234,38 @@ export async function getOrCreateDiscussion({
           postId: existingDiscussionId,
         },
       }
+
+    const isCreatingInAnotherSession = await redisCallWrapper((redis) => {
+      return redis?.get(getDiscussionMutationKey(resourceId)) as Promise<string>
+    })
+    if (isCreatingInAnotherSession) {
+      await wait(20 * 1000)
+      return getOrCreateDiscussion(data)
+    }
+    redisCallWrapper((redis) =>
+      redis?.set(
+        getDiscussionRedisKey(resourceId),
+        'true',
+        'EX',
+        MUTATION_MAX_AGE
+      )
+    )
     const contentCid = await saveDiscussionContent(content as IpfsPostContent)
 
     if (!contentCid.success && !contentCid.cid) {
-      throw new Error()
+      throw new Error('Failed to save content to IPFS')
     }
 
-    return createDiscussionAndGetPostId({
+    const res = await createDiscussionAndGetPostId({
       resourceId,
       spaceId,
       contentCid: contentCid.cid!,
       api: subsocialApi,
     })
+    await redisCallWrapper((redis) =>
+      redis?.del(getDiscussionRedisKey(resourceId))
+    )
+    return res
   } catch (e) {
     return {
       success: false,

@@ -7,6 +7,7 @@ export type ExtensionChatItemProps = {
   scrollToMessage?: (messageId: string) => Promise<void>
   chatId: string
   hubId: string
+  bg?: 'background' | 'background-light'
 }
 
 export type RepliedMessagePreviewPartProps = {

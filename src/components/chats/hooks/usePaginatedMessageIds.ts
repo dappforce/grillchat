@@ -17,6 +17,7 @@ type PaginatedData = {
   hasMore: boolean
   totalDataCount: number
   isLoading: boolean
+  allIds: string[]
 }
 
 type PaginatedConfig = {
@@ -56,7 +57,7 @@ export function usePaginatedMessageIdsFromDatahub({
     return data?.pages?.map((page) => page.data).flat() || []
   }, [data?.pages])
 
-  const filteredCurrentPageIds = useFilterBlockedMessageIds(
+  const filteredPageIds = useFilterBlockedMessageIds(
     hubId,
     chatId,
     flattenedIds
@@ -66,11 +67,12 @@ export function usePaginatedMessageIdsFromDatahub({
 
   return {
     currentPage: lastPage?.page ?? 1,
-    currentPageMessageIds: filteredCurrentPageIds,
+    currentPageMessageIds: filteredPageIds,
     loadMore,
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore ?? true,
     isLoading,
+    allIds: filteredPageIds,
   }
 }
 
@@ -111,5 +113,6 @@ export function usePaginatedMessageIdsFromChain({
     hasMore,
     totalDataCount: filteredMessageIds.length,
     isLoading,
+    allIds: filteredMessageIds,
   }
 }

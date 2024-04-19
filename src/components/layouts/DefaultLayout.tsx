@@ -6,6 +6,7 @@ import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import BackButton from '../BackButton'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
+import CreatorSidebar from './CreatorSidebar'
 import Sidebar from './Sidebar'
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
@@ -13,11 +14,13 @@ export type DefaultLayoutProps = ComponentProps<'div'> & {
   withBackButton?: LayoutNavbarExtensionProps
   withFixedHeight?: boolean
   withSidebar?: boolean
+  withSidebarBorder?: boolean
 }
 
 export default function DefaultLayout({
   children,
   navbarProps,
+  withSidebarBorder = true,
   withBackButton,
   withFixedHeight,
   withSidebar,
@@ -29,21 +32,41 @@ export default function DefaultLayout({
 
   return (
     <div
+      {...props}
       className={cx(
         'flex flex-col bg-background text-text',
-        withFixedHeight && 'h-screen'
+        withFixedHeight && 'h-screen',
+        props.className
       )}
       style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
-      {...props}
     >
-      <Navbar {...navbarProps} withSidebar={withSidebar} />
+      <Navbar
+        {...navbarProps}
+        withLargerContainer={withSidebar || navbarProps?.withLargerContainer}
+      />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <div className='container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
-          <div className='sticky top-14 hidden w-[225px] border-r border-border-gray md:block'>
+        <div
+          className={cx(
+            'container-page flex flex-1 items-start border-border-gray !pl-0 !pr-0 md:!pl-4'
+          )}
+        >
+          <div
+            className={cx(
+              'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[200px] border-r border-border-gray md:block',
+              withSidebarBorder && 'border-r'
+            )}
+          >
             <Sidebar />
           </div>
           <div className='flex-1'>{children}</div>
+          <div
+            className={cx(
+              'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[275px] py-4 lg:block'
+            )}
+          >
+            <CreatorSidebar />
+          </div>
         </div>
       ) : (
         children

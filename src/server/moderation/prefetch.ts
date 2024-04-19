@@ -23,6 +23,7 @@ export async function prefetchBlockedEntities(
         { spaceId: data.id },
         { ...data, type: 'spaceId' }
       )
+      getBlockedResourcesQuery.invalidate(queryClient, { spaceId: data.id })
     })
     blockedInPostIds.forEach((data) => {
       getBlockedResourcesQuery.setQueryData(
@@ -30,6 +31,9 @@ export async function prefetchBlockedEntities(
         { postEntityId: data.id },
         { ...data, type: 'postEntityId' }
       )
+      getBlockedResourcesQuery.invalidate(queryClient, {
+        postEntityId: data.id,
+      })
     })
     blockedInAppIds.forEach((data) => {
       getBlockedResourcesQuery.setQueryData(
@@ -37,6 +41,7 @@ export async function prefetchBlockedEntities(
         { appId: data.id },
         { ...data, type: 'appId' }
       )
+      getBlockedResourcesQuery.invalidate(queryClient, { appId: data.id })
     })
 
     return { blockedInSpaceIds, blockedInPostIds, blockedInAppIds }

@@ -1,9 +1,11 @@
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 
-export type ChatLoadingProps = ComponentProps<'div'>
+export type LoadingProps = ComponentProps<'div'> & {
+  spinnerClassName?: string
+}
 
-export default function ChatLoading({ ...props }: ChatLoadingProps) {
+export default function Loading({ spinnerClassName, ...props }: LoadingProps) {
   return (
     <div
       {...props}
@@ -13,7 +15,12 @@ export default function ChatLoading({ ...props }: ChatLoadingProps) {
       )}
     >
       <div className='relative h-4 w-4'>
-        <div className='absolute inset-0 h-4 w-4 animate-spin rounded-full border-b-2 border-background-lightest' />
+        <div
+          className={cx(
+            'absolute inset-0 h-4 w-4 animate-spin rounded-full border-b-2 border-background-lightest',
+            spinnerClassName
+          )}
+        />
       </div>
       <span className='text-sm text-text-muted'>Loading...</span>
     </div>

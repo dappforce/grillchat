@@ -3,7 +3,7 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
-import { PAGES_WITH_SIDEBAR } from '@/constants/layout'
+import { PAGES_WITH_LARGER_CONTAINER } from '@/constants/layout'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
@@ -31,9 +31,6 @@ import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 import urlJoin from 'url-join'
 
-const PWAInstall = dynamic(() => import('@/components/PWAInstall'), {
-  ssr: false,
-})
 const ForegroundNotificationHandler = dynamic(
   () => import('@/components/ForegroundNotificationHandler'),
   { ssr: false }
@@ -75,10 +72,12 @@ function Styles({
   const router = useRouter()
   const isInIframe = useIsInIframe()
 
-  const isPagesWithSidebar = PAGES_WITH_SIDEBAR.includes(router.pathname)
+  const isPagesWithSidebar = PAGES_WITH_LARGER_CONTAINER.includes(
+    router.pathname
+  )
   const isUsing16BaseSize =
     router.pathname === '/landing' ||
-    PAGES_WITH_SIDEBAR.includes(router.pathname)
+    PAGES_WITH_LARGER_CONTAINER.includes(router.pathname)
 
   const scrollbarSelector = isInIframe ? 'body' : 'html'
   const scrollbarStyling = alwaysShowScrollbarOffset

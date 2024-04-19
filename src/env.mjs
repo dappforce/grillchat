@@ -46,6 +46,7 @@ export const env = createEnv({
       .string()
       .default('')
       .transform((val) => val.split(',').filter(Boolean)),
+    NEXT_PUBLIC_PROPOSALS_HUB: z.string().default(''),
     NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT: z.string().default(''),
 
     NEXT_PUBLIC_AMP_ID: z.string().default(''),
@@ -105,5 +106,6 @@ export const env = createEnv({
     NEXT_PUBLIC_DATAHUB_QUERY_URL: process.env.NEXT_PUBLIC_DATAHUB_QUERY_URL,
     NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL:
       process.env.NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL,
+    NEXT_PUBLIC_PROPOSALS_HUB: process.env.NEXT_PUBLIC_PROPOSALS_HUB,
   },
 })

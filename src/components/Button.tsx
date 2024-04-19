@@ -13,10 +13,12 @@ export const buttonStyles = cva('relative transition', {
         'bg-transparent border border-background-primary/50 dark:border-background-primary/80 text-text',
       bgLighter:
         'bg-background-lighter border border-transparent text-text-muted',
-      whiteOutline: 'bg-transparent border border-white text-text',
-      mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
+      whiteOutline: 'bg-transparent border border-white text-text !ring-white',
+      white: 'bg-white text-black !ring-white',
+      mutedOutline:
+        'bg-transparent border border-text-muted text-text-muted !ring-text-muted',
       transparent: 'bg-transparent',
-      redOutline: 'bg-transparent border border-text-red',
+      redOutline: 'bg-transparent border border-text-red !ring-text-red',
       landingPrimary:
         'bg-gradient-to-r from-[#DB4646] to-[#F9A11E] text-white hover:!ring-white/50 focus-visible:!ring-white/50',
       landingPrimaryOutline:

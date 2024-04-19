@@ -8,4 +8,5 @@ export type ChatItemContentProps = ComponentProps<'div'> & {
   message: PostData
   isMyMessage: boolean
   scrollToMessage?: ScrollToMessage
+  bg?: 'background-light' | 'background'
 }

@@ -2,7 +2,7 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import { useSendEvent } from '@/stores/analytics'
 import { debounce } from '@/utils/general'
 import { useEffect } from 'react'
-import { useChatListContext } from './ChatList'
+import { useChatListContext } from './provider'
 
 export default function ChatListEventManager() {
   const containerRef = useChatListContext()

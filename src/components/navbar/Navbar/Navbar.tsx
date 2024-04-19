@@ -34,7 +34,7 @@ const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
 })
 
 export type NavbarProps = ComponentProps<'div'> & {
-  withSidebar?: boolean
+  withLargerContainer?: boolean
   backButtonProps?: {
     defaultBackLink: string
     forceUseDefaultBackLink?: boolean
@@ -51,7 +51,7 @@ export type NavbarProps = ComponentProps<'div'> & {
 }
 
 export default function Navbar({
-  withSidebar,
+  withLargerContainer,
   customContent,
   backButtonProps,
   containerClassName,
@@ -176,7 +176,7 @@ export default function Navbar({
         <Container
           className={cx(
             'flex h-14 w-full',
-            withSidebar && 'container-page',
+            withLargerContainer && 'container-page',
             containerClassName
           )}
         >
