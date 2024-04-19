@@ -7,8 +7,8 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import urlJoin from 'url-join'
 
-const useRedirectToNewChatPage = (hubId: string, onAction?: () => void) => {
-  const { newChatId } = useCreateChatModal()
+const useRedirectToNewChatPage = (hubId?: string, onAction?: () => void) => {
+  const { newChatId, setNewChatId } = useCreateChatModal()
   const router = useRouter()
   const setSubscriptionState = useSubscriptionState(
     (state) => state.setSubscriptionState
@@ -19,7 +19,7 @@ const useRedirectToNewChatPage = (hubId: string, onAction?: () => void) => {
   })
 
   useEffect(() => {
-    if (newChat) {
+    if (newChat && hubId) {
       const chatId = newChat.id
       async function onSuccessChatCreation() {
         const isWidget = window.location.pathname.includes('/widget')
@@ -36,11 +36,12 @@ const useRedirectToNewChatPage = (hubId: string, onAction?: () => void) => {
         }
       }
       onSuccessChatCreation()
+      setNewChatId(undefined)
       setSubscriptionState('post', 'dynamic')
       onAction?.()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newChat, hubId, router])
+  }, [newChat, hubId])
 }
 
 export default useRedirectToNewChatPage

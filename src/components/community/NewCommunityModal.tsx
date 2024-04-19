@@ -4,7 +4,6 @@ import {
 } from '@/stores/create-chat-modal'
 import Modal from '../modals/Modal'
 
-import { communityHubId } from '@/modules/chat/HomePage'
 import { PostData } from '@subsocial/api/types'
 import { useEffect, useState } from 'react'
 import ChooseCommunityTypeContent from './content/ChooseCommunityType'
@@ -72,7 +71,7 @@ const NewCommunityModal = ({
     setIsWidget(isWidget)
   }, [])
 
-  useRedirectToNewChatPage(hubId || communityHubId, closeModal)
+  useRedirectToNewChatPage(hubId, closeModal)
 
   const Content = chatContentByStep[defaultOpenState || 'new-comunity']
 
