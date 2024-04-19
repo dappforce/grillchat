@@ -21,7 +21,7 @@ const chatContentByStep: {
   loading: LoadingContent,
 }
 
-const getModalConfigByStep = (isWidget: boolean) => ({
+const getModalConfigByStep = (isWidget: boolean, isUpdateChat: boolean) => ({
   'new-comunity': {
     title: '💭 New Community',
   },
@@ -32,7 +32,7 @@ const getModalConfigByStep = (isWidget: boolean) => ({
     title: '✏️ Edit chat',
   },
   loading: {
-    title: 'Creating chat',
+    title: isUpdateChat ? 'Updating chat' : 'Creating chat',
   },
 })
 
@@ -42,14 +42,16 @@ export type NewCommunityModalProps = {
   withBackButton?: boolean
   onBackClick?: () => void
   customOnClose?: () => void
+  onSuccess?: () => void
 }
 
 const NewCommunityModal = ({
-  hubId = communityHubId,
+  hubId,
   withBackButton,
   chat,
   customOnClose,
   onBackClick: customOnBackClick,
+  onSuccess,
 }: NewCommunityModalProps) => {
   const {
     openModal,
@@ -70,17 +72,19 @@ const NewCommunityModal = ({
     setIsWidget(isWidget)
   }, [])
 
-  useRedirectToNewChatPage(hubId, closeModal)
+  useRedirectToNewChatPage(hubId || communityHubId, closeModal)
 
   const Content = chatContentByStep[defaultOpenState || 'new-comunity']
 
-  const { title } =
-    getModalConfigByStep(isWidget)[defaultOpenState || 'new-comunity']
-
   const augmentedFormProps: UpsertChatFormProps = {
     hubId,
-    ...(chat ? chat : {}),
+    ...(chat ? { chat } : {}),
+    onSuccess: chat ? onSuccess : undefined,
   }
+
+  const { title } = getModalConfigByStep(isWidget, !!chat)[
+    defaultOpenState || 'new-comunity'
+  ]
 
   const onBackClick =
     withBackButton && defaultOpenState !== 'new-comunity'

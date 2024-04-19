@@ -334,6 +334,10 @@ export default function AboutChatModal({
           setOpenedModalType(null)
           closeModal()
         }}
+        onSuccess={() => {
+          closeCreateChatModal()
+          setOpenedModalType(null)
+        }}
       />
       {hubId && (
         <ModerationInfoModal

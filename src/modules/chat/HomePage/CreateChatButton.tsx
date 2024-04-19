@@ -20,8 +20,6 @@ const CreateChatButton = () => {
     showHiddenPost: { type: 'all' },
   })
 
-  console.log('Chat id and chat struct', chatId, chat)
-
   const commonProps: Partial<ButtonProps> = {
     size: 'xs',
     variant: 'primary',
