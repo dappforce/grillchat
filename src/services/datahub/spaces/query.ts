@@ -2,7 +2,6 @@ import { createQuery, poolQuery } from '@/subsocial-query'
 import { SpaceData } from '@subsocial/api/types'
 import { gql } from 'graphql-request'
 
-// TODO: update this with correct fragment and change to datahub query, also change imports for the usages
 const SPACE_FRAGMENT = gql`
   fragment SpaceFragment on Space {
     id

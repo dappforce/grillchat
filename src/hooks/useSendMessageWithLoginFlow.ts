@@ -1,7 +1,8 @@
 import {
-  SendMessageParams,
+  generateSendMessageParam,
   useSendMessage,
-} from '@/services/subsocial/commentIds'
+} from '@/services/datahub/posts/mutation'
+import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useMyMainAddress } from '@/stores/my-account'
 import { UseMutationOptions, useMutation } from '@tanstack/react-query'
 import useLoginOption from './useLoginOption'
@@ -23,7 +24,7 @@ export default function useSendMessageWithLoginFlow(
       usedAddress = loginAddress
     }
 
-    await sendMessage(params)
+    await sendMessage(generateSendMessageParam(params))
   }
 
   return useMutation(handler, options)

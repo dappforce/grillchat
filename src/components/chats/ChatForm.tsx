@@ -2,7 +2,6 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import { ERRORS } from '@/constants/error'
-import { env } from '@/env.mjs'
 import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
 import useSendMessageWithLoginFlow from '@/hooks/useSendMessageWithLoginFlow'
@@ -10,11 +9,11 @@ import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
-import { useSendOffchainMessage } from '@/services/datahub/posts/mutation'
 import {
-  SendMessageParams,
+  generateSendMessageParam,
   useSendMessage,
-} from '@/services/subsocial/commentIds'
+} from '@/services/datahub/posts/mutation'
+import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -39,10 +38,6 @@ import { IoRefresh } from 'react-icons/io5'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 import { sendEventWithRef } from '../referral/analytics'
-
-// const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
-//   ssr: false,
-// })
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   hubId: string
@@ -135,16 +130,10 @@ export default function ChatForm({
   }
 
   const { mutate: sendMessage } = useSendMessage({
-    onSuccess: () => unsentMessageStorage.remove(chatId),
-    onError: (error, variables) => {
-      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
-        reloadUnsentMessage,
-        setIsDisabledInput,
-      })
+    onSuccess: () => {
+      unsentMessageStorage.remove(chatId)
+      resetForm()
     },
-  })
-  const { mutate: sendOffchainMessage } = useSendOffchainMessage({
-    onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
         reloadUnsentMessage,
@@ -223,29 +212,12 @@ export default function ChatForm({
     unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')
 
-    resetForm()
-    const isOffchainPosting =
-      env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(hubId)
-    if (isOffchainPosting) {
-      sendOffchainMessage({
-        ...messageParams,
-        uuid: crypto.randomUUID(),
-        timestamp: Date.now(),
-      })
-    } else if (shouldSendMessage) {
-      sendMessage(messageParams)
+    if (shouldSendMessage) {
+      sendMessage(generateSendMessageParam(messageParams))
     } else {
       loginAndSendMessage(messageParams)
     }
 
-    // // TODO: wrap it into hook
-    // const storage = new SessionStorage(() => 'FIRST_MESSAGE_SENT')
-    // const isFirstMessageInSession = storage.get()
-    // console.log('isFirstMessageInSession', isFirstMessageInSession)
-    // if (!isFirstMessageInSession) {
-    //   sendEvent('send_first_message', { chatId, title: chatTitle })
-    //   storage.set('true')
-    // }
     const firstExtension = sendMessageParams.extensions?.[0]
     sendEventWithRef(myAddress ?? '', (ref) => {
       sendEvent('send_comment', { extensionType: firstExtension?.id }, { ref })
@@ -284,52 +256,45 @@ export default function ChatForm({
     </Button>
   )
   return (
-    <>
-      <form
-        onSubmit={submitForm}
-        {...props}
-        className={cx('flex w-full flex-col gap-2', className)}
-      >
-        <TextArea
-          onPaste={(e) => {
-            const clipboardData = e.clipboardData
-            interceptPastedData(clipboardData, e)
-          }}
-          placeholder='Message...'
-          rows={1}
-          autoComplete='off'
-          autoCapitalize='sentences'
-          autoCorrect='off'
-          spellCheck='false'
-          variant='fill'
-          pill
-          {...inputProps}
-          onChange={(e) => setMessageBody((e.target as any).value)}
-          onEnterToSubmitForm={submitForm}
-          disabled={!chatId || disabled}
-          value={messageBody}
-          ref={textAreaRef}
-          rightElement={!sendButtonText ? renderSendButton : undefined}
-        />
+    <form
+      onSubmit={submitForm}
+      {...props}
+      className={cx('flex w-full flex-col gap-2', className)}
+    >
+      <TextArea
+        onPaste={(e) => {
+          const clipboardData = e.clipboardData
+          interceptPastedData(clipboardData, e)
+        }}
+        placeholder='Message...'
+        rows={1}
+        autoComplete='off'
+        autoCapitalize='sentences'
+        autoCorrect='off'
+        spellCheck='false'
+        variant='fill'
+        pill
+        {...inputProps}
+        onChange={(e) => setMessageBody((e.target as any).value)}
+        onEnterToSubmitForm={submitForm}
+        disabled={!chatId || disabled}
+        value={messageBody}
+        ref={textAreaRef}
+        rightElement={!sendButtonText ? renderSendButton : undefined}
+      />
 
-        {sendButtonText && (
-          <Button
-            type='submit'
-            disabled={isDisabled}
-            size='lg'
-            onClick={submitForm}
-            {...sendButtonProps}
-          >
-            {sendButtonText}
-          </Button>
-        )}
-      </form>
-
-      {/* <StayUpdatedModal
-        isOpen={isOpenCtaModal}
-        closeModal={() => setIsOpenCtaModal(false)}
-      /> */}
-    </>
+      {sendButtonText && (
+        <Button
+          type='submit'
+          disabled={isDisabled}
+          size='lg'
+          onClick={submitForm}
+          {...sendButtonProps}
+        >
+          {sendButtonText}
+        </Button>
+      )}
+    </form>
   )
 }
 

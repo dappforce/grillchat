@@ -246,12 +246,19 @@ const datahubMutation = {
 }
 export default datahubMutation
 
-type SendOffchainMessageParams = SendMessageParams & {
+type Params = SendMessageParams & {
   uuid: string
   timestamp: number
 }
-export function useSendOffchainMessage(
-  config: UseMutationOptions<void, unknown, SendOffchainMessageParams, unknown>
+export function generateSendMessageParam(params: SendMessageParams) {
+  return {
+    ...params,
+    uuid: crypto.randomUUID(),
+    timestamp: Date.now(),
+  }
+}
+export function useSendMessage(
+  config?: UseMutationOptions<void, unknown, Params, unknown>
 ) {
   const client = useQueryClient()
 
@@ -284,7 +291,7 @@ export function useSendOffchainMessage(
       })
     },
     onMutate: async (data) => {
-      config.onMutate?.(data)
+      config?.onMutate?.(data)
       preventWindowUnload()
       const content = {
         body: data.message,
@@ -307,10 +314,10 @@ export function useSendOffchainMessage(
         client,
         customId: newId,
       })
-      config.onMutate?.(data)
+      config?.onMutate?.(data)
     },
     onError: (err, data, context) => {
-      config.onError?.(err, data, context)
+      config?.onError?.(err, data, context)
       allowWindowUnload()
       const newId = getDeterministicId({
         account:
@@ -324,10 +331,10 @@ export function useSendOffchainMessage(
         client,
         idToDelete: newId,
       })
-      config.onError?.(err, data, context)
+      config?.onError?.(err, data, context)
     },
     onSuccess: (...params) => {
-      config.onSuccess?.(...params)
+      config?.onSuccess?.(...params)
       allowWindowUnload()
     },
   })

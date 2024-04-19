@@ -4,9 +4,7 @@ import ChatImage from '@/components/chats/ChatImage'
 import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
-import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import LinkText from '@/components/LinkText'
 import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
@@ -191,10 +189,7 @@ export default function ChatPage({
                 chatMetadata={content}
                 chatId={chatId}
               />
-              <div className='flex items-center gap-3'>
-                {}
-                {authComponent}
-              </div>
+              <div className='flex items-center gap-3'>{authComponent}</div>
             </div>
           ),
         }}
@@ -206,7 +201,6 @@ export default function ChatPage({
           className='flex-1 overflow-hidden'
           customAction={customAction}
         />
-        <BottomPanel />
       </DefaultLayout>
 
       <ChatCreateSuccessModal
@@ -216,24 +210,6 @@ export default function ChatPage({
         closeModal={() => setIsOpenCreateSuccessModal(false)}
       />
     </>
-  )
-}
-
-function BottomPanel() {
-  return (
-    <Container as='div' className='pb-2 text-center text-sm text-text-muted'>
-      <p className='inline'>
-        Powered by{' '}
-        <LinkText
-          variant='primary'
-          href='https://subsocial.network/'
-          openInNewTab
-        >
-          Subsocial
-        </LinkText>
-      </p>
-      <NetworkStatus className='ml-2 inline-block' />
-    </Container>
   )
 }
 

@@ -375,7 +375,7 @@ export const GET_OWNED_POSTS = gql`
     }
   }
 `
-async function getOwnedPosts(address: string) {
+async function getOwnedPosts(address: string, queryClient: QueryClient | null) {
   if (!address) return []
 
   const res = await datahubQueryRequest<
@@ -406,7 +406,10 @@ export const GET_POSTS_BY_SPACE_ID = gql`
     }
   }
 `
-async function getPostsBySpaceId(spaceId: string) {
+async function getPostsBySpaceId(
+  spaceId: string,
+  queryClient: QueryClient | null
+) {
   const res = await datahubQueryRequest<
     GetPostsBySpaceIdQuery,
     GetPostsBySpaceIdQueryVariables
