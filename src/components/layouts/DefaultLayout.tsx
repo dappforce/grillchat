@@ -24,6 +24,7 @@ export default function DefaultLayout({
   withBackButton,
   withFixedHeight,
   withSidebar,
+  style,
   ...props
 }: DefaultLayoutProps) {
   if (currentNetwork === 'xsocial') {
@@ -38,7 +39,11 @@ export default function DefaultLayout({
         withFixedHeight && 'h-screen',
         props.className
       )}
-      style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
+      style={
+        withFixedHeight
+          ? { height: '100dvh', ...style }
+          : { minHeight: '100svh', ...style }
+      }
     >
       <Navbar
         {...navbarProps}
