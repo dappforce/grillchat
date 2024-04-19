@@ -34,6 +34,7 @@ import { useTheme } from 'next-themes'
 import { useRouter } from 'next/router'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
+import { TbMessageCirclePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
 import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
@@ -79,8 +80,6 @@ export default function AccountContent({
 
   const haveChat = !!chatId && chat?.struct.spaceId
 
-  console.log(haveChat, chatId, chat)
-
   const colorModeOptions = useColorModeOptions()
 
   const {
@@ -124,7 +123,7 @@ export default function AccountContent({
       ? [
           {
             text: 'Creator Chat',
-            icon: FaRegUser,
+            icon: TbMessageCirclePlus,
             onClick: (e: any) => {
               closeModal()
 
@@ -144,7 +143,7 @@ export default function AccountContent({
       : [
           {
             text: 'Create Chat',
-            icon: FaRegUser,
+            icon: TbMessageCirclePlus,
             onClick: () => {
               setCurrentState('create-chat')
             },
