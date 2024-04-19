@@ -69,6 +69,7 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=grill-web-push.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:8b27ce87e8cb476f95d1bb
+            GH_NEXT_PUBLIC_PROPOSALS_HUB=27942
           target: runner
           tags: |
             ${{ env.image }}
