@@ -1,14 +1,14 @@
 import Button from '@/components/Button'
+import Container from '@/components/Container'
+import LinkText from '@/components/LinkText'
+import { getPluralText } from '@/components/PluralText'
+import Spinner from '@/components/Spinner'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
 import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
-import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import LinkText from '@/components/LinkText'
-import { getPluralText } from '@/components/PluralText'
-import Spinner from '@/components/Spinner'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -18,6 +18,7 @@ import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -35,6 +36,7 @@ import { ImageProps } from 'next/image'
 import Router, { useRouter } from 'next/router'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
+import { communityHubId } from '../HomePage'
 
 const NetworkStatus = dynamic(() => import('@/components/NetworkStatus'), {
   ssr: false,
@@ -187,7 +189,8 @@ export default function ChatPage({
         withFixedHeight
         navbarProps={{
           backButtonProps: {
-            defaultBackLink: getHubPageLink(router),
+            defaultBackLink:
+              hubId !== communityHubId ? '/my-chats' : getHubPageLink(router),
             forceUseDefaultBackLink: false,
           },
           customContent: ({ backButton, authComponent, notificationBell }) => (
@@ -262,6 +265,8 @@ function NavbarChatInfo({
     showHiddenPost: { type: 'all' },
   })
 
+  const { data: space } = getSpaceQuery.useQuery(chat?.struct.spaceId ?? '')
+
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
   const router = useRouter()
@@ -294,6 +299,35 @@ function NavbarChatInfo({
 
   const chatTitle = chatMetadata?.title || chatMetadata?.summary || 'Untitled'
 
+  let subtitle = (
+    <>{`${messageCount} ${getPluralText({
+      count: messageCount,
+      plural: 'messages',
+      singular: 'message',
+    })}`}</>
+  )
+
+  if (space) {
+    const { content: spaceContent } = space || {}
+
+    const chats =
+      ((spaceContent as any)?.experimental?.chats as { id: string }[]) ||
+      undefined
+
+    const isProfileChat = chats?.[0]?.id === chatId
+
+    if (isProfileChat && spaceContent) {
+      const title = spaceContent.name
+
+      subtitle = (
+        <span className='font-normal leading-normal'>
+          <span className='text-text-muted'>by</span>{' '}
+          <span className='text-text'>{title}</span>
+        </span>
+      )
+    }
+  }
+
   return (
     <div className='flex flex-1 items-center overflow-hidden'>
       {enableBackButton && backButton}
@@ -324,11 +358,7 @@ function NavbarChatInfo({
             )}
           </div>
           <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
-            {`${messageCount} ${getPluralText({
-              count: messageCount,
-              plural: 'messages',
-              singular: 'message',
-            })}`}
+            {subtitle}
           </span>
         </div>
       </Button>

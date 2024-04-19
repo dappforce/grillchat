@@ -76,6 +76,7 @@ declare module '@subsocial/api/types' {
 
   export interface SpaceContent extends SubsocialSpaceContent {
     profileSource?: string
+    experimental?: any
   }
   export interface PostContent extends SubsocialPostContent {
     optimisticId?: string

@@ -9,16 +9,19 @@ import MenuList, { MenuListProps } from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import SkeletonFallback from '@/components/SkeletonFallback'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import { getProfileQuery } from '@/services/api/query'
+import { getPostQuery, getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { useProfileModal } from '@/stores/profile-modal'
+import { getCreatorChatIdFromProfile } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import {
@@ -28,8 +31,10 @@ import {
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
+import { useRouter } from 'next/router'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
+import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
 import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
@@ -39,11 +44,10 @@ export default function AccountContent({
   address,
   setCurrentState,
 }: ProfileModalContentProps) {
-  // const { showNotification, closeNotification } =
-  //   useFirstVisitNotification('notification-menu')
-
   const canUseGrillKey = useCanUseGrillKey()
   const isInIframe = useIsInIframe()
+  const { closeModal } = useProfileModal()
+  const router = useRouter()
 
   const {
     data: balance,
@@ -68,66 +72,34 @@ export default function AccountContent({
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
+  const chatId = getCreatorChatIdFromProfile(profile)
+
+  const { data: chat } = getPostQuery.useQuery(chatId || '', {
+    showHiddenPost: { type: 'all' },
+  })
+
+  const haveChat = !!chatId && chat?.struct.spaceId
+
   const colorModeOptions = useColorModeOptions()
 
-  // const {
-  //   count: linkedAddressesCount,
-  //   maxCount: maxLinkedCount,
-  //   isLoading: isLoadingLinkedAcccountCount,
-  // } = useLinkedAccountCount()
   const {
     count: activatedNotificationCount,
     maxCount: maxNotificationCount,
     isLoading: isLoadingActivatedNotificationCount,
   } = useActivatedNotificationCount()
 
-  // const onLinkedAddressesClick = () => {
-  //   sendEvent('open_linked_addresses', commonEventProps)
-  //   setCurrentState('linked-addresses')
-  // }
   const onPrivacySecurityKeyClick = () => {
     sendEvent('open_privacy_security_modal', commonEventProps)
     setCurrentState('privacy-security')
   }
-  // const onShareSessionClick = () => {
-  //   sendEvent('open_share_session_modal', commonEventProps)
-  //   setCurrentState('share-session')
-  // }
+
   const onLogoutClick = () => {
     disconnect()
     sendEvent('open_log_out_modal', commonEventProps)
     setCurrentState('logout')
   }
-  // const onAboutClick = () => {
-  //   sendEvent('open_about_app_info', commonEventProps)
-  //   setCurrentState('about')
-  // }
 
   const menus: MenuListProps['menus'] = [
-    // {
-    //   text: (
-    //     <span className='flex items-center gap-2'>
-    //       <span>Linked Addresses</span>
-    //       {!isLoadingLinkedAcccountCount && (
-    //         <Notice size='sm' noticeType='grey'>
-    //           {linkedAddressesCount} / {maxLinkedCount}
-    //         </Notice>
-    //       )}
-    //     </span>
-    //   ),
-    //   icon: LinkedAddressesIcon,
-    //   onClick: onLinkedAddressesClick,
-    // },
-    // ...(isInstallAvailable()
-    //   ? [
-    //       {
-    //         text: 'Install app',
-    //         icon: FiDownload,
-    //         onClick: installApp,
-    //         iconClassName: 'text-text-muted text-xl',
-    //       },
-    //     ]
-    //   : []),
     ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
       ? [
           {
@@ -147,6 +119,36 @@ export default function AccountContent({
           },
         ]
       : []),
+    ...(haveChat
+      ? [
+          {
+            text: 'Creator Chat',
+            icon: TbMessageCircle,
+            onClick: (e: any) => {
+              closeModal()
+
+              const createChatLink = `/${profile?.profileSpace?.id}/${chatId}`
+              if (getIsAnIframeInSameOrigin()) {
+                e.preventDefault()
+                sendMessageToParentWindow(
+                  'redirect-hard',
+                  `/c${createChatLink}`
+                )
+              } else {
+                router.push(createChatLink)
+              }
+            },
+          },
+        ]
+      : [
+          {
+            text: 'Create Chat',
+            icon: TbMessageCirclePlus,
+            onClick: () => {
+              setCurrentState('create-chat')
+            },
+          },
+        ]),
     ...(canUseGrillKey
       ? [
           {
@@ -185,11 +187,6 @@ export default function AccountContent({
         }
       },
     },
-    // {
-    //   text: 'About App',
-    //   icon: InfoIcon,
-    //   onClick: onAboutClick,
-    // },
     ...(!isInIframe ? colorModeOptions : []),
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
@@ -257,6 +254,7 @@ export default function AccountContent({
           </div>
         </div>
         <MenuList menus={menus} />
+        <NewCommunityModal hubId={profile?.profileSpace?.id} />
       </div>
     </>
   )
@@ -287,20 +285,6 @@ function useColorModeOptions(): MenuListProps['menus'] {
 
   return []
 }
-
-// function useLinkedAccountCount() {
-//   const myAddress = useMyMainAddress()
-//   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
-//   const { data: accountData, isLoading } = getAccountDataQuery.useQuery(
-//     myAddress ?? ''
-//   )
-
-//   let count = 0
-//   if (hasProxy) count++
-//   if (accountData?.evmAddress) count++
-
-//   return { count, maxCount: 2, isLoading }
-// }
 
 function useActivatedNotificationCount() {
   const myAddress = useMyMainAddress()

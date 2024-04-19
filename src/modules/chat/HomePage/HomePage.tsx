@@ -1,7 +1,4 @@
-import CommunityAddIcon from '@/assets/icons/community-add.svg'
-import Button from '@/components/Button'
 import Tabs, { TabsProps } from '@/components/Tabs'
-import NewCommunityModal from '@/components/community/NewCommunityModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
@@ -21,6 +18,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import urlJoin from 'url-join'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
+import CreateChatButton from './CreateChatButton'
 import HotChatsContent from './HotChatsContent'
 import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
@@ -30,7 +28,7 @@ export type HomePageProps = {
 }
 
 const hotChatsHubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
-const communityHubId = env.NEXT_PUBLIC_COMMUNITY_HUB_ID
+export const communityHubId = env.NEXT_PUBLIC_COMMUNITY_HUB_ID
 
 const addressFromStorage = accountAddressStorage.get()
 
@@ -141,8 +139,6 @@ export default function HomePage(props: HomePageProps) {
       })
   }
 
-  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
-
   return (
     <DefaultLayout
       withSidebar
@@ -191,20 +187,7 @@ export default function HomePage(props: HomePageProps) {
             isLoggedIn &&
             communityHubId && (
               <div className='ml-auto mr-2 flex items-center justify-end self-stretch pl-2'>
-                <Button
-                  size='xs'
-                  variant='primary'
-                  className='flex items-center gap-2'
-                  onClick={() => {
-                    setIsOpenNewCommunity(true)
-                    sendEvent('open_community_creation_modal', {
-                      eventSource: 'home',
-                    })
-                  }}
-                >
-                  <CommunityAddIcon className='text-text-muted-on-primary' />
-                  <span>New</span>
-                </Button>
+                <CreateChatButton />
               </div>
             )
           }
@@ -215,14 +198,6 @@ export default function HomePage(props: HomePageProps) {
           }}
         />
       </SearchChannelsWrapper>
-
-      {communityHubId && (
-        <NewCommunityModal
-          isOpen={isOpenNewCommunity}
-          closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={communityHubId}
-        />
-      )}
     </DefaultLayout>
   )
 }

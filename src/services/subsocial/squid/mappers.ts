@@ -44,6 +44,7 @@ export const mapSpaceFragment = (space: SpaceFragmentFragment): SpaceData => {
       email: space.email ?? '',
       links: getTokensFromUnifiedString(space.linksOriginal ?? ''),
       isShowMore: space.isShowMore ?? false,
+      experimental: space.experimental ?? [],
     },
   }
 }

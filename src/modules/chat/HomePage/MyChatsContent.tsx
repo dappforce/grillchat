@@ -10,6 +10,7 @@ import {
   getFollowedPostIdsByAddressQuery,
   getOwnedPostIdsQuery,
 } from '@/services/subsocial/posts'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
@@ -164,7 +165,7 @@ function Toolbar({ filter, changeFilter, hasAnyHiddenChats }: ToolbarProps) {
 
 type NoChatsProps = Pick<MyChatsContentProps, 'changeTab'>
 function NoChats({ changeTab }: NoChatsProps) {
-  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+  const { openModal } = useCreateChatModal()
 
   return (
     <>
@@ -187,7 +188,7 @@ function NoChats({ changeTab }: NoChatsProps) {
             <Button
               className='mt-4 w-full'
               size='lg'
-              onClick={() => setIsOpenNewCommunity(true)}
+              onClick={() => openModal({ defaultOpenState: 'new-comunity' })}
             >
               Create Chat
             </Button>
@@ -221,13 +222,7 @@ function NoChats({ changeTab }: NoChatsProps) {
         )}
       </Container>
 
-      {communityHubId && (
-        <NewCommunityModal
-          isOpen={isOpenNewCommunity}
-          closeModal={() => setIsOpenNewCommunity(false)}
-          hubId={communityHubId}
-        />
-      )}
+      {communityHubId && <NewCommunityModal hubId={communityHubId} />}
     </>
   )
 }

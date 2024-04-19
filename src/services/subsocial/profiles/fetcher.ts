@@ -41,6 +41,7 @@ const GET_PROFILES = gql`
         tagsOriginal
         profileSource
         updatedAtTime
+        experimental
       }
     }
   }
@@ -65,6 +66,7 @@ async function getProfilesFromSquid(
             links: profileSpace.linksOriginal?.split(','),
             tags: profileSpace.tagsOriginal?.split(','),
             profileSource: profileSpace.profileSource,
+            experimental: profileSpace.experimental,
           } as SpaceContent,
         }
       : null,

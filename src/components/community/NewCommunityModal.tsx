@@ -1,67 +1,116 @@
-import ChatIcon from '@/assets/icons/bubble-chat.svg'
-import HubIcon from '@/assets/icons/hub.svg'
-import MegaphoneIcon from '@/assets/icons/megaphone.svg'
-import ActionCard, { ActionCardProps } from '@/components/ActionCard'
-import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { useSendEvent } from '@/stores/analytics'
-import { useState } from 'react'
-import UpsertChatModal from './UpsertChatModal'
+import {
+  CreateChatModalState,
+  useCreateChatModal,
+} from '@/stores/create-chat-modal'
+import Modal from '../modals/Modal'
 
-export type NewCommunityModalProps = ModalFunctionalityProps & {
-  hubId: string
+import { communityHubId } from '@/modules/chat/HomePage'
+import { PostData } from '@subsocial/api/types'
+import { useEffect, useState } from 'react'
+import ChooseCommunityTypeContent from './content/ChooseCommunityType'
+import LoadingContent from './content/LoadingContent'
+import UpsertChatForm, { UpsertChatFormProps } from './content/UpsertChatForm'
+import useRedirectToNewChatPage from './useRedirectToNewChatPage'
+
+const chatContentByStep: {
+  [key in CreateChatModalState]: (props: UpsertChatFormProps) => JSX.Element
+} = {
+  'new-comunity': ChooseCommunityTypeContent,
+  'create-chat': UpsertChatForm,
+  'update-chat': UpsertChatForm,
+  loading: LoadingContent,
 }
 
-export default function NewCommunityModal({
-  hubId,
-  ...props
-}: NewCommunityModalProps) {
-  const [openedModalState, setOpenedModalState] = useState<null | 'chat'>(null)
-  const sendEvent = useSendEvent()
+const getModalConfigByStep = (isWidget: boolean) => ({
+  'new-comunity': {
+    title: '💭 New Community',
+  },
+  'create-chat': {
+    title: isWidget ? '💬 Your Community Chat' : '💬 New Group Chat',
+  },
+  'update-chat': {
+    title: '✏️ Edit chat',
+  },
+  loading: {
+    title: 'Creating chat',
+  },
+})
 
-  const menus: ActionCardProps['actions'] = [
-    {
-      text: 'Group Chat',
-      description: 'Anyone can participate in a public conversation',
-      icon: ChatIcon,
-      firstVisitNotificationStorageName: 'new-community-chat',
-      onClick: () => {
-        setOpenedModalState('chat')
-        sendEvent('open_chat_creation_form')
-      },
-    },
-    {
-      text: 'Channel',
-      description: 'Only you can post updates and others can comment on them',
-      icon: MegaphoneIcon,
-      isComingSoon: true,
-    },
-    {
-      text: 'Hub',
-      description: 'A collection of related chats or channels',
-      icon: HubIcon,
-      isComingSoon: true,
-    },
-  ]
+export type NewCommunityModalProps = {
+  chat?: PostData
+  hubId?: string
+  withBackButton?: boolean
+  onBackClick?: () => void
+  customOnClose?: () => void
+}
+
+const NewCommunityModal = ({
+  hubId = communityHubId,
+  withBackButton,
+  chat,
+  customOnClose,
+  onBackClick: customOnBackClick,
+}: NewCommunityModalProps) => {
+  const {
+    openModal,
+    isOpen,
+    defaultOpenState,
+    closeModal,
+    onBackClick: storeOnBackClick,
+  } = useCreateChatModal()
+  const [isWidget, setIsWidget] = useState(false)
+
+  // even after the tx succeed, datahub needs some time to process the data from squid, so there is some kind of delay before the post is ready to be fetched
+  // if we don't use this hack, the user will be redirected to chat page with empty data
+  // so we need to wait for the post to be ready and then redirect the user
+
+  useEffect(() => {
+    const isWidget = window.location.pathname.includes('/widget')
+
+    setIsWidget(isWidget)
+  }, [])
+
+  useRedirectToNewChatPage(hubId, closeModal)
+
+  const Content = chatContentByStep[defaultOpenState || 'new-comunity']
+
+  const { title } =
+    getModalConfigByStep(isWidget)[defaultOpenState || 'new-comunity']
+
+  const augmentedFormProps: UpsertChatFormProps = {
+    hubId,
+    ...(chat ? chat : {}),
+  }
+
+  const onBackClick =
+    withBackButton && defaultOpenState !== 'new-comunity'
+      ? () => openModal({ defaultOpenState: 'new-comunity' })
+      : undefined
+
+  const onBack = withBackButton
+    ? customOnBackClick
+      ? customOnBackClick
+      : onBackClick
+    : undefined
 
   return (
-    <>
-      <Modal
-        {...props}
-        isOpen={props.isOpen && openedModalState === null}
-        title='💭 New Community'
-        withCloseButton
-      >
-        <ActionCard className='mt-2' actions={menus} />
-      </Modal>
-      <UpsertChatModal
-        isOpen={openedModalState === 'chat'}
-        closeModal={() => setOpenedModalState(null)}
-        onBackClick={() => setOpenedModalState(null)}
-        formProps={{
-          hubId,
-          onTxSuccess: props.closeModal,
-        }}
-      />
-    </>
+    <Modal
+      isOpen={isOpen}
+      title={title}
+      withCloseButton
+      onBackClick={storeOnBackClick || onBack}
+      closeModal={
+        customOnClose
+          ? () => {
+              customOnClose()
+              closeModal()
+            }
+          : closeModal
+      }
+    >
+      <Content {...augmentedFormProps} />
+    </Modal>
   )
 }
+
+export default NewCommunityModal
