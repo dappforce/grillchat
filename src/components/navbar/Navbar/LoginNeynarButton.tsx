@@ -23,8 +23,6 @@ export default function LoginNeynarButton() {
     }
   }, [])
 
-  console.log(user, env.NEXT_PUBLIC_NEYNAR_CLIENT_ID)
-
   return (
     <>
       <Script src='https://neynarxyz.github.io/siwn/raw/1.2.0/index.js' async />
