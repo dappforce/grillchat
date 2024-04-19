@@ -23,7 +23,7 @@ type Actions = {
     customInternalStepProps?: any
   }) => void
   clearInternalProps: () => void
-  setNewChatId: (id: string) => void
+  setNewChatId: (id?: string) => void
 }
 
 const initialState: State = {
@@ -39,7 +39,7 @@ const useCreateChatModalBase = create<State & Actions>()((set, get) => ({
   clearInternalProps: () => {
     set({ customInternalStepProps: undefined })
   },
-  setNewChatId: (id: string) => {
+  setNewChatId: (id?: string) => {
     const config = get()
 
     set({ ...config, newChatId: id })

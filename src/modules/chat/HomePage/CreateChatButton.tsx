@@ -5,7 +5,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { getCreatorChatIdFromProfile } from '@/utils/chat'
-import { communityHubId } from './HomePage'
 
 const CreateChatButton = () => {
   const { openModal } = useCreateChatModal()
@@ -49,7 +48,7 @@ const CreateChatButton = () => {
         Create Chat
       </Button>
       <NewCommunityModal
-        hubId={profile?.profileSpace?.id || communityHubId}
+        hubId={profile?.profileSpace?.id}
         withBackButton={false}
       />
     </>

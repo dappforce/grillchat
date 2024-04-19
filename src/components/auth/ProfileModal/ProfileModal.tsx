@@ -2,7 +2,6 @@ import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoadin
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
 import useRedirectToNewChatPage from '@/components/community/useRedirectToNewChatPage'
 import Modal, { ModalProps } from '@/components/modals/Modal'
-import { communityHubId } from '@/modules/chat/HomePage'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
@@ -131,10 +130,7 @@ export default function ProfileModal({
   )
   const { data: profile } = getProfileQuery.useQuery(address)
 
-  useRedirectToNewChatPage(
-    profile?.profileSpace?.id || communityHubId,
-    closeModal
-  )
+  useRedirectToNewChatPage(profile?.profileSpace?.id, closeModal)
 
   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)

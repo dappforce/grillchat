@@ -80,6 +80,7 @@ export default function ChatPage({
     const isNewChat = getUrlQuery('new')
     if (isNewChat) setIsOpenCreateSuccessModal(true)
   }, [])
+
   useEffect(() => {
     if (!getUrlQuery('new')) return
     if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
