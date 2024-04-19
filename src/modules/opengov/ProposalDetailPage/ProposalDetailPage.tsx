@@ -18,7 +18,8 @@ export type ProposalDetailPageProps = {
 export default function ProposalDetailPage(props: ProposalDetailPageProps) {
   return (
     <DefaultLayout
-      className='h-[100dvh] h-screen lg:h-auto'
+      className='h-screen lg:!h-auto'
+      style={{ height: '100svh' }}
       navbarProps={{
         withLargerContainer: true,
         backButtonProps: {
