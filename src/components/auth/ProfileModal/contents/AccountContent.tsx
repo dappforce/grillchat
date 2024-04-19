@@ -34,7 +34,7 @@ import { useTheme } from 'next-themes'
 import { useRouter } from 'next/router'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
-import { TbMessageCirclePlus } from 'react-icons/tb'
+import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
 import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
@@ -123,7 +123,7 @@ export default function AccountContent({
       ? [
           {
             text: 'Creator Chat',
-            icon: TbMessageCirclePlus,
+            icon: TbMessageCircle,
             onClick: (e: any) => {
               closeModal()
 
