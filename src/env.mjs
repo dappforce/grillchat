@@ -68,6 +68,7 @@ export const env = createEnv({
 
     NEXT_PUBLIC_DATAHUB_QUERY_URL: z.string().default(''),
     NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL: z.string().default(''),
+    NEXT_PUBLIC_NEYNAR_CLIENT_ID: z.string().default(''),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_ID: process.env.NEXT_PUBLIC_APP_ID,
@@ -105,5 +106,6 @@ export const env = createEnv({
     NEXT_PUBLIC_DATAHUB_QUERY_URL: process.env.NEXT_PUBLIC_DATAHUB_QUERY_URL,
     NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL:
       process.env.NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL,
+    NEXT_PUBLIC_NEYNAR_CLIENT_ID: process.env.NEXT_PUBLIC_NEYNAR_CLIENT_ID,
   },
 })
