@@ -16,6 +16,7 @@ import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -33,6 +34,7 @@ import { ImageProps } from 'next/image'
 import Router, { useRouter } from 'next/router'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
+import { communityHubId } from '../HomePage'
 import BottomPanel from './BottomPanel'
 
 const AboutChatModal = dynamic(
@@ -74,6 +76,7 @@ export default function ChatPage({
     const isNewChat = getUrlQuery('new')
     if (isNewChat) setIsOpenCreateSuccessModal(true)
   }, [])
+
   useEffect(() => {
     if (!getUrlQuery('new')) return
     if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
@@ -183,7 +186,8 @@ export default function ChatPage({
         withFixedHeight
         navbarProps={{
           backButtonProps: {
-            defaultBackLink: getHubPageLink(router),
+            defaultBackLink:
+              hubId !== communityHubId ? '/my-chats' : getHubPageLink(router),
             forceUseDefaultBackLink: false,
           },
           customContent: ({ backButton, authComponent, notificationBell }) => (
@@ -239,6 +243,8 @@ function NavbarChatInfo({
     showHiddenPost: { type: 'all' },
   })
 
+  const { data: space } = getSpaceQuery.useQuery(chat?.struct.spaceId ?? '')
+
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
   const router = useRouter()
@@ -271,6 +277,35 @@ function NavbarChatInfo({
 
   const chatTitle = chatMetadata?.title || chatMetadata?.summary || 'Untitled'
 
+  let subtitle = (
+    <>{`${messageCount} ${getPluralText({
+      count: messageCount,
+      plural: 'messages',
+      singular: 'message',
+    })}`}</>
+  )
+
+  if (space) {
+    const { content: spaceContent } = space || {}
+
+    const chats =
+      ((spaceContent as any)?.experimental?.chats as { id: string }[]) ||
+      undefined
+
+    const isProfileChat = chats?.[0]?.id === chatId
+
+    if (isProfileChat && spaceContent) {
+      const title = spaceContent.name
+
+      subtitle = (
+        <span className='font-normal leading-normal'>
+          <span className='text-text-muted'>by</span>{' '}
+          <span className='text-text'>{title}</span>
+        </span>
+      )
+    }
+  }
+
   return (
     <div className='flex flex-1 items-center'>
       {enableBackButton && backButton}
@@ -299,11 +334,7 @@ function NavbarChatInfo({
             )}
           </div>
           <span className='line-clamp-1 text-xs text-text-muted'>
-            {`${messageCount} ${getPluralText({
-              count: messageCount,
-              plural: 'messages',
-              singular: 'message',
-            })}`}
+            {subtitle}
           </span>
         </div>
       </Button>

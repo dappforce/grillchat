@@ -4,7 +4,7 @@ import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
-import UpsertChatModal from '@/components/community/UpsertChatModal'
+import NewCommunityModal from '@/components/community/NewCommunityModal'
 import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { isCommunityHubId } from '@/constants/config'
@@ -19,7 +19,9 @@ import {
   JoinChatWrapper,
   LeaveChatWrapper,
 } from '@/services/subsocial/posts/mutation'
+import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
@@ -62,6 +64,8 @@ export default function AboutChatModal({
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
   })
+  const { data: space } = getSpaceQuery.useQuery(chat?.struct.spaceId || '')
+  const { openModal, closeModal: closeCreateChatModal } = useCreateChatModal()
   const sendEvent = useSendEvent()
   const refSearchParam = useReferralSearchParam()
 
@@ -115,6 +119,7 @@ export default function AboutChatModal({
       ),
     })
   }
+  const closeModal = () => setOpenedModalType(null)
 
   const getActionMenu = (
     joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
@@ -151,6 +156,7 @@ export default function AboutChatModal({
         iconClassName: cx('text-text-muted'),
         onClick: () => {
           setOpenedModalType('edit')
+          openModal({ defaultOpenState: 'update-chat' })
           sendEvent('click edit_chat_menu')
         },
       })
@@ -210,8 +216,6 @@ export default function AboutChatModal({
     return actionMenu
   }
 
-  const closeModal = () => setOpenedModalType(null)
-
   let subtitle = (
     <span>
       {messageCount}{' '}
@@ -229,6 +233,27 @@ export default function AboutChatModal({
         <span className='mx-1'>·</span> {subtitle}
       </span>
     )
+  }
+
+  if (space) {
+    const { content: spaceContent } = space || {}
+
+    const chats =
+      ((spaceContent as any)?.experimental.chats as { id: string }[]) ||
+      undefined
+
+    const isProfileChat = chats?.[0]?.id === chatId
+
+    if (isProfileChat && spaceContent) {
+      const title = spaceContent.name
+
+      subtitle = (
+        <span className='font-normal leading-normal'>
+          <span className='text-text-muted'>by</span>{' '}
+          <span className='text-text'>{title}</span>
+        </span>
+      )
+    }
   }
 
   return (
@@ -299,11 +324,20 @@ export default function AboutChatModal({
         url={chatUrl}
         urlTitle={content.title}
       />
-      <UpsertChatModal
-        isOpen={openedModalType === 'edit'}
-        closeModal={closeModal}
-        onBackClick={closeModal}
-        formProps={{ chat }}
+      <NewCommunityModal
+        chat={chat}
+        onBackClick={() => {
+          closeCreateChatModal()
+          setOpenedModalType(null)
+        }}
+        customOnClose={() => {
+          setOpenedModalType(null)
+          closeModal()
+        }}
+        onSuccess={() => {
+          closeCreateChatModal()
+          setOpenedModalType(null)
+        }}
       />
       {hubId && (
         <ModerationInfoModal

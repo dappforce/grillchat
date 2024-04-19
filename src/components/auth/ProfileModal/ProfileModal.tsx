@@ -1,5 +1,6 @@
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import { CommonEvmAddressLinked } from '@/components/auth/common/evm/CommonEvmModalContent'
+import useRedirectToNewChatPage from '@/components/community/useRedirectToNewChatPage'
 import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/api/query'
@@ -19,6 +20,10 @@ import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotCo
 import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
+import {
+  CreateChatContent,
+  CreateChatLoadingContent,
+} from './contents/CreateChatContent'
 import LinkedAddressesContent from './contents/LinkedAddressesContent'
 import LogoutContent from './contents/LogoutContent'
 import PrivacySecurityContent from './contents/PrivacySecurityContent'
@@ -82,6 +87,8 @@ const modalContents: {
       <DynamicLoadedHamsterLoading />
     </div>
   ),
+  'create-chat': CreateChatContent,
+  'create-chat-loading': CreateChatLoadingContent,
 }
 
 const pushNotificationDesc: Record<
@@ -121,6 +128,9 @@ export default function ProfileModal({
       enabled: isOpen,
     }
   )
+  const { data: profile } = getProfileQuery.useQuery(address)
+
+  useRedirectToNewChatPage(profile?.profileSpace?.id, closeModal)
 
   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -319,6 +329,14 @@ export default function ProfileModal({
       desc: 'It may take up to 30 seconds',
       withBackButton: false,
     },
+    'create-chat': {
+      title: '💬 New Group Chat',
+      withBackButton: true,
+    },
+    'create-chat-loading': {
+      title: 'Creating chat',
+      withBackButton: false,
+    },
   }
 
   useEffect(() => {
@@ -376,15 +394,4 @@ export default function ProfileModal({
       />
     </Modal>
   )
-}
-
-function useHasPreviousGrillIdentity() {
-  const grillAddress = useMyAccount((state) => state.address)
-  const { data: grillAccountData } = getAccountDataQuery.useQuery(
-    grillAddress ?? ''
-  )
-  const { data: grillProfile } = getProfileQuery.useQuery(grillAddress ?? '')
-  const hasPreviousIdentity =
-    grillAccountData?.evmAddress || grillProfile?.profileSpace?.content?.name
-  return !!hasPreviousIdentity
 }

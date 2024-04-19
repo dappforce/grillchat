@@ -12,7 +12,7 @@ import { JoinChatWrapper } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
@@ -85,6 +85,7 @@ function ChatInputWrapper({
 }: ChatInputWrapperProps) {
   const clearAction = useMessageData((state) => state.clearAction)
   const sendEvent = useSendEvent()
+  const myAddress = useMyMainAddress()
 
   const openProfileModal = useProfileModal((state) => state.openModal)
   const openLoginModal = useLoginModal((state) => state.setIsOpen)
@@ -120,6 +121,10 @@ function ChatInputWrapper({
     showHiddenPost: { type: 'all' },
   })
   const isHidden = chat?.struct.hidden
+
+  const owner = chat?.struct?.ownerId
+
+  const isMyChat = owner === myAddress
 
   return (
     <>
@@ -184,7 +189,7 @@ function ChatInputWrapper({
                 />
               )
 
-            if (isJoined || isHubWithoutJoinButton)
+            if (isJoined || isHubWithoutJoinButton || isMyChat)
               return (
                 <ChatInputBar
                   formProps={{

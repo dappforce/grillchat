@@ -1,13 +1,11 @@
-import CommunityAddIcon from '@/assets/icons/community-add.svg'
-import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
-import NewCommunityModal from '@/components/community/NewCommunityModal'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { isCommunityHubId } from '@/constants/config'
 import useSearch from '@/hooks/useSearch'
 import { useSendEvent } from '@/stores/analytics'
+import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
@@ -18,6 +16,7 @@ import {
   HiOutlineClock,
   HiOutlineUsers,
 } from 'react-icons/hi2'
+import CreateChatButton from '../HomePage/CreateChatButton'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import useSortedChats, {
   SortChatOption,
@@ -119,7 +118,7 @@ function CommunityHubToolbar({
   changeSortBy,
 }: CommunityHubToolbarProps) {
   const isLoggedIn = useMyAccount((state) => !!state.address)
-  const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+  const { openModal } = useCreateChatModal()
   const sendEvent = useSendEvent()
 
   return (
@@ -173,27 +172,8 @@ function CommunityHubToolbar({
             }}
           </FloatingMenus>
         </div>
-        <Button
-          size='xs'
-          variant='primary'
-          className={cx(
-            'flex items-center gap-2 text-sm',
-            !isLoggedIn && 'pointer-events-none select-none opacity-0'
-          )}
-          onClick={() => {
-            setIsOpenNewCommunity(true)
-            sendEvent('open_community_creation_modal', { eventSource: 'hub' })
-          }}
-        >
-          <CommunityAddIcon className='text-text-muted-on-primary' />
-          <span>New</span>
-        </Button>
+        <CreateChatButton />
       </Container>
-      <NewCommunityModal
-        hubId={hubId}
-        closeModal={() => setIsOpenNewCommunity(false)}
-        isOpen={isOpenNewCommunity}
-      />
     </>
   )
 }
