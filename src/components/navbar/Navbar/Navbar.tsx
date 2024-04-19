@@ -4,22 +4,18 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import Sidebar from '@/components/layouts/Sidebar'
 import CustomLink from '@/components/referral/CustomLink'
-import useLoginOption from '@/hooks/useLoginOption'
-import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getProfileQuery } from '@/services/api/query'
-import { useSendEvent } from '@/stores/analytics'
-import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHubPageLink } from '@/utils/links'
 import { Dialog, Transition } from '@headlessui/react'
-import { Wallet, getWallets } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ComponentProps, Fragment, ReactNode, useEffect, useState } from 'react'
+import { ComponentProps, Fragment, ReactNode, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import AuthErrorModal from './AuthErrorModal'
+import LoginNeynarButton from './LoginNeynarButton'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -53,44 +49,13 @@ export default function Navbar({
   ...props
 }: NavbarProps) {
   const [openSidebar, setOpenSidebar] = useState(false)
-  const { enableLoginButton = true } = useConfigContext()
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
   const router = useRouter()
-  const sendEvent = useSendEvent()
 
   const address = useMyMainAddress()
   const { data: profile } = getProfileQuery.useQuery(address ?? '')
   const isLoggedIn = !!address
-
-  const setIsLoginModalOpen = useLoginModal((state) => state.setIsOpen)
-  const setLoginModalDefaultOpenState = useLoginModal(
-    (state) => state.setDefaultOpenState
-  )
-
-  const { loginOption } = useLoginOption()
-  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
-  const { defaultWallet } = useConfigContext()
-  useEffect(() => {
-    if (defaultWallet) {
-      const supportedWallets: Wallet[] = getWallets()
-      const wallet = supportedWallets.find(
-        (wallet) =>
-          wallet.title.toLowerCase() === defaultWallet.walletName.toLowerCase()
-      )
-      if (wallet) {
-        setPreferredWallet(wallet)
-        setLoginModalDefaultOpenState('polkadot-connect-account')
-      }
-    }
-  }, [defaultWallet, setPreferredWallet, setLoginModalDefaultOpenState])
-  const login = () => {
-    if (loginOption === 'polkadot') {
-      setIsLoginModalOpen(true, 'polkadot-connect')
-      return
-    }
-    setIsLoginModalOpen(true)
-  }
 
   const renderAuthComponent = () => {
     if (!isInitialized) return <div className='w-20' />
@@ -99,19 +64,7 @@ export default function Navbar({
       return <ProfileAvatar />
     }
 
-    return enableLoginButton ? (
-      <Button
-        onClick={() => {
-          login()
-          sendEvent('login_button_clicked', { eventSource: 'navbar' })
-        }}
-        className='px-5 text-sm'
-      >
-        Login
-      </Button>
-    ) : (
-      <></>
-    )
+    return <LoginNeynarButton />
   }
   const authComponent = renderAuthComponent()
 
