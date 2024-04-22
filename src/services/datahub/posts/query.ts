@@ -1,7 +1,8 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
-import { createQuery, poolQuery, QueryConfig } from '@/subsocial-query'
+import { QueryConfig, createQuery, poolQuery } from '@/subsocial-query'
+import { PostData } from '@subsocial/api/types'
 import {
   QueryClient,
   useInfiniteQuery,
@@ -30,12 +31,11 @@ import { datahubQueryRequest } from '../utils'
 import { DATAHUB_POST_FRAGMENT } from './fetcher'
 
 const GET_COMMENT_IDS_IN_POST_ID = gql`
+  ${DATAHUB_POST_FRAGMENT}
   query GetCommentIdsInPostId($args: FindPostsWithFilterArgs!) {
     posts(args: $args) {
       data {
-        id
-        persistentId
-        optimisticId
+        ...DatahubPostFragment
       }
       total
     }
@@ -47,10 +47,10 @@ export type PaginatedPostsData = {
   hasMore: boolean
   totalData: number
 }
-async function getPaginatedPostsByRootPostId({
+async function getPaginatedPostIdsByRootPostId({
   page,
   postId,
-  client = queryClient,
+  client,
 }: {
   postId: string
   page: number
@@ -59,10 +59,7 @@ async function getPaginatedPostsByRootPostId({
   if (!postId || !client)
     return { data: [], page, hasMore: false, totalData: 0 }
 
-  const oldIds = getPaginatedPostsByPostIdFromDatahubQuery.getFirstPageData(
-    client,
-    postId
-  )
+  const oldIds = getPaginatedPostIdsByPostId.getFirstPageData(client, postId)
   const firstPageDataLength = oldIds?.length || CHAT_PER_PAGE
 
   // only first page that has dynamic content, where its length can increase from:
@@ -90,11 +87,17 @@ async function getPaginatedPostsByRootPostId({
     },
   })
   const optimisticIds = new Set<string>()
-  const ids = res.posts.data.map((post) => {
+  const ids: string[] = []
+  const messages: PostData[] = []
+  res.posts.data.forEach((post) => {
     optimisticIds.add(post.optimisticId ?? '')
 
     const id = post.persistentId || post.id
-    return id
+    ids.push(id)
+
+    const mapped = mapDatahubPostFragment(post)
+    messages.push(mapped)
+    getPostQuery.setQueryData(client, id, mapped)
   })
   const totalData = res.posts.total ?? 0
   const hasMore = offset + ids.length < totalData
@@ -140,7 +143,11 @@ async function getPaginatedPostsByRootPostId({
   }
 
   return {
-    data: [...unincludedOptimisticIds, ...ids, ...unincludedFirstPageIds],
+    data: [
+      ...unincludedOptimisticIds,
+      ...messages.map(({ id }) => id),
+      ...unincludedFirstPageIds,
+    ],
     page,
     hasMore,
     totalData,
@@ -148,7 +155,7 @@ async function getPaginatedPostsByRootPostId({
 }
 const COMMENT_IDS_QUERY_KEY = 'comments'
 const getQueryKey = (postId: string) => [COMMENT_IDS_QUERY_KEY, postId]
-export const getPaginatedPostsByPostIdFromDatahubQuery = {
+export const getPaginatedPostIdsByPostId = {
   getQueryKey,
   getFirstPageData: (client: QueryClient, postId: string) => {
     const cachedData = client?.getQueryData(getQueryKey(postId))
@@ -160,10 +167,10 @@ export const getPaginatedPostsByPostIdFromDatahubQuery = {
     postId: string,
     page = 1
   ) => {
-    const res = await getPaginatedPostsByRootPostId({
+    const res = await getPaginatedPostIdsByRootPostId({
       postId,
       page,
-      client: client ?? undefined,
+      client,
     })
     if (!client) return res
 
@@ -205,7 +212,7 @@ export const getPaginatedPostsByPostIdFromDatahubQuery = {
       queryKey: getQueryKey(postId),
       queryFn: async ({ pageParam = 1, queryKey }) => {
         const [_, postId] = queryKey
-        const res = await getPaginatedPostsByRootPostId({
+        const res = await getPaginatedPostIdsByRootPostId({
           postId,
           page: pageParam,
         })

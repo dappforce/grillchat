@@ -1,13 +1,10 @@
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { CHAT_PER_PAGE } from '@/constants/chat'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { sendMessageToParentWindow } from '@/utils/window'
 import {
@@ -18,9 +15,7 @@ import {
   useContext,
   useEffect,
   useId,
-  useMemo,
   useRef,
-  useState,
 } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import usePaginatedMessageIds from '../hooks/usePaginatedMessageIds'
@@ -84,9 +79,8 @@ function ChatListContent({
 
   const innerRef = useRef<HTMLDivElement>(null)
 
-  const [isPausedLoadMore, setIsPausedLoadMore] = useState(false)
   const {
-    currentPageMessageIds,
+    messageIds,
     hasMore,
     loadMore,
     totalDataCount,
@@ -95,51 +89,14 @@ function ChatListContent({
   } = usePaginatedMessageIds({
     hubId,
     chatId,
-    isPausedLoadMore,
   })
-  const lastFocusedTime = useLastFocusedMessageTime(
-    chatId,
-    currentPageMessageIds[0] ?? ''
-  )
+  const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
 
   useEffect(() => {
     sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())
   }, [totalDataCount])
 
-  const [renderedMessageIds, setRenderedMessageIds] = useState<string[]>(
-    currentPageMessageIds
-  )
-  const renderedMessageQueries = getPostQuery.useQueries(renderedMessageIds)
-  const lastBatchIds = useMemo(
-    () =>
-      currentPageMessageIds.slice(currentPageMessageIds.length - CHAT_PER_PAGE),
-    [currentPageMessageIds]
-  )
-
-  const lastBatchQueries = getPostQuery.useQueries(lastBatchIds)
-  const superLikeCountQueries = getSuperLikeCountQuery.useQueries(lastBatchIds)
-
-  const isLastBatchLoading = useIsAnyQueriesLoading([
-    ...lastBatchQueries,
-    ...superLikeCountQueries,
-  ])
-
-  useEffect(() => {
-    if (isLastBatchLoading) return
-    setRenderedMessageIds(() => {
-      let newRenderedMessageIds = [...currentPageMessageIds]
-      if (isLastBatchLoading) {
-        newRenderedMessageIds = newRenderedMessageIds.slice(
-          0,
-          newRenderedMessageIds.length - CHAT_PER_PAGE
-        )
-      }
-
-      return newRenderedMessageIds
-    })
-  }, [isLastBatchLoading, currentPageMessageIds])
-
-  useLoadMoreIfNoScroll(loadMore, renderedMessageIds?.length ?? 0, {
+  useLoadMoreIfNoScroll(loadMore, messageIds?.length ?? 0, {
     scrollContainer: scrollContainerRef,
     innerContainer: innerRef,
   })
@@ -148,15 +105,12 @@ function ChatListContent({
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
     {
-      renderedMessageIds,
+      renderedMessageIds: messageIds,
       loadMore,
-      isLoading: isLastBatchLoading,
+      isLoading,
       hasMore,
     },
-    {
-      pause: () => setIsPausedLoadMore(true),
-      unpause: () => setIsPausedLoadMore(false),
-    },
+    undefined,
     {
       scrollOffset: pinnedMessageId ? 'large' : 'normal',
     }
@@ -168,9 +122,11 @@ function ChatListContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const isAllMessagesLoaded = renderedMessageIds.length === totalDataCount
+  const isAllMessagesLoaded = messageIds.length === totalDataCount
   let alreadyRenderLastReadMessage = false
   let isFirstRenderedMessage = true
+
+  const renderedMessageQueries = getPostQuery.useQueries(messageIds)
 
   return (
     <ChatListContext.Provider value={scrollContainerRef}>
@@ -211,7 +167,7 @@ function ChatListContent({
             className={cx(enableBackButton === false && 'px-0')}
           >
             <InfiniteScroll
-              dataLength={renderedMessageIds.length}
+              dataLength={messageIds.length}
               next={() => {
                 loadMore()
                 sendEvent('load_more_messages', { currentPage })
@@ -226,7 +182,7 @@ function ChatListContent({
               scrollableTarget={scrollableContainerId}
               loader={<ChatLoading className='pb-2 pt-4' />}
               endMessage={
-                currentPageMessageIds.length === 0 ? null : (
+                messageIds.length === 0 ? null : (
                   <ChatTopNotice className='pb-2 pt-4' />
                 )
               }
@@ -278,7 +234,7 @@ function ChatListContent({
           chatId={chatId}
           hubId={hubId}
           isLoadingIds={isLoading}
-          renderedMessageIds={renderedMessageIds}
+          renderedMessageIds={messageIds}
           scrollContainerRef={scrollContainerRef}
           scrollToMessage={scrollToMessage}
           asContainer={asContainer}

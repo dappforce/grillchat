@@ -9,10 +9,7 @@ import {
   SubscribePostSubscription,
 } from '../generated-query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
-import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
-  getPostMetadataQuery,
-} from './query'
+import { getPaginatedPostIdsByPostId, getPostMetadataQuery } from './query'
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
@@ -35,7 +32,7 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
         unsubRef.current = subscription(queryClient)
         // invalidate first page so it will refetch after the websocket connection is disconnected previously when the user is not in the tab
         if (subscribedPostId) {
-          getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(
+          getPaginatedPostIdsByPostId.invalidateFirstQuery(
             queryClient,
             subscribedPostId
           )
@@ -152,7 +149,7 @@ async function processMessage(
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
 
-  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
+  getPaginatedPostIdsByPostId.setQueryFirstPageData(
     queryClient,
     rootPostId,
     (oldData) => {

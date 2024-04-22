@@ -7,10 +7,9 @@ import { getPricesFromCache } from '@/pages/api/prices'
 import { getProfilesServer } from '@/pages/api/profiles'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery, getProfileQuery } from '@/services/api/query'
-import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
+  getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
 } from '@/services/datahub/posts/query'
 import {
@@ -73,26 +72,15 @@ async function getChatsData(client: QueryClient, chatId: string) {
 }
 
 async function getMessageIds(client: QueryClient, chatId: string) {
-  const res =
-    await getPaginatedPostsByPostIdFromDatahubQuery.fetchFirstPageQuery(
-      client,
-      chatId
-    )
-  getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
-
-  const [messages, superlikes] = await Promise.allSettled([
-    getPostsServer(res.data),
-    getSuperLikeCountQuery.fetchQueries(client, res.data),
-  ] as const)
-  if (messages.status === 'fulfilled') {
-    messages.value.forEach((message) => {
-      getPostQuery.setQueryData(client, message.id, message)
-    })
-  }
+  const res = await getPaginatedPostIdsByPostId.fetchFirstPageQuery(
+    client,
+    chatId
+  )
+  getPaginatedPostIdsByPostId.invalidateFirstQuery(client, chatId)
 
   return {
     messageIds: res.data,
-    messages: messages.status === 'fulfilled' ? messages.value : [],
+    messages: res.data.map((id) => getPostQuery.getQueryData(client, id)),
   }
 }
 async function prefetchPostMetadata(queryClient: QueryClient, chatId: string) {

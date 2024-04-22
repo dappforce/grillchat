@@ -1,13 +1,12 @@
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
   PaginatedPostsData,
+  getPaginatedPostIdsByPostId,
 } from '@/services/datahub/posts/query'
 import { useMemo } from 'react'
-import usePauseableLoadMore from '../ChatList/hooks/usePausableLoadMore'
 
 type PaginatedData = {
-  currentPageMessageIds: string[]
+  messageIds: string[]
   currentPage: number
   loadMore: () => void
   hasMore: boolean
@@ -16,7 +15,6 @@ type PaginatedData = {
 }
 
 type PaginatedConfig = {
-  isPausedLoadMore?: boolean
   hubId: string
   chatId: string
 }
@@ -24,10 +22,9 @@ type PaginatedConfig = {
 export default function usePaginatedMessageIds({
   chatId,
   hubId,
-  isPausedLoadMore,
 }: PaginatedConfig): PaginatedData {
   const { data, fetchNextPage, isLoading } =
-    getPaginatedPostsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)
+    getPaginatedPostIdsByPostId.useInfiniteQuery(chatId)
 
   const page = data?.pages
   let lastPage: PaginatedPostsData | null = null
@@ -42,18 +39,16 @@ export default function usePaginatedMessageIds({
     return data?.pages?.map((page) => page.data).flat() || []
   }, [data?.pages])
 
-  const filteredCurrentPageIds = useFilterBlockedMessageIds(
+  const filteredPageIds = useFilterBlockedMessageIds(
     hubId,
     chatId,
     flattenedIds
   )
 
-  const loadMore = usePauseableLoadMore(fetchNextPage, isPausedLoadMore)
-
   return {
     currentPage: lastPage?.page ?? 1,
-    currentPageMessageIds: filteredCurrentPageIds,
-    loadMore,
+    messageIds: filteredPageIds,
+    loadMore: fetchNextPage,
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore ?? true,
     isLoading,

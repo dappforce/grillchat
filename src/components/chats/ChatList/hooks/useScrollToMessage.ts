@@ -10,7 +10,7 @@ export type ScrollToMessage = ReturnType<typeof useScrollToMessage>
 export default function useScrollToMessage(
   scrollContainerRef: React.RefObject<HTMLElement>,
   getMessageElementArgs: Parameters<typeof useGetMessageElement>[0],
-  loadMoreController: { pause: () => void; unpause: () => void },
+  loadMoreController?: { pause: () => void; unpause: () => void },
   defaultScrollConfig?: ScrollToMessageElementConfig
 ) {
   const getElement = useGetMessageElement(getMessageElementArgs)
@@ -25,12 +25,12 @@ export default function useScrollToMessage(
       const element = await getElement(messageIdOrTime)
       if (!element) return
 
-      loadMoreControllerRef.current.pause()
+      loadMoreControllerRef.current?.pause()
       await scrollToMessageElement(element, scrollContainerRef.current, {
         ...defaultConfigRef.current,
         ...config,
       })
-      loadMoreControllerRef.current.unpause()
+      loadMoreControllerRef.current?.unpause()
     },
     [getElement, loadMoreControllerRef, scrollContainerRef, defaultConfigRef]
   )

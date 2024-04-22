@@ -2,7 +2,7 @@ import { getPostQuery } from '@/services/api/query'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
+  getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
 } from '../../datahub/posts/query'
 import { SendMessageParams } from './types'
@@ -41,7 +41,7 @@ export function addOptimisticData({
     },
     content: ipfsContent,
   } as unknown as PostData)
-  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
+  getPaginatedPostIdsByPostId.setQueryFirstPageData(
     client,
     params.chatId,
     (oldData) => {
@@ -68,7 +68,7 @@ export function deleteOptimisticData({
 }) {
   const tempId = commentIdsOptimisticEncoder.encode(idToDelete)
 
-  getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
+  getPaginatedPostIdsByPostId.setQueryFirstPageData(
     client,
     chatId,
     (oldData) => {
