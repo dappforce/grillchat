@@ -11,6 +11,7 @@ const proposalsClassNameMap: Record<string, { text: string; bg: string }> = {
   Rejected: { text: cx('text-text-red'), bg: cx('bg-text-red/20') },
   Deciding: { text: cx('text-[#847FE8]'), bg: cx('bg-[#847FE814]') },
   Preparing: { text: cx('text-[#2196f3]'), bg: cx('bg-[#2196f314]') },
+  Queueing: { text: cx('text-[#2196f3]'), bg: cx('bg-[#2196f314]') },
 }
 export default function ProposalStatus({
   proposal,
@@ -24,7 +25,7 @@ export default function ProposalStatus({
   return (
     <span
       className={cx(
-        proposalsClassNameMap[proposal.status].text ?? 'text-text-muted',
+        proposalsClassNameMap[proposal.status]?.text ?? 'text-text-muted',
         'font-medium',
         withBg &&
           cx(
