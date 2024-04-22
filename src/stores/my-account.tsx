@@ -18,7 +18,6 @@ import {
 } from '@/utils/account'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
-import { toSubsocialAddress } from '@subsocial/utils'
 import { Wallet, WalletAccount, getWallets } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
@@ -153,10 +152,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     else preferredWalletStorage.set(wallet.title)
   },
   connectWallet: async (address, signer) => {
-    const { toSubsocialAddress } = await import('@subsocial/utils')
-    const parsedAddress = toSubsocialAddress(address)!
-
-    set({ connectedWallet: { address: parsedAddress, signer } })
+    set({ connectedWallet: { address, signer } })
   },
   saveProxyAddress: () => {
     const { connectedWallet } = get()
@@ -174,7 +170,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       isInitialization,
       withErrorToast = true,
     } = config || {}
-    const { toSubsocialAddress } = await import('@subsocial/utils')
     const analytics = useAnalytics.getState()
     let address: string = ''
     try {
@@ -201,7 +196,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
-      address = toSubsocialAddress(signer.address)!
+      address = signer.address
 
       set({
         address,
@@ -366,11 +361,7 @@ async function linkPolkadotIfNotLinked(
   parentProxyAddress: string
 ) {
   const linkedAddress = await getParentProxyAddress(address)
-  if (
-    toSubsocialAddress(linkedAddress ?? '')! ===
-    toSubsocialAddress(parentProxyAddress)!
-  )
-    return
+  if (linkedAddress ?? ''! === parentProxyAddress!) return
 
   try {
     await linkIdentity({
