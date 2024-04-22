@@ -4,33 +4,51 @@ import { mutedTextColorStyles } from './content-staking/utils/commonStyles'
 
 export type Column = {
   index: string
-  name: string
+  name?: string
   align?: 'left' | 'center' | 'right'
+  className?: string
 }
 
 type TableProps = {
   columns: Column[]
   data: any[]
+  headerClassName?: string
+  className?: string
+  withDivider?: boolean
 }
 
-const Table = ({ columns, data }: TableProps) => {
+const Table = ({
+  columns,
+  data,
+  headerClassName,
+  className,
+  withDivider = true,
+}: TableProps) => {
   return (
-    <div className={cx('relative overflow-x-auto rounded-2xl', sectionBg)}>
+    <div
+      className={cx(
+        'relative overflow-x-auto rounded-2xl',
+        sectionBg,
+        className
+      )}
+    >
       <table className='w-full text-left'>
         <thead
           className={cx(
             'bg-slate-50 text-base backdrop-blur-xl dark:bg-white/5',
-            mutedTextColorStyles
+            mutedTextColorStyles,
+            headerClassName
           )}
         >
           <tr>
-            {columns.map(({ name, index, align }, i) => (
+            {columns.map(({ name, index, align, className }) => (
               <th
                 key={index}
                 scope='col'
                 className={cx(
                   'px-6 py-4 font-normal',
-                  `text-${align || 'left'}`
+                  `text-${align || 'left'}`,
+                  className
                 )}
               >
                 {name}
@@ -44,19 +62,26 @@ const Table = ({ columns, data }: TableProps) => {
               <tr
                 key={i}
                 className={cx(
-                  'border-b border-[#D4E2EF] dark:border-white/20',
+                  {
+                    ['border-b border-[#D4E2EF] dark:border-white/20']:
+                      withDivider,
+                  },
                   {
                     ['border-none']: i === data.length - 1,
                   }
                 )}
               >
-                {columns.map(({ index, align }, j) => {
+                {columns.map(({ index, align, className }, j) => {
                   const value = item[index]
 
                   return (
                     <td
                       key={`${index}-${j}`}
-                      className={cx('px-6 py-4', `text-${align || 'left'}`)}
+                      className={cx(
+                        'px-6 py-4',
+                        `text-${align || 'left'}`,
+                        className
+                      )}
                     >
                       {value}
                     </td>
