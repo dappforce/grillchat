@@ -1,14 +1,12 @@
-import Button from '@/components/Button'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
 import { Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
-import { ReactNode, useState } from 'react'
+import { ReactNode } from 'react'
 import DesktopProposalDetail from './DesktopProposalDetail'
 import MobileProposalDetailPage from './MobileProposalDetail'
-import ProposalDetailModal from './ProposalDetailModal'
 import { ProposalDetailContextProvider } from './context'
 
 export type ProposalDetailPageProps = {
@@ -28,7 +26,10 @@ export default function ProposalDetailPage(props: ProposalDetailPageProps) {
         },
         customContent: ({ backButton, authComponent, notificationBell }) => (
           <div className='flex w-full items-center justify-between gap-4'>
-            <NavbarChatInfo backButton={backButton} proposal={props.proposal} />
+            <NavbarProposalInfo
+              backButton={backButton}
+              proposal={props.proposal}
+            />
             <div className='flex items-center gap-3'>
               {notificationBell}
               {authComponent}
@@ -45,28 +46,18 @@ export default function ProposalDetailPage(props: ProposalDetailPageProps) {
   )
 }
 
-function NavbarChatInfo({
+function NavbarProposalInfo({
   proposal,
   backButton,
 }: {
   proposal: Proposal
   backButton: ReactNode
 }) {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-
   return (
     <div className='-ml-2 flex flex-1 items-center'>
       {backButton}
-      <Button
-        variant='transparent'
-        interactive='none'
-        size='noPadding'
-        className={cx(
-          'flex flex-1 cursor-pointer items-center gap-2 rounded-none text-left'
-        )}
-        onClick={() => {
-          setIsOpenModal(true)
-        }}
+      <div
+        className={cx('flex flex-1 items-center gap-2 rounded-none text-left')}
       >
         <VoteSummary proposal={proposal} className='h-10 w-10' size='small' />
         <div className='flex flex-col'>
@@ -78,12 +69,7 @@ function NavbarChatInfo({
             <ProposalStatus proposal={proposal} />
           </span>
         </div>
-      </Button>
-      <ProposalDetailModal
-        isOpen={isOpenModal}
-        closeModal={() => setIsOpenModal(false)}
-        proposal={proposal}
-      />
+      </div>
     </div>
   )
 }

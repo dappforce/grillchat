@@ -20,28 +20,34 @@ export default function ProposerSummary({
     ) * parseFloat(currentPrice ?? '0')
   return (
     <div className={cx('flex items-center justify-between gap-6', className)}>
-      <div className='flex flex-shrink-0 items-center gap-2'>
-        <span className='whitespace-nowrap'>
-          {formatBalanceWithDecimals(proposal.requested)} DOT
-        </span>
-        {isLoading ? (
-          <Skeleton className='w-24' />
-        ) : (
-          total > 0 && (
-            <span className='whitespace-nowrap text-text-muted'>
-              ≈${formatBalance({ value: total.toString() })}
-            </span>
-          )
-        )}
+      <div className='flex flex-shrink-0 flex-col gap-1'>
+        <span className='text-sm text-text-muted'>Proposed by:</span>
+        <ProfilePreview
+          withPolkadotIdentity
+          address={proposal.proposer}
+          showAddress={false}
+          className='gap-1'
+          nameClassName='text-text-muted text-base [&_span]:line-clamp-1'
+          avatarClassName='h-5 w-5'
+        />
       </div>
-      <ProfilePreview
-        withPolkadotIdentity
-        address={proposal.proposer}
-        showAddress={false}
-        className='gap-1'
-        nameClassName='text-text-muted [&_span]:line-clamp-1'
-        avatarClassName='h-6 w-6'
-      />
+      <div className='flex flex-shrink-0 flex-col items-end gap-1'>
+        <span className='text-sm text-text-muted'>Requested amount:</span>
+        <div className='flex flex-shrink-0 items-center gap-2'>
+          <span className='whitespace-nowrap'>
+            {formatBalanceWithDecimals(proposal.requested)} DOT
+          </span>
+          {isLoading ? (
+            <Skeleton className='w-24' />
+          ) : (
+            total > 0 && (
+              <span className='whitespace-nowrap text-text-muted'>
+                ≈${formatBalance({ value: total.toString() })}
+              </span>
+            )
+          )}
+        </div>
+      </div>
     </div>
   )
 }

@@ -255,7 +255,7 @@ function LastCommentItem({
   ownerId?: string
   createdAtTime?: number
 }) {
-  const { data: postMetadata, isLoading } = getPostMetadataQuery.useQuery(
+  const { data: postMetadata } = getPostMetadataQuery.useQuery(
     proposal.chatId ?? '',
     {
       enabled: !!proposal.chatId,
@@ -266,7 +266,10 @@ function LastCommentItem({
   return (
     <div className='flex flex-col gap-2'>
       <span className='text-sm text-text-muted'>Latest comment:</span>
-      <div className='flex items-center justify-between'>
+      <CustomLink
+        href={`/opengov/${proposal.id}?chat=true`}
+        className='flex items-center justify-between'
+      >
         <div className='flex items-center gap-3'>
           {ownerId ? (
             <AddressAvatar address={proposal.proposer} />
@@ -296,10 +299,7 @@ function LastCommentItem({
             />
           </div>
         </div>
-        <CustomLink
-          href={`/opengov/${proposal.id}?chat=true`}
-          className='flex-shrink-0'
-        >
+        <div className='flex-shrink-0'>
           <Button
             variant='mutedOutline'
             size='sm'
@@ -310,8 +310,8 @@ function LastCommentItem({
               {postMetadata?.totalCommentsCount ?? 0}
             </span>
           </Button>
-        </CustomLink>
-      </div>
+        </div>
+      </CustomLink>
     </div>
   )
 }

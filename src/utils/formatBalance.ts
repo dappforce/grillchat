@@ -72,6 +72,7 @@ export function formatBalanceWithDecimals(
 
   if (precision > 0 && postfix !== '0') {
     decimals = BigNumber(`0.${postfix}`).toPrecision(precision)
+    // this may happen if you have 0.99, it got rounded up to 1
     if (BigNumber(decimals).gte(1)) {
       prefix = BigNumber(prefix).plus(1).toFixed(0)
       decimals = BigNumber(decimals).minus(1).toPrecision(precision)
@@ -84,9 +85,7 @@ export function formatBalanceWithDecimals(
     if (BigNumber(decimals).isZero()) {
       decimals = ''
     }
-    if (prefix !== '0') {
-      decimals = decimals.substring(2)
-    }
+    decimals = decimals.substring(2)
   }
 
   return `${prefix}${decimals ? `.${decimals}` : ''}${roundings}`

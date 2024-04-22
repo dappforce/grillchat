@@ -40,6 +40,10 @@ export default function DesktopProposalDetail({
     } else {
       document.documentElement.style.overflow = 'visible'
     }
+
+    return () => {
+      document.documentElement.style.overflow = 'visible'
+    }
   }, [isOpen])
 
   const { data: postMetadata, isLoading: isLoadingMetadata } =
@@ -54,7 +58,7 @@ export default function DesktopProposalDetail({
     <>
       <div
         className={cx(
-          'container-page grid grid-cols-[3fr_2fr] gap-6 pt-4',
+          'container-page grid grid-cols-[2fr_1fr] gap-6 pt-4',
           className
         )}
       >
@@ -62,7 +66,7 @@ export default function DesktopProposalDetail({
           <ProposerSummary proposal={proposal} />
           <Card className='flex flex-col items-start gap-2 bg-background-light'>
             <div className='flex w-full items-center justify-between gap-4'>
-              <h1 className='text-lg font-bold'>
+              <h1 className='text-xl font-bold'>
                 #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
                 {proposal.title}
               </h1>
@@ -240,6 +244,8 @@ function SidePanel({
   const lgUp = useBreakpointThreshold('lg')
 
   const { chatId, isLoading, createDiscussion } = useProposalDetailContext()
+  const { data, isLoading: isLoadingMetadata } =
+    getPostMetadataQuery.useQuery(chatId)
   // Should not render multiple chat rooms (along with the mobile one), because it will cause issue with chat item menu
   if (!isMounted || !lgUp) return null
 
@@ -279,6 +285,7 @@ function SidePanel({
               onClick={() => setSelectedTab('grill')}
             >
               Grill
+              {isLoadingMetadata ? '' : ` (${data?.totalCommentsCount ?? 0})`}
             </Button>
             <Button
               size='noPadding'
@@ -289,7 +296,7 @@ function SidePanel({
               )}
               onClick={() => setSelectedTab('others')}
             >
-              Other Sources
+              Other Sources ({proposal.comments.length ?? 0})
             </Button>
           </div>
         </div>
