@@ -244,6 +244,8 @@ function SidePanel({
   const lgUp = useBreakpointThreshold('lg')
 
   const { chatId, isLoading, createDiscussion } = useProposalDetailContext()
+  const { data, isLoading: isLoadingMetadata } =
+    getPostMetadataQuery.useQuery(chatId)
   // Should not render multiple chat rooms (along with the mobile one), because it will cause issue with chat item menu
   if (!isMounted || !lgUp) return null
 
@@ -282,7 +284,7 @@ function SidePanel({
               )}
               onClick={() => setSelectedTab('grill')}
             >
-              Grill
+              Grill ({isLoadingMetadata ? '' : data?.totalCommentsCount ?? 0})
             </Button>
             <Button
               size='noPadding'
@@ -293,7 +295,7 @@ function SidePanel({
               )}
               onClick={() => setSelectedTab('others')}
             >
-              Other Sources
+              Other Sources ({proposal.comments.length ?? 0})
             </Button>
           </div>
         </div>
