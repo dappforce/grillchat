@@ -15,8 +15,9 @@ export default function ProposerSummary({
   const { data: price, isLoading } = getPriceQuery.useQuery('polkadot')
   const currentPrice = price?.current_price
   const total =
-    parseFloat(formatBalanceWithDecimals(proposal.requested)) *
-    parseFloat(currentPrice ?? '0')
+    parseFloat(
+      formatBalanceWithDecimals(proposal.requested, { shorten: false })
+    ) * parseFloat(currentPrice ?? '0')
   return (
     <div className={cx('flex items-center justify-between gap-6', className)}>
       <div className='flex flex-shrink-0 items-center gap-2'>
