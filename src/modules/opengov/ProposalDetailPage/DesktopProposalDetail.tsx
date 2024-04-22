@@ -284,7 +284,8 @@ function SidePanel({
               )}
               onClick={() => setSelectedTab('grill')}
             >
-              Grill ({isLoadingMetadata ? '' : data?.totalCommentsCount ?? 0})
+              Grill
+              {isLoadingMetadata ? '' : ` (${data?.totalCommentsCount ?? 0})`}
             </Button>
             <Button
               size='noPadding'
