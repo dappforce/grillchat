@@ -1,12 +1,11 @@
 import { useMyAccount } from '@/stores/my-account'
-import type { Keyring } from '@polkadot/keyring'
 import { HDNodeWallet, Wallet, isAddress } from 'ethers'
 
-export type Signer = ReturnType<Keyring['addFromSeed']>
+export type Signer = HDNodeWallet
 
 export async function generateAccount() {
   const wallet = Wallet.createRandom()
-  return { publicKey: wallet.address, secretKey: wallet.mnemonic }
+  return { publicKey: wallet.address, secretKey: wallet.mnemonic?.phrase ?? '' }
 }
 
 export function isSecretKeyUsingMiniSecret(secretKey: string) {
@@ -48,5 +47,5 @@ export async function signMessage(message: string) {
     throw new Error('No signer connected')
   }
 
-  return signer.sign(message).toString()
+  return (await signer.signMessage(message)).toString()
 }
