@@ -57,9 +57,7 @@ function NavbarProposalInfo({
     <div className='-ml-2 flex flex-1 items-center'>
       {backButton}
       <div
-        className={cx(
-          'flex flex-1 cursor-pointer items-center gap-2 rounded-none text-left'
-        )}
+        className={cx('flex flex-1 items-center gap-2 rounded-none text-left')}
       >
         <VoteSummary proposal={proposal} className='h-10 w-10' size='small' />
         <div className='flex flex-col'>
