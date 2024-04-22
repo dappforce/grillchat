@@ -112,7 +112,7 @@ const ProfilePreview = ({
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='ml-1 flex items-center gap-2'>
           <Name
-            withPolkadotIdentity
+            withPolkadotIdentity={withPolkadotIdentity}
             asLink={asLink}
             profileSourceIconClassName='text-base'
             profileSourceIconPosition='right'
