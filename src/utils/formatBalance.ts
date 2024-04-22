@@ -87,7 +87,6 @@ export function formatBalanceWithDecimals(
     }
     decimals = decimals.substring(2)
   }
-  if (value === '850000000') console.log(prefix, decimals)
 
   return `${prefix}${decimals ? `.${decimals}` : ''}${roundings}`
 }
