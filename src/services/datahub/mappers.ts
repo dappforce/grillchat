@@ -7,10 +7,13 @@ import {
   PostContent,
   PostContentExtension,
   PostData,
+  SpaceData,
 } from '@subsocial/api/types'
+import { summarizeMd } from '@subsocial/utils'
 import {
   ContentExtensionSchemaId,
   DatahubPostFragmentFragment,
+  SpaceFragmentFragment,
 } from './generated-query'
 
 const SQUID_SEPARATOR = ','
@@ -148,4 +151,32 @@ export const mapDatahubPostFragment = (
   }
 
   return data
+}
+
+export const mapDatahubSpaceFragment = (
+  space: SpaceFragmentFragment
+): SpaceData => {
+  return {
+    id: space.id,
+    content: {
+      ...summarizeMd(space.about ?? ''),
+      name: space.name ?? '',
+      image: space.image ?? '',
+      about: space.about ?? '',
+      email: '',
+      links: [],
+      tags: [],
+    },
+    struct: {
+      hidden: space.hidden ?? false,
+      canEveryoneCreatePosts: false,
+      canFollowerCreatePosts: false,
+      createdAtBlock: space.createdAtBlock ?? 0,
+      createdAtTime: space.createdAtTime ?? 0,
+      createdByAccount: space.createdByAccount.id,
+      id: space.id,
+      ownerId: space.ownedByAccount.id,
+      contentId: space.content ?? '',
+    },
+  }
 }

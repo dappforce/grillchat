@@ -495,6 +495,28 @@ export type FindPostsWithFilterArgs = {
   pageSize?: InputMaybe<Scalars['Int']['input']>
 }
 
+export type FindSpacesFilter = {
+  createdByAccountAddress?: InputMaybe<Scalars['String']['input']>
+  ids?: InputMaybe<Array<Scalars['String']['input']>>
+  ownedByAccountAddress?: InputMaybe<Scalars['String']['input']>
+}
+
+export type FindSpacesWithFilterArgsInput = {
+  filter: FindSpacesFilter
+  offset?: InputMaybe<Scalars['Int']['input']>
+  orderBy?: InputMaybe<Scalars['String']['input']>
+  orderDirection?: InputMaybe<QueryOrder>
+  pageSize?: InputMaybe<Scalars['Int']['input']>
+}
+
+export type FindSpacesWithFilterResponseDto = {
+  __typename?: 'FindSpacesWithFilterResponseDto'
+  data: Array<Space>
+  offset?: Maybe<Scalars['Int']['output']>
+  pageSize?: Maybe<Scalars['Int']['output']>
+  total?: Maybe<Scalars['Int']['output']>
+}
+
 export type GetModeratorByInput = {
   substrateAccountAddress: Scalars['String']['input']
 }
@@ -941,6 +963,7 @@ export type Query = {
   postsViewsCounts: Array<PostViewsCountResponse>
   socialProfileBalances?: Maybe<SocialProfileBalances>
   socialProfiles: SocialProfilesResponse
+  spaces: FindSpacesWithFilterResponseDto
   unreadMessages: Array<UnreadPostsCountResponse>
 }
 
@@ -1096,6 +1119,10 @@ export type QuerySocialProfileBalancesArgs = {
 
 export type QuerySocialProfilesArgs = {
   args: SocialProfileInput
+}
+
+export type QuerySpacesArgs = {
+  args: FindSpacesWithFilterArgsInput
 }
 
 export type QueryUnreadMessagesArgs = {
@@ -1272,6 +1299,8 @@ export enum SocialCallName {
   SynthCreatePostTxFailed = 'synth_create_post_tx_failed',
   SynthCreatePostTxRetry = 'synth_create_post_tx_retry',
   SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
+  SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
+  SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
   SynthModerationBlockResource = 'synth_moderation_block_resource',
@@ -1342,6 +1371,7 @@ export type Space = {
   dataType: DataType
   email?: Maybe<Scalars['String']['output']>
   experimental?: Maybe<Scalars['JSON']['output']>
+  farcasterId?: Maybe<Scalars['String']['output']>
   followers: Array<SpaceFollowers>
   followersCount?: Maybe<Scalars['Int']['output']>
   handle?: Maybe<Scalars['String']['output']>
@@ -2327,6 +2357,46 @@ export type GetReferrerIdQuery = {
   }
 }
 
+export type SpaceFragmentFragment = {
+  __typename?: 'Space'
+  name?: string | null
+  image?: string | null
+  about?: string | null
+  id: string
+  hidden: boolean
+  content?: string | null
+  createdAtTime?: any | null
+  createdAtBlock?: number | null
+  createdByAccount: { __typename?: 'Account'; id: string }
+  ownedByAccount: { __typename?: 'Account'; id: string }
+}
+
+export type GetSpacesQueryVariables = Exact<{
+  ids?: InputMaybe<
+    Array<Scalars['String']['input']> | Scalars['String']['input']
+  >
+}>
+
+export type GetSpacesQuery = {
+  __typename?: 'Query'
+  spaces: {
+    __typename?: 'FindSpacesWithFilterResponseDto'
+    data: Array<{
+      __typename?: 'Space'
+      name?: string | null
+      image?: string | null
+      about?: string | null
+      id: string
+      hidden: boolean
+      content?: string | null
+      createdAtTime?: any | null
+      createdAtBlock?: number | null
+      createdByAccount: { __typename?: 'Account'; id: string }
+      ownedByAccount: { __typename?: 'Account'; id: string }
+    }>
+  }
+}
+
 export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
@@ -2408,6 +2478,25 @@ export const DatahubPostFragment = gql`
         }
       }
     }
+  }
+`
+export const SpaceFragment = gql`
+  fragment SpaceFragment on Space {
+    name
+    image
+    about
+    id
+    hidden
+    about
+    content
+    createdByAccount {
+      id
+    }
+    ownedByAccount {
+      id
+    }
+    createdAtTime
+    createdAtBlock
   }
 `
 export const GetSuperLikeCounts = gql`
@@ -2741,4 +2830,14 @@ export const GetReferrerId = gql`
       }
     }
   }
+`
+export const GetSpaces = gql`
+  query getSpaces($ids: [String!]) {
+    spaces(args: { filter: { ids: $ids } }) {
+      data {
+        ...SpaceFragment
+      }
+    }
+  }
+  ${SpaceFragment}
 `
