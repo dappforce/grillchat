@@ -18,7 +18,6 @@ import {
 } from '@/utils/account'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
-import { Wallet, WalletAccount, getWallets } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
 import { UserProperties, useAnalytics } from './analytics'
@@ -40,13 +39,6 @@ type State = {
   isInitializedProxy: boolean | undefined
   isTemporaryAccount: boolean
 
-  preferredWallet: Wallet | null
-  connectedWallet:
-    | {
-        address: string
-        signer: Signer | null
-      }
-    | undefined
   parentProxyAddress: string | undefined
 
   address: string | null
@@ -66,20 +58,15 @@ type Actions = {
   loginAsTemporaryAccount: () => Promise<string | false>
   finalizeTemporaryAccount: () => void
   logout: () => void
-  setPreferredWallet: (wallet: Wallet | null) => void
-  connectWallet: (address: string, signer: Signer | null) => Promise<void>
-  saveProxyAddress: () => void
+  saveProxyAddress: (address: string) => void
   disconnectProxy: () => void
-  _readPreferredWalletFromStorage: () => Wallet | undefined
 }
 
 const initialState: State = {
-  connectedWallet: undefined,
   isInitialized: undefined,
   isInitializedAddress: true,
   isInitializedProxy: false,
   isTemporaryAccount: false,
-  preferredWallet: null,
   parentProxyAddress: undefined,
   address: null,
   signer: null,
@@ -98,7 +85,6 @@ const temporaryAccountStorage = new LocalStorage(() => 'temp-account')
 const parentProxyAddressStorage = new LocalStorage(
   () => 'connectedWalletAddress'
 )
-const preferredWalletStorage = new LocalStorage(() => 'preferred-wallet')
 
 const sendLaunchEvent = async (
   address?: string | false,
@@ -146,22 +132,12 @@ const sendLaunchEvent = async (
 
 const useMyAccountBase = create<State & Actions>()((set, get) => ({
   ...initialState,
-  setPreferredWallet: (wallet) => {
-    set({ preferredWallet: wallet })
-    if (!wallet) preferredWalletStorage.remove()
-    else preferredWalletStorage.set(wallet.title)
-  },
-  connectWallet: async (address, signer) => {
-    set({ connectedWallet: { address, signer } })
-  },
-  saveProxyAddress: () => {
-    const { connectedWallet } = get()
-    if (!connectedWallet) return
-    parentProxyAddressStorage.set(connectedWallet.address)
-    set({ parentProxyAddress: connectedWallet.address })
+  saveProxyAddress: (address) => {
+    parentProxyAddressStorage.set(address)
+    set({ parentProxyAddress: address })
   },
   disconnectProxy: () => {
-    set({ connectedWallet: undefined, parentProxyAddress: undefined })
+    set({ parentProxyAddress: undefined })
     parentProxyAddressStorage.remove()
   },
   login: async (secretKey, config) => {
@@ -276,24 +252,12 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     set({ ...initialState, isInitialized: true, isInitializedProxy: true })
   },
-  _readPreferredWalletFromStorage: () => {
-    const preferredWallet = preferredWalletStorage.get()
-    let wallet: Wallet | undefined
-    if (preferredWallet) {
-      wallet = getWallets().find((wallet) => wallet.title === preferredWallet)
-      if (wallet) set({ preferredWallet: wallet })
-      else preferredWalletStorage.remove()
-    }
-    return wallet
-  },
   init: async () => {
-    const { isInitialized, login, _readPreferredWalletFromStorage } = get()
+    const { isInitialized, login } = get()
 
     // Prevent multiple initialization
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
-
-    _readPreferredWalletFromStorage()
 
     const encodedSecretKey = accountStorage.get()
     const parentProxyAddressFromStorage = parentProxyAddressStorage.get()
@@ -435,58 +399,6 @@ export function useMyMainAddress() {
   const address = useMyAccount((state) => state.address)
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   return parentProxyAddress || address
-}
-
-export async function enableWallet({
-  listener,
-  onError,
-}: {
-  listener: (accounts: WalletAccount[]) => void
-  onError: (err: unknown) => void
-}) {
-  let preferredWallet = useMyAccount.getState().preferredWallet
-  if (!preferredWallet) {
-    const fromStorage = useMyAccount
-      .getState()
-      ._readPreferredWalletFromStorage()
-    if (fromStorage) {
-      preferredWallet = fromStorage
-    } else {
-      const firstInstalledWallet = getWallets().find(
-        (wallet) => wallet.installed
-      )
-      if (!firstInstalledWallet)
-        return onError(new Error('No supported wallet found'))
-      preferredWallet = firstInstalledWallet
-    }
-  }
-
-  try {
-    await preferredWallet.enable('grillapp')
-    const unsub = preferredWallet.subscribeAccounts((accounts) => {
-      listener(accounts ?? [])
-    })
-    return () => {
-      if (typeof unsub === 'function') unsub()
-    }
-  } catch (err) {
-    console.error('Error enabling wallet', err)
-    onError(err)
-  }
-}
-
-export async function enableWalletOnce() {
-  return new Promise<WalletAccount[]>((resolve, reject) => {
-    const unsub = enableWallet({
-      listener: (accounts) => {
-        unsub.then((unsub) => unsub?.())
-        resolve(accounts)
-      },
-      onError: (err) => {
-        reject(err)
-      },
-    })
-  })
 }
 
 export function getIsLoggedIn() {
