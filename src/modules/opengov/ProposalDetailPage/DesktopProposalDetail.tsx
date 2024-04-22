@@ -58,7 +58,7 @@ export default function DesktopProposalDetail({
     <>
       <div
         className={cx(
-          'container-page grid grid-cols-[3fr_2fr] gap-6 pt-4',
+          'container-page grid grid-cols-[2fr_1fr] gap-6 pt-4',
           className
         )}
       >
