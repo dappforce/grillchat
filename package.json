@@ -64,7 +64,7 @@
     "embla-carousel-react": "^8.0.0-rc23",
     "eslint": "8.34.0",
     "eslint-config-next": "13.2.1",
-    "ethers": "^6.3.0",
+    "ethers": "^6.12.0",
     "express": "^4.18.2",
     "firebase": "^10.1.0",
     "formidable": "^3.4.0",

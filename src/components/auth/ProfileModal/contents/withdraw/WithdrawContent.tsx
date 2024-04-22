@@ -15,7 +15,6 @@ import AutocompleteInput, {
 } from '@/components/inputs/AutocompleteInput'
 import SelectInput from '@/components/inputs/SelectInput'
 import { useMyMainAddress } from '@/stores/my-account'
-import { convertAddressToGenericAddress } from '@/utils/account'
 import { encodeAddress } from '@polkadot/keyring'
 import { isAddress } from '@polkadot/util-crypto'
 import { isEmptyArray } from '@subsocial/utils'
@@ -49,13 +48,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
 
     if (!myAddress) return items
 
-    return (
-      items?.filter(
-        (item) =>
-          convertAddressToGenericAddress(item.id) !==
-          convertAddressToGenericAddress(myAddress)
-      ) || []
-    )
+    return items?.filter((item) => item.id !== myAddress) || []
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts?.length, isLoading, myAddress])
 

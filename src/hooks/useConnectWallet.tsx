@@ -1,6 +1,6 @@
 import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet'
 import { useMyAccount } from '@/stores/my-account'
-import { Signer, convertAddressToGenericAddress } from '@/utils/account'
+import { Signer } from '@/utils/account'
 import { useEffect } from 'react'
 
 const useConnectWallet = () => {
@@ -11,13 +11,7 @@ const useConnectWallet = () => {
   useEffect(() => {
     if (parentProxyAddress && accounts) {
       const signer = accounts.find((account) => {
-        const genericAccountAddress = convertAddressToGenericAddress(
-          account.address
-        )
-        const genericProxyAddress =
-          convertAddressToGenericAddress(parentProxyAddress)
-
-        return genericAccountAddress === genericProxyAddress
+        return account.address === parentProxyAddress
       })?.signer
 
       if (signer) {
