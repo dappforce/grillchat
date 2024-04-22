@@ -7,11 +7,10 @@ import Modal, {
   ModalProps,
 } from '@/components/modals/Modal'
 import { getProfileQuery } from '@/services/api/query'
-import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
+import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { encodeProfileSource } from '@/utils/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -108,82 +107,67 @@ function CreateProfileForm({
     mode: 'onChange',
   })
 
+  const { mutateAsync, isLoading } = useUpsertProfile({
+    onSuccess: onTxSuccess,
+  })
+
+  const handleCreateProfileSubmit = handleSubmit(async (data) => {
+    sendEvent('account_settings_changed', { profileSource: 'custom' })
+    onSubmit?.()
+    await mutateAsync({
+      content: {
+        name: data.name,
+        image: data.image,
+        about: data.about,
+      },
+    })
+    onSuccessSent?.()
+  })
+
   return (
-    <UpsertProfileWrapper
-      loadingUntilTxSuccess={loadingUntilTxSuccess}
-      config={{
-        txCallbacks: {
-          onSuccess: () => {
-            onTxSuccess?.()
-          },
-        },
-      }}
+    <form
+      onSubmit={handleCreateProfileSubmit}
+      className={cx('flex flex-col gap-4')}
     >
-      {({ mutateAsync, isLoading }) => {
-        const handleCreateProfileSubmit = handleSubmit(async (data) => {
-          sendEvent('account_settings_changed', { profileSource: 'custom' })
-          onSubmit?.()
-          await mutateAsync({
-            content: {
-              name: data.name,
-              image: data.image,
-              about: data.about,
-
-              profileSource: encodeProfileSource({
-                source: 'subsocial-profile',
-              }),
-            },
-          })
-          onSuccessSent?.()
-        })
-
-        return (
-          <form
-            onSubmit={handleCreateProfileSubmit}
-            className={cx('flex flex-col gap-4')}
-          >
-            <div className='self-center'>
-              <Controller
-                control={control}
-                name='image'
-                render={({ field, fieldState }) => {
-                  return (
-                    <ImageInput
-                      disabled={isLoading}
-                      image={field.value}
-                      setImageUrl={(value) => setValue('image', value)}
-                      containerProps={{ className: 'my-2' }}
-                      setIsLoading={setIsImageLoading}
-                      error={fieldState.error?.message}
-                    />
-                  )
-                }}
+      <div className='self-center'>
+        <Controller
+          control={control}
+          name='image'
+          render={({ field, fieldState }) => {
+            return (
+              <ImageInput
+                disabled={isLoading}
+                image={field.value}
+                setImageUrl={(value) => setValue('image', value)}
+                containerProps={{ className: 'my-2' }}
+                setIsLoading={setIsImageLoading}
+                error={fieldState.error?.message}
               />
-            </div>
-            <Input
-              placeholder='* Profile name'
-              {...register('name')}
-              variant='fill-bg'
-              error={errors.name?.message}
-            />
-            <TextArea
-              rows={3}
-              placeholder='Bio (optional)'
-              {...register('about')}
-              variant='fill-bg'
-              error={errors.about?.message}
-            />
-            <FormButton
-              schema={formSchema}
-              watch={watch}
-              size='lg'
-              isLoading={isLoading || isImageLoading}
-            >
-              Create
-            </FormButton>
-          </form>
-        )
-      }}
-    </UpsertProfileWrapper>
+            )
+          }}
+        />
+      </div>
+      <Input
+        placeholder='* Profile name'
+        {...register('name')}
+        variant='fill-bg'
+        error={errors.name?.message}
+      />
+      <TextArea
+        rows={3}
+        placeholder='Bio (optional)'
+        {...register('about')}
+        variant='fill-bg'
+        error={errors.about?.message}
+      />
+      <FormButton
+        schema={formSchema}
+        watch={watch}
+        size='lg'
+        isLoading={isLoading || isImageLoading}
+      >
+        Create
+      </FormButton>
+    </form>
   )
 }
