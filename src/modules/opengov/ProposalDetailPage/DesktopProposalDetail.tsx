@@ -40,6 +40,10 @@ export default function DesktopProposalDetail({
     } else {
       document.documentElement.style.overflow = 'visible'
     }
+
+    return () => {
+      document.documentElement.style.overflow = 'visible'
+    }
   }, [isOpen])
 
   const { data: postMetadata, isLoading: isLoadingMetadata } =
