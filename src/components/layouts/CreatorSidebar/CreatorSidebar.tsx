@@ -1,14 +1,15 @@
 import { Skeleton } from '@/components/SkeletonFallback'
 import { getTotalStakeQuery } from '@/services/datahub/content-staking/query'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import OverviewCard from './OverviewCard'
 import RewardInfoCard from './RewardInfoCard'
 
 export default function CreatorSidebar() {
+  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress() ?? ''
   const { isLoading, data: totalStake } = getTotalStakeQuery.useQuery(myAddress)
 
-  if (isLoading)
+  if (!isInitializedProxy || (isLoading && myAddress))
     return (
       <div className='flex animate-pulse flex-col rounded-2xl bg-background-light'>
         <div className='flex flex-col gap-1 border-b border-border-gray p-4'>
