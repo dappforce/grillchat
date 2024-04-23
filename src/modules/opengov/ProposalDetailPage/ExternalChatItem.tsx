@@ -174,7 +174,9 @@ function ExternalChatRepliedMessagePreview({
         <span className='font-medium'>
           <ExternalMessageName comment={parentComment} />
         </span>
-        <span className='line-clamp-1 opacity-75'>{parentComment.content}</span>
+        <div className='line-clamp-1 opacity-75'>
+          <MdRenderer source={parentComment.content} plain />
+        </div>
       </div>
     </div>
   )
