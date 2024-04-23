@@ -1,8 +1,10 @@
+import LinkText from '@/components/LinkText'
 import ProfilePreview from '@/components/ProfilePreview'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { Proposal } from '@/server/opengov/mapper'
 import { getDurationWithPredefinedUnit } from '@/utils/date'
 import { formatBalance, formatBalanceWithDecimals } from '@/utils/formatBalance'
+import { getSubsquareUserProfileLink } from '@/utils/links'
 import { ReactNode } from 'react'
 
 export default function ProposalMetadataModal({
@@ -17,13 +19,20 @@ export default function ProposalMetadataModal({
         {metadata.submissionDeposit && (
           <MetadataItem title='Submission'>
             <div className='flex items-center gap-1.5'>
-              <ProfilePreview
-                address={metadata.submissionDeposit.who}
-                withPolkadotIdentity
-                showAddress={false}
-                className='gap-1'
-                avatarClassName='h-5 w-5'
-              />
+              <LinkText
+                href={getSubsquareUserProfileLink(
+                  metadata.submissionDeposit.who
+                )}
+                openInNewTab
+              >
+                <ProfilePreview
+                  address={metadata.submissionDeposit.who}
+                  withPolkadotIdentity
+                  showAddress={false}
+                  className='gap-1'
+                  avatarClassName='h-5 w-5'
+                />
+              </LinkText>
               <span>&middot;</span>
               <span>
                 {formatBalanceWithDecimals(
@@ -38,13 +47,18 @@ export default function ProposalMetadataModal({
         {metadata.decisionDeposit && (
           <MetadataItem title='Decision'>
             <div className='flex items-center gap-1.5'>
-              <ProfilePreview
-                address={metadata.decisionDeposit.who}
-                withPolkadotIdentity
-                showAddress={false}
-                className='gap-1'
-                avatarClassName='h-5 w-5'
-              />
+              <LinkText
+                href={getSubsquareUserProfileLink(metadata.decisionDeposit.who)}
+                openInNewTab
+              >
+                <ProfilePreview
+                  address={metadata.decisionDeposit.who}
+                  withPolkadotIdentity
+                  showAddress={false}
+                  className='gap-1'
+                  avatarClassName='h-5 w-5'
+                />
+              </LinkText>
               <span>&middot;</span>
               <span>
                 {formatBalanceWithDecimals(

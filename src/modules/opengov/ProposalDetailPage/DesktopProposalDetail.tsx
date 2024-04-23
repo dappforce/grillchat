@@ -16,7 +16,7 @@ import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
 import { PostData } from '@subsocial/api/types'
-import { useEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import ExternalChatItem from './ExternalChatItem'
@@ -47,9 +47,6 @@ export default function DesktopProposalDetail({
     }
   }, [isOpen])
 
-  const { data: postMetadata, isLoading: isLoadingMetadata } =
-    getPostMetadataQuery.useQuery(chatId ?? '')
-
   return (
     <>
       <div
@@ -58,7 +55,7 @@ export default function DesktopProposalDetail({
           className
         )}
       >
-        <div className='flex flex-col gap-4'>
+        <div className='mb-8 flex flex-col gap-4'>
           <ProposerSummary proposal={proposal} />
           <Card className='flex flex-col items-start gap-2 bg-background-light'>
             <div className='flex w-full items-center justify-between gap-4'>
@@ -74,7 +71,13 @@ export default function DesktopProposalDetail({
             />
           </Card>
         </div>
-        <StickyRightPanel proposal={proposal} chatId={chatId} />
+        <StickyRightPanel
+          proposal={proposal}
+          chatId={chatId}
+          allIds={allIds}
+          isLoading={isLoading}
+          setIsOpen={setIsOpen}
+        />
       </div>
       <SidePanel
         isLoading={isLoading}
@@ -92,11 +95,16 @@ export default function DesktopProposalDetail({
 function StickyRightPanel({
   proposal,
   chatId,
+  allIds,
+  isLoading,
+  setIsOpen,
 }: {
   proposal: Proposal
   chatId: string
+  allIds: string[]
+  isLoading: boolean
+  setIsOpen: (isOpen: boolean) => void
 }) {
-  const { allIds, isLoading, setIsOpen } = useCommentDrawer(proposal)
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
   const lastThreeMessageIds = allIds.slice(0, 3)
   const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
@@ -159,6 +167,7 @@ function LatestCommentFromExternalSources({
   setIsOpenDrawer: (isOpen: boolean) => void
 }) {
   const lastThreeComments = proposal.comments.slice(0, 3).toReversed()
+  const length = proposal.comments.length
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-2'>
@@ -179,9 +188,8 @@ function LatestCommentFromExternalSources({
         onClick={() => setIsOpenDrawer(true)}
         className='mt-auto w-full'
       >
-        Show all{' '}
-        {proposal.comments.length ? `${proposal.comments.length} ` : ''}{' '}
-        Comments
+        Show {length > 1 && 'all '}
+        {length ? `${length} ` : ''} Comments
       </Button>
     </div>
   )
@@ -238,6 +246,7 @@ function NoMessagesCard({ onClick }: { onClick: () => void }) {
   )
 }
 
+const MemoizedExternalChatRoom = memo(ExternalSourceChatRoom)
 function SidePanel({
   hubId,
   proposal,
@@ -261,6 +270,11 @@ function SidePanel({
   const { chatId, isLoading, createDiscussion } = useProposalDetailContext()
   const { data, isLoading: isLoadingMetadata } =
     getPostMetadataQuery.useQuery(chatId)
+
+  const switchToGrillCallback = useCallback(() => {
+    setSelectedTab('grill')
+  }, [setSelectedTab])
+
   // Should not render multiple chat rooms (along with the mobile one), because it will cause issue with chat item menu
   if (!isMounted || !lgUp) return null
 
@@ -334,10 +348,10 @@ function SidePanel({
             }
           />
         ) : (
-          <ExternalSourceChatRoom
+          <MemoizedExternalChatRoom
             proposal={proposal}
             comments={proposal.comments}
-            switchToGrillTab={() => setSelectedTab('grill')}
+            switchToGrillTab={switchToGrillCallback}
           />
         )}
       </div>

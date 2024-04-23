@@ -1,9 +1,11 @@
+import LinkText from '@/components/LinkText'
 import ProfilePreview from '@/components/ProfilePreview'
 import { Skeleton } from '@/components/SkeletonFallback'
 import { Proposal } from '@/server/opengov/mapper'
 import { getPriceQuery } from '@/services/subsocial/prices/query'
 import { cx } from '@/utils/class-names'
 import { formatBalance, formatBalanceWithDecimals } from '@/utils/formatBalance'
+import { getSubsquareUserProfileLink } from '@/utils/links'
 
 export default function ProposerSummary({
   proposal,
@@ -22,14 +24,19 @@ export default function ProposerSummary({
     <div className={cx('flex items-center justify-between gap-6', className)}>
       <div className='flex flex-shrink-0 flex-col gap-1'>
         <span className='text-sm text-text-muted'>Proposed by:</span>
-        <ProfilePreview
-          withPolkadotIdentity
-          address={proposal.proposer}
-          showAddress={false}
-          className='gap-1'
-          nameClassName='text-text-muted text-base [&_span]:line-clamp-1'
-          avatarClassName='h-5 w-5'
-        />
+        <LinkText
+          href={getSubsquareUserProfileLink(proposal.proposer)}
+          openInNewTab
+        >
+          <ProfilePreview
+            withPolkadotIdentity
+            address={proposal.proposer}
+            showAddress={false}
+            className='gap-1'
+            nameClassName='text-text-muted text-base [&_span]:line-clamp-1'
+            avatarClassName='h-5 w-5'
+          />
+        </LinkText>
       </div>
       <div className='flex flex-shrink-0 flex-col items-end gap-1'>
         <span className='text-sm text-text-muted'>Requested amount:</span>
