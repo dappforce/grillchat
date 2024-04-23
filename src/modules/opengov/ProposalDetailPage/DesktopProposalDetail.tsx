@@ -16,7 +16,7 @@ import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
 import { PostData } from '@subsocial/api/types'
-import { useEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import ExternalChatItem from './ExternalChatItem'
@@ -246,6 +246,7 @@ function NoMessagesCard({ onClick }: { onClick: () => void }) {
   )
 }
 
+const MemoizedExternalChatRoom = memo(ExternalSourceChatRoom)
 function SidePanel({
   hubId,
   proposal,
@@ -269,6 +270,11 @@ function SidePanel({
   const { chatId, isLoading, createDiscussion } = useProposalDetailContext()
   const { data, isLoading: isLoadingMetadata } =
     getPostMetadataQuery.useQuery(chatId)
+
+  const switchToGrillCallback = useCallback(() => {
+    setSelectedTab('grill')
+  }, [setSelectedTab])
+
   // Should not render multiple chat rooms (along with the mobile one), because it will cause issue with chat item menu
   if (!isMounted || !lgUp) return null
 
@@ -342,10 +348,10 @@ function SidePanel({
             }
           />
         ) : (
-          <ExternalSourceChatRoom
+          <MemoizedExternalChatRoom
             proposal={proposal}
             comments={proposal.comments}
-            switchToGrillTab={() => setSelectedTab('grill')}
+            switchToGrillTab={switchToGrillCallback}
           />
         )}
       </div>

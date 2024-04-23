@@ -23,11 +23,11 @@ export default function ExternalSourceChatRoom({
         className='flex flex-1 flex-col-reverse'
       >
         <Container className='flex flex-1 flex-col-reverse gap-2 pb-2 pt-4'>
-          {comments.map((comment) => (
+          {comments.map((comment, idx) => (
             <ExternalChatItem
               proposal={proposal}
               comment={comment}
-              key={comment.id}
+              key={idx}
               containerRef={containerRef}
             />
           ))}
