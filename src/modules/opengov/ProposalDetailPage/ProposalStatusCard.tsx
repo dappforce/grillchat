@@ -133,15 +133,29 @@ function getProposalPeriodStatus(period: {
   endTime: number
   duration: number
 }) {
-  const periodDuration = dayjs.duration(period.duration).asDays()
+  let periodDuration = dayjs.duration(period.duration).asDays()
+  let periodDurationType: 'd' | 'm' | 'h' = 'd'
   const periodPercentage =
     (dayjs().diff(period.startTime) / period.duration) * 100
-  const currentDay = dayjs().diff(period.startTime, 'days')
   const daysLeft = dayjs(period.endTime).diff(dayjs(), 'days')
   const hoursLeft = dayjs(period.endTime).diff(dayjs(), 'hours') % 24
 
+  if (periodDuration < 1) {
+    periodDuration = dayjs.duration(period.duration).asHours()
+    periodDurationType = 'h'
+    if (periodDuration < 1) {
+      periodDuration = dayjs.duration(period.duration).asMinutes()
+      periodDurationType = 'm'
+    }
+  }
+  const currentDay = Math.min(
+    dayjs().diff(period.startTime, periodDurationType),
+    periodDuration
+  )
+
   return {
     duration: periodDuration,
+    durationType: periodDurationType,
     percentage: periodPercentage,
     currentDayElapsed: currentDay,
     daysLeft,
@@ -156,8 +170,14 @@ function StatusProgressBar({
   periodData: ProposalDecisionPeriod | ProposalConfirmationPeriod | null
 }) {
   if (!periodData || !('startTime' in periodData)) return null
-  const { currentDayElapsed, duration, percentage, daysLeft, hoursLeft } =
-    getProposalPeriodStatus(periodData)
+  const {
+    currentDayElapsed,
+    duration,
+    durationType,
+    percentage,
+    daysLeft,
+    hoursLeft,
+  } = getProposalPeriodStatus(periodData)
   const percentageFixed = parseInt(percentage.toString())
 
   return (
@@ -166,7 +186,8 @@ function StatusProgressBar({
         <span className='text-text-muted'>{title}</span>
         <span>
           <span className='text-text-muted'>{currentDayElapsed} / </span>
-          {duration}d
+          {duration}
+          {durationType}
         </span>
       </div>
       <PopOver
