@@ -1,6 +1,7 @@
 import { cx } from '@/utils/class-names'
 import { sanitizeHtmlPlugin } from '@osn/previewer'
 import Image from 'next/image'
+import { memo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm'
@@ -13,7 +14,7 @@ interface Props {
   plain?: boolean
 }
 
-export default function MdRenderer({
+function MdRendererRaw({
   source,
   removeEmptyParagraph = false,
   className = '',
@@ -72,3 +73,6 @@ export default function MdRenderer({
 function sanitizeHtml(html: string) {
   return sanitizeHtmlPlugin().transformHtml?.(html) ?? html
 }
+
+const MdRenderer = memo(MdRendererRaw)
+export default MdRenderer
