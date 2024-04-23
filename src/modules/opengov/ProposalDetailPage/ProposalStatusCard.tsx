@@ -199,7 +199,9 @@ function StatusProgressBar({
           <div
             className='grid h-1.5 w-full rounded-full bg-background-lightest'
             style={{
-              gridTemplateColumns: `${percentage}fr ${100 - percentageFixed}fr`,
+              gridTemplateColumns: `${percentageFixed}fr ${
+                100 - percentageFixed
+              }fr`,
             }}
           >
             <div className='h-full rounded-full bg-background-primary' />
