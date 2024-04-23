@@ -65,13 +65,7 @@ export default function DefaultLayout({
             <Sidebar />
           </div>
           <div className='flex-1'>{children}</div>
-          <div
-            className={cx(
-              'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[275px] py-4 lg:block'
-            )}
-          >
-            <CreatorSidebar />
-          </div>
+          <CreatorSidebar className='h-fit max-h-none w-[275px] pb-4' />
         </div>
       ) : (
         children

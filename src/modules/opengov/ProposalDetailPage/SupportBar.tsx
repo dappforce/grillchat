@@ -2,6 +2,8 @@ import PopOver from '@/components/floating/PopOver'
 import { CurveType, Proposal } from '@/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 
+const THRESHOLD_UI_EDGE = 13 // 13% of container
+
 export default function SupportBar({ proposal }: { proposal: Proposal }) {
   const supportThreshold = getSupportThreshold(proposal)
   if (!supportThreshold) return null
@@ -46,7 +48,7 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
           >
             <div
               className='absolute top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#C3C8D4]'
-              style={{ left: `${markThreshold}%` }}
+              style={{ left: `${parsedMarkThreshold}%` }}
             />
             <div className='h-full rounded-full bg-background-primary' />
           </div>
@@ -58,17 +60,23 @@ export default function SupportBar({ proposal }: { proposal: Proposal }) {
         <div
           className={cx(
             'absolute flex -translate-x-1/2 flex-col items-center justify-center text-center text-xs text-text-muted',
-            parsedMarkThreshold <= 6 && 'items-start text-left',
-            parsedMarkThreshold >= 94 && 'items-end text-right'
+            parsedMarkThreshold <= THRESHOLD_UI_EDGE && 'items-start text-left',
+            parsedMarkThreshold >= 100 - THRESHOLD_UI_EDGE &&
+              'items-end text-right'
           )}
-          style={{ left: `${Math.max(Math.min(parsedMarkThreshold, 94), 6)}%` }}
+          style={{
+            left: `${Math.max(
+              Math.min(parsedMarkThreshold, 100 - THRESHOLD_UI_EDGE),
+              THRESHOLD_UI_EDGE
+            )}%`,
+          }}
         >
           <span>{getSupportPercentage(threshold)}</span>
-          <span>Threshold</span>
+          <span className='whitespace-nowrap'>Support Threshold</span>
         </div>
         <span className='pointer-events-none flex flex-col text-xs opacity-0'>
           <span>0</span>
-          <span>Threshold</span>
+          <span className='whitespace-nowrap'>Support Threshold</span>
         </span>
       </div>
     </div>

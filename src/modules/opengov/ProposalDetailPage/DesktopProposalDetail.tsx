@@ -8,6 +8,7 @@ import { WriteFirstComment } from '@/components/opengov/ProposalPreview'
 import { env } from '@/env.mjs'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useIsMounted from '@/hooks/useIsMounted'
+import { useStickyElement } from '@/hooks/useStickyElement'
 import { Proposal } from '@/server/opengov/mapper'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
@@ -15,7 +16,7 @@ import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
 import { PostData } from '@subsocial/api/types'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import ExternalChatItem from './ExternalChatItem'
@@ -48,11 +49,6 @@ export default function DesktopProposalDetail({
 
   const { data: postMetadata, isLoading: isLoadingMetadata } =
     getPostMetadataQuery.useQuery(chatId ?? '')
-  const lastThreeMessageIds = allIds.slice(0, 3)
-  const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
-  const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
-
-  const hasGrillComments = !isLoading && allIds.length > 0
 
   return (
     <>
@@ -70,14 +66,6 @@ export default function DesktopProposalDetail({
                 #{proposal.id} <span className='text-text-muted'>&middot;</span>{' '}
                 {proposal.title}
               </h1>
-              <Button className='flex-shrink-0' onClick={() => setIsOpen(true)}>
-                {isLoadingMetadata
-                  ? ''
-                  : postMetadata?.totalCommentsCount ||
-                    proposal.comments.length ||
-                    ''}{' '}
-                Comments
-              </Button>
             </div>
             <MdRenderer
               className='max-w-full break-words'
@@ -85,43 +73,8 @@ export default function DesktopProposalDetail({
               source={proposal.content}
             />
           </Card>
-          <Card className='flex flex-col gap-4 bg-background-light'>
-            <span className='text-lg font-bold'>Latest Comments</span>
-            {(() => {
-              if (isLoading || isLoadingMessages) {
-                return (
-                  <div className='flex flex-col gap-2'>
-                    <Skeleton className='w-full' />
-                    <Skeleton className='w-full' />
-                    <Skeleton className='w-full' />
-                  </div>
-                )
-              }
-              if (!hasGrillComments && proposal.comments.length) {
-                return (
-                  <LatestCommentFromExternalSources
-                    setIsOpenDrawer={setIsOpen}
-                    proposal={proposal}
-                  />
-                )
-              }
-              if (hasGrillComments && chatId) {
-                return (
-                  <GrillLatestMessages
-                    lastThreeMessages={lastThreeMessages}
-                    chatId={chatId}
-                    setIsOpenDrawer={setIsOpen}
-                    totalCommentsCount={postMetadata?.totalCommentsCount || 0}
-                  />
-                )
-              }
-              return <NoMessagesCard onClick={() => setIsOpen(true)} />
-            })()}
-          </Card>
         </div>
-        <div className='sticky top-[4.5rem] self-start'>
-          <ProposalStatusCard proposal={proposal} />
-        </div>
+        <StickyRightPanel proposal={proposal} chatId={chatId} />
       </div>
       <SidePanel
         isLoading={isLoading}
@@ -133,6 +86,68 @@ export default function DesktopProposalDetail({
         setSelectedTab={setSelectedTab}
       />
     </>
+  )
+}
+
+function StickyRightPanel({
+  proposal,
+  chatId,
+}: {
+  proposal: Proposal
+  chatId: string
+}) {
+  const { allIds, isLoading, setIsOpen } = useCommentDrawer(proposal)
+  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
+  const lastThreeMessageIds = allIds.slice(0, 3)
+  const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
+  const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
+
+  const ref = useRef<HTMLDivElement | null>(null)
+  const style = useStickyElement({ elRef: ref, top: 72 })
+
+  const hasGrillComments = !isLoading && allIds.length > 0
+
+  return (
+    <div
+      className='flex flex-col gap-6 self-start pb-8'
+      style={style}
+      ref={ref}
+    >
+      <ProposalStatusCard proposal={proposal} />
+      <Card className='flex flex-col gap-4 bg-background-light'>
+        <span className='text-lg font-bold'>Latest Comments</span>
+        {(() => {
+          if (isLoading || isLoadingMessages) {
+            return (
+              <div className='flex flex-col gap-2'>
+                <Skeleton className='w-full' />
+                <Skeleton className='w-full' />
+                <Skeleton className='w-full' />
+              </div>
+            )
+          }
+          if (!hasGrillComments && proposal.comments.length) {
+            return (
+              <LatestCommentFromExternalSources
+                setIsOpenDrawer={setIsOpen}
+                proposal={proposal}
+              />
+            )
+          }
+          if (hasGrillComments && chatId) {
+            return (
+              <GrillLatestMessages
+                lastThreeMessages={lastThreeMessages}
+                chatId={chatId}
+                setIsOpenDrawer={setIsOpen}
+                totalCommentsCount={postMetadata?.totalCommentsCount || 0}
+              />
+            )
+          }
+          return <NoMessagesCard onClick={() => setIsOpen(true)} />
+        })()}
+      </Card>
+    </div>
   )
 }
 
