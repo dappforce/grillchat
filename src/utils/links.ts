@@ -97,3 +97,8 @@ export function getUserProfileLink(profileId?: string) {
   if (!profileId) return undefined
   return `/${profileId}`
 }
+
+export function getSubsquareUserProfileLink(address?: string) {
+  if (!address) return undefined
+  return `https://polkadot.subsquare.io/user/${address}`
+}
