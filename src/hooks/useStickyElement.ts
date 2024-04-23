@@ -103,7 +103,7 @@ export const useStickyElement = ({
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [])
+  }, [elRef, topPositionAtWhichElementBecomesStickyFromTop])
 
   return { top, position }
 }

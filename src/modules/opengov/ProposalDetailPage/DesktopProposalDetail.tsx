@@ -85,43 +85,8 @@ export default function DesktopProposalDetail({
               source={proposal.content}
             />
           </Card>
-          <Card className='flex flex-col gap-4 bg-background-light'>
-            <span className='text-lg font-bold'>Latest Comments</span>
-            {(() => {
-              if (isLoading || isLoadingMessages) {
-                return (
-                  <div className='flex flex-col gap-2'>
-                    <Skeleton className='w-full' />
-                    <Skeleton className='w-full' />
-                    <Skeleton className='w-full' />
-                  </div>
-                )
-              }
-              if (!hasGrillComments && proposal.comments.length) {
-                return (
-                  <LatestCommentFromExternalSources
-                    setIsOpenDrawer={setIsOpen}
-                    proposal={proposal}
-                  />
-                )
-              }
-              if (hasGrillComments && chatId) {
-                return (
-                  <GrillLatestMessages
-                    lastThreeMessages={lastThreeMessages}
-                    chatId={chatId}
-                    setIsOpenDrawer={setIsOpen}
-                    totalCommentsCount={postMetadata?.totalCommentsCount || 0}
-                  />
-                )
-              }
-              return <NoMessagesCard onClick={() => setIsOpen(true)} />
-            })()}
-          </Card>
         </div>
-        <div className='sticky top-[4.5rem] self-start'>
-          <ProposalStatusCard proposal={proposal} />
-        </div>
+        <StickyRightPanel proposal={proposal} chatId={chatId} />
       </div>
       <SidePanel
         isLoading={isLoading}
@@ -133,6 +98,62 @@ export default function DesktopProposalDetail({
         setSelectedTab={setSelectedTab}
       />
     </>
+  )
+}
+
+function StickyRightPanel({
+  proposal,
+  chatId,
+}: {
+  proposal: Proposal
+  chatId: string
+}) {
+  const { allIds, isLoading, setIsOpen, setSelectedTab } =
+    useCommentDrawer(proposal)
+  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
+  const lastThreeMessageIds = allIds.slice(0, 3)
+  const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
+  const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
+
+  const hasGrillComments = !isLoading && allIds.length > 0
+
+  return (
+    <div className='sticky top-[4.5rem] flex flex-col gap-6 self-start'>
+      <ProposalStatusCard proposal={proposal} />
+      <Card className='flex flex-col gap-4 bg-background-light'>
+        <span className='text-lg font-bold'>Latest Comments</span>
+        {(() => {
+          if (isLoading || isLoadingMessages) {
+            return (
+              <div className='flex flex-col gap-2'>
+                <Skeleton className='w-full' />
+                <Skeleton className='w-full' />
+                <Skeleton className='w-full' />
+              </div>
+            )
+          }
+          if (!hasGrillComments && proposal.comments.length) {
+            return (
+              <LatestCommentFromExternalSources
+                setIsOpenDrawer={setIsOpen}
+                proposal={proposal}
+              />
+            )
+          }
+          if (hasGrillComments && chatId) {
+            return (
+              <GrillLatestMessages
+                lastThreeMessages={lastThreeMessages}
+                chatId={chatId}
+                setIsOpenDrawer={setIsOpen}
+                totalCommentsCount={postMetadata?.totalCommentsCount || 0}
+              />
+            )
+          }
+          return <NoMessagesCard onClick={() => setIsOpen(true)} />
+        })()}
+      </Card>
+    </div>
   )
 }
 
