@@ -28,16 +28,19 @@ export default function MdRenderer({
           // @ts-expect-error - the props type is not correctly inferred
           <LinkText {...props} openInNewTab variant='secondary' />
         ),
-        img: (props) => (
-          // @ts-expect-error - the props type is not correctly inferred
-          <Image
-            alt=''
-            className='bg-background-lighter'
-            {...props}
-            width={(props.width as number) ?? 1500}
-            height={(props.height as number) ?? 1500}
-          />
-        ),
+        img: (props) => {
+          if (!props.src) return null
+          return (
+            // @ts-expect-error - the props type is not correctly inferred
+            <Image
+              alt=''
+              className='bg-background-lighter'
+              {...props}
+              width={(props.width as number) ?? 1500}
+              height={(props.height as number) ?? 1500}
+            />
+          )
+        },
         p: (props) => {
           if (!removeEmptyParagraph) return <p {...props} />
 
