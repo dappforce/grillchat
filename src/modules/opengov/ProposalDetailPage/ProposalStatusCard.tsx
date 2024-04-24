@@ -2,6 +2,7 @@ import IssuanceIcon from '@/assets/icons/issuance.svg'
 import SupportIcon from '@/assets/icons/support.svg'
 import VoteIcon from '@/assets/icons/vote.svg'
 import ActionCard from '@/components/ActionCard'
+import Button from '@/components/Button'
 import Card from '@/components/Card'
 import PopOver from '@/components/floating/PopOver'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
@@ -11,6 +12,7 @@ import {
   ProposalConfirmationPeriod,
   ProposalDecisionPeriod,
 } from '@/server/opengov/mapper'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import dayjs from 'dayjs'
@@ -22,12 +24,21 @@ import SupportBar, { getCurrentBillPercentage } from './SupportBar'
 
 export default function ProposalStatusCard({
   proposal,
+  onCommentButtonClick,
+  chatId,
 }: {
   proposal: Proposal
+  onCommentButtonClick?: () => void
+  chatId: string
 }) {
+  const { data: postMetadata, isLoading } = getPostMetadataQuery.useQuery(
+    chatId ?? ''
+  )
   const [isOpenModal, setIsOpenModal] = useState(false)
-
   const currentSupport = getCurrentBillPercentage(proposal)
+
+  const isLoadingMetadata = isLoading && !!chatId
+
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>
       <div className='flex items-center justify-between gap-4'>
@@ -119,6 +130,20 @@ export default function ProposalStatusCard({
         ]}
         size='sm'
       />
+      {onCommentButtonClick && (
+        <Button
+          size='lg'
+          onClick={() => onCommentButtonClick()}
+          className='w-full'
+        >
+          {isLoadingMetadata
+            ? ''
+            : postMetadata?.totalCommentsCount ||
+              proposal.comments.length ||
+              ''}{' '}
+          Comments
+        </Button>
+      )}
       <ProposalMetadataModal
         proposal={proposal}
         isOpen={isOpenModal}
