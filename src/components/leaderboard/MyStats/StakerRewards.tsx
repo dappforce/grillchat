@@ -1,3 +1,13 @@
+import FormatBalance from '@/components/FormatBalance'
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { getRewardHistoryQuery } from '@/services/datahub/content-staking/query'
+import { BN } from '@polkadot/util'
+import { convertToBalanceWithDecimal, isEmptyArray } from '@subsocial/utils'
+import BigNumber from 'bignumber.js'
+import dayjs from 'dayjs'
+import { useMemo } from 'react'
+import { useLeaderboardContext } from '../LeaderboardContext'
+
 const tmpData = [
   {
     date: '07.01.24',
@@ -46,6 +56,21 @@ type StakerRewardsProps = {
 }
 
 const StakerRewards = ({ address }: StakerRewardsProps) => {
+  const { data, isLoading } = getRewardHistoryQuery.useQuery(address)
+  const { leaderboardRole } = useLeaderboardContext()
+
+  const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
+
+  const rewards = useMemo(() => {
+    return (
+      data?.rewards.filter((reward) => {
+        const usedReward =
+          leaderboardRole === 'staker' ? reward.reward : reward.creatorReward
+        return BigInt(usedReward) > 0
+      }) ?? []
+    )
+  }, [data, leaderboardRole])
+
   return (
     <div className='flex flex-col gap-5 rounded-2xl bg-slate-800 p-4'>
       <div className='flex flex-col gap-2'>
@@ -54,22 +79,55 @@ const StakerRewards = ({ address }: StakerRewardsProps) => {
           The last 30 days of my Content Staking rewards
         </span>
       </div>
-      <div className='flex flex-col gap-5'>
-        {tmpData.map((item, index) => (
-          <RewardsRow
-            key={index}
-            date={item.date}
-            rewardValue={item.rewardValue}
-          />
-        ))}
-      </div>
+      {rewards && !isEmptyArray(rewards) ? (
+        <div className='flex flex-col gap-5'>
+          {rewards.map((reward) => {
+            const userRewardValue =
+              leaderboardRole === 'staker'
+                ? reward.reward
+                : reward.creatorReward
+
+            const rewardValueWithDecumal =
+              userRewardValue && decimal
+                ? convertToBalanceWithDecimal(userRewardValue, decimal)
+                : new BigNumber(0)
+
+            return (
+              <RewardsRow
+                key={reward.week}
+                date={
+                  <span className='ColorMuted FontSmall'>
+                    {formatDate(reward.startDate, 'DD.MM.YY')} -{' '}
+                    {formatDate(reward.endDate, 'DD.MM.YY')}
+                  </span>
+                }
+                rewardValue={
+                  <FormatBalance
+                    value={rewardValueWithDecumal.toString()}
+                    symbol={tokenSymbol}
+                    defaultMaximumFractionDigits={2}
+                    loading={isLoading}
+                  />
+                }
+              />
+            )
+          })}
+        </div>
+      ) : (
+        <span className='text-text-muted'>No rewards yet</span>
+      )}
     </div>
   )
 }
 
+export const formatDate = (date: dayjs.ConfigType | BN, format = 'lll') => {
+  date = BN.isBN(date) ? date.toNumber() : date
+  return dayjs(date).format(format)
+}
+
 type RewardsRowProps = {
-  date: string
-  rewardValue: string
+  date: React.ReactNode
+  rewardValue: React.ReactNode
 }
 
 const RewardsRow = ({ date, rewardValue }: RewardsRowProps) => {

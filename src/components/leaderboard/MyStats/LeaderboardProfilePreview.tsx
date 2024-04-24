@@ -2,6 +2,8 @@ import AddressAvatar from '@/components/AddressAvatar'
 import Name from '@/components/Name'
 import { getProfileQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
+import { useState } from 'react'
+import LeaderboardRoleRadioGroup from '../LeaderboardRadioGroup'
 
 type LeaderboardProfilePreviewProps = {
   address: string
@@ -10,6 +12,7 @@ type LeaderboardProfilePreviewProps = {
 const LeaderboardProfilePreview = ({
   address,
 }: LeaderboardProfilePreviewProps) => {
+  const [value, setValue] = useState('staker')
   const { data: profile } = getProfileQuery.useQuery(address)
 
   const about = profile?.profileSpace?.content?.about
@@ -27,6 +30,7 @@ const LeaderboardProfilePreview = ({
           {about}
         </div>
       )}
+      <LeaderboardRoleRadioGroup />
     </div>
   )
 }
