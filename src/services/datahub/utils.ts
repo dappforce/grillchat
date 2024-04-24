@@ -129,3 +129,13 @@ export function createSignedSocialDataEvent<
 
   return payload
 }
+
+export function augmentDatahubParams<T>(
+  params: T
+): { uuid: string; timestamp: number } & T {
+  return {
+    ...params,
+    uuid: crypto.randomUUID(),
+    timestamp: Date.now(),
+  }
+}

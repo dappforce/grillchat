@@ -1,8 +1,4 @@
-import {
-  invalidatePostServerCache,
-  saveFile,
-  useRevalidateChatPage,
-} from '@/services/api/mutation'
+import { saveFile, useRevalidateChatPage } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
@@ -10,13 +6,13 @@ import {
   getOwnedPostsQuery,
   getPostsBySpaceIdQuery,
 } from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
+import { getMyMainAddress } from '@/stores/my-account'
 import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
 import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
-import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils/mutation'
@@ -26,7 +22,10 @@ type Content = {
   title: string
   body?: string
 }
-export type UpsertPostParams = ({ postId: string } | { spaceId: string }) &
+export type UpsertPostParams = (
+  | { postId: string }
+  | { spaceId: string; timestamp: number; uuid: string }
+) &
   Content
 
 async function generateMessageContent(
@@ -72,170 +71,136 @@ function checkAction(data: UpsertPostParams) {
 
   return { payload: data, action: 'invalid' } as const
 }
-export function useUpsertPost(
+function useUpsertPostRaw(
   config?: TransactionMutationConfig<UpsertPostParams, GeneratedMessageContent>
 ) {
   const client = useQueryClient()
-
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
   const router = useRouter()
 
-  return useTransactionMutation<UpsertPostParams, GeneratedMessageContent>(
-    {
-      getWallet: getCurrentWallet,
-      generateContext: (params) => generateMessageContent(params, client),
-      transactionGenerator: async ({ data: params, context: { content } }) => {
-        const { payload, action } = checkAction(params)
+  return useMutation({
+    ...config,
+    mutationFn: async (params: UpsertPostParams) => {
+      const { payload, action } = checkAction(params)
+      const { content } = await generateMessageContent(params, client)
 
-        const res = await saveFile(content)
-        const cid = res.cid
-        if (!cid) throw new Error('Failed to save file')
-
-        if (action === 'update') {
-          await datahubMutation.updatePostData({
-            ...getCurrentWallet(),
-            args: {
-              postId: payload.postId,
-              changes: {
-                content: {
-                  cid,
-                  content,
-                },
+      if (action === 'update') {
+        await datahubMutation.updatePostData({
+          ...getCurrentWallet(),
+          args: {
+            postId: payload.postId,
+            changes: {
+              content: {
+                cid: '',
+                content,
               },
             },
-          })
-          revalidateChatPage({ pathname: getChatPageLink(router) })
-        } else if (action === 'create') {
-          await datahubMutation.createPostData({
-            ...getCurrentWallet(),
-            args: {
-              content,
-              cid: cid,
-              spaceId: payload.spaceId,
-            },
-          })
-        }
+          },
+        })
+        revalidateChatPage({ pathname: getChatPageLink(router) })
+      } else if (action === 'create') {
+        await datahubMutation.createPostData({
+          ...getCurrentWallet(),
+          uuid: payload.uuid,
+          timestamp: payload.timestamp,
+          args: {
+            content,
+            cid: '',
+            spaceId: payload.spaceId,
+          },
+        })
+      }
 
-        throw new Error('Invalid params')
-      },
+      throw new Error('Invalid params')
     },
-    config,
-    {
-      // to make the error invisible to user if the tx was created (in this case, post was sent to dh)
-      supressSendingTxError: isDatahubAvailable,
-      txCallbacks: {
-        onStart: ({ data }) => {
-          if (isDatahubAvailable) return
-
-          const { payload, action } = checkAction(data)
-          if (action === 'update') {
-            getPostQuery.setQueryData(client, payload.postId, (post) => {
-              if (!post) return post
-              return {
-                ...post,
-                content: {
-                  ...post.content,
-                  title: data.title,
-                  image: data.image,
-                  body: data.body ?? '',
-                } as PostContent,
-              }
-            })
+    onMutate: (params) => {
+      config?.onMutate?.(params)
+      const { payload, action } = checkAction(params)
+      if (action === 'update') {
+        getPostQuery.setQueryData(client, payload.postId, (post) => {
+          if (!post) return post
+          return {
+            ...post,
+            content: {
+              ...post.content,
+              title: payload.title,
+              image: payload.image,
+              body: payload.body ?? '',
+            } as PostContent,
           }
-        },
-        onError: ({ data, context }, error, isAfterTxGenerated) => {
-          const { action, payload } = checkAction(data)
-          if (!isAfterTxGenerated) return
-
-          if (action === 'create' && context.content.optimisticId) {
-            datahubMutation.notifyCreatePostFailedOrRetryStatus({
-              ...getCurrentWallet(),
-              timestamp: Date.now(),
-              args: {
-                optimisticId: context.content.optimisticId,
-                reason: error,
-              },
-            })
-          } else if (action === 'update') {
-            datahubMutation.notifyUpdatePostFailedOrRetryStatus({
-              ...getCurrentWallet(),
-              args: {
-                postId: payload.postId,
-                reason: error,
-              },
-              timestamp: Date.now(),
-            })
-          }
-        },
-        onSuccess: async ({ data, address }, txResult) => {
-          const { payload, action } = checkAction(data)
-          if (action === 'create') {
-            getPostsBySpaceIdQuery.invalidate(client, payload.spaceId)
-            getOwnedPostsQuery.invalidate(client, address)
-          } else if ('postId' in data && data.postId) {
-            await invalidatePostServerCache(data.postId)
-            getPostQuery.invalidate(client, data.postId)
-          }
-        },
-      },
-    }
-  )
+        })
+      }
+    },
+    onError: async (_, params, __) => {
+      config?.onError?.(_, params, __)
+      const { action, payload } = checkAction(params)
+      if (!params) return
+      if (action === 'update') {
+        getPostQuery.invalidate(client, payload.postId)
+      }
+    },
+    onSuccess: async (_, params, __) => {
+      config?.onSuccess?.(_, params, __)
+      const { payload, action } = checkAction(params)
+      const mainAddress = getMyMainAddress() ?? ''
+      if (action === 'create') {
+        getPostsBySpaceIdQuery.invalidate(client, payload.spaceId)
+        getOwnedPostsQuery.invalidate(client, mainAddress)
+      } else if (action === 'update') {
+        getPostQuery.invalidate(client, payload.postId)
+      }
+    },
+  })
 }
-export const UpsertPostWrapper = createMutationWrapper(
-  useUpsertPost,
+export const useUpsertPost = createMutationWrapper(
+  useUpsertPostRaw,
   'Failed to upsert post'
 )
 
 export type HideUnhidePostParams = { postId: string; action: 'hide' | 'unhide' }
-export function useHideUnhidePost(
+function useHideUnhidePostRaw(
   config?: TransactionMutationConfig<HideUnhidePostParams>
 ) {
   const client = useQueryClient()
 
-  return useTransactionMutation<HideUnhidePostParams>(
-    {
-      getWallet: getCurrentWallet,
-      generateContext: undefined,
-      transactionGenerator: async ({ data: { action, postId } }) => {
-        await datahubMutation.updatePostData({
-          ...getCurrentWallet(),
-          args: {
-            postId,
-            changes: {
-              hidden: action === 'hide',
-            },
+  return useMutation({
+    ...config,
+    mutationFn: async ({ action, postId }: HideUnhidePostParams) => {
+      await datahubMutation.updatePostData({
+        ...getCurrentWallet(),
+        args: {
+          postId,
+          changes: {
+            hidden: action === 'hide',
           },
-        })
-      },
+        },
+      })
     },
-    config,
-    {
-      txCallbacks: {
-        onStart: ({ data }) => {
-          getPostQuery.setQueryData(client, data.postId, (post) => {
-            if (!post) return post
-            return {
-              ...post,
-              struct: {
-                ...post.struct,
-                hidden: data.action === 'hide',
-              },
-            }
-          })
-        },
-        onError: async ({ data }) => {
-          getPostQuery.invalidate(client, data.postId)
-        },
-        onSuccess: async ({ data }) => {
-          await invalidatePostServerCache(data.postId)
-          getPostQuery.invalidate(client, data.postId)
-        },
-      },
-    }
-  )
+    onMutate: (data) => {
+      config?.onMutate?.(data)
+      getPostQuery.setQueryData(client, data.postId, (post) => {
+        if (!post) return post
+        return {
+          ...post,
+          struct: {
+            ...post.struct,
+            hidden: data.action === 'hide',
+          },
+        }
+      })
+    },
+    onError: (_, data, __) => {
+      config?.onError?.(_, data, __)
+      getPostQuery.invalidate(client, data.postId)
+    },
+    onSuccess: (_, data, __) => {
+      config?.onSuccess?.(_, data, __)
+      getPostQuery.invalidate(client, data.postId)
+    },
+  })
 }
-export const HideUnhideChatWrapper = createMutationWrapper(
-  useHideUnhidePost,
+export const useHideUnhidePost = createMutationWrapper(
+  useHideUnhidePostRaw,
   'Failed to hide/unhide chat'
 )
 
@@ -288,7 +253,6 @@ export function useHideMessage(
         },
         onSuccess: async ({ data }) => {
           allowWindowUnload()
-          await invalidatePostServerCache(data.messageId)
           getPostQuery.invalidate(client, data.messageId)
         },
       },
@@ -355,7 +319,6 @@ export function usePinMessage(
         },
         onSuccess: async ({ data }) => {
           allowWindowUnload()
-          await invalidatePostServerCache(data.chatId)
           getPostQuery.invalidate(client, data.chatId)
         },
       },

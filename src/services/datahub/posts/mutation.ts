@@ -140,13 +140,6 @@ type Params = SendMessageParams & {
   uuid: string
   timestamp: number
 }
-export function generateSendMessageParam(params: SendMessageParams) {
-  return {
-    ...params,
-    uuid: crypto.randomUUID(),
-    timestamp: Date.now(),
-  }
-}
 export function useSendMessage(
   config?: UseMutationOptions<void, unknown, Params, unknown>
 ) {

@@ -1,8 +1,5 @@
 import { ApiDatahubSpaceMutationBody } from '@/pages/api/datahub/space'
-import { invalidateProfileServerCache } from '@/services/api/mutation'
-import { getProfileQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
-import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils/mutation'
 import { getMyMainAddress } from '@/stores/my-account'
@@ -14,6 +11,7 @@ import {
   socialCallName,
 } from '@subsocial/data-hub-sdk'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getDeterministicId } from '../posts/mutation'
 import { DatahubParams, createSignedSocialDataEvent } from '../utils'
 import { getSpaceQuery } from './query'
 
@@ -125,18 +123,6 @@ export async function createSpaceData(
 //   )
 // }
 
-type Params = SendMessageParams & {
-  uuid: string
-  timestamp: number
-}
-export function generateSendMessageParam(params: SendMessageParams) {
-  return {
-    ...params,
-    uuid: crypto.randomUUID(),
-    timestamp: Date.now(),
-  }
-}
-
 type CommonParams = {
   content: {
     name?: string
@@ -145,16 +131,24 @@ type CommonParams = {
   }
 }
 export type UpsertSpaceParams =
-  | CommonParams
+  | (CommonParams & Required<Pick<DatahubParams<{}>, 'timestamp' | 'uuid'>>)
   | (CommonParams & { spaceId: string })
 function checkAction(data: UpsertSpaceParams) {
-  if ('spaceId' in data && data.spaceId) {
+  if ('spaceId' in data) {
     return { payload: data, action: 'update' } as const
   }
 
   return { payload: data, action: 'create' } as const
 }
-const OPTIMISTIC_SPACE_ID = 'optimistic-space-id'
+function getMutatedSpaceId(data: UpsertSpaceParams) {
+  const { payload, action } = checkAction(data)
+  if (action === 'update') return payload.spaceId
+  return getDeterministicId({
+    timestamp: payload.timestamp.toString(),
+    uuid: payload.uuid,
+    account: getMyMainAddress() ?? '',
+  })
+}
 function useUpsertSpaceRaw(
   config?: TransactionMutationConfig<UpsertSpaceParams>
 ) {
@@ -168,7 +162,7 @@ function useUpsertSpaceRaw(
       if (!currentWallet.address) throw new Error('Please login')
 
       const { payload, action } = checkAction(params)
-      if (action === 'update' && payload.spaceId === OPTIMISTIC_SPACE_ID)
+      if (action === 'update')
         throw new Error(
           'Please wait until we finalized your previous name change'
         )
@@ -176,6 +170,8 @@ function useUpsertSpaceRaw(
       if (action === 'create') {
         createSpaceData({
           ...currentWallet,
+          uuid: payload.uuid,
+          timestamp: payload.timestamp,
           args: { content: content as any },
         })
       } else if (action === 'update') {
@@ -184,14 +180,15 @@ function useUpsertSpaceRaw(
       }
     },
     onMutate: (data) => {
+      config?.onMutate?.(data)
       preventWindowUnload()
       const mainAddress = getMyMainAddress() ?? ''
-      getSpaceQuery.setQueryData(client, mainAddress, (oldData) => {
-        const oldSpaceId = oldData?.id
+      const spaceId = getMutatedSpaceId(data)
+
+      getSpaceQuery.setQueryData(client, spaceId, (oldData) => {
         const oldSpaceContent = oldData?.content || {}
-        const id = oldSpaceId ? oldSpaceId : OPTIMISTIC_SPACE_ID
         return {
-          id,
+          id: spaceId,
           struct: {
             ...oldData?.struct,
             createdByAccount: mainAddress,
@@ -200,7 +197,7 @@ function useUpsertSpaceRaw(
             createdAtBlock: 0,
             createdAtTime: Date.now(),
             hidden: false,
-            id,
+            id: spaceId,
             ownerId: mainAddress,
           },
           content: {
@@ -210,16 +207,16 @@ function useUpsertSpaceRaw(
         }
       })
     },
-    onError: async () => {
-      const mainAddress = getMyMainAddress() ?? ''
-      getProfileQuery.invalidate(client, mainAddress)
+    onError: async (_, data, __) => {
+      config?.onError?.(_, data, __)
+      const spaceId = getMutatedSpaceId(data)
+      getSpaceQuery.invalidate(client, spaceId)
     },
-    onSuccess: async () => {
+    onSuccess: async (_, data, __) => {
+      config?.onSuccess?.(_, data, __)
       allowWindowUnload()
-      const mainAddress = getMyMainAddress() ?? ''
-      await invalidateProfileServerCache(mainAddress)
-      // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
-      // getProfileQuery.invalidate(client, address)
+      const spaceId = getMutatedSpaceId(data)
+      getSpaceQuery.invalidate(client, spaceId)
     },
   })
 }

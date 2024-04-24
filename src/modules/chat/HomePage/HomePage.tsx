@@ -7,6 +7,7 @@ import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger
 import { env } from '@/env.mjs'
 import { getOwnedPostsQuery } from '@/services/datahub/posts/query'
 import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
+import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import {
@@ -153,7 +154,11 @@ export default function HomePage(props: HomePageProps) {
     <DefaultLayout withSidebar>
       <Button
         onClick={() =>
-          mutate({ content: { name: 'Test space', about: 'test space' } })
+          mutate(
+            augmentDatahubParams({
+              content: { name: 'Test space', about: 'test space' },
+            })
+          )
         }
       >
         LOGIN

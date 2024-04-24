@@ -9,10 +9,8 @@ import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
-import {
-  generateSendMessageParam,
-  useSendMessage,
-} from '@/services/datahub/posts/mutation'
+import { useSendMessage } from '@/services/datahub/posts/mutation'
+import { augmentDatahubParams } from '@/services/datahub/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
@@ -213,7 +211,7 @@ export default function ChatForm({
     hasSentMessageStorage.set('true')
 
     if (shouldSendMessage) {
-      sendMessage(generateSendMessageParam(messageParams))
+      sendMessage(augmentDatahubParams(messageParams))
     } else {
       loginAndSendMessage(messageParams)
     }

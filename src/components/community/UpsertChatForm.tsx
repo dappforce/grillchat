@@ -4,11 +4,11 @@ import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
 import { getPostQuery } from '@/services/api/query'
-import { UpsertPostWrapper } from '@/services/subsocial/posts/mutation'
+import { getDeterministicId } from '@/services/datahub/posts/mutation'
+import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
-import { getNewIdFromTxResult } from '@/utils/blockchain'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink } from '@/utils/links'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -98,111 +98,105 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   const isUpdating = !!chat
   const actionText = isUpdating ? 'Save changes' : 'Create'
 
+  const { mutateAsync, isLoading: isMutating } = useUpsertPost({
+    onSuccess: async (_, data) => {
+      if (isUpdating || !myAddress || !('spaceId' in data)) return
+
+      setSubscriptionState('post', 'always-sub')
+      setIsProcessingData(true)
+      const chatId = await getDeterministicId({
+        account: myAddress,
+        timestamp: data.timestamp.toString(),
+        uuid: data.uuid,
+      })
+
+      sendEvent('community_chat_created', { hubId }, { ownedChat: true })
+
+      setNewChatId(chatId)
+    },
+  })
+  const onSubmit: SubmitHandler<FormSchema> = async (data) => {
+    if (!isUpdating) {
+      sendEvent('start_community_chat_creation')
+    }
+
+    await mutateAsync({
+      spaceId: hubId,
+      postId: chat?.id,
+      ...data,
+    })
+    onSuccess?.()
+  }
+
+  const isLoading = isMutating || isProcessingData
+
+  let loadingText = 'Saving...'
+  if (!isUpdating) {
+    if (!isProcessingData) {
+      loadingText = 'Creating...'
+    } else {
+      loadingText = 'Finalizing group chat...'
+    }
+  }
+
   return (
-    <UpsertPostWrapper
-      config={{
-        txCallbacks: {
-          onSuccess: async (_data, txResult) => {
-            if (isUpdating || !myAddress) return
-
-            setSubscriptionState('post', 'always-sub')
-            setIsProcessingData(true)
-            const chatId = await getNewIdFromTxResult(txResult)
-
-            sendEvent('community_chat_created', { hubId }, { ownedChat: true })
-
-            setNewChatId(chatId)
-          },
-        },
-      }}
-      loadingUntilTxSuccess={!isUpdating}
+    <form
+      {...otherProps}
+      onSubmit={handleSubmit(onSubmit)}
+      className={cx('flex flex-col gap-4', otherProps.className)}
     >
-      {({ isLoading: isMutating, mutateAsync }) => {
-        const onSubmit: SubmitHandler<FormSchema> = async (data) => {
-          if (!isUpdating) {
-            sendEvent('start_community_chat_creation')
-          }
-
-          await mutateAsync({
-            spaceId: hubId,
-            postId: chat?.id,
-            ...data,
-          })
-          onSuccess?.()
-        }
-
-        const isLoading = isMutating || isProcessingData
-
-        let loadingText = 'Saving...'
-        if (!isUpdating) {
-          if (!isProcessingData) {
-            loadingText = 'Creating...'
-          } else {
-            loadingText = 'Finalizing group chat...'
-          }
-        }
-
-        return (
-          <form
-            {...otherProps}
-            onSubmit={handleSubmit(onSubmit)}
-            className={cx('flex flex-col gap-4', otherProps.className)}
-          >
-            <div className='flex flex-col items-center gap-4'>
-              <Controller
-                control={control}
-                name='image'
-                render={({ field, fieldState }) => {
-                  return (
-                    <ImageInput
-                      disabled={isLoading}
-                      image={field.value}
-                      setImageUrl={(value) => setValue('image', value)}
-                      containerProps={{ className: 'my-2' }}
-                      setIsLoading={setIsImageLoading}
-                      error={fieldState.error?.message}
-                    />
-                  )
-                }}
-              />
-              <AutofocusWrapper>
-                {({ ref }) => (
-                  <Input
-                    {...register('title')}
-                    ref={(e) => {
-                      register('title').ref(e)
-                      ref.current = e
-                    }}
-                    disabled={isLoading}
-                    placeholder='Chat Name'
-                    error={errors.title?.message}
-                    variant='fill-bg'
-                  />
-                )}
-              </AutofocusWrapper>
-              <TextArea
-                {...register('body')}
+      <div className='flex flex-col items-center gap-4'>
+        <Controller
+          control={control}
+          name='image'
+          render={({ field, fieldState }) => {
+            return (
+              <ImageInput
                 disabled={isLoading}
-                placeholder='Description (optional)'
-                error={errors.body?.message}
-                rows={1}
-                variant='fill-bg'
+                image={field.value}
+                setImageUrl={(value) => setValue('image', value)}
+                containerProps={{ className: 'my-2' }}
+                setIsLoading={setIsImageLoading}
+                error={fieldState.error?.message}
               />
-            </div>
+            )
+          }}
+        />
+        <AutofocusWrapper>
+          {({ ref }) => (
+            <Input
+              {...register('title')}
+              ref={(e) => {
+                register('title').ref(e)
+                ref.current = e
+              }}
+              disabled={isLoading}
+              placeholder='Chat Name'
+              error={errors.title?.message}
+              variant='fill-bg'
+            />
+          )}
+        </AutofocusWrapper>
+        <TextArea
+          {...register('body')}
+          disabled={isLoading}
+          placeholder='Description (optional)'
+          error={errors.body?.message}
+          rows={1}
+          variant='fill-bg'
+        />
+      </div>
 
-            <FormButton
-              schema={formSchema}
-              watch={watch}
-              isLoading={isLoading}
-              disabled={isImageLoading}
-              loadingText={loadingText}
-              size='lg'
-            >
-              {actionText}
-            </FormButton>
-          </form>
-        )
-      }}
-    </UpsertPostWrapper>
+      <FormButton
+        schema={formSchema}
+        watch={watch}
+        isLoading={isLoading}
+        disabled={isImageLoading}
+        loadingText={loadingText}
+        size='lg'
+      >
+        {actionText}
+      </FormButton>
+    </form>
   )
 }

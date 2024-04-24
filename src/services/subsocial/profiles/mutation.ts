@@ -1,4 +1,4 @@
-import { invalidateProfileServerCache, saveFile } from '@/services/api/mutation'
+import { saveFile } from '@/services/api/mutation'
 import { getProfileQuery } from '@/services/api/query'
 import { getMyMainAddress } from '@/stores/my-account'
 import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
@@ -70,7 +70,6 @@ function useUpsertProfileRaw(
     onSuccess: async () => {
       allowWindowUnload()
       const mainAddress = getMyMainAddress() ?? ''
-      await invalidateProfileServerCache(mainAddress)
       // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
       // getProfileQuery.invalidate(client, address)
     },

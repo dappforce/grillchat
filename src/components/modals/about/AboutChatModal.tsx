@@ -12,7 +12,7 @@ import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
-import { HideUnhideChatWrapper } from '@/services/subsocial/posts/mutation'
+import { useHideUnhidePost } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -59,6 +59,7 @@ export default function AboutChatModal({
   const refSearchParam = useReferralSearchParam()
 
   const [openedModalType, setOpenedModalType] = useState<InnerModalType>(null)
+  const { mutate: hideUnhidePost, isLoading: isHiding } = useHideUnhidePost()
 
   const isInIframe = useIsInIframe()
 
@@ -253,40 +254,32 @@ export default function AboutChatModal({
           chatId={chatId}
         />
       )}
-      <HideUnhideChatWrapper>
-        {({ isLoading, mutateAsync }) => {
-          return (
-            <>
-              <ConfirmationModal
-                isOpen={openedModalType === 'hide'}
-                title='🤔 Make this chat hidden?'
-                closeModal={closeModal}
-                primaryButtonProps={{ children: 'No, keep it public' }}
-                secondaryButtonProps={{
-                  children: 'Yes, hide this chat',
-                  isLoading,
-                  onClick: async () => {
-                    await mutateAsync({ postId: chatId, action: 'hide' })
-                  },
-                }}
-              />
-              <ConfirmationModal
-                isOpen={openedModalType === 'unhide'}
-                title='🤔 Make this chat public?'
-                closeModal={closeModal}
-                primaryButtonProps={{ children: 'No, keep it hidden' }}
-                secondaryButtonProps={{
-                  children: 'Yes, make it public',
-                  isLoading,
-                  onClick: async () => {
-                    await mutateAsync({ postId: chatId, action: 'unhide' })
-                  },
-                }}
-              />
-            </>
-          )
+      <ConfirmationModal
+        isOpen={openedModalType === 'hide'}
+        title='🤔 Make this chat hidden?'
+        closeModal={closeModal}
+        primaryButtonProps={{ children: 'No, keep it public' }}
+        secondaryButtonProps={{
+          children: 'Yes, hide this chat',
+          isLoading: isHiding,
+          onClick: () => {
+            hideUnhidePost({ postId: chatId, action: 'hide' })
+          },
         }}
-      </HideUnhideChatWrapper>
+      />
+      <ConfirmationModal
+        isOpen={openedModalType === 'unhide'}
+        title='🤔 Make this chat public?'
+        closeModal={closeModal}
+        primaryButtonProps={{ children: 'No, keep it hidden' }}
+        secondaryButtonProps={{
+          children: 'Yes, make it public',
+          isLoading: isHiding,
+          onClick: () => {
+            hideUnhidePost({ postId: chatId, action: 'unhide' })
+          },
+        }}
+      />
     </>
   )
 }

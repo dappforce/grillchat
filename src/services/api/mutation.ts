@@ -3,7 +3,6 @@ import {
   ApiDiscussionInput,
   ApiDiscussionResponse,
 } from '@/pages/api/discussion'
-import { ApiPostsInvalidationResponse } from '@/pages/api/posts'
 import { RevalidateChatInput } from '@/pages/api/revalidation/chat'
 import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import { SaveImageResponse } from '@/pages/api/save-image'
@@ -48,16 +47,6 @@ export async function saveImage(content: File) {
 export const useSaveImage = mutationWrapper(saveImage, {
   retry: 2,
 })
-
-// NOTE: this invalidations won't work if server doesn't have redis
-export async function invalidatePostServerCache(postId: string) {
-  const res = await apiInstance.post('/api/posts', { postId })
-  return res.data as ApiPostsInvalidationResponse
-}
-export async function invalidateProfileServerCache(address: string) {
-  const res = await apiInstance.post('/api/profiles', { address })
-  return res.data as ApiPostsInvalidationResponse
-}
 
 export function revalidateChatPage(input: RevalidateChatInput) {
   return apiInstance.post('/api/revalidation/chat', input)
