@@ -1,16 +1,11 @@
 import { gql } from 'graphql-request'
 import {
   CanAccountDoArgsInput,
-  CreatePostOptimisticInput,
-  CreatePostOptimisticMutation,
-  CreatePostOptimisticMutationVariables,
+  CreatePostOffChainInput,
+  CreatePostOffChainMutation,
+  CreatePostOffChainMutationVariables,
   GetCanAccountDoQuery,
   GetCanAccountDoQueryVariables,
-  NotifyCreatePostTxFailedOrRetryStatusMutation,
-  NotifyCreatePostTxFailedOrRetryStatusMutationVariables,
-  NotifyUpdatePostTxFailedOrRetryStatusMutation,
-  NotifyUpdatePostTxFailedOrRetryStatusMutationVariables,
-  UpdatePostBlockchainSyncStatusInput,
   UpdatePostOptimisticInput,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
@@ -37,29 +32,27 @@ export async function getCanAccountDo(input: CanAccountDoArgsInput) {
   return canAccountDo.isAllowed
 }
 
-const CREATE_POST_OPTIMISTIC_MUTATION = gql`
-  mutation CreatePostOptimistic(
-    $createPostOptimisticInput: CreatePostOptimisticInput!
+const CREATE_POST_OFFCHAIN_MUTATION = gql`
+  mutation CreatePostOffChain(
+    $createPostOffChainInput: CreatePostOffChainInput!
   ) {
-    createPostOptimistic(
-      createPostOptimisticInput: $createPostOptimisticInput
-    ) {
+    createPostOffChain(createPostOffChainInput: $createPostOffChainInput) {
       processed
       message
     }
   }
 `
-export async function createPostData(input: CreatePostOptimisticInput) {
+export async function createPostData(input: CreatePostOffChainInput) {
   const res = await datahubQueueRequest<
-    CreatePostOptimisticMutation,
-    CreatePostOptimisticMutationVariables
+    CreatePostOffChainMutation,
+    CreatePostOffChainMutationVariables
   >({
-    document: CREATE_POST_OPTIMISTIC_MUTATION,
+    document: CREATE_POST_OFFCHAIN_MUTATION,
     variables: {
-      createPostOptimisticInput: input,
+      createPostOffChainInput: input,
     },
   })
-  throwErrorIfNotProcessed(res.createPostOptimistic, 'Failed to create post')
+  throwErrorIfNotProcessed(res.createPostOffChain, 'Failed to create post')
 }
 
 const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
@@ -85,64 +78,4 @@ export async function updatePostData(input: UpdatePostOptimisticInput) {
     },
   })
   throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to update post')
-}
-
-const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
-  mutation NotifyCreatePostTxFailedOrRetryStatus(
-    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
-  ) {
-    updatePostBlockchainSyncStatus(
-      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-    ) {
-      processed
-      message
-    }
-  }
-`
-export async function notifyCreatePostFailedOrRetryStatus(
-  input: UpdatePostBlockchainSyncStatusInput
-) {
-  const res = await datahubQueueRequest<
-    NotifyCreatePostTxFailedOrRetryStatusMutation,
-    NotifyCreatePostTxFailedOrRetryStatusMutationVariables
-  >({
-    document: NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
-    variables: {
-      updatePostBlockchainSyncStatusInput: input,
-    },
-  })
-  throwErrorIfNotProcessed(
-    res.updatePostBlockchainSyncStatus,
-    'Failed to notify create post'
-  )
-}
-
-const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
-  mutation NotifyUpdatePostTxFailedOrRetryStatus(
-    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
-  ) {
-    updatePostBlockchainSyncStatus(
-      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-    ) {
-      processed
-      message
-    }
-  }
-`
-export async function notifyUpdatePostFailedOrRetryStatus(
-  input: UpdatePostBlockchainSyncStatusInput
-) {
-  const res = await datahubQueueRequest<
-    NotifyUpdatePostTxFailedOrRetryStatusMutation,
-    NotifyUpdatePostTxFailedOrRetryStatusMutationVariables
-  >({
-    document: NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
-    variables: {
-      updatePostBlockchainSyncStatusInput: input,
-    },
-  })
-  throwErrorIfNotProcessed(
-    res.updatePostBlockchainSyncStatus,
-    'Failed to notify update post'
-  )
 }

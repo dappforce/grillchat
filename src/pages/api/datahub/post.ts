@@ -2,14 +2,11 @@ import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   CanUserDoAction,
   CreatePostOptimisticInput,
-  UpdatePostBlockchainSyncStatusInput,
   UpdatePostOptimisticInput,
 } from '@/server/datahub-queue/generated'
 import {
   createPostData,
   getCanAccountDo,
-  notifyCreatePostFailedOrRetryStatus,
-  notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
 } from '@/server/datahub-queue/post'
 import {
@@ -62,14 +59,6 @@ export type ApiDatahubPostMutationBody =
       action: 'update-post'
       payload: UpdatePostOptimisticInput
     }
-  | {
-      action: 'notify-create-failed'
-      payload: UpdatePostBlockchainSyncStatusInput
-    }
-  | {
-      action: 'notify-update-failed'
-      payload: UpdatePostBlockchainSyncStatusInput
-    }
 
 export type ApiDatahubPostResponse = ApiResponse
 const POST_handler = handlerWrapper({
@@ -112,10 +101,6 @@ function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
       return createPostData(data.payload)
     case 'update-post':
       return updatePostData(data.payload)
-    case 'notify-create-failed':
-      return notifyCreatePostFailedOrRetryStatus(data.payload)
-    case 'notify-update-failed':
-      return notifyUpdatePostFailedOrRetryStatus(data.payload)
     default:
       throw new Error('Unknown action')
   }

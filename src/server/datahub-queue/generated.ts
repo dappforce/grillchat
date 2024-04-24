@@ -58,6 +58,24 @@ export type CreateMutateLinkedIdentityInput = {
   sig: Scalars['String']['input'];
 };
 
+export type CreateMutatePostOffChainDataInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  content?: InputMaybe<Scalars['String']['input']>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
+};
+
+export type CreateMutateSpaceOffChainDataInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  content?: InputMaybe<Scalars['String']['input']>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
+};
+
 export type CreatePostOffChainInput = {
   callData?: InputMaybe<SocialCallDataInput>;
   content?: InputMaybe<Scalars['String']['input']>;
@@ -102,8 +120,15 @@ export type FindSocialEventsResponseDto = {
   total?: Maybe<Scalars['Int']['output']>;
 };
 
+export type IngestDataFromIndexerInput = {
+  /** Stringified JSON with social event data */
+  dataStr: Scalars['String']['input'];
+  eventId: Scalars['String']['input'];
+};
+
 export type IngestDataResponseDto = {
   __typename?: 'IngestDataResponseDto';
+  callId?: Maybe<Scalars['String']['output']>;
   message?: Maybe<Scalars['String']['output']>;
   processed: Scalars['Boolean']['output'];
 };
@@ -134,10 +159,14 @@ export type ModerationCallInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   activeStakingCreateSuperLike: IngestDataResponseDto;
+  addPostView: IngestDataResponseDto;
+  addPostViewsBatch: IngestDataResponseDto;
   createLinkedIdentity: IngestDataResponseDto;
   createPostOffChain: IngestDataResponseDto;
   createPostOptimistic: IngestDataResponseDto;
+  createSpaceOffChain: IngestDataResponseDto;
   deleteLinkedIdentity: IngestDataResponseDto;
+  ingestDataFromIndexerNeynar: IngestPersistentDataFromSquidResponseDto;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
   moderationAddContextToOrganization: IngestDataResponseDto;
   moderationBlockResource: IngestDataResponseDto;
@@ -147,11 +176,22 @@ export type Mutation = {
   socialProfileAddReferrerId: IngestDataResponseDto;
   updatePostBlockchainSyncStatus: IngestDataResponseDto;
   updatePostOptimistic: IngestDataResponseDto;
+  updateSpaceOffChain: IngestDataResponseDto;
 };
 
 
 export type MutationActiveStakingCreateSuperLikeArgs = {
   args: CreateMutateActiveStakingSuperLikeInput;
+};
+
+
+export type MutationAddPostViewArgs = {
+  args: CreateMutatePostOffChainDataInput;
+};
+
+
+export type MutationAddPostViewsBatchArgs = {
+  args: CreateMutatePostOffChainDataInput;
 };
 
 
@@ -170,8 +210,18 @@ export type MutationCreatePostOptimisticArgs = {
 };
 
 
+export type MutationCreateSpaceOffChainArgs = {
+  args: CreateMutateSpaceOffChainDataInput;
+};
+
+
 export type MutationDeleteLinkedIdentityArgs = {
   deleteLinkedIdentityInput: CreateMutateLinkedIdentityInput;
+};
+
+
+export type MutationIngestDataFromIndexerNeynarArgs = {
+  input: IngestDataFromIndexerInput;
 };
 
 
@@ -217,6 +267,11 @@ export type MutationUpdatePostBlockchainSyncStatusArgs = {
 
 export type MutationUpdatePostOptimisticArgs = {
   updatePostOptimisticInput: UpdatePostOptimisticInput;
+};
+
+
+export type MutationUpdateSpaceOffChainArgs = {
+  args: CreateMutateSpaceOffChainDataInput;
 };
 
 export type PersistentDataItemFromSquid = {
@@ -285,13 +340,30 @@ export enum SocialCallName {
   ForceCreatePostReaction = 'force_create_post_reaction',
   ForceCreateSpace = 'force_create_space',
   ForceDeletePostReaction = 'force_delete_post_reaction',
+  ForceRegisterDomain = 'force_register_domain',
+  ForceSetInnerValue = 'force_set_inner_value',
+  ForceSetSpaceAsProfile = 'force_set_space_as_profile',
   MovePost = 'move_post',
+  OwnershipAcceptPendingOwnership = 'ownership_accept_pending_ownership',
+  OwnershipRejectPendingOwnership = 'ownership_reject_pending_ownership',
+  OwnershipTransferOwnership = 'ownership_transfer_ownership',
+  RegisterDomain = 'register_domain',
+  ResetProfile = 'reset_profile',
+  SetDomainContent = 'set_domain_content',
+  SetInnerValue = 'set_inner_value',
+  SetOuterValue = 'set_outer_value',
+  SetPaymentBeneficiary = 'set_payment_beneficiary',
+  SetProfile = 'set_profile',
   SynthActiveStakingCreateSuperLike = 'synth_active_staking_create_super_like',
   SynthActiveStakingDeleteSuperLike = 'synth_active_staking_delete_super_like',
+  SynthAddPostView = 'synth_add_post_view',
+  SynthAddPostViewsBatch = 'synth_add_post_views_batch',
   SynthCreateLinkedIdentity = 'synth_create_linked_identity',
   SynthCreatePostTxFailed = 'synth_create_post_tx_failed',
   SynthCreatePostTxRetry = 'synth_create_post_tx_retry',
   SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
+  SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
+  SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
   SynthModerationBlockResource = 'synth_moderation_block_resource',
@@ -397,12 +469,12 @@ export type GetCanAccountDoQueryVariables = Exact<{
 
 export type GetCanAccountDoQuery = { __typename?: 'Query', canAccountDo: { __typename?: 'CanAccountDoResponse', isAllowed: boolean } };
 
-export type CreatePostOptimisticMutationVariables = Exact<{
-  createPostOptimisticInput: CreatePostOptimisticInput;
+export type CreatePostOffChainMutationVariables = Exact<{
+  createPostOffChainInput: CreatePostOffChainInput;
 }>;
 
 
-export type CreatePostOptimisticMutation = { __typename?: 'Mutation', createPostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+export type CreatePostOffChainMutation = { __typename?: 'Mutation', createPostOffChain: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type UpdatePostOptimisticMutationVariables = Exact<{
   updatePostOptimisticInput: UpdatePostOptimisticInput;
@@ -411,26 +483,26 @@ export type UpdatePostOptimisticMutationVariables = Exact<{
 
 export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
-export type NotifyCreatePostTxFailedOrRetryStatusMutationVariables = Exact<{
-  updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput;
-}>;
-
-
-export type NotifyCreatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
-
-export type NotifyUpdatePostTxFailedOrRetryStatusMutationVariables = Exact<{
-  updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput;
-}>;
-
-
-export type NotifyUpdatePostTxFailedOrRetryStatusMutation = { __typename?: 'Mutation', updatePostBlockchainSyncStatus: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
-
 export type SetReferrerIdMutationVariables = Exact<{
   setReferrerIdInput: SocialProfileAddReferrerIdInput;
 }>;
 
 
 export type SetReferrerIdMutation = { __typename?: 'Mutation', socialProfileAddReferrerId: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+
+export type CreateSpaceOffChainMutationVariables = Exact<{
+  createSpaceOffChainInput: CreateMutateSpaceOffChainDataInput;
+}>;
+
+
+export type CreateSpaceOffChainMutation = { __typename?: 'Mutation', createSpaceOffChain: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+
+export type UpdateSpaceOffChainMutationVariables = Exact<{
+  updateSpaceOffChainInput: CreateMutateSpaceOffChainDataInput;
+}>;
+
+
+export type UpdateSpaceOffChainMutation = { __typename?: 'Mutation', updateSpaceOffChain: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type GetSuperLikeConfirmationMsgQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -492,9 +564,9 @@ export const GetCanAccountDo = gql`
   }
 }
     `;
-export const CreatePostOptimistic = gql`
-    mutation CreatePostOptimistic($createPostOptimisticInput: CreatePostOptimisticInput!) {
-  createPostOptimistic(createPostOptimisticInput: $createPostOptimisticInput) {
+export const CreatePostOffChain = gql`
+    mutation CreatePostOffChain($createPostOffChainInput: CreatePostOffChainInput!) {
+  createPostOffChain(createPostOffChainInput: $createPostOffChainInput) {
     processed
     message
   }
@@ -508,29 +580,25 @@ export const UpdatePostOptimistic = gql`
   }
 }
     `;
-export const NotifyCreatePostTxFailedOrRetryStatus = gql`
-    mutation NotifyCreatePostTxFailedOrRetryStatus($updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!) {
-  updatePostBlockchainSyncStatus(
-    updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-  ) {
-    processed
-    message
-  }
-}
-    `;
-export const NotifyUpdatePostTxFailedOrRetryStatus = gql`
-    mutation NotifyUpdatePostTxFailedOrRetryStatus($updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!) {
-  updatePostBlockchainSyncStatus(
-    updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-  ) {
-    processed
-    message
-  }
-}
-    `;
 export const SetReferrerId = gql`
     mutation SetReferrerId($setReferrerIdInput: SocialProfileAddReferrerIdInput!) {
   socialProfileAddReferrerId(args: $setReferrerIdInput) {
+    processed
+    message
+  }
+}
+    `;
+export const CreateSpaceOffChain = gql`
+    mutation CreateSpaceOffChain($createSpaceOffChainInput: CreateMutateSpaceOffChainDataInput!) {
+  createSpaceOffChain(args: $createSpaceOffChainInput) {
+    processed
+    message
+  }
+}
+    `;
+export const UpdateSpaceOffChain = gql`
+    mutation UpdateSpaceOffChain($updateSpaceOffChainInput: CreateMutateSpaceOffChainDataInput!) {
+  updateSpaceOffChain(args: $updateSpaceOffChainInput) {
     processed
     message
   }

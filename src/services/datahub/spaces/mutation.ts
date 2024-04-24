@@ -1,5 +1,5 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { ApiDatahubSpaceMutationBody } from '@/pages/api/datahub/space'
 import { apiInstance } from '@/services/api/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
 import {
@@ -9,13 +9,9 @@ import {
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
-import { stringToU8a, u8aToHex } from '@polkadot/util'
-import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
-import { PostContent } from '@subsocial/api/types'
+import { PostContent, SpaceContent } from '@subsocial/api/types'
 import {
-  CreatePostCallParsedArgs,
-  PostKind,
-  UpdatePostCallParsedArgs,
+  CreateSpaceCallParsedArgs,
   socialCallName,
 } from '@subsocial/data-hub-sdk'
 import {
@@ -23,118 +19,116 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import {
-  DatahubParams,
-  createSignedSocialDataEvent,
-  isDatahubAvailable,
-} from '../utils'
+import { DatahubParams, createSignedSocialDataEvent } from '../utils'
 
-export function isValidUUIDv4(maybeUuid: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    maybeUuid
-  )
+function getPermission(allAllowed = false) {
+  return {
+    CreateComments: true,
+    CreatePosts: allAllowed,
+    CreateSubspaces: allAllowed,
+    DeleteAnyPost: allAllowed,
+    DeleteAnySubspace: allAllowed,
+    DeleteOwnComments: true,
+    DeleteOwnPosts: true,
+    DeleteOwnSubspaces: true,
+    Downvote: true,
+    HideAnyComment: allAllowed,
+    HideAnyPost: allAllowed,
+    HideAnySubspace: allAllowed,
+    HideOwnComments: true,
+    HideOwnPosts: true,
+    HideOwnSubspaces: true,
+    ManageRoles: allAllowed,
+    OverridePostPermissions: allAllowed,
+    OverrideSubspacePermissions: allAllowed,
+    RepresentSpaceExternally: allAllowed,
+    RepresentSpaceInternally: allAllowed,
+    Share: true,
+    SuggestEntityStatus: allAllowed,
+    UpdateAnyPost: false,
+    UpdateAnySubspace: allAllowed,
+    UpdateEntityStatus: allAllowed,
+    UpdateOwnComments: true,
+    UpdateOwnPosts: true,
+    UpdateOwnSubspaces: true,
+    UpdateSpace: allAllowed,
+    UpdateSpaceSettings: allAllowed,
+    Upvote: true,
+  }
 }
 
-type GetDeterministicIdInput = {
-  uuid: string
-  timestamp: string
-  account: string
-}
-export function getDeterministicId({
-  uuid,
-  timestamp,
-  account,
-}: GetDeterministicIdInput): string {
-  if (!isValidUUIDv4(uuid))
-    throw new Error('Not valid uuid has been provided. Must be UUID v4.')
-  const pubKey = u8aToHex(decodeAddress(account), undefined, false)
-  const u8aKey = stringToU8a(pubKey + timestamp + uuid.replace(/-/g, ''))
-  return blake2AsHex(u8aKey, 128, null, true)
-}
-
-async function createPostData(
+export async function createSpaceData(
   params: DatahubParams<{
-    rootPostId?: string
-    parentPostId?: string
     spaceId: string
     cid?: string
-    content: PostContent
+    content: SpaceContent
   }>
 ) {
   const { args } = params
-  const { content, spaceId, cid, rootPostId, parentPostId } = args
-  const eventArgs: CreatePostCallParsedArgs = {
+  const { content, cid } = args
+  const eventArgs: CreateSpaceCallParsedArgs = {
     forced: false,
-    postKind: rootPostId ? PostKind.Comment : PostKind.RegularPost,
-    rootPostId,
-    parentPostId,
-    spaceId,
     ipfsSrc: cid,
+    forcedData: null,
+    permissions: {
+      spaceOwner: getPermission(true),
+      everyone: getPermission(),
+      follower: getPermission(),
+      none: getPermission(),
+    },
   }
 
   const input = createSignedSocialDataEvent(
-    socialCallName.create_post,
+    socialCallName.create_space,
     params,
     eventArgs,
     content
   )
 
-  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
-    '/api/datahub/post',
+  await apiInstance.post<any, any, ApiDatahubSpaceMutationBody>(
+    '/api/datahub/space',
     {
-      action: 'create-post',
+      action: 'create-space',
       payload: input as any,
     }
   )
 }
 
-async function updatePostData(
-  params: DatahubParams<{
-    postId: string
-    changes: {
-      content?: {
-        cid: string
-        content: PostContent
-      }
-      hidden?: boolean
-    }
-  }>
-) {
-  const { postId, changes } = params.args
-  const { content, hidden } = changes
-  const eventArgs: UpdatePostCallParsedArgs = {
-    spaceId: null,
-    hidden: hidden ?? null,
-    postId,
-    ipfsSrc: content?.cid ?? null,
-  }
-  const input = createSignedSocialDataEvent(
-    socialCallName.update_post,
-    params,
-    eventArgs,
-    content?.content
-  )
+// async function updatePostData(
+//   params: DatahubParams<{
+//     postId: string
+//     changes: {
+//       content?: {
+//         cid: string
+//         content: PostContent
+//       }
+//       hidden?: boolean
+//     }
+//   }>
+// ) {
+//   const { postId, changes } = params.args
+//   const { content, hidden } = changes
+//   const eventArgs: UpdatePostCallParsedArgs = {
+//     spaceId: null,
+//     hidden: hidden ?? null,
+//     postId,
+//     ipfsSrc: content?.cid ?? null,
+//   }
+//   const input = createSignedSocialDataEvent(
+//     socialCallName.update_post,
+//     params,
+//     eventArgs,
+//     content?.content
+//   )
 
-  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
-    '/api/datahub/post',
-    {
-      action: 'update-post',
-      payload: input as any,
-    }
-  )
-}
-
-function datahubWrapper<T extends (...args: any[]) => Promise<any>>(func: T) {
-  return (...args: Parameters<T>) => {
-    if (!isDatahubAvailable) return
-    return func(...args)
-  }
-}
-const datahubMutation = {
-  createPostData: datahubWrapper(createPostData),
-  updatePostData: datahubWrapper(updatePostData),
-}
-export default datahubMutation
+//   await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+//     '/api/datahub/post',
+//     {
+//       action: 'update-post',
+//       payload: input as any,
+//     }
+//   )
+// }
 
 type Params = SendMessageParams & {
   uuid: string
@@ -167,7 +161,7 @@ export function useSendMessage(
           'Your message is too long, please split it up to multiple messages'
         )
 
-      await datahubMutation.createPostData({
+      await createSpaceData({
         ...getCurrentWallet(),
         uuid: data.uuid,
         timestamp: data.timestamp,

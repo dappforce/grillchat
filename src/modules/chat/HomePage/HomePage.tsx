@@ -145,9 +145,11 @@ export default function HomePage(props: HomePageProps) {
   }
 
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
+  const address = useMyAccount((state) => state.address)
 
   return (
     <DefaultLayout withSidebar>
+      <Button onClick={() => useMyAccount.getState().login()}>LOGIN</Button>
       <Tabs
         className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
         panelClassName='mt-0 px-0'

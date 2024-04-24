@@ -1,7 +1,6 @@
 import { env } from '@/env.mjs'
 import { Signer } from '@/utils/account'
 import { wait } from '@/utils/promise'
-import { u8aToHex } from '@polkadot/util'
 import { PostContent } from '@subsocial/api/types'
 import {
   SocialCallDataArgs,
@@ -73,9 +72,9 @@ export function signDatahubPayload(
 ) {
   if (!signer) throw new Error('Signer is not defined')
   const sortedPayload = sortKeysRecursive(payload)
-  const sig = signer.sign(JSON.stringify(sortedPayload))
-  const hexSig = u8aToHex(sig)
-  payload.sig = hexSig
+  const sig = signer.signMessageSync(JSON.stringify(sortedPayload))
+  console.log(sig)
+  payload.sig = sig
 }
 
 export function createSocialDataEventPayload<
@@ -122,7 +121,7 @@ export function createSignedSocialDataEvent<
   callName: T,
   params: DatahubParams<{}>,
   eventArgs: SocialCallDataArgs<T>,
-  content?: PostContent
+  content?: any
 ) {
   const payload = createSocialDataEventPayload(
     callName,
