@@ -1,6 +1,5 @@
 import { cx } from '@/utils/class-names'
 import { sanitizeHtmlPlugin } from '@osn/previewer'
-import Image from 'next/image'
 import { memo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
@@ -32,14 +31,8 @@ function MdRendererRaw({
         img: (props) => {
           if (!props.src) return null
           return (
-            // @ts-expect-error - the props type is not correctly inferred
-            <Image
-              alt=''
-              className='bg-background-lighter'
-              {...props}
-              width={(props.width as number) ?? 1500}
-              height={(props.height as number) ?? 1500}
-            />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt='' className='bg-background-lighter' {...props} />
           )
         },
         p: (props) => {
