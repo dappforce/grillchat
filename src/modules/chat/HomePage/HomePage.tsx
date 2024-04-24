@@ -6,6 +6,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import { getOwnedPostsQuery } from '@/services/datahub/posts/query'
+import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import {
@@ -146,10 +147,17 @@ export default function HomePage(props: HomePageProps) {
 
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
   const address = useMyAccount((state) => state.address)
+  const { mutate } = useUpsertSpace()
 
   return (
     <DefaultLayout withSidebar>
-      <Button onClick={() => useMyAccount.getState().login()}>LOGIN</Button>
+      <Button
+        onClick={() =>
+          mutate({ content: { name: 'Test space', about: 'test space' } })
+        }
+      >
+        LOGIN
+      </Button>
       <Tabs
         className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
         panelClassName='mt-0 px-0'

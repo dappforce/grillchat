@@ -73,7 +73,6 @@ export function signDatahubPayload(
   if (!signer) throw new Error('Signer is not defined')
   const sortedPayload = sortKeysRecursive(payload)
   const sig = signer.signMessageSync(JSON.stringify(sortedPayload))
-  console.log(sig)
   payload.sig = sig
 }
 
@@ -82,14 +81,13 @@ export function createSocialDataEventPayload<
 >(
   callName: T,
   {
-    isOffchain,
     timestamp,
     address,
     uuid,
     proxyToAddress,
   }: Pick<
     DatahubParams<{}>,
-    'isOffchain' | 'timestamp' | 'address' | 'uuid' | 'proxyToAddress'
+    'timestamp' | 'address' | 'uuid' | 'proxyToAddress'
   >,
   eventArgs: SocialCallDataArgs<T>,
   content?: PostContent
@@ -97,9 +95,7 @@ export function createSocialDataEventPayload<
   const owner = proxyToAddress || address
   const payload: SocialEventDataApiInput = {
     protVersion: socialEventProtVersion['0.1'],
-    dataType: isOffchain
-      ? SocialEventDataType.offChain
-      : SocialEventDataType.optimistic,
+    dataType: SocialEventDataType.offChain,
     callData: {
       name: callName,
       signer: owner || '',

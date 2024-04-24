@@ -1,25 +1,21 @@
-import { getMaxMessageLength } from '@/constants/chat'
 import { ApiDatahubSpaceMutationBody } from '@/pages/api/datahub/space'
+import { invalidateProfileServerCache } from '@/services/api/mutation'
+import { getProfileQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds'
-import {
-  addOptimisticData,
-  deleteOptimisticData,
-} from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { createMutationWrapper } from '@/services/subsocial/utils/mutation'
+import { getMyMainAddress } from '@/stores/my-account'
+import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
-import { PostContent, SpaceContent } from '@subsocial/api/types'
+import { SpaceContent } from '@subsocial/api/types'
 import {
   CreateSpaceCallParsedArgs,
   socialCallName,
 } from '@subsocial/data-hub-sdk'
-import {
-  UseMutationOptions,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { DatahubParams, createSignedSocialDataEvent } from '../utils'
+import { getSpaceQuery } from './query'
 
 function getPermission(allAllowed = false) {
   return {
@@ -59,7 +55,6 @@ function getPermission(allAllowed = false) {
 
 export async function createSpaceData(
   params: DatahubParams<{
-    spaceId: string
     cid?: string
     content: SpaceContent
   }>
@@ -141,85 +136,94 @@ export function generateSendMessageParam(params: SendMessageParams) {
     timestamp: Date.now(),
   }
 }
-export function useSendMessage(
-  config?: UseMutationOptions<void, unknown, Params, unknown>
+
+type CommonParams = {
+  content: {
+    name?: string
+    image?: string
+    about?: string
+  }
+}
+export type UpsertSpaceParams =
+  | CommonParams
+  | (CommonParams & { spaceId: string })
+function checkAction(data: UpsertSpaceParams) {
+  if ('spaceId' in data && data.spaceId) {
+    return { payload: data, action: 'update' } as const
+  }
+
+  return { payload: data, action: 'create' } as const
+}
+const OPTIMISTIC_SPACE_ID = 'optimistic-space-id'
+function useUpsertSpaceRaw(
+  config?: TransactionMutationConfig<UpsertSpaceParams>
 ) {
   const client = useQueryClient()
 
   return useMutation({
     ...config,
-    mutationFn: async (data) => {
-      const content = {
-        body: data.message,
-        inReplyTo: ReplyWrapper(data.replyTo),
-        extensions: data.extensions,
-      } as PostContent
+    mutationFn: async (params: UpsertSpaceParams) => {
+      const { content } = params
+      const currentWallet = getCurrentWallet()
+      if (!currentWallet.address) throw new Error('Please login')
 
-      const maxLength = getMaxMessageLength(data.chatId)
-      if (data.message && data.message.length > maxLength)
+      const { payload, action } = checkAction(params)
+      if (action === 'update' && payload.spaceId === OPTIMISTIC_SPACE_ID)
         throw new Error(
-          'Your message is too long, please split it up to multiple messages'
+          'Please wait until we finalized your previous name change'
         )
 
-      await createSpaceData({
-        ...getCurrentWallet(),
-        uuid: data.uuid,
-        timestamp: data.timestamp,
-        isOffchain: true,
-        args: {
-          parentPostId: ParentPostIdWrapper(data.replyTo),
-          content: content,
-          rootPostId: data.chatId,
-          spaceId: data.hubId,
-        },
-      })
+      if (action === 'create') {
+        createSpaceData({
+          ...currentWallet,
+          args: { content: content as any },
+        })
+      } else if (action === 'update') {
+        // TODO: implement
+        throw new Error('Not implemented')
+      }
     },
-    onMutate: async (data) => {
-      config?.onMutate?.(data)
+    onMutate: (data) => {
       preventWindowUnload()
-      const content = {
-        body: data.message,
-        inReplyTo: ReplyWrapper(data.replyTo),
-        extensions: data.extensions,
-      } as PostContent
-
-      const newId = getDeterministicId({
-        account:
-          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
-        timestamp: data.timestamp.toString(),
-        uuid: data.uuid,
+      const mainAddress = getMyMainAddress() ?? ''
+      getSpaceQuery.setQueryData(client, mainAddress, (oldData) => {
+        const oldSpaceId = oldData?.id
+        const oldSpaceContent = oldData?.content || {}
+        const id = oldSpaceId ? oldSpaceId : OPTIMISTIC_SPACE_ID
+        return {
+          id,
+          struct: {
+            ...oldData?.struct,
+            createdByAccount: mainAddress,
+            canEveryoneCreatePosts: false,
+            canFollowerCreatePosts: false,
+            createdAtBlock: 0,
+            createdAtTime: Date.now(),
+            hidden: false,
+            id,
+            ownerId: mainAddress,
+          },
+          content: {
+            ...oldSpaceContent,
+            ...data.content,
+          } as SpaceContent,
+        }
       })
-
-      addOptimisticData({
-        address:
-          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
-        params: data,
-        ipfsContent: content,
-        client,
-        customId: newId,
-      })
-      config?.onMutate?.(data)
     },
-    onError: (err, data, context) => {
-      config?.onError?.(err, data, context)
-      allowWindowUnload()
-      const newId = getDeterministicId({
-        account:
-          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
-        timestamp: data.timestamp.toString(),
-        uuid: data.uuid,
-      })
-      const { chatId } = data
-      deleteOptimisticData({
-        chatId,
-        client,
-        idToDelete: newId,
-      })
-      config?.onError?.(err, data, context)
+    onError: async () => {
+      const mainAddress = getMyMainAddress() ?? ''
+      getProfileQuery.invalidate(client, mainAddress)
     },
-    onSuccess: (...params) => {
-      config?.onSuccess?.(...params)
+    onSuccess: async () => {
       allowWindowUnload()
+      const mainAddress = getMyMainAddress() ?? ''
+      await invalidateProfileServerCache(mainAddress)
+      // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
+      // getProfileQuery.invalidate(client, address)
     },
   })
 }
+export const useUpsertSpace = createMutationWrapper(
+  useUpsertSpaceRaw,
+  'Failed to upsert space'
+)

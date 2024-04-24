@@ -3,7 +3,7 @@ import useToastError from '@/hooks/useToastError'
 import { getMyMainAddress } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { UseMutationResult } from '@tanstack/react-query'
-import { useMemo } from 'react'
+import { useCallback } from 'react'
 
 export type Status =
   | 'idle'
@@ -41,20 +41,27 @@ export function createMutationWrapper<Data, ReturnValue, OtherProps>(
     const mutation = useMutationHook(config, otherProps)
     useToastError(mutation.error, errorMessage)
 
-    const mutate = useMemo(() => {
-      return mutationWrapper(
-        mutation.mutate,
-        getMyMainAddress(),
-        promptUserForLogin
-      )
-    }, [mutation.mutate, promptUserForLogin])
-    const mutateAsync = useMemo(() => {
-      return mutationWrapper(
-        mutation.mutateAsync,
-        getMyMainAddress(),
-        promptUserForLogin
-      )
-    }, [mutation.mutateAsync, promptUserForLogin])
+    const { mutate: rawMutate, mutateAsync: rawMutateAsync } = mutation
+    const mutate = useCallback(
+      (...args: Parameters<typeof rawMutate>) => {
+        return mutationWrapper(
+          rawMutate,
+          getMyMainAddress(),
+          promptUserForLogin
+        )(...args)
+      },
+      [rawMutate, promptUserForLogin]
+    )
+    const mutateAsync = useCallback(
+      (...args: Parameters<typeof rawMutateAsync>) => {
+        return mutationWrapper(
+          rawMutateAsync,
+          getMyMainAddress(),
+          promptUserForLogin
+        )(...args)
+      },
+      [rawMutateAsync, promptUserForLogin]
+    )
 
     return {
       ...mutation,
