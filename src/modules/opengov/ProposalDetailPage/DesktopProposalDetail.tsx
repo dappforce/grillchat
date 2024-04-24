@@ -34,6 +34,14 @@ export default function DesktopProposalDetail({
   const { chatId } = useProposalDetailContext()
   const { allIds, isOpen, isLoading, selectedTab, setIsOpen, setSelectedTab } =
     useCommentDrawer(proposal)
+  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
+  const lastThreeMessageIds = allIds.slice(0, 3)
+  const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
+  const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
+
+  const ref = useRef<HTMLDivElement | null>(null)
+
+  const hasGrillComments = !isLoading && allIds.length > 0
 
   useEffect(() => {
     if (isOpen) {
@@ -70,12 +78,44 @@ export default function DesktopProposalDetail({
               source={proposal.content}
             />
           </Card>
+
+          <Card className='flex flex-col gap-4 bg-background-light'>
+            <span className='text-lg font-bold'>Latest Comments</span>
+            {(() => {
+              if (isLoading || isLoadingMessages) {
+                return (
+                  <div className='flex flex-col gap-2'>
+                    <Skeleton className='w-full' />
+                    <Skeleton className='w-full' />
+                    <Skeleton className='w-full' />
+                  </div>
+                )
+              }
+              if (!hasGrillComments && proposal.comments.length) {
+                return (
+                  <LatestCommentFromExternalSources
+                    setIsOpenDrawer={setIsOpen}
+                    proposal={proposal}
+                  />
+                )
+              }
+              if (hasGrillComments && chatId) {
+                return (
+                  <GrillLatestMessages
+                    lastThreeMessages={lastThreeMessages}
+                    chatId={chatId}
+                    setIsOpenDrawer={setIsOpen}
+                    totalCommentsCount={postMetadata?.totalCommentsCount || 0}
+                  />
+                )
+              }
+              return <NoMessagesCard onClick={() => setIsOpen(true)} />
+            })()}
+          </Card>
         </div>
         <StickyRightPanel
           proposal={proposal}
           chatId={chatId}
-          allIds={allIds}
-          isLoading={isLoading}
           setIsOpen={setIsOpen}
         />
       </div>
@@ -95,25 +135,14 @@ export default function DesktopProposalDetail({
 function StickyRightPanel({
   proposal,
   chatId,
-  allIds,
-  isLoading,
   setIsOpen,
 }: {
   proposal: Proposal
   chatId: string
-  allIds: string[]
-  isLoading: boolean
   setIsOpen: (isOpen: boolean) => void
 }) {
-  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
-  const lastThreeMessageIds = allIds.slice(0, 3)
-  const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
-  const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
-
   const ref = useRef<HTMLDivElement | null>(null)
   const style = useStickyElement({ elRef: ref, top: 72 })
-
-  const hasGrillComments = !isLoading && allIds.length > 0
 
   return (
     <div
@@ -121,40 +150,11 @@ function StickyRightPanel({
       style={style}
       ref={ref}
     >
-      <ProposalStatusCard proposal={proposal} />
-      <Card className='flex flex-col gap-4 bg-background-light'>
-        <span className='text-lg font-bold'>Latest Comments</span>
-        {(() => {
-          if (isLoading || isLoadingMessages) {
-            return (
-              <div className='flex flex-col gap-2'>
-                <Skeleton className='w-full' />
-                <Skeleton className='w-full' />
-                <Skeleton className='w-full' />
-              </div>
-            )
-          }
-          if (!hasGrillComments && proposal.comments.length) {
-            return (
-              <LatestCommentFromExternalSources
-                setIsOpenDrawer={setIsOpen}
-                proposal={proposal}
-              />
-            )
-          }
-          if (hasGrillComments && chatId) {
-            return (
-              <GrillLatestMessages
-                lastThreeMessages={lastThreeMessages}
-                chatId={chatId}
-                setIsOpenDrawer={setIsOpen}
-                totalCommentsCount={postMetadata?.totalCommentsCount || 0}
-              />
-            )
-          }
-          return <NoMessagesCard onClick={() => setIsOpen(true)} />
-        })()}
-      </Card>
+      <ProposalStatusCard
+        proposal={proposal}
+        chatId={chatId}
+        onCommentButtonClick={() => setIsOpen(true)}
+      />
     </div>
   )
 }

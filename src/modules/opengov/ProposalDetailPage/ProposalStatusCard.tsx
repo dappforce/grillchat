@@ -2,6 +2,7 @@ import IssuanceIcon from '@/assets/icons/issuance.svg'
 import SupportIcon from '@/assets/icons/support.svg'
 import VoteIcon from '@/assets/icons/vote.svg'
 import ActionCard from '@/components/ActionCard'
+import Button from '@/components/Button'
 import Card from '@/components/Card'
 import PopOver from '@/components/floating/PopOver'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
@@ -11,6 +12,7 @@ import {
   ProposalConfirmationPeriod,
   ProposalDecisionPeriod,
 } from '@/server/opengov/mapper'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import dayjs from 'dayjs'
@@ -22,12 +24,21 @@ import SupportBar, { getCurrentBillPercentage } from './SupportBar'
 
 export default function ProposalStatusCard({
   proposal,
+  onCommentButtonClick,
+  chatId,
 }: {
   proposal: Proposal
+  onCommentButtonClick?: () => void
+  chatId: string
 }) {
+  const { data: postMetadata, isLoading } = getPostMetadataQuery.useQuery(
+    chatId ?? ''
+  )
   const [isOpenModal, setIsOpenModal] = useState(false)
-
   const currentSupport = getCurrentBillPercentage(proposal)
+
+  const isLoadingMetadata = isLoading && !!chatId
+
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>
       <div className='flex items-center justify-between gap-4'>
@@ -119,6 +130,20 @@ export default function ProposalStatusCard({
         ]}
         size='sm'
       />
+      {onCommentButtonClick && (
+        <Button
+          size='lg'
+          onClick={() => onCommentButtonClick()}
+          className='w-full'
+        >
+          {isLoadingMetadata
+            ? ''
+            : postMetadata?.totalCommentsCount ||
+              proposal.comments.length ||
+              ''}{' '}
+          Comments
+        </Button>
+      )}
       <ProposalMetadataModal
         proposal={proposal}
         isOpen={isOpenModal}
@@ -133,15 +158,29 @@ function getProposalPeriodStatus(period: {
   endTime: number
   duration: number
 }) {
-  const periodDuration = dayjs.duration(period.duration).asDays()
+  let periodDuration = dayjs.duration(period.duration).asDays()
+  let periodDurationType: 'd' | 'm' | 'h' = 'd'
   const periodPercentage =
     (dayjs().diff(period.startTime) / period.duration) * 100
-  const currentDay = dayjs().diff(period.startTime, 'days')
   const daysLeft = dayjs(period.endTime).diff(dayjs(), 'days')
   const hoursLeft = dayjs(period.endTime).diff(dayjs(), 'hours') % 24
 
+  if (periodDuration < 1) {
+    periodDuration = dayjs.duration(period.duration).asHours()
+    periodDurationType = 'h'
+    if (periodDuration < 1) {
+      periodDuration = dayjs.duration(period.duration).asMinutes()
+      periodDurationType = 'm'
+    }
+  }
+  const currentDay = Math.min(
+    dayjs().diff(period.startTime, periodDurationType),
+    periodDuration
+  )
+
   return {
     duration: periodDuration,
+    durationType: periodDurationType,
     percentage: periodPercentage,
     currentDayElapsed: currentDay,
     daysLeft,
@@ -156,8 +195,14 @@ function StatusProgressBar({
   periodData: ProposalDecisionPeriod | ProposalConfirmationPeriod | null
 }) {
   if (!periodData || !('startTime' in periodData)) return null
-  const { currentDayElapsed, duration, percentage, daysLeft, hoursLeft } =
-    getProposalPeriodStatus(periodData)
+  const {
+    currentDayElapsed,
+    duration,
+    durationType,
+    percentage,
+    daysLeft,
+    hoursLeft,
+  } = getProposalPeriodStatus(periodData)
   const percentageFixed = parseInt(percentage.toString())
 
   return (
@@ -166,7 +211,8 @@ function StatusProgressBar({
         <span className='text-text-muted'>{title}</span>
         <span>
           <span className='text-text-muted'>{currentDayElapsed} / </span>
-          {duration}d
+          {duration}
+          {durationType}
         </span>
       </div>
       <PopOver
@@ -178,7 +224,9 @@ function StatusProgressBar({
           <div
             className='grid h-1.5 w-full rounded-full bg-background-lightest'
             style={{
-              gridTemplateColumns: `${percentage}fr ${100 - percentageFixed}fr`,
+              gridTemplateColumns: `${percentageFixed}fr ${
+                100 - percentageFixed
+              }fr`,
             }}
           >
             <div className='h-full rounded-full bg-background-primary' />

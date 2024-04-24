@@ -67,7 +67,7 @@ export default function MobileProposalDetailPage({
                 Read more
               </LinkText>
             </Card>
-            <ProposalStatusCard proposal={proposal} />
+            <ProposalStatusCard proposal={proposal} chatId={chatId} />
           </div>
         </div>
         <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4'>

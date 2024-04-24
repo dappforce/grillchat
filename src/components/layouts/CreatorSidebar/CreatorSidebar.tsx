@@ -40,7 +40,7 @@ export default function CreatorSidebar({ className }: { className?: string }) {
 
 function SidebarContent({ className }: { className?: string }) {
   const ref = useRef<HTMLDivElement | null>(null)
-  const { position, top } = useStickyElement({ elRef: ref, top: 72 })
+  const { position, top } = useStickyElement({ elRef: ref, top: 56 })
   const myAddress = useMyMainAddress() ?? ''
   const { data: totalStake } = getTotalStakeQuery.useQuery(myAddress)
 
