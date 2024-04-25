@@ -20,7 +20,7 @@ const LeaderboardPage = () => {
         },
       }}
     >
-      <div className='relative w-full'>
+      <div className='relative mb-4 w-full'>
         <LeaderboardContent />
       </div>
     </DefaultLayout>

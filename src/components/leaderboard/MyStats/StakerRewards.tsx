@@ -8,49 +8,6 @@ import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { useLeaderboardContext } from '../LeaderboardContext'
 
-const tmpData = [
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-  {
-    date: '07.01.24',
-    rewardValue: '+ 34.59 SUB',
-  },
-]
-
 type StakerRewardsProps = {
   address: string
 }

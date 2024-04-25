@@ -1,11 +1,14 @@
-import { createQuery } from '@/subsocial-query'
+import { QueryConfig, createQuery } from '@/subsocial-query'
+import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import {
+  LeaderboardRole,
   getGeneralStatistics,
   getLeaderboardData,
   getRewardHistory,
   getTopUsers,
   getUserStatistics,
 } from '.'
+import { LeaderboardData } from './types'
 
 export const getTopUsersQuery = createQuery({
   key: 'getTopUsers',
@@ -39,10 +42,50 @@ export const getRewardHistoryQuery = createQuery({
   }),
 })
 
-export const getLeaderboardDataQuery = createQuery({
-  key: 'getLeaderboardData',
-  fetcher: getLeaderboardData,
-  defaultConfigGenerator: (data) => ({
-    enabled: !!data,
-  }),
-})
+const PROPOSALS_QUERY_KEY = 'leaderboardData'
+const getQueryKey = () => [PROPOSALS_QUERY_KEY]
+export const getLeaderboardDataQuery = {
+  getQueryKey,
+  fetchFirstPageQuery: async (
+    role: LeaderboardRole,
+    client: QueryClient | null
+  ) => {
+    const res = await getLeaderboardData({
+      page: 1,
+      role,
+    })
+    if (!client) return res
+
+    client.setQueryData(getQueryKey(), {
+      pageParams: [1],
+      pages: [res],
+    })
+    return res
+  },
+  setFirstPageData: (queryClient: QueryClient, data: LeaderboardData) => {
+    queryClient.setQueryData(getQueryKey(), {
+      pageParams: [1],
+      pages: [data],
+    })
+  },
+  useInfiniteQuery: (role: LeaderboardRole, config?: QueryConfig) => {
+    return useInfiniteQuery<
+      LeaderboardData,
+      unknown,
+      LeaderboardData,
+      string[]
+    >({
+      ...config,
+      queryKey: getQueryKey(),
+      queryFn: async ({ pageParam = 1 }) => {
+        const res = await getLeaderboardData({
+          page: pageParam,
+          role,
+        })
+        return res
+      },
+      getNextPageParam: (lastPage) =>
+        lastPage.hasMore ? lastPage.page + 1 : undefined,
+    })
+  },
+}
