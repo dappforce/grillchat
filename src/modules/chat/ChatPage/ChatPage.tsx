@@ -15,7 +15,6 @@ import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
-import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -84,24 +83,24 @@ export default function ChatPage({
     enabled: isDatahubAvailable,
   })
 
-  const openExtensionModal = useExtensionData(
-    (state) => state.openExtensionModal
-  )
+  // const openExtensionModal = useExtensionData(
+  //   (state) => state.openExtensionModal
+  // )
 
-  useEffect(() => {
-    const query = getUrlQuery('donateTo')
-    if (!query) return
+  // useEffect(() => {
+  //   const query = getUrlQuery('donateTo')
+  //   if (!query) return
 
-    replaceUrl(getCurrentUrlWithoutQuery('donateTo'))
-    try {
-      const donateTo = (JSON.parse(query) || {}) as {
-        messageId: string
-        recipient: string
-      }
-      if (donateTo.messageId && donateTo.recipient)
-        openExtensionModal('subsocial-donations', donateTo)
-    } catch {}
-  }, [openExtensionModal])
+  //   replaceUrl(getCurrentUrlWithoutQuery('donateTo'))
+  //   try {
+  //     const donateTo = (JSON.parse(query) || {}) as {
+  //       messageId: string
+  //       recipient: string
+  //     }
+  //     if (donateTo.messageId && donateTo.recipient)
+  //       openExtensionModal('subsocial-donations', donateTo)
+  //   } catch {}
+  // }, [openExtensionModal])
 
   const myAddress = useMyMainAddress()
   const isSignerReady = useMyAccount((state) => !!state.signer)
