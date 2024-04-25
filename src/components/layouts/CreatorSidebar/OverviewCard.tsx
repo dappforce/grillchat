@@ -38,7 +38,7 @@ function StakedCard() {
             buttonText='Start Earning'
             buttonHref='/staking'
             image={EngageToEarn}
-            className='bg-[#DFEFFF] text-[#4972E9]'
+            className='bg-[#DFEFFF] text-[#4972E9] dark:bg-[#092847] dark:text-[#A8BBF3]'
           />,
           <StakedSlide
             key='chat-monetization'
@@ -47,7 +47,7 @@ function StakedCard() {
             buttonText='Explore Chats'
             buttonHref='/'
             image={ChatMonetization}
-            className='bg-[#DFFFDF] text-[#30AD30]'
+            className='bg-[#DFFFDF] text-[#30AD30] dark:bg-[#092847] dark:text-[#A8BBF3]'
           />,
           <StakedSlide
             key='establish-your-brand'
@@ -57,7 +57,7 @@ function StakedCard() {
             buttonHref='/dd'
             forceHardNavigation
             image={EstablishBrand}
-            className='bg-[#ECF1FF] text-[#0F172A]'
+            className='bg-[#ECF1FF] text-[#0F172A] dark:bg-[#092847] dark:text-[#A8BBF3]'
           />,
           <StakedSlide
             key='seamless-access'
@@ -68,7 +68,7 @@ function StakedCard() {
             forceHardNavigation
             buttonHref='https://grillapp.net/@olehmell/lets-use-login-with-grill-key-100229'
             image={SeamlessAccess}
-            className='bg-[#C0FEF3] text-[#1A3D7A]'
+            className='bg-[#C0FEF3] text-[#1A3D7A] dark:bg-[#092847] dark:text-[#A8BBF3]'
           />,
         ]}
       />
