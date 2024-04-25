@@ -6,6 +6,7 @@ import Table, { Column } from '@/components/Table'
 import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
+import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useState } from 'react'
@@ -14,15 +15,15 @@ import LeaderboardModal from './LeaderboardModal'
 
 const TABLE_LIMIT = 10
 
-export const leaderboardColumns: Column[] = [
+export const leaderboardColumns = (role: LeaderboardRole): Column[] => [
   {
     index: 'rank',
     name: '#',
     className: 'p-0 text-text-muted py-2 w-[5%]',
   },
   {
-    index: 'staker',
-    name: 'Staker',
+    index: 'user-role',
+    name: role === 'staker' ? 'Staker' : 'Creator',
     align: 'left',
     className: 'p-0 py-2',
   },
@@ -34,41 +35,45 @@ export const leaderboardColumns: Column[] = [
   },
 ]
 
-type LeaderboardTableProps = {
-  address: string
+const sectionConfig = {
+  staker: {
+    title: 'Staker Leaderboard',
+    desc: 'Users ranked by the amount of SUB earned with Content Staking this week.',
+  },
+  creator: {
+    title: 'Creator Leaderboard',
+    desc: 'Creators ranked by the amount of SUB earned from their posts this week.',
+  },
 }
 
-const LeaderboardTable = ({ address }: LeaderboardTableProps) => {
+const LeaderboardTable = () => {
   const { leaderboardRole } = useLeaderboardContext()
   const [openModal, setOpenModal] = useState(false)
 
-  const { data: leaderboardData, isLoading } =
+  const { data: leaderboardData } =
     getLeaderboardDataQuery.useInfiniteQuery(leaderboardRole)
 
   const data =
     leaderboardData?.pages[0].data
       .map((item) => ({
         rank: item.rank! + 1,
-        staker: <UserPreview address={item.address} />,
+        'user-role': <UserPreview address={item.address} />,
         rewards: <UserReward reward={item.reward} />,
       }))
       .slice(0, TABLE_LIMIT) || []
+
+  const { title, desc } = sectionConfig[leaderboardRole]
 
   return (
     <>
       <div className='flex flex-col gap-6 rounded-2xl bg-slate-800 p-4'>
         <div className='flex flex-col gap-2'>
-          <span className='text-lg font-bold leading-normal'>
-            Staker Leaderboard
-          </span>
-          <span className='text-sm leading-normal text-text-muted'>
-            Users ranked by the amount of SUB earned with Content Staking this
-            week.
-          </span>
+          <span className='text-lg font-bold leading-normal'>{title}</span>
+          <span className='text-sm leading-normal text-text-muted'>{desc}</span>
         </div>
         <div className='flex w-full flex-col'>
           <Table
-            columns={leaderboardColumns}
+            columns={leaderboardColumns(leaderboardRole)}
             data={data}
             className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
             headerClassName='!bg-transparent dark:!bg-transparent'

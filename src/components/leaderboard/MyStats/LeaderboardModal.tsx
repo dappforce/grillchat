@@ -23,11 +23,13 @@ const LeaderboardModal = ({ openModal, closeModal }: LeaderboardModalProps) => {
 
   const flattenData = leaderboardData?.pages.flatMap((item) => item.data) || []
 
-  const columns = leaderboardColumns.map((column, i) => ({
+  const columnsByRole = leaderboardColumns(leaderboardRole)
+
+  const columns = columnsByRole.map((column, i) => ({
     ...column,
     className: cx(column.className, {
       ['!w-[8%]']: i === 0,
-      ['!w-[30%]']: i === leaderboardColumns.length - 1,
+      ['!w-[30%]']: i === columnsByRole.length - 1,
     }),
   }))
 
@@ -76,7 +78,7 @@ type ModalTableRowsProps = {
 const ModalTableRows = ({ data, columns }: ModalTableRowsProps) => {
   const tableData = data.map((item) => ({
     rank: item.rank! + 1,
-    staker: <UserPreview address={item.address} />,
+    'user-role': <UserPreview address={item.address} />,
     rewards: <UserReward reward={item.reward} />,
   }))
 
@@ -84,12 +86,7 @@ const ModalTableRows = ({ data, columns }: ModalTableRowsProps) => {
     <>
       {tableData.map((item, i) => {
         return (
-          <TableRow
-            key={i}
-            columns={leaderboardColumns}
-            item={item}
-            withDivider={false}
-          />
+          <TableRow key={i} columns={columns} item={item} withDivider={false} />
         )
       })}
     </>

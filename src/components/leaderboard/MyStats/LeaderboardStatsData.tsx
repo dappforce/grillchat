@@ -5,9 +5,8 @@ import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import { useLeaderboardContext } from '../LeaderboardContext'
-import IncreaseStakeBanner from './IncreaseStakeBanner'
-import LeaderboardTable from './LeaderboardTable'
 
 type LeaderboardStatsDataProps = {
   address: string
@@ -27,26 +26,24 @@ const LeaderboardStatsData = ({ address }: LeaderboardStatsDataProps) => {
     {
       title: 'SUB earned this week',
       value: earnedByPeriod,
-      tooltipText: 'blablabla',
+      tooltipText:
+        'The amount of SUB rewards you have earned this week from Content Staking rewards',
       rank,
     },
     {
       title: 'SUB earned in total',
       value: earnedTotal,
-      tooltipText: 'blablabla',
+      tooltipText:
+        'The total amount of SUB rewards you have earned this week from Content Staking rewards',
       rank,
     },
   ]
 
   return (
-    <div className='flex flex-col gap-4'>
-      <div className='item-center flex gap-4'>
-        {data.map((item, index) => (
-          <UserStatsCard key={index} {...item} isLoading={isLoading} />
-        ))}
-      </div>
-      <IncreaseStakeBanner address={address} />
-      <LeaderboardTable address={address} />
+    <div className='item-center flex gap-4'>
+      {data.map((item, index) => (
+        <UserStatsCard key={index} {...item} isLoading={isLoading} />
+      ))}
     </div>
   )
 }
@@ -82,8 +79,13 @@ const UserStatsCard = ({
           yOffset={6}
           panelSize='sm'
           placement='top'
+          triggerClassName='w-fit'
           triggerOnHover
-          trigger={titleElement}
+          trigger={
+            <div className='flex items-center gap-2'>
+              {titleElement} <HiOutlineInformationCircle />
+            </div>
+          }
         >
           <p>{tooltipText}</p>
         </PopOver>

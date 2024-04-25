@@ -28,10 +28,14 @@ const StakerRewards = ({ address }: StakerRewardsProps) => {
     )
   }, [data, leaderboardRole])
 
+  const sectionTitle = leaderboardRole === 'staker' ? 'Staker' : 'Creator'
+
   return (
     <div className='flex flex-col gap-5 rounded-2xl bg-slate-800 p-4'>
       <div className='flex flex-col gap-2'>
-        <span className='text-lg font-bold leading-normal'>Staker Rewards</span>
+        <span className='text-lg font-bold leading-normal'>
+          {sectionTitle} Rewards
+        </span>
         <span className='text-sm font-normal leading-[22px] text-text-muted'>
           The last 30 days of my Content Staking rewards
         </span>

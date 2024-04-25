@@ -43,7 +43,9 @@ export const getRewardHistoryQuery = createQuery({
 })
 
 const PROPOSALS_QUERY_KEY = 'leaderboardData'
-const getQueryKey = () => [PROPOSALS_QUERY_KEY]
+const getQueryKey = (role: LeaderboardRole) => [
+  `${role}-${PROPOSALS_QUERY_KEY}`,
+]
 export const getLeaderboardDataQuery = {
   getQueryKey,
   fetchFirstPageQuery: async (
@@ -56,14 +58,18 @@ export const getLeaderboardDataQuery = {
     })
     if (!client) return res
 
-    client.setQueryData(getQueryKey(), {
+    client.setQueryData(getQueryKey(role), {
       pageParams: [1],
       pages: [res],
     })
     return res
   },
-  setFirstPageData: (queryClient: QueryClient, data: LeaderboardData) => {
-    queryClient.setQueryData(getQueryKey(), {
+  setFirstPageData: (
+    role: LeaderboardRole,
+    queryClient: QueryClient,
+    data: LeaderboardData
+  ) => {
+    queryClient.setQueryData(getQueryKey(role), {
       pageParams: [1],
       pages: [data],
     })
@@ -76,7 +82,7 @@ export const getLeaderboardDataQuery = {
       string[]
     >({
       ...config,
-      queryKey: getQueryKey(),
+      queryKey: getQueryKey(role),
       queryFn: async ({ pageParam = 1 }) => {
         const res = await getLeaderboardData({
           page: pageParam,
