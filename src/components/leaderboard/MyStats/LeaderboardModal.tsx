@@ -1,29 +1,44 @@
 import Loading from '@/components/Loading'
 import { Column, TableHeader } from '@/components/Table'
 import Modal from '@/components/modals/Modal'
+import { LeaderboardRole } from '@/services/datahub/leaderboard'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
 import { cx } from '@/utils/class-names'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { TableRow } from '../../Table'
-import { useLeaderboardContext } from '../LeaderboardContext'
 import { UserPreview, UserReward, leaderboardColumns } from './LeaderboardTable'
 
 type LeaderboardModalProps = {
   openModal: boolean
   closeModal: () => void
+  role: LeaderboardRole
 }
 
-const LeaderboardModal = ({ openModal, closeModal }: LeaderboardModalProps) => {
-  const { leaderboardRole } = useLeaderboardContext()
+const modalConfig = {
+  staker: {
+    title: 'Top Stakers this week',
+    desc: 'Users ranked by the amount of SUB earned with Content Staking.',
+  },
+  creator: {
+    title: 'Top Creators this week',
+    desc: 'Creators ranked by the amount of SUB earned from their posts.',
+  },
+}
+
+const LeaderboardModal = ({
+  openModal,
+  closeModal,
+  role,
+}: LeaderboardModalProps) => {
   const {
     data: leaderboardData,
     fetchNextPage,
     hasNextPage,
-  } = getLeaderboardDataQuery.useInfiniteQuery(leaderboardRole)
+  } = getLeaderboardDataQuery.useInfiniteQuery(role)
 
   const flattenData = leaderboardData?.pages.flatMap((item) => item.data) || []
 
-  const columnsByRole = leaderboardColumns(leaderboardRole)
+  const columnsByRole = leaderboardColumns(role)
 
   const columns = columnsByRole.map((column, i) => ({
     ...column,
@@ -33,15 +48,15 @@ const LeaderboardModal = ({ openModal, closeModal }: LeaderboardModalProps) => {
     }),
   }))
 
+  const { title, desc } = modalConfig[role]
+
   return (
     <Modal
       isOpen={openModal}
       closeModal={closeModal}
       className='h-full !max-h-[500px]'
-      title={'Top Stakers this week'}
-      description={
-        'Users ranked by the amount of SUB earned with Content Staking.'
-      }
+      title={title}
+      description={desc}
     >
       <div className='max-h-[500px] overflow-auto' id='leaderboard'>
         <InfiniteScroll

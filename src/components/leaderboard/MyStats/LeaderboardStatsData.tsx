@@ -50,13 +50,13 @@ const LeaderboardStatsData = ({ address }: LeaderboardStatsDataProps) => {
 
 type StatsCardProps = {
   title: React.ReactNode
-  value?: string
+  value?: string | number
   tooltipText?: string
   rank?: number
   isLoading: boolean
 }
 
-const UserStatsCard = ({
+export const UserStatsCard = ({
   title,
   value,
   tooltipText,
@@ -94,14 +94,16 @@ const UserStatsCard = ({
       )}
       <div className='flex items-center justify-between gap-2'>
         <span className='text-2xl font-semibold'>
-          {
+          {typeof value === 'number' ? (
+            value
+          ) : (
             <FormatBalance
               value={valueWithDecimals.toString()}
               loading={isLoading}
               defaultMaximumFractionDigits={2}
               symbol={tokenSymbol}
             />
-          }
+          )}
         </span>
         {rank && (
           <SkeletonFallback isLoading={isLoading}>

@@ -10,7 +10,6 @@ import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useState } from 'react'
-import { useLeaderboardContext } from '../LeaderboardContext'
 import LeaderboardModal from './LeaderboardModal'
 
 const TABLE_LIMIT = 10
@@ -46,12 +45,15 @@ const sectionConfig = {
   },
 }
 
-const LeaderboardTable = () => {
-  const { leaderboardRole } = useLeaderboardContext()
+type LeaderboardTableProps = {
+  role: LeaderboardRole
+}
+
+const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
   const [openModal, setOpenModal] = useState(false)
 
   const { data: leaderboardData } =
-    getLeaderboardDataQuery.useInfiniteQuery(leaderboardRole)
+    getLeaderboardDataQuery.useInfiniteQuery(role)
 
   const data =
     leaderboardData?.pages[0].data
@@ -62,7 +64,7 @@ const LeaderboardTable = () => {
       }))
       .slice(0, TABLE_LIMIT) || []
 
-  const { title, desc } = sectionConfig[leaderboardRole]
+  const { title, desc } = sectionConfig[role]
 
   return (
     <>
@@ -73,7 +75,7 @@ const LeaderboardTable = () => {
         </div>
         <div className='flex w-full flex-col'>
           <Table
-            columns={leaderboardColumns(leaderboardRole)}
+            columns={leaderboardColumns(role)}
             data={data}
             className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
             headerClassName='!bg-transparent dark:!bg-transparent'
@@ -92,6 +94,7 @@ const LeaderboardTable = () => {
       <LeaderboardModal
         openModal={openModal}
         closeModal={() => setOpenModal(false)}
+        role={role}
       />
     </>
   )
