@@ -8,6 +8,7 @@ import { env } from '@/env.mjs'
 import { getOwnedPostsQuery } from '@/services/datahub/posts/query'
 import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
+import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import {
@@ -149,6 +150,7 @@ export default function HomePage(props: HomePageProps) {
   const [isOpenNewCommunity, setIsOpenNewCommunity] = useState(false)
   const address = useMyAccount((state) => state.address)
   const { mutate } = useUpsertSpace()
+  const { mutate: upsertPost } = useUpsertPost()
 
   return (
     <DefaultLayout withSidebar>
@@ -161,7 +163,20 @@ export default function HomePage(props: HomePageProps) {
           )
         }
       >
-        LOGIN
+        CREATE SPACE
+      </Button>
+      <Button
+        onClick={() =>
+          upsertPost(
+            augmentDatahubParams({
+              title: 'Test post',
+              image: '',
+              spaceId: '1', // TODO: add space id from
+            })
+          )
+        }
+      >
+        CREATE POST
       </Button>
       <Tabs
         className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'

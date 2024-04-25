@@ -109,9 +109,9 @@ function useUpsertPostRaw(
             spaceId: payload.spaceId,
           },
         })
+      } else {
+        throw new Error('Invalid action')
       }
-
-      throw new Error('Invalid params')
     },
     onMutate: (params) => {
       config?.onMutate?.(params)
