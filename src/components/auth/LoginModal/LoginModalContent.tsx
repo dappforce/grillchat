@@ -1,15 +1,10 @@
-import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import WalletIcon from '@/assets/icons/wallet.svg'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
-import useIsInIframe from '@/hooks/useIsInIframe'
-import useLogin from '@/hooks/useLogin'
-import useLoginOption from '@/hooks/useLoginOption'
-import useToastError from '@/hooks/useToastError'
-import { useConfigContext } from '@/providers/config/ConfigProvider'
+import LoginNeynarButton from '@/components/navbar/Navbar/LoginNeynarButton'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
@@ -34,25 +29,16 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
 
 export const LoginContent = (props: LoginModalContentProps) => {
   const { setCurrentState } = props
-  const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
-
-  const { mutateAsync: login, isLoading, error } = useLogin()
-  useToastError(error, 'Login failed')
-
-  const { loginRequired } = useConfigContext()
-  const isInIframe = useIsInIframe()
 
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {
     const auth = getUrlQuery('auth') === 'true'
     const error = getUrlQuery('error')
     // if user denied access to twitter (has suspended account)
-    if (auth && error.toLowerCase() === 'oauthcallback') setShowErrorPanel(true)
+    if (auth && error?.toLowerCase() === 'oauthcallback')
+      setShowErrorPanel(true)
   }, [])
-
-  const canUseAnonLogin = !loginRequired
-  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
 
   return (
     <div>
@@ -60,25 +46,21 @@ export const LoginContent = (props: LoginModalContentProps) => {
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4')}>
-          {loginOption === 'all' && (
-            <Button
-              variant='primary'
-              onClick={() => {
-                sendEvent('login_grill_key_clicked')
-                setCurrentState('enter-secret-key')
-              }}
-              size='lg'
-            >
-              <div className='flex items-center justify-center gap-2'>
-                <KeyIcon className='text-text-muted-on-primary' />
-                Log in with Grill key
-              </div>
-            </Button>
-          )}
           <Button
-            variant={
-              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
-            }
+            variant='primary'
+            onClick={() => {
+              sendEvent('login_grill_key_clicked')
+              setCurrentState('enter-secret-key')
+            }}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <KeyIcon className='text-text-muted-on-primary' />
+              Log in with Grill key
+            </div>
+          </Button>
+          <Button
+            variant='primaryOutline'
             onClick={() => {
               // setCurrentState('polkadot-connect')
               sendEvent('login_polkadot_account_clicked')
@@ -86,68 +68,40 @@ export const LoginContent = (props: LoginModalContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <WalletIcon
-                className={cx(
-                  isConnectWalletPrimaryButton
-                    ? 'text-text-muted-on-primary'
-                    : 'text-text-muted'
-                )}
-              />
+              <WalletIcon className={cx('text-text-muted')} />
               Connect via Polkadot
             </div>
           </Button>
-          {loginOption === 'all' && canUseAnonLogin && isInIframe && (
+          <LoginNeynarButton />
+          <div className='mt-1 flex flex-col'>
+            <div className='relative mb-4 flex items-center justify-center text-center text-text-muted'>
+              <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
+              <span className='relative inline-block bg-background-light px-4 text-xs'>
+                OR
+              </span>
+            </div>
+            {showErrorPanel && (
+              <InfoPanel variant='error' className='mb-4'>
+                😕 Sorry there is some issue with logging you in, please try
+                again or try different account
+              </InfoPanel>
+            )}
             <Button
-              type='button'
-              size='lg'
-              className='w-full'
               variant='primaryOutline'
-              isLoading={isLoading}
-              onClick={async () => {
-                sendEvent('login_anonymously')
-                const newAddress = await login(null)
-                if (newAddress) {
-                  setCurrentState('account-created')
-                }
+              size='lg'
+              onClick={() => {
+                setCurrentState('new-account')
+                sendEvent('login_create_new_clicked')
               }}
             >
               <div className='flex items-center justify-center gap-2'>
-                <IncognitoIcon className='text-text-muted' />
-                Continue anonymously
+                <HiPlus className='text-[20px] text-text-muted' />
+                <div className='flex flex-col text-left'>
+                  <span>Create new Grill account</span>
+                </div>
               </div>
             </Button>
-          )}
-          {!isInIframe && (
-            <div className='mt-1 flex flex-col'>
-              <div className='relative mb-4 flex items-center justify-center text-center text-text-muted'>
-                <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
-                <span className='relative inline-block bg-background-light px-4 text-xs'>
-                  OR
-                </span>
-              </div>
-              {showErrorPanel && (
-                <InfoPanel variant='error' className='mb-4'>
-                  😕 Sorry there is some issue with logging you in, please try
-                  again or try different account
-                </InfoPanel>
-              )}
-              <Button
-                variant='primaryOutline'
-                size='lg'
-                onClick={() => {
-                  setCurrentState('new-account')
-                  sendEvent('login_create_new_clicked')
-                }}
-              >
-                <div className='flex items-center justify-center gap-2'>
-                  <HiPlus className='text-[20px] text-text-muted' />
-                  <div className='flex flex-col text-left'>
-                    <span>Create new Grill account</span>
-                  </div>
-                </div>
-              </Button>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

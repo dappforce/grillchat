@@ -40,7 +40,7 @@ export default function LoginNeynarButton() {
 
   return (
     <>
-      <Script src='https://neynarxyz.github.io/siwn/raw/1.2.0/index.js' async />
+      <Script src='https://neynarxyz.github.io/siwn/raw/1.2.0/index.js' defer />
       <div
         className='neynar_signin [&>button]:!min-w-[auto]'
         data-client_id={env.NEXT_PUBLIC_NEYNAR_CLIENT_ID}

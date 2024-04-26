@@ -5,6 +5,8 @@ import Logo from '@/components/Logo'
 import Sidebar from '@/components/layouts/Sidebar'
 import CustomLink from '@/components/referral/CustomLink'
 import { getProfileQuery } from '@/services/api/query'
+import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHubPageLink } from '@/utils/links'
@@ -15,7 +17,6 @@ import { ComponentProps, Fragment, ReactNode, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import AuthErrorModal from './AuthErrorModal'
-import LoginNeynarButton from './LoginNeynarButton'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -48,10 +49,12 @@ export default function Navbar({
   containerClassName,
   ...props
 }: NavbarProps) {
+  const setIsLoginModalOpen = useLoginModal.use.setIsOpen()
   const [openSidebar, setOpenSidebar] = useState(false)
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
   const router = useRouter()
+  const sendEvent = useSendEvent()
 
   const address = useMyMainAddress()
   const { data: profile } = getProfileQuery.useQuery(address ?? '')
@@ -64,7 +67,17 @@ export default function Navbar({
       return <ProfileAvatar />
     }
 
-    return <LoginNeynarButton />
+    return (
+      <Button
+        onClick={() => {
+          setIsLoginModalOpen(true)
+          sendEvent('login_button_clicked', { eventSource: 'navbar' })
+        }}
+        className='px-5 text-sm'
+      >
+        Login
+      </Button>
+    )
   }
   const authComponent = renderAuthComponent()
 
