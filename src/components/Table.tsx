@@ -15,6 +15,7 @@ type TableProps = {
   headerClassName?: string
   className?: string
   withDivider?: boolean
+  onRowClick?: (item: any) => void
 }
 
 const Table = ({
@@ -23,6 +24,7 @@ const Table = ({
   headerClassName,
   className,
   withDivider = true,
+  onRowClick,
 }: TableProps) => {
   return (
     <div
@@ -43,6 +45,7 @@ const Table = ({
                 item={item}
                 withDivider={withDivider}
                 showLastDivider={i === data.length - 1}
+                onRowClick={onRowClick}
               />
             )
           })}
@@ -93,6 +96,7 @@ type TableRowProps = {
   item: any
   withDivider?: boolean
   showLastDivider?: boolean
+  onRowClick?: (item: any) => void
 }
 
 export const TableRow = ({
@@ -100,17 +104,16 @@ export const TableRow = ({
   item,
   withDivider,
   showLastDivider,
+  onRowClick,
 }: TableRowProps) => {
   return (
     <tr
-      className={cx(
-        {
-          ['border-b border-[#D4E2EF] dark:border-white/20']: withDivider,
-        },
-        {
-          ['border-none']: showLastDivider,
-        }
-      )}
+      className={cx({
+        ['border-b border-[#D4E2EF] dark:border-white/20']: withDivider,
+        ['border-none']: showLastDivider,
+        ['hover:bg-slate-700']: onRowClick,
+      })}
+      onClick={() => onRowClick?.(item)}
     >
       {columns.map(({ index, align, className }, j) => {
         const value = item[index]

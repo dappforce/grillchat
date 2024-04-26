@@ -1,5 +1,6 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import Name from '@/components/Name'
+import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import { getProfileQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import LeaderboardRoleRadioGroup from '../LeaderboardRadioGroup'
@@ -22,12 +23,23 @@ const LeaderboardProfilePreview = ({
       )}
     >
       <AddressAvatar address={address} className='h-[70px] w-[70px]' />
-      <Name address={address} className='text-[22px] font-semibold leading-6' />
-      {about && (
-        <div className='overflow-hidden overflow-ellipsis whitespace-nowrap'>
-          {about}
-        </div>
-      )}
+      <div className='flex w-full flex-col items-center gap-2'>
+        <Name
+          address={address}
+          className='text-[22px] font-semibold leading-6'
+        />
+        {about && (
+          <div
+            className={cx(
+              'w-full overflow-hidden overflow-ellipsis whitespace-nowrap',
+              mutedTextColorStyles
+            )}
+          >
+            {about}
+          </div>
+        )}
+      </div>
+
       <LeaderboardRoleRadioGroup />
     </div>
   )

@@ -11,14 +11,14 @@ export type UserStatistics = {
     likedPosts: number
     earnedByPeriod: string
     earnedTotal: string
-    rank: number | undefined
+    rank: number | null
   }
   creator: {
     likesCountByPeriod: number
     stakersWhoLiked: number
     earnedByPeriod: string
     earnedTotal: string
-    rank: number | undefined
+    rank: number | null
   }
 }
 
@@ -34,7 +34,7 @@ export type LeaderboardRole = 'staker' | 'creator'
 export type LeaderboardData = {
   total: number
   page: number
-  data: { reward: string; rank?: number; address: string }[]
+  data: { reward: string; rank: number | null; address: string }[]
   hasMore: boolean
   role: LeaderboardRole
 }

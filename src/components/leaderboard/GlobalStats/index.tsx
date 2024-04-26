@@ -5,7 +5,7 @@ import GlobalStatsDashboard from './GlobalStatsDashboard'
 
 const GlobalStats = () => {
   return (
-    <div className='flex w-full flex-col gap-4'>
+    <div className='flex w-full flex-col gap-5'>
       <div className='grid grid-cols-3 gap-4'>
         <div className='row-[span_2] flex flex-col items-center gap-4 rounded-[20px] border border-[#6366F1]/20 bg-[#0053FF]/10 p-4'>
           <div

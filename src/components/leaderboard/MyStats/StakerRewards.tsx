@@ -31,7 +31,7 @@ const StakerRewards = ({ address }: StakerRewardsProps) => {
   const sectionTitle = leaderboardRole === 'staker' ? 'Staker' : 'Creator'
 
   return (
-    <div className='flex flex-col gap-5 rounded-2xl bg-slate-800 p-4'>
+    <div className='flex h-fit flex-col gap-5 rounded-2xl bg-slate-800 p-4'>
       <div className='flex flex-col gap-2'>
         <span className='text-lg font-bold leading-normal'>
           {sectionTitle} Rewards
@@ -95,7 +95,7 @@ const RewardsRow = ({ date, rewardValue }: RewardsRowProps) => {
   return (
     <div className='flex items-center justify-between gap-2'>
       <span className='text-sm leading-[22px] text-text-muted'>{date}</span>
-      <span className='text-base font-semibold'>{rewardValue}</span>
+      <span className='text-base font-semibold'>+ {rewardValue}</span>
     </div>
   )
 }

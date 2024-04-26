@@ -28,14 +28,14 @@ const LeaderboardStatsData = ({ address }: LeaderboardStatsDataProps) => {
       value: earnedByPeriod,
       tooltipText:
         'The amount of SUB rewards you have earned this week from Content Staking rewards',
-      rank,
+      rank: rank ?? null,
     },
     {
       title: 'SUB earned in total',
       value: earnedTotal,
       tooltipText:
         'The total amount of SUB rewards you have earned this week from Content Staking rewards',
-      rank,
+      rank: rank ?? null,
     },
   ]
 
@@ -52,7 +52,7 @@ type StatsCardProps = {
   title: React.ReactNode
   value?: string | number
   tooltipText?: string
-  rank?: number
+  rank: number | null
   isLoading: boolean
 }
 
@@ -72,6 +72,7 @@ export const UserStatsCard = ({
     <span className='text-sm leading-[22px] text-text-muted'>{title}</span>
   )
 
+  console.log(rank)
   return (
     <div className='flex w-full flex-col gap-2 rounded-2xl bg-slate-800 p-4'>
       {tooltipText ? (
@@ -105,9 +106,9 @@ export const UserStatsCard = ({
             />
           )}
         </span>
-        {rank && (
+        {rank !== null && (
           <SkeletonFallback isLoading={isLoading}>
-            <span className='text-text-muted'>#{rank}</span>
+            <span className='text-text-muted'>#{rank + 1}</span>
           </SkeletonFallback>
         )}
       </div>

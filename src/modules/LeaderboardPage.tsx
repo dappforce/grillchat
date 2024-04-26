@@ -1,7 +1,11 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import LeaderboardContent from '@/components/leaderboard'
 
-const LeaderboardPage = () => {
+type LeaderboardPageProps = {
+  address?: string
+}
+
+const LeaderboardPage = ({ address }: LeaderboardPageProps) => {
   return (
     <DefaultLayout
       withSidebar
@@ -21,7 +25,7 @@ const LeaderboardPage = () => {
       }}
     >
       <div className='relative mb-4 w-full'>
-        <LeaderboardContent />
+        <LeaderboardContent address={address} />
       </div>
     </DefaultLayout>
   )

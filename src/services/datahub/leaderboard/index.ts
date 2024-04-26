@@ -153,11 +153,11 @@ export async function getUserStatistics({
     address,
     creator: {
       ...res.activeStakingAccountActivityMetricsForFixedPeriod.creator,
-      rank: res.creator?.rankIndex,
+      rank: res.creator?.rankIndex ?? null,
     },
     staker: {
       ...res.activeStakingAccountActivityMetricsForFixedPeriod.staker,
-      rank: res.staker?.rankIndex,
+      rank: res.staker?.rankIndex ?? null,
     },
   }
 }
@@ -265,8 +265,14 @@ export async function getLeaderboardData({
   })
 
   const data = res.activeStakingAddressesRankedByRewardsForPeriod
+
+  const leaderboardData = data.data.map(({ rank, ...other }) => ({
+    ...other,
+    rank: rank ?? null,
+  }))
+
   return {
-    data: data.data,
+    data: leaderboardData,
     hasMore: data.total > data.limit + offset,
     total: data.total,
     page,

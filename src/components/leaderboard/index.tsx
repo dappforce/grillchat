@@ -5,14 +5,18 @@ import GlobalStats from './GlobalStats'
 import { LeaderboardContextWrapper } from './LeaderboardContext'
 import MyStats from './MyStats'
 
-const LeaderboardContent = () => {
+type LeaderboardContentProps = {
+  address?: string
+}
+
+const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
   const myAddress = useMyMainAddress()
 
   const tabs = [
     {
       id: 'my-stats',
       text: 'My Staking Stats',
-      content: () => <MyStats address={myAddress || ''} />,
+      content: () => <MyStats address={address || myAddress || ''} />,
     },
     {
       id: 'global-stats',

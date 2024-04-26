@@ -84,7 +84,7 @@ const LeaderboardModal = ({
 type ModalTableRowsProps = {
   data: {
     reward: string
-    rank?: number | undefined
+    rank: number | null
     address: string
   }[]
   columns: Column[]
@@ -92,6 +92,7 @@ type ModalTableRowsProps = {
 
 const ModalTableRows = ({ data, columns }: ModalTableRowsProps) => {
   const tableData = data.map((item) => ({
+    address: item.address,
     rank: item.rank! + 1,
     'user-role': <UserPreview address={item.address} />,
     rewards: <UserReward reward={item.reward} />,

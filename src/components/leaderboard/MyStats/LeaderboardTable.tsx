@@ -9,6 +9,7 @@ import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import LeaderboardModal from './LeaderboardModal'
 
@@ -51,6 +52,7 @@ type LeaderboardTableProps = {
 
 const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
   const [openModal, setOpenModal] = useState(false)
+  const router = useRouter()
 
   const { data: leaderboardData } =
     getLeaderboardDataQuery.useInfiniteQuery(role)
@@ -58,6 +60,7 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
   const data =
     leaderboardData?.pages[0].data
       .map((item) => ({
+        address: item.address,
         rank: item.rank! + 1,
         'user-role': <UserPreview address={item.address} />,
         rewards: <UserReward reward={item.reward} />,
@@ -80,6 +83,12 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
             className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
             headerClassName='!bg-transparent dark:!bg-transparent'
             withDivider={false}
+            onRowClick={(item) =>
+              router.replace(
+                '/leaderboard/[address]',
+                `/leaderboard/${item.address}`
+              )
+            }
           />
           <LinkText
             className='w-full text-center hover:no-underline'
