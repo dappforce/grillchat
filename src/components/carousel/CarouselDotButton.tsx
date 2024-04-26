@@ -69,7 +69,7 @@ export const DotButton: React.FC<PropType> = (props) => {
       type='button'
       {...restProps}
       className={cx(
-        'h-2 w-2 rounded-full bg-black/40 transition-opacity',
+        'h-2 w-2 rounded-full bg-black/40 transition-opacity dark:bg-white/50',
         restProps.className
       )}
     >

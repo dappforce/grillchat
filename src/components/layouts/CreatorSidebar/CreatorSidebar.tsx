@@ -15,22 +15,22 @@ export default function CreatorSidebar({ className }: { className?: string }) {
 
   if (!isInitializedProxy || (isLoading && myAddress))
     return (
-      <div
-        ref={ref}
-        className={cx(
-          'flex animate-pulse flex-col rounded-2xl bg-background-light',
-          className
-        )}
-      >
-        <div className='flex flex-col gap-1 border-b border-border-gray p-4'>
-          <Skeleton className='w-48 text-lg' />
-          <Skeleton className='w-32 text-sm' />
-        </div>
-        <div className='flex flex-col gap-3 p-4 text-sm'>
-          <Skeleton className='w-full' />
-          <Skeleton className='w-full' />
-          <Skeleton className='w-full' />
-          <Skeleton className='w-full' />
+      <div className={className} ref={ref}>
+        <div
+          className={cx(
+            'flex animate-pulse flex-col rounded-2xl bg-background-light'
+          )}
+        >
+          <div className='flex flex-col gap-1 border-b border-border-gray p-4'>
+            <Skeleton className='w-48 text-lg' />
+            <Skeleton className='w-32 text-sm' />
+          </div>
+          <div className='flex flex-col gap-3 p-4 text-sm'>
+            <Skeleton className='w-full' />
+            <Skeleton className='w-full' />
+            <Skeleton className='w-full' />
+            <Skeleton className='w-full' />
+          </div>
         </div>
       </div>
     )
