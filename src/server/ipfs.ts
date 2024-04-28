@@ -1,5 +1,8 @@
 import { env } from '@/env.mjs'
 import { SubsocialIpfsApi } from '@subsocial/api'
+import axios from 'axios'
+
+const offchainUrl = 'https://api.subsocial.network'
 
 export function getIpfsApi() {
   const pinUrl = env.IPFS_PIN_URL
@@ -15,7 +18,7 @@ export function getIpfsApi() {
     ipfsNodeUrl: writeUrl,
     ipfsClusterUrl: pinUrl,
     headers,
-    offchainUrl: 'https://api.subsocial.network',
+    offchainUrl,
   })
   ipfs.setWriteHeaders(headers)
   ipfs.setPinHeaders(headers)
