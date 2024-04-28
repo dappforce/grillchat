@@ -29,9 +29,15 @@ export function getIpfsApi() {
       return cid?.toString() ?? ''
     },
     saveAndPinImage: async (file: any) => {
-      const cid = await ipfs.saveFile(file)
-      await ipfs.pinContent(cid, props)
-      return cid?.toString() ?? ''
+      const res = await axios.post(`${offchainUrl}/v1/ipfs/addRaw`, file)
+
+      if (res.status !== 200) {
+        throw new Error('Error saving image' + res.statusText)
+      }
+
+      // const cid = await ipfs.saveFile(file)
+      // await ipfs.pinContent(cid, props)
+      return res.data?.toString() ?? ''
     },
   }
 }
