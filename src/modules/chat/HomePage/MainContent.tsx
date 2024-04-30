@@ -47,7 +47,7 @@ export default function MainContent() {
             </Button>
           </Card>
         </div>
-        <Card className='flex flex-col gap-1 bg-white'>
+        <Card className='flex flex-col gap-1 bg-background-light'>
           <div className='mb-1 flex items-center gap-2'>
             <span className='font-semibold'>Earn With Friends</span>
             <HiOutlineInformationCircle className='text-text-muted' />
@@ -184,7 +184,7 @@ function MainCardTemplate({
         ...props.style,
       }}
     >
-      <div className='relative z-10 flex flex-1 flex-col items-start'>
+      <div className='relative z-10 flex w-full flex-1 flex-col items-start'>
         {props.children}
       </div>
       <EpicTokenIllust

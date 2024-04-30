@@ -40,11 +40,11 @@ export default function DefaultLayout({
       <Navbar {...navbarProps} withSidebar={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <Container className='flex flex-1 px-0'>
+        <Container className='flex flex-1 px-0 md:pl-3'>
           <div className='sticky top-14 hidden w-[225px] border-r border-border-gray md:block'>
             <Sidebar />
           </div>
-          <div className='flex-1'>{children}</div>
+          <div className='flex flex-1 flex-col'>{children}</div>
         </Container>
       ) : (
         children
