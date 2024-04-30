@@ -10,10 +10,11 @@ export const buttonStyles = cva('relative transition', {
       primary:
         'bg-background-primary border border-transparent text-text-on-primary',
       primaryOutline:
-        'bg-transparent border border-background-primary/50 dark:border-background-primary/80 text-text',
+        'bg-transparent border border-background-primary/70 text-background-primary',
       bgLighter:
         'bg-background-lighter border border-transparent text-text-muted',
       whiteOutline: 'bg-transparent border border-white text-text',
+      white: 'bg-white text-text-primary',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
       transparent: 'bg-transparent',
       redOutline: 'bg-transparent border border-text-red',
@@ -40,7 +41,7 @@ export const buttonStyles = cva('relative transition', {
       circleSm: 'p-1',
       xs: 'px-3 py-1.5',
       sm: 'px-4 py-1.5',
-      md: 'px-6 py-2',
+      md: 'px-5 py-2',
       lg: 'px-8 py-3',
       xl: 'text-lg md:text-xl py-2.5 px-4 md:py-3 md:px-5',
     },
