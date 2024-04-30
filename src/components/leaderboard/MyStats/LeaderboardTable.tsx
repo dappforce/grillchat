@@ -71,7 +71,8 @@ const parseTableRows = (
         rank: item.rank! + 1,
         'user-role': <UserPreview address={item.address} />,
         rewards: <UserReward reward={item.reward} />,
-        className: item.address === address ? 'bg-slate-700' : '',
+        className:
+          item.address === address ? 'dark:bg-slate-700 bg-[#EEF2FF]' : '',
       }))
       .slice(0, limit) || []
   )
@@ -100,7 +101,7 @@ const LeaderboardTable = ({ role, currentUserRank }: LeaderboardTableProps) => {
         rank: currentUserRank.rank! + 1,
         'user-role': <UserPreview address={currentUserRank.address} />,
         rewards: <UserReward reward={currentUserRank.reward} />,
-        className: 'bg-slate-700',
+        className: 'dark:bg-slate-700 bg-[#EEF2FF]',
       },
     ]
   }, [JSON.stringify(currentUserRank), role, leaderboardData?.pages[0]])
@@ -109,7 +110,7 @@ const LeaderboardTable = ({ role, currentUserRank }: LeaderboardTableProps) => {
 
   return (
     <>
-      <div className='flex h-fit flex-col gap-6 rounded-2xl bg-slate-800 py-4'>
+      <div className='flex h-fit flex-col gap-6 rounded-2xl bg-white py-4 dark:bg-slate-800'>
         <div className='flex flex-col gap-2 px-4'>
           <span className='text-lg font-bold leading-normal'>{title}</span>
           <span className='text-sm leading-normal text-text-muted'>{desc}</span>

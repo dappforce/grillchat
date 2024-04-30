@@ -24,7 +24,10 @@ const MyStats = ({ address }: MyStatsProps) => {
           <LeaderboardStatsData address={address} />
           <IncreaseStakeBanner address={address} />
         </div>
-        <LeaderboardProfilePreview address={address} />
+        <LeaderboardProfilePreview
+          address={address}
+          rank={userStats?.[leaderboardRole].rank || null}
+        />
       </div>
       <div className='grid grid-cols-[calc(70%-8px),30%] gap-5'>
         <LeaderboardTable

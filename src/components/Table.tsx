@@ -112,7 +112,7 @@ export const TableRow = ({
       className={cx(item?.className, {
         ['border-b border-[#D4E2EF] dark:border-white/20']: withDivider,
         ['border-none']: showLastDivider,
-        ['cursor-pointer overflow-hidden first:rounded-s-md last:rounded-e-md hover:bg-slate-700']:
+        ['cursor-pointer overflow-hidden first:rounded-s-md last:rounded-e-md hover:bg-[#EEF2FF] dark:hover:bg-slate-700']:
           onRowClick,
       })}
       onClick={() => onRowClick?.(item)}

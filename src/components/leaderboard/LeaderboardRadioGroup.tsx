@@ -10,7 +10,7 @@ export const LeaderboardRoleRadioGroup = () => {
     <RadioGroup
       value={leaderboardRole}
       onChange={setLeaderboardRole}
-      className='flex h-[34px] items-center gap-[2px] rounded-lg bg-white/10 px-[2px]'
+      className='flex h-[34px] items-center gap-[2px] rounded-lg bg-white px-[2px] dark:bg-white/10'
     >
       {labels.map((label, i) => (
         <RadioGroup.Option
@@ -23,7 +23,7 @@ export const LeaderboardRoleRadioGroup = () => {
               className={cx(
                 'cursor-pointer rounded-md p-2 text-sm font-medium leading-[22px]',
                 {
-                  ['bg-background-primary']: checked,
+                  ['bg-background-primary text-white']: checked,
                 }
               )}
             >

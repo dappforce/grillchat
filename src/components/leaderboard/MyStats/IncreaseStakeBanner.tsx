@@ -8,7 +8,7 @@ type IncreaseStakeBannerProps = {
 
 const IncreaseStakeBanner = ({ address }: IncreaseStakeBannerProps) => {
   return (
-    <div className='relative flex w-full items-center justify-between gap-2 overflow-hidden rounded-2xl bg-[#4F46E5] p-6 pl-[65px] backdrop-blur-xl'>
+    <div className='relative flex w-full items-center justify-between gap-2 overflow-hidden rounded-2xl bg-[#EEF2FF] p-6 pl-[65px] backdrop-blur-xl dark:bg-[#4F46E5]'>
       <Image
         src={CoinsImage}
         alt=''

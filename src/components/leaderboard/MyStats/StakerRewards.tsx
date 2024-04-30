@@ -31,7 +31,7 @@ const StakerRewards = ({ address }: StakerRewardsProps) => {
   const sectionTitle = leaderboardRole === 'staker' ? 'Staker' : 'Creator'
 
   return (
-    <div className='flex h-fit flex-col gap-5 rounded-2xl bg-slate-800 p-4'>
+    <div className='flex h-fit flex-col gap-5 rounded-2xl bg-white p-4 dark:bg-slate-800'>
       <div className='flex flex-col gap-2'>
         <span className='text-lg font-bold leading-normal'>
           {sectionTitle} Rewards

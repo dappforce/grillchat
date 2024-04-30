@@ -7,10 +7,12 @@ import LeaderboardRoleRadioGroup from '../LeaderboardRadioGroup'
 
 type LeaderboardProfilePreviewProps = {
   address: string
+  rank: number | null
 }
 
 const LeaderboardProfilePreview = ({
   address,
+  rank,
 }: LeaderboardProfilePreviewProps) => {
   const { data: profile } = getProfileQuery.useQuery(address)
 
@@ -19,9 +21,20 @@ const LeaderboardProfilePreview = ({
   return (
     <div
       className={cx(
-        'flex flex-col items-center gap-4 rounded-[20px] border border-[#6366F1]/20 bg-[#0053FF]/10 p-4'
+        'relative flex flex-col items-center gap-4 rounded-[20px] border',
+        'border-[#6366F1]/20 bg-[#EDF4FF] p-4 dark:bg-[#0053FF]/10'
       )}
     >
+      {rank && (
+        <span
+          className={cx(
+            mutedTextColorStyles,
+            'absolute left-4 top-4 font-semibold'
+          )}
+        >
+          #{rank + 1}
+        </span>
+      )}
       <AddressAvatar address={address} className='h-[70px] w-[70px]' />
       <div className='flex w-full flex-col items-center gap-2'>
         <Name
