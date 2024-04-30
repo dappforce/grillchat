@@ -12,7 +12,7 @@ export const buttonStyles = cva('relative transition', {
       primaryOutline:
         'bg-transparent border border-background-primary/70 text-background-primary',
       bgLighter:
-        'bg-background-lighter border border-transparent text-text-muted',
+        'bg-background-light border border-transparent text-text-muted',
       whiteOutline: 'bg-transparent border border-white text-text',
       white: 'bg-white text-text-primary',
       mutedOutline: 'bg-transparent border border-text-muted text-text-muted',
