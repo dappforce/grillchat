@@ -93,10 +93,11 @@ export const TableHeader = ({
 
 type TableRowProps = {
   columns: Column[]
-  item: any
+  item: any & { className?: string }
   withDivider?: boolean
   showLastDivider?: boolean
   onRowClick?: (item: any) => void
+  className?: string
 }
 
 export const TableRow = ({
@@ -108,10 +109,11 @@ export const TableRow = ({
 }: TableRowProps) => {
   return (
     <tr
-      className={cx({
+      className={cx(item?.className, {
         ['border-b border-[#D4E2EF] dark:border-white/20']: withDivider,
         ['border-none']: showLastDivider,
-        ['hover:bg-slate-700']: onRowClick,
+        ['cursor-pointer overflow-hidden first:rounded-s-md last:rounded-e-md hover:bg-slate-700']:
+          onRowClick,
       })}
       onClick={() => onRowClick?.(item)}
     >

@@ -26,12 +26,12 @@ const LeaderboardProfilePreview = ({
       <div className='flex w-full flex-col items-center gap-2'>
         <Name
           address={address}
-          className='text-[22px] font-semibold leading-6'
+          className='text-[22px] font-semibold leading-6 !text-text'
         />
         {about && (
           <div
             className={cx(
-              'w-full overflow-hidden overflow-ellipsis whitespace-nowrap',
+              'w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-center',
               mutedTextColorStyles
             )}
           >

@@ -10,7 +10,7 @@ import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import LeaderboardModal from './LeaderboardModal'
 
 const TABLE_LIMIT = 10
@@ -19,7 +19,7 @@ export const leaderboardColumns = (role: LeaderboardRole): Column[] => [
   {
     index: 'rank',
     name: '#',
-    className: 'p-0 text-text-muted py-2 w-[5%]',
+    className: 'p-0 text-text-muted py-2 pl-4 w-[7%]',
   },
   {
     index: 'user-role',
@@ -31,7 +31,7 @@ export const leaderboardColumns = (role: LeaderboardRole): Column[] => [
     index: 'rewards',
     name: 'Rewards',
     align: 'right',
-    className: 'p-0 py-2 w-[20%]',
+    className: 'p-0 py-2 pr-4 w-[20%]',
   },
 ]
 
@@ -48,31 +48,69 @@ const sectionConfig = {
 
 type LeaderboardTableProps = {
   role: LeaderboardRole
+  currentUserRank?: {
+    address: string
+    rank: number | null
+    reward: string
+  }
 }
 
-const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
+const parseTableRows = (
+  data: {
+    address: string
+    rank: number | null
+    reward: string
+  }[],
+  limit: number,
+  address?: string
+) => {
+  return (
+    data
+      .map((item) => ({
+        address: item.address,
+        rank: item.rank! + 1,
+        'user-role': <UserPreview address={item.address} />,
+        rewards: <UserReward reward={item.reward} />,
+        className: item.address === address ? 'bg-slate-700' : '',
+      }))
+      .slice(0, limit) || []
+  )
+}
+
+const LeaderboardTable = ({ role, currentUserRank }: LeaderboardTableProps) => {
   const [openModal, setOpenModal] = useState(false)
   const router = useRouter()
 
   const { data: leaderboardData } =
     getLeaderboardDataQuery.useInfiniteQuery(role)
 
-  const data =
-    leaderboardData?.pages[0].data
-      .map((item) => ({
-        address: item.address,
-        rank: item.rank! + 1,
-        'user-role': <UserPreview address={item.address} />,
-        rewards: <UserReward reward={item.reward} />,
-      }))
-      .slice(0, TABLE_LIMIT) || []
+  const data = useMemo(() => {
+    if (!currentUserRank || (currentUserRank.rank ?? 0) < TABLE_LIMIT) {
+      return parseTableRows(
+        leaderboardData?.pages[0].data || [],
+        TABLE_LIMIT,
+        currentUserRank?.address
+      )
+    }
+
+    return [
+      ...parseTableRows(leaderboardData?.pages[0].data || [], TABLE_LIMIT - 1),
+      {
+        address: currentUserRank.address,
+        rank: currentUserRank.rank! + 1,
+        'user-role': <UserPreview address={currentUserRank.address} />,
+        rewards: <UserReward reward={currentUserRank.reward} />,
+        className: 'bg-slate-700',
+      },
+    ]
+  }, [JSON.stringify(currentUserRank), role, leaderboardData?.pages[0]])
 
   const { title, desc } = sectionConfig[role]
 
   return (
     <>
-      <div className='flex flex-col gap-6 rounded-2xl bg-slate-800 p-4'>
-        <div className='flex flex-col gap-2'>
+      <div className='flex h-fit flex-col gap-6 rounded-2xl bg-slate-800 py-4'>
+        <div className='flex flex-col gap-2 px-4'>
           <span className='text-lg font-bold leading-normal'>{title}</span>
           <span className='text-sm leading-normal text-text-muted'>{desc}</span>
         </div>
@@ -91,7 +129,7 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
             }
           />
           <LinkText
-            className='w-full text-center hover:no-underline'
+            className='mt-3 w-full text-center hover:no-underline'
             onClick={() => setOpenModal(true)}
             variant={'primary'}
           >
@@ -104,6 +142,7 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
         openModal={openModal}
         closeModal={() => setOpenModal(false)}
         role={role}
+        currentUserAddress={currentUserRank?.address}
       />
     </>
   )

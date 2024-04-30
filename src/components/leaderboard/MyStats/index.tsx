@@ -1,3 +1,4 @@
+import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
 import { useLeaderboardContext } from '../LeaderboardContext'
 import IncreaseStakeBanner from './IncreaseStakeBanner'
 import LeaderboardProfilePreview from './LeaderboardProfilePreview'
@@ -12,6 +13,10 @@ type MyStatsProps = {
 const MyStats = ({ address }: MyStatsProps) => {
   const { leaderboardRole } = useLeaderboardContext()
 
+  const { data: userStats } = getUserStatisticsQuery.useQuery({
+    address,
+  })
+
   return (
     <div className='flex flex-col gap-5'>
       <div className='grid grid-cols-[calc(70%-8px),30%] gap-5'>
@@ -22,7 +27,18 @@ const MyStats = ({ address }: MyStatsProps) => {
         <LeaderboardProfilePreview address={address} />
       </div>
       <div className='grid grid-cols-[calc(70%-8px),30%] gap-5'>
-        <LeaderboardTable role={leaderboardRole} />
+        <LeaderboardTable
+          role={leaderboardRole}
+          currentUserRank={
+            userStats
+              ? {
+                  address,
+                  rank: userStats[leaderboardRole].rank,
+                  reward: userStats[leaderboardRole].earnedByPeriod,
+                }
+              : undefined
+          }
+        />
         <StakerRewards address={address} />
       </div>
     </div>

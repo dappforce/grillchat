@@ -72,7 +72,6 @@ export const UserStatsCard = ({
     <span className='text-sm leading-[22px] text-text-muted'>{title}</span>
   )
 
-  console.log(rank)
   return (
     <div className='flex w-full flex-col gap-2 rounded-2xl bg-slate-800 p-4'>
       {tooltipText ? (
