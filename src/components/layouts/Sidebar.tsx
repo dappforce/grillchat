@@ -1,14 +1,13 @@
-import GrillGreyIcon from '@/assets/icons/grill-grey.svg'
+import Farcaster from '@/assets/logo/farcaster.svg'
+import Galxe from '@/assets/logo/galxe.svg'
 import useIsMounted from '@/hooks/useIsMounted'
-import { getIsLoggedIn, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
-import { BiChat, BiNews } from 'react-icons/bi'
-import { LuCompass } from 'react-icons/lu'
-import { MdOutlineLeaderboard } from 'react-icons/md'
-import { RiLineChartLine } from 'react-icons/ri'
-import { TbCoins, TbWorld } from 'react-icons/tb'
+import { FaRegLaugh, FaRegLaughBeam } from 'react-icons/fa'
+import { FaXTwitter } from 'react-icons/fa6'
+import { RiQuestionLine } from 'react-icons/ri'
 import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
@@ -19,51 +18,34 @@ export default function Sidebar() {
 
   return (
     <aside className='flex flex-col p-4 pl-0 text-[#64748BCC] dark:text-text-muted'>
-      <ul className='flex flex-col gap-4'>
-        <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
-        <SidebarItem icon={BiChat} title='Chat' href='/' />
-        {getIsLoggedIn() && (
-          <SidebarItem
-            icon={LuCompass}
-            title='My Spaces'
-            href={`/accounts/${myAddress}/spaces`}
-            forceHardNavigation
-          />
-        )}
+      <ul className='flex flex-col gap-8'>
+        <div className='flex flex-col gap-3'>
+          <span className='text-xs'>MEME2EARN</span>
+          <div className='flex flex-col gap-4'>
+            <SidebarItem icon={FaRegLaughBeam} title='Epic Memes' href='/' />
+            <SidebarItem icon={FaRegLaugh} title='Memes' href='/memes' />
+          </div>
+        </div>
 
-        <div className='border-t border-border-gray' />
+        <div className='flex flex-col gap-3'>
+          <span className='text-xs'>LEARN MORE</span>
+          <div className='flex flex-col gap-4'>
+            <SidebarItem icon={Galxe} title='Galxe Quests' href='/galxe' />
+            <SidebarItem
+              icon={RiQuestionLine}
+              title='What is Epic?'
+              href='/what-is-epic'
+            />
+          </div>
+        </div>
 
-        <SidebarItem icon={TbCoins} title='Content Staking' href='/staking' />
-        <SidebarItem
-          icon={MdOutlineLeaderboard}
-          title='Leaderboard'
-          href='/leaderboard'
-          forceHardNavigation
-        />
-        <SidebarItem
-          icon={RiLineChartLine}
-          title='Statistics'
-          href='/stats'
-          forceHardNavigation
-        />
-
-        <div className='border-t border-border-gray' />
-
-        <SidebarItem
-          icon={TbWorld}
-          title='Usernames'
-          href='/dd'
-          forceHardNavigation
-        />
-
-        <div className='border-t border-border-gray' />
-
-        <SidebarItem
-          icon={GrillGreyIcon}
-          title='What is Grill?'
-          href='/landing'
-          iconClassName='[&_path]:fill-current'
-        />
+        <div className='flex flex-col gap-3'>
+          <span className='text-xs'>SOCIAL LINKS</span>
+          <div className='flex flex-col gap-4'>
+            <SidebarItem icon={Farcaster} title='Farcaster' href='/farcaster' />
+            <SidebarItem icon={FaXTwitter} title='X' href='/x' />
+          </div>
+        </div>
       </ul>
     </aside>
   )

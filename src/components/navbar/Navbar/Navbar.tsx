@@ -96,7 +96,7 @@ export default function Navbar({
     <div className='flex items-center'>
       {hamburgerMenu}
       <CustomLink href={getHubPageLink(router)} aria-label='Back'>
-        <Logo className='text-2xl' />
+        <Logo className='text-xl' />
       </CustomLink>
     </div>
   )
@@ -131,13 +131,7 @@ export default function Navbar({
           props.className
         )}
       >
-        <Container
-          className={cx(
-            'flex h-14 w-full',
-            withSidebar && 'container-page',
-            containerClassName
-          )}
-        >
+        <Container className={cx('flex h-14 w-full', containerClassName)}>
           {customContent ? (
             customContent({
               logoLink,

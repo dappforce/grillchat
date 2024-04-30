@@ -1,19 +1,11 @@
-@media screen and (min-width: 768px) {
-  :root {
-    font-size: 0.9375rem;
-  }
-}
-
 * {
   min-width: 0;
 }
 
 :root {
-  --background: 236 239 244;
-  --background-light: 248 250 252;
-  --background-lighter: 236 239 244;
-  --background-lightest: 219 222 230;
-  --background-primary: 77 70 220;
+  --background: 248 250 252;
+  --background-light: 255 255 255;
+  --background-primary: 0 83 255;
   --background-primary-light: 224 225 254;
   --background-warning: 225 181 62;
   --background-info: 77 70 220;
@@ -23,13 +15,13 @@
   --text-primary: 99 102 241;
   --text-secondary: 99 102 241;
   --text-secondary-light: 37 99 235;
-  --text-muted: 100 116 139;
+  --text-muted: 148 163 184;
   --text-dark: 17 23 41;
   --text-warning: 230 121 38;
   --text-on-primary: 255 255 255;
   --text-muted-on-primary: 151 162 182;
   --text-red: 220 70 70;
-  --border-gray: 207 212 222;
+  --border-gray: 226 232 240;
 }
 
 .dark {
@@ -158,11 +150,6 @@ body {
   @apply select-none;
   user-drag: none;
   -webkit-user-drag: none;
-}
-
-.container-page {
-  @apply mx-auto w-full px-4;
-  max-width: 1300px;
 }
 
 .unselectable-text {

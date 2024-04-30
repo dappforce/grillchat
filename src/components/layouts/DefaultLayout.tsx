@@ -4,6 +4,7 @@ import { currentNetwork } from '@/utils/network'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import BackButton from '../BackButton'
+import Container from '../Container'
 import Navbar, { NavbarProps } from '../navbar/Navbar'
 import NavbarExtension from '../navbar/NavbarExtension'
 import Sidebar from './Sidebar'
@@ -39,12 +40,12 @@ export default function DefaultLayout({
       <Navbar {...navbarProps} withSidebar={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <div className='container-page flex flex-1 border-border-gray !pl-0 !pr-0 md:border-r md:!pl-4'>
+        <Container className='flex flex-1 border-border-gray !pl-0 md:border-r md:!pl-3'>
           <div className='sticky top-14 hidden w-[225px] border-r border-border-gray md:block'>
             <Sidebar />
           </div>
           <div className='flex-1'>{children}</div>
-        </div>
+        </Container>
       ) : (
         children
       )}

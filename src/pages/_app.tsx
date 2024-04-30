@@ -3,7 +3,6 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
-import { PAGES_WITH_SIDEBAR } from '@/constants/layout'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import {
@@ -22,7 +21,6 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
@@ -70,13 +68,7 @@ function Styles({
 }: {
   alwaysShowScrollbarOffset?: boolean
 }) {
-  const router = useRouter()
   const isInIframe = useIsInIframe()
-
-  const isPagesWithSidebar = PAGES_WITH_SIDEBAR.includes(router.pathname)
-  const isUsing16BaseSize =
-    router.pathname === '/landing' ||
-    PAGES_WITH_SIDEBAR.includes(router.pathname)
 
   const scrollbarSelector = isInIframe ? 'body' : 'html'
   const scrollbarStyling = alwaysShowScrollbarOffset
@@ -100,34 +92,6 @@ function Styles({
         }
       `
         : ''}
-      ${isUsing16BaseSize
-        ? `
-          @media screen and (min-width: 768px) {
-            :root {
-              font-size: 1rem;
-            }
-          }
-        `
-        : ''}
-      ${isPagesWithSidebar
-        ? `
-        :root {
-          --background: 248 250 252;
-          --background-light: 255 255 255;
-          --background-lighter: 248 250 252;
-          --background-lightest: 241 245 249;
-          --border-gray: 223 229 240;
-        }
-        .dark {
-          --background: 17 23 41;
-          --background-light: 32 41 58;
-          --background-lighter: 44 56 79;
-          --background-lightest: 54 74 102;
-          --border-gray: 51 59 74;
-        }
-      `
-        : ''}
-
       ${scrollbarStyling}
     `}</style>
   )
