@@ -152,13 +152,13 @@ function ProfileCard() {
 function GuestCard() {
   return (
     <MainCardTemplate className='pt-3' illustClassName='-bottom-1/3'>
-      <div className='mb-1 flex w-full items-center justify-between'>
+      <div className='mb-2 flex w-full items-center justify-between'>
         <span className='text-lg font-semibold'>Meme2earn</span>
         <Button variant='transparent' className='bg-white/10'>
           How does it work?
         </Button>
       </div>
-      <p className='mb-4 max-w-96 font-medium'>
+      <p className='mb-4 max-w-96 text-white/80'>
         Start monetizing your best memes, and earn when you like posts from
         others!
       </p>
@@ -184,7 +184,9 @@ function MainCardTemplate({
         ...props.style,
       }}
     >
-      {props.children}
+      <div className='relative z-10 flex flex-1 flex-col items-start'>
+        {props.children}
+      </div>
       <EpicTokenIllust
         className={cx(
           'pointer-events-none absolute -bottom-1/4 right-0 h-full w-[125%] translate-x-[40%] @lg:-bottom-1/3',
