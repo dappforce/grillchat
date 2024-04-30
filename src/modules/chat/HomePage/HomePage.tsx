@@ -7,7 +7,7 @@ export type HomePageProps = {}
 export default function HomePage(props: HomePageProps) {
   return (
     <DefaultLayout withSidebar>
-      <Container className='grid grid-cols-[1fr_375px] gap-4 px-4'>
+      <Container className='grid grid-cols-1 gap-4 px-4 lg:grid-cols-[1fr_375px]'>
         <MainContent />
       </Container>
     </DefaultLayout>

@@ -8,29 +8,10 @@ import { HiOutlineInformationCircle } from 'react-icons/hi2'
 export default function MainContent() {
   return (
     <div className='flex flex-col gap-8 pt-4'>
-      <Card
-        className='relative flex flex-col items-start overflow-clip bg-background-primary pt-3 text-white'
-        style={{
-          backgroundImage:
-            'radial-gradient(ellipse at top right, #7996F9, #2756F5)',
-        }}
-      >
-        <div className='mb-1 flex w-full items-center justify-between'>
-          <span className='text-lg font-semibold'>Meme2earn</span>
-          <Button variant='transparent' className='bg-white/10'>
-            How does it work?
-          </Button>
-        </div>
-        <p className='mb-4 max-w-96 font-medium'>
-          Start monetizing your best memes, and earn when you like posts from
-          others!
-        </p>
-        <Button variant='white'>Start earning</Button>
-        <EpicTokenIllust className='pointer-events-none absolute -bottom-1/3 right-0 w-full translate-x-[40%]' />
-      </Card>
-      <div className='flex flex-col gap-4'>
+      <GuestCard />
+      <div className='flex flex-col gap-4 @container'>
         <span className='text-lg font-semibold'>Earn more points</span>
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 gap-4 @lg:grid-cols-2'>
           <Card className='relative flex flex-col bg-[#8A63D20D]'>
             <FarcasterLogo className='absolute right-2 top-2 text-5xl text-[#8A63D2]' />
             <div className='mb-1 flex items-center gap-2'>
@@ -69,5 +50,30 @@ export default function MainContent() {
         </Card>
       </div>
     </div>
+  )
+}
+
+function GuestCard() {
+  return (
+    <Card
+      className='relative flex flex-col items-start overflow-clip bg-background-primary pt-3 text-white @container'
+      style={{
+        backgroundImage:
+          'radial-gradient(ellipse at top right, #7996F9, #2756F5)',
+      }}
+    >
+      <div className='mb-1 flex w-full items-center justify-between'>
+        <span className='text-lg font-semibold'>Meme2earn</span>
+        <Button variant='transparent' className='bg-white/10'>
+          How does it work?
+        </Button>
+      </div>
+      <p className='mb-4 max-w-96 font-medium'>
+        Start monetizing your best memes, and earn when you like posts from
+        others!
+      </p>
+      <Button variant='white'>Start earning</Button>
+      <EpicTokenIllust className='pointer-events-none absolute -bottom-1/4 right-0 w-[125%] min-w-96 translate-x-[40%] @md:w-full @lg:-bottom-1/3' />
+    </Card>
   )
 }

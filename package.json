@@ -128,6 +128,7 @@
     "@next/bundle-analyzer": "^13.1.6",
     "@subsocial/config": "^1.0.0",
     "@svgr/webpack": "^6.5.1",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/react-lottie": "^1.2.10",
     "autoprefixer": "^10.4.13",
