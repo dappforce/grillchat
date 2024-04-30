@@ -40,7 +40,7 @@ export default function DefaultLayout({
       <Navbar {...navbarProps} withSidebar={withSidebar} />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
-        <Container className='flex flex-1 border-border-gray !pl-0 md:border-r md:!pl-3'>
+        <Container className='flex flex-1 px-0'>
           <div className='sticky top-14 hidden w-[225px] border-r border-border-gray md:block'>
             <Sidebar />
           </div>
