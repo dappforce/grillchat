@@ -18,8 +18,7 @@ const LeaderboardStatsData = ({ address }: LeaderboardStatsDataProps) => {
     address,
   })
 
-  const { earnedByPeriod, earnedTotal, rank } =
-    userStats?.[leaderboardRole] || {}
+  const { earnedByPeriod, earnedTotal } = userStats?.[leaderboardRole] || {}
 
   const data = [
     {

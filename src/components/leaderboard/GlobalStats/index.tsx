@@ -3,6 +3,8 @@ import { IoPeople } from 'react-icons/io5'
 import LeaderboardTable from '../MyStats/LeaderboardTable'
 import GlobalStatsDashboard from './GlobalStatsDashboard'
 
+const customColumnsClassNames = ['w-[9.8%]', undefined, 'w-[30%]']
+
 const GlobalStats = () => {
   return (
     <div className='flex w-full flex-col gap-5'>
@@ -28,8 +30,14 @@ const GlobalStats = () => {
         <GlobalStatsDashboard />
       </div>
       <div className='grid grid-cols-2 gap-4'>
-        <LeaderboardTable role='staker' />
-        <LeaderboardTable role='creator' />
+        <LeaderboardTable
+          role='staker'
+          customColumnsClassNames={customColumnsClassNames}
+        />
+        <LeaderboardTable
+          role='creator'
+          customColumnsClassNames={customColumnsClassNames}
+        />
       </div>
     </div>
   )

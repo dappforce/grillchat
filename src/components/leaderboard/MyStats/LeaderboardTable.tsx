@@ -7,6 +7,7 @@ import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
+import { cx } from '@/utils/class-names'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { useRouter } from 'next/router'
@@ -15,23 +16,29 @@ import LeaderboardModal from './LeaderboardModal'
 
 const TABLE_LIMIT = 10
 
-export const leaderboardColumns = (role: LeaderboardRole): Column[] => [
+export const leaderboardColumns = (
+  role: LeaderboardRole,
+  customColumnsClassNames?: (string | undefined)[]
+): Column[] => [
   {
     index: 'rank',
     name: '#',
-    className: 'p-0 text-text-muted py-2 pl-4 w-[7%]',
+    className: cx(
+      'p-0 text-text-muted py-2 pl-4 w-[7%]',
+      customColumnsClassNames?.[0]
+    ),
   },
   {
     index: 'user-role',
     name: role === 'staker' ? 'Staker' : 'Creator',
     align: 'left',
-    className: 'p-0 py-2',
+    className: cx('p-0 py-2', customColumnsClassNames?.[1]),
   },
   {
     index: 'rewards',
     name: 'Rewards',
     align: 'right',
-    className: 'p-0 py-2 pr-4 w-[20%]',
+    className: cx('p-0 py-2 pr-4 w-[20%]', customColumnsClassNames?.[2]),
   },
 ]
 
@@ -53,6 +60,7 @@ type LeaderboardTableProps = {
     rank: number | null
     reward: string
   }
+  customColumnsClassNames?: (string | undefined)[]
 }
 
 const parseTableRows = (
@@ -78,7 +86,11 @@ const parseTableRows = (
   )
 }
 
-const LeaderboardTable = ({ role, currentUserRank }: LeaderboardTableProps) => {
+const LeaderboardTable = ({
+  role,
+  currentUserRank,
+  customColumnsClassNames,
+}: LeaderboardTableProps) => {
   const [openModal, setOpenModal] = useState(false)
   const router = useRouter()
 
@@ -117,7 +129,7 @@ const LeaderboardTable = ({ role, currentUserRank }: LeaderboardTableProps) => {
         </div>
         <div className='flex w-full flex-col'>
           <Table
-            columns={leaderboardColumns(role)}
+            columns={leaderboardColumns(role, customColumnsClassNames)}
             data={data}
             className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
             headerClassName='!bg-transparent dark:!bg-transparent'
