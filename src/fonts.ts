@@ -2,7 +2,7 @@ import { Space_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 
 export const spaceMono = Space_Mono({
-  weight: '400',
+  weight: ['400', '700'],
   subsets: ['latin'],
 })
 
