@@ -50,10 +50,12 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
   }, [address, myAddress])
 
   useEffect(() => {
-    if (myAddress !== address && address) {
+    if (myAddress !== address && address && myAddress) {
       setSelectedTab(tabs.length - 1)
+    } else if (myAddress === address) {
+      setSelectedTab(0)
     }
-  }, [address, tabs.length])
+  }, [address, tabs.length, myAddress])
 
   return (
     <>
@@ -78,6 +80,8 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
                   '/leaderboard/[address]',
                   `/leaderboard/${myAddress}`
                 )
+              } else if (tabId === 'grill-stats') {
+                router.push('https://grillapp.net/stats')
               }
             },
           }}

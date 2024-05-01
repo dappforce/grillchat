@@ -3,6 +3,7 @@ import FormatBalance from '@/components/FormatBalance'
 import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
 import Table, { Column } from '@/components/Table'
+import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
@@ -24,7 +25,8 @@ export const leaderboardColumns = (
     index: 'rank',
     name: '#',
     className: cx(
-      'p-0 text-text-muted py-2 pl-4 w-[7%]',
+      'p-0 py-2 pl-4 md:w-[7%] w-[14%]',
+      mutedTextColorStyles,
       customColumnsClassNames?.[0]
     ),
   },
@@ -38,7 +40,10 @@ export const leaderboardColumns = (
     index: 'rewards',
     name: 'Rewards',
     align: 'right',
-    className: cx('p-0 py-2 pr-4 w-[20%]', customColumnsClassNames?.[2]),
+    className: cx(
+      'p-0 py-2 pr-4 md:w-[20%] w-[38%]',
+      customColumnsClassNames?.[2]
+    ),
   },
 ]
 
@@ -122,10 +127,12 @@ const LeaderboardTable = ({
 
   return (
     <>
-      <div className='flex h-fit flex-col gap-6 rounded-2xl bg-white py-4 dark:bg-slate-800'>
+      <div className='flex h-fit flex-col gap-4 rounded-2xl bg-white py-4 dark:bg-slate-800 md:gap-6'>
         <div className='flex flex-col gap-2 px-4'>
           <span className='text-lg font-bold leading-normal'>{title}</span>
-          <span className='text-sm leading-normal text-text-muted'>{desc}</span>
+          <span className={cx('text-sm leading-normal', mutedTextColorStyles)}>
+            {desc}
+          </span>
         </div>
         <div className='flex w-full flex-col'>
           <Table
@@ -198,7 +205,12 @@ export const UserPreview = ({ address }: UserPreviewProps) => {
           className='text-sm font-medium leading-none !text-text'
         />
         {about && (
-          <div className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs leading-none text-text-muted'>
+          <div
+            className={cx(
+              'overflow-hidden overflow-ellipsis whitespace-nowrap text-xs leading-none',
+              mutedTextColorStyles
+            )}
+          >
             {about}
           </div>
         )}

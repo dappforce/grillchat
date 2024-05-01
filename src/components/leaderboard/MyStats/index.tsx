@@ -18,18 +18,18 @@ const MyStats = ({ address }: MyStatsProps) => {
   })
 
   return (
-    <div className='flex flex-col gap-5'>
-      <div className='grid grid-cols-[calc(70%-8px),30%] gap-5'>
+    <div className='flex flex-col gap-4 md:gap-5'>
+      <div className='flex grid-cols-[calc(70%-8px),30%] flex-col-reverse gap-4 md:grid md:gap-5'>
         <div className='flex flex-col gap-4'>
           <LeaderboardStatsData address={address} />
-          <IncreaseStakeBanner address={address} />
+          <IncreaseStakeBanner />
         </div>
         <LeaderboardProfilePreview
           address={address}
           rank={userStats?.[leaderboardRole].rank || null}
         />
       </div>
-      <div className='grid grid-cols-[calc(70%-8px),30%] gap-5'>
+      <div className='flex grid-cols-[calc(70%-8px),30%] flex-col gap-4 md:grid md:gap-5'>
         <LeaderboardTable
           role={leaderboardRole}
           currentUserRank={

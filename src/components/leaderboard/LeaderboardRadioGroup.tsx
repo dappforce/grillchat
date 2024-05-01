@@ -2,7 +2,13 @@ import { cx } from '@/utils/class-names'
 import { RadioGroup } from '@headlessui/react'
 import { useLeaderboardContext } from './LeaderboardContext'
 
-export const LeaderboardRoleRadioGroup = () => {
+type LeaderboardRoleRadioGroupProps = {
+  className?: string
+}
+
+export const LeaderboardRoleRadioGroup = ({
+  className,
+}: LeaderboardRoleRadioGroupProps) => {
   const { leaderboardRole, setLeaderboardRole } = useLeaderboardContext()
   const labels = ['Staker', 'Creator']
 
@@ -10,7 +16,10 @@ export const LeaderboardRoleRadioGroup = () => {
     <RadioGroup
       value={leaderboardRole}
       onChange={setLeaderboardRole}
-      className='flex h-[34px] items-center gap-[2px] rounded-lg bg-white px-[2px] dark:bg-white/10'
+      className={cx(
+        'flex h-[34px] items-center gap-[2px] rounded-lg bg-white px-[2px] dark:bg-white/10',
+        className
+      )}
     >
       {labels.map((label, i) => (
         <RadioGroup.Option

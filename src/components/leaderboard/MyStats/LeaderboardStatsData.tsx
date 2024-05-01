@@ -1,10 +1,12 @@
 import FormatBalance from '@/components/FormatBalance'
+import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import PopOver from '@/components/floating/PopOver'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BN from 'bignumber.js'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import { cx } from '../../../utils/class-names'
 import { useLeaderboardContext } from '../LeaderboardContext'
 
 type LeaderboardStatsDataProps = {
@@ -63,7 +65,9 @@ export const UserStatsCard = ({
     value && decimal ? convertToBalanceWithDecimal(value, decimal) : new BN(0)
 
   const titleElement = (
-    <span className='text-sm leading-[22px] text-text-muted'>{title}</span>
+    <span className={cx('text-sm leading-[22px]', mutedTextColorStyles)}>
+      {title}
+    </span>
   )
 
   return (
@@ -76,8 +80,13 @@ export const UserStatsCard = ({
           triggerClassName='w-fit'
           triggerOnHover
           trigger={
-            <div className='flex items-center gap-2'>
-              {titleElement} <HiOutlineInformationCircle />
+            <div className='flex items-start gap-2 md:items-center '>
+              {titleElement}{' '}
+              <span className='mt-[4px] md:mt-0'>
+                <HiOutlineInformationCircle
+                  className={cx(mutedTextColorStyles, 'h-4 w-4')}
+                />
+              </span>
             </div>
           }
         >
@@ -87,7 +96,7 @@ export const UserStatsCard = ({
         titleElement
       )}
       <div className='flex items-center justify-between gap-2'>
-        <span className='text-2xl font-semibold'>
+        <span className='text-lg font-semibold md:text-2xl'>
           {typeof value === 'number' ? (
             value
           ) : (

@@ -40,7 +40,7 @@ export default function Sidebar() {
         <SidebarItem
           icon={MdOutlineLeaderboard}
           title='Leaderboard'
-          href='/leaderboard'
+          href={`/c/leaderboard${myAddress ? `/${myAddress}` : ''}`}
           forceHardNavigation
         />
         <SidebarItem

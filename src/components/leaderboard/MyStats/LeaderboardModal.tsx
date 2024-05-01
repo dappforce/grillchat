@@ -46,8 +46,8 @@ const LeaderboardModal = ({
   const columns = columnsByRole.map((column, i) => ({
     ...column,
     className: cx(column.className, {
-      ['!w-[10%]']: i === 0,
-      ['!w-[30%]']: i === columnsByRole.length - 1,
+      ['md:!w-[10%]']: i === 0,
+      ['md:!w-[30%]']: i === columnsByRole.length - 1,
     }),
   }))
 
@@ -132,6 +132,7 @@ const ModalTableRows = ({
             columns={columns}
             item={item}
             withDivider={false}
+            className='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl'
             onRowClick={() => {
               router.push(
                 '/leaderboard/[address]',
