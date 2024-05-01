@@ -1,10 +1,14 @@
 import { useMyMainAddress } from '@/stores/my-account'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Tabs from '../Tabs'
 import GlobalStats from './GlobalStats'
 import { LeaderboardContextWrapper } from './LeaderboardContext'
 import MyStats from './MyStats'
+
+const getIndexById = (tabs: any[], id: string) => {
+  return tabs.findIndex((tab) => tab.id === id)
+}
 
 type LeaderboardContentProps = {
   address?: string
@@ -13,7 +17,6 @@ type LeaderboardContentProps = {
 const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
   const myAddress = useMyMainAddress()
   const router = useRouter()
-  const [selectedTab, setSelectedTab] = useState(0)
 
   const tabs = useMemo(() => {
     const values = [
@@ -49,43 +52,65 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
     return values
   }, [address, myAddress])
 
+  const [selectedTab, setSelectedTabIndex] = useState(0)
+
   useEffect(() => {
-    if (myAddress !== address && address && myAddress) {
-      setSelectedTab(tabs.length - 1)
-    } else if (myAddress === address) {
-      setSelectedTab(0)
+    const defaultTab = address ? 'my-stats' : 'global-stats'
+
+    setSelectedTabIndex(getIndexById(tabs, defaultTab))
+  }, [tabs, address])
+
+  useEffect(() => {
+    if (!router.isReady) return
+
+    if (address) {
+      if (address === myAddress) {
+        const index = getIndexById(tabs, 'my-stats')
+
+        setSelectedTabIndex(index > -1 ? index : 0)
+      } else {
+        const index = getIndexById(tabs, 'other-users-stats')
+
+        setSelectedTabIndex(index > -1 ? index : 0)
+      }
     }
-  }, [address, tabs.length, myAddress])
+  }, [address, myAddress, router])
+
+  const TabsComp = useCallback(() => {
+    return (
+      <Tabs
+        className='w-full max-w-full border-b border-border-gray bg-background-light text-sm md:bg-background-light/50'
+        panelClassName='mt-0 w-full max-w-full px-4 pt-5'
+        asContainer
+        defaultTab={0}
+        tabs={tabs}
+        manualTabControl={{
+          selectedTab: selectedTab,
+          setSelectedTab: (selectedTab, tabId) => {
+            if (tabId === 'global-stats') {
+              router.replace('/leaderboard', '/leaderboard', {
+                shallow: true,
+              })
+            } else if (tabId === 'my-stats') {
+              router.replace(
+                '/leaderboard/[address]',
+                `/leaderboard/${myAddress}`,
+                { shallow: true }
+              )
+            } else if (tabId === 'grill-stats') {
+              router.replace('https://grillapp.net/stats')
+            }
+            setSelectedTabIndex(selectedTab)
+          },
+        }}
+      />
+    )
+  }, [tabs.length, selectedTab])
 
   return (
     <>
       <LeaderboardContextWrapper>
-        <Tabs
-          className='w-full max-w-full border-b border-border-gray bg-background-light text-sm md:bg-background-light/50'
-          panelClassName='mt-0 w-full max-w-full px-4 pt-5'
-          defaultTab={router.query.address ? 0 : 1}
-          asContainer
-          tabs={tabs}
-          withHashIntegration={false}
-          hideBeforeHashLoaded
-          manualTabControl={{
-            selectedTab: selectedTab,
-            setSelectedTab: (selectedTab, tabId) => {
-              setSelectedTab(selectedTab)
-
-              if (tabId === 'global-stats') {
-                router.replace('/leaderboard', '/leaderboard', {})
-              } else if (tabId === 'my-stats') {
-                router.replace(
-                  '/leaderboard/[address]',
-                  `/leaderboard/${myAddress}`
-                )
-              } else if (tabId === 'grill-stats') {
-                router.push('https://grillapp.net/stats')
-              }
-            },
-          }}
-        />
+        <TabsComp />
       </LeaderboardContextWrapper>
     </>
   )

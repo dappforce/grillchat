@@ -50,7 +50,7 @@ export default function Tabs({
 
     const hash = window.location.hash
     const index = tabs.findIndex(({ id }) => `#${id}` === hash)
-    const id = tabs[index].id
+    const id = tabs[index]?.id
     if (index > -1) setSelectedTab(index, id)
 
     setIsHashLoaded(true)
@@ -76,8 +76,10 @@ export default function Tabs({
   return (
     <Tab.Group
       selectedIndex={usedSelectedTab === -1 ? tabs.length : usedSelectedTab}
+      manual
       onChange={(index) => {
-        const id = tabs[index].id
+        const id = tabs[index]?.id
+
         setSelectedTab(index, id)
       }}
     >
