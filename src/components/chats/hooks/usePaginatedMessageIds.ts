@@ -12,6 +12,7 @@ type PaginatedData = {
   hasMore: boolean
   totalDataCount: number
   isLoading: boolean
+  allIds: string[]
 }
 
 type PaginatedConfig = {
@@ -52,5 +53,6 @@ export default function usePaginatedMessageIds({
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore ?? true,
     isLoading,
+    allIds: filteredPageIds,
   }
 }

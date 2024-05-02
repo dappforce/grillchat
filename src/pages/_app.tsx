@@ -27,9 +27,6 @@ import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 import urlJoin from 'url-join'
 
-const PWAInstall = dynamic(() => import('@/components/PWAInstall'), {
-  ssr: false,
-})
 const ForegroundNotificationHandler = dynamic(
   () => import('@/components/ForegroundNotificationHandler'),
   { ssr: false }

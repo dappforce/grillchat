@@ -65,6 +65,22 @@ export function getChatPageLink(
   return `/widget/${hubAliasOrId}/${chatSlug}`
 }
 
+export const getWidgetChatPageLink = (
+  currentPath: CurrentPath,
+  chatSlug: string,
+  defaultHubId?: string
+) => {
+  const hubId = getHubIdFromUrl(currentPath) ?? defaultHubId
+  const hubAliasOrId = getAliasFromHubId(hubId) || hubId
+
+  const currentSlug = currentPath.query.slug
+  if (!chatSlug && typeof currentSlug === 'string') {
+    chatSlug = currentSlug
+  }
+
+  return `/c/${hubAliasOrId}/${chatSlug}`
+}
+
 export function validateVideoUrl(url: string) {
   const videoFileUrlRegex = /\.(mp4|mov|avi|wmv|flv|mkv)$/i
   return videoFileUrlRegex.test(url)
@@ -80,4 +96,9 @@ export function getPolkadotJsUrl(pathname?: string) {
 export function getUserProfileLink(profileId?: string) {
   if (!profileId) return undefined
   return `/${profileId}`
+}
+
+export function getSubsquareUserProfileLink(address?: string) {
+  if (!address) return undefined
+  return `https://polkadot.subsquare.io/user/${address}`
 }

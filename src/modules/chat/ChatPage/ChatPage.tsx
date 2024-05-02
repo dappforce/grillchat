@@ -1,12 +1,12 @@
 import Button from '@/components/Button'
+import { getPluralText } from '@/components/PluralText'
+import Spinner from '@/components/Spinner'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
 import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import { getPluralText } from '@/components/PluralText'
-import Spinner from '@/components/Spinner'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -14,6 +14,7 @@ import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
+import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -22,7 +23,6 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import {
   getChatPageLink,
   getCurrentUrlWithoutQuery,
-  getHubPageLink,
   getUrlQuery,
 } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
@@ -32,9 +32,6 @@ import Router, { useRouter } from 'next/router'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 
-const NetworkStatus = dynamic(() => import('@/components/NetworkStatus'), {
-  ssr: false,
-})
 const AboutChatModal = dynamic(
   () => import('@/components/modals/about/AboutChatModal'),
   {
@@ -74,6 +71,7 @@ export default function ChatPage({
     const isNewChat = getUrlQuery('new')
     if (isNewChat) setIsOpenCreateSuccessModal(true)
   }, [])
+
   useEffect(() => {
     if (!getUrlQuery('new')) return
     if (!isOpenCreateSuccessModal) replaceUrl(getCurrentUrlWithoutQuery('new'))
@@ -176,7 +174,7 @@ export default function ChatPage({
         withFixedHeight
         navbarProps={{
           backButtonProps: {
-            defaultBackLink: getHubPageLink(router),
+            defaultBackLink: '/my-chats',
             forceUseDefaultBackLink: false,
           },
           customContent: ({ backButton, authComponent }) => (
@@ -197,7 +195,6 @@ export default function ChatPage({
           hubId={hubId}
           chatId={chatId}
           asContainer
-          className='flex-1 overflow-hidden'
           customAction={customAction}
         />
       </DefaultLayout>
@@ -228,6 +225,8 @@ function NavbarChatInfo({
   const { data: chat } = getPostQuery.useQuery(chatId ?? '', {
     showHiddenPost: { type: 'all' },
   })
+
+  const { data: space } = getSpaceQuery.useQuery(chat?.struct.spaceId ?? '')
 
   const [isOpenAboutChatModal, setIsOpenAboutChatModal] = useState(false)
   const prevIsOpenAboutChatModal = usePrevious(isOpenAboutChatModal)
@@ -261,15 +260,44 @@ function NavbarChatInfo({
 
   const chatTitle = chatMetadata?.title || chatMetadata?.summary || 'Untitled'
 
+  let subtitle = (
+    <>{`${messageCount} ${getPluralText({
+      count: messageCount,
+      plural: 'messages',
+      singular: 'message',
+    })}`}</>
+  )
+
+  if (space) {
+    const { content: spaceContent } = space || {}
+
+    const chats =
+      ((spaceContent as any)?.experimental?.chats as { id: string }[]) ||
+      undefined
+
+    const isProfileChat = chats?.[0]?.id === chatId
+
+    if (isProfileChat && spaceContent) {
+      const title = spaceContent.name
+
+      subtitle = (
+        <span className='font-normal leading-normal'>
+          <span className='text-text-muted'>by</span>{' '}
+          <span className='text-text'>{title}</span>
+        </span>
+      )
+    }
+  }
+
   return (
-    <div className='flex flex-1 items-center overflow-hidden'>
+    <div className='flex flex-1 items-center'>
       {enableBackButton && backButton}
       <Button
         variant='transparent'
         interactive='none'
         size='noPadding'
         className={cx(
-          'flex flex-1 items-center gap-2 overflow-hidden rounded-none text-left',
+          'flex flex-1 items-center gap-2 rounded-none text-left',
           !chatId && 'cursor-pointer'
         )}
         onClick={() => setIsOpenAboutChatModal(true)}
@@ -280,22 +308,16 @@ function NavbarChatInfo({
           image={image}
           chatTitle={chatTitle}
         />
-        <div className='flex flex-col overflow-hidden'>
-          <div className='flex items-center gap-2 overflow-hidden'>
-            <span className='overflow-hidden overflow-ellipsis whitespace-nowrap font-medium'>
-              {chatTitle}
-            </span>
+        <div className='flex flex-col'>
+          <div className='flex items-center gap-2'>
+            <span className='line-clamp-1 font-medium'>{chatTitle}</span>
             <ChatModerateChip chatId={chatId} />
             {chat?.struct.hidden && (
               <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
             )}
           </div>
-          <span className='overflow-hidden overflow-ellipsis whitespace-nowrap text-xs text-text-muted'>
-            {`${messageCount} ${getPluralText({
-              count: messageCount,
-              plural: 'messages',
-              singular: 'message',
-            })}`}
+          <span className='line-clamp-1 text-xs text-text-muted'>
+            {subtitle}
           </span>
         </div>
       </Button>

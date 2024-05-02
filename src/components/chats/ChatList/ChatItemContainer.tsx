@@ -52,7 +52,7 @@ function ChatItemContainer(
       // ref: https://stackoverflow.com/a/54582980
       style={{ transform: 'translate3d(0, 0, 0)' }}
       className={cx(
-        'w-11/12 md:w-8/12',
+        'w-11/12 @3xl:w-8/12',
         isMyMessage && 'self-end',
         containerProps?.className
       )}

@@ -18,6 +18,8 @@ export type ProfileModalState =
   // | 'withdraw-tokens'
   | 'wallet-action-required'
   | 'loading-tx'
+  | 'create-chat'
+  | 'create-chat-loading'
 
 export type ProfileModalContentProps = {
   address: string

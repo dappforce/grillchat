@@ -24,6 +24,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   enableChatMenu?: boolean
   chatId: string
   hubId: string
+  bg?: 'background-light' | 'background'
 }
 
 export default function ChatItem({
@@ -34,6 +35,7 @@ export default function ChatItem({
   enableChatMenu = true,
   chatId,
   hubId,
+  bg = 'background-light',
   ...props
 }: ChatItemProps) {
   const setReplyTo = useMessageData((state) => state.setReplyTo)
@@ -118,6 +120,7 @@ export default function ChatItem({
                     isMyMessage={isMyMessage}
                     chatId={chatId}
                     hubId={hubId}
+                    bg={bg}
                   />
                 ) : (
                   <ChatItemContentVariant
@@ -126,6 +129,7 @@ export default function ChatItem({
                     scrollToMessage={scrollToMessage}
                     chatId={chatId}
                     hubId={hubId}
+                    bg={bg}
                   />
                 )}
               </div>

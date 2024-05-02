@@ -36,7 +36,10 @@ export default function ChatRoom({
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div {...props} className={cx('flex flex-col', className)}>
+    <div
+      {...props}
+      className={cx('flex flex-1 flex-col overflow-hidden', className)}
+    >
       <ChatList
         hubId={hubId}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
@@ -94,40 +97,42 @@ function ChatInputWrapper({
 
   return (
     <>
-      <Component className={cx('mt-auto flex flex-col py-2 pt-0')}>
-        <ActionDetailBar
-          chatId={chatId}
-          hubId={hubId}
-          scrollContainer={scrollContainerRef}
-        />
-        {(() => {
-          if (customAction) return customAction
+      <Component className={cx('mt-auto flex py-2 pt-0')}>
+        <div className='flex flex-1 flex-col'>
+          <ActionDetailBar
+            chatId={chatId}
+            hubId={hubId}
+            scrollContainer={scrollContainerRef}
+          />
+          {(() => {
+            if (customAction) return customAction
 
-          if (isHidden)
+            if (isHidden)
+              return (
+                <TextArea
+                  rows={1}
+                  disabled
+                  value='You cannot send messages in a hidden chat'
+                  className='bg-background-light/50 text-center text-text-muted !brightness-100'
+                  variant='fill'
+                  pill
+                />
+              )
+
             return (
-              <TextArea
-                rows={1}
-                disabled
-                value='You cannot send messages in a hidden chat'
-                className='bg-background-light/50 text-center text-text-muted !brightness-100'
-                variant='fill'
-                pill
+              <ChatInputBar
+                formProps={{
+                  hubId,
+                  chatId,
+                  onSubmit: (isEditing) => {
+                    if (!isEditing) scrollToBottom()
+                  },
+                  isPrimary: true,
+                }}
               />
             )
-
-          return (
-            <ChatInputBar
-              formProps={{
-                hubId,
-                chatId,
-                onSubmit: (isEditing) => {
-                  if (!isEditing) scrollToBottom()
-                },
-                isPrimary: true,
-              }}
-            />
-          )
-        })()}
+          })()}
+        </div>
       </Component>
 
       <ExtensionModals

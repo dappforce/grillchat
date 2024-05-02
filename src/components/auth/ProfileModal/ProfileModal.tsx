@@ -1,6 +1,8 @@
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
+import useRedirectToNewChatPage from '@/components/community/useRedirectToNewChatPage'
 import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
+import { getProfileQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
@@ -10,6 +12,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
+import {
+  CreateChatContent,
+  CreateChatLoadingContent,
+} from './contents/CreateChatContent'
 import LinkedAddressesContent from './contents/LinkedAddressesContent'
 import LogoutContent from './contents/LogoutContent'
 import PrivacySecurityContent from './contents/PrivacySecurityContent'
@@ -52,6 +58,8 @@ const modalContents: {
       <DynamicLoadedHamsterLoading />
     </div>
   ),
+  'create-chat': CreateChatContent,
+  'create-chat-loading': CreateChatLoadingContent,
 }
 
 const pushNotificationDesc: Record<
@@ -91,9 +99,9 @@ export default function ProfileModal({
       enabled: isOpen,
     }
   )
+  const { data: profile } = getProfileQuery.useQuery(address)
 
-  const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
-  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
+  useRedirectToNewChatPage(profile?.profileSpace?.id, closeModal)
 
   const [currentState, setCurrentState] = useState<ProfileModalState>(
     defaultOpenState || 'account'
@@ -260,6 +268,14 @@ export default function ProfileModal({
     'loading-tx': {
       title: 'Transfer',
       desc: 'It may take up to 30 seconds',
+      withBackButton: false,
+    },
+    'create-chat': {
+      title: '💬 New Group Chat',
+      withBackButton: true,
+    },
+    'create-chat-loading': {
+      title: 'Creating chat',
       withBackButton: false,
     },
   }

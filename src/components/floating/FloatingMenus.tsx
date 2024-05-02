@@ -62,7 +62,7 @@ function FloatingMenuPanel({
   return (
     <div
       className={cx(
-        'flex flex-col overflow-hidden rounded-lg bg-background-light shadow-[0_5px_50px_-12px_rgb(0,0,0,.25)] dark:shadow-[0_5px_50px_-12px_rgb(0,0,0)]',
+        'pointer-events-auto flex flex-col overflow-hidden rounded-lg bg-background-light shadow-[0_5px_50px_-12px_rgb(0,0,0,.25)] dark:shadow-[0_5px_50px_-12px_rgb(0,0,0)]',
         panelSize === 'xs' ? 'w-48' : 'w-56',
         panelClassName
       )}

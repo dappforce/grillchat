@@ -35,6 +35,7 @@ export type NameProps = ComponentProps<'span'> & {
   forceProfileSource?: ForceProfileSource
   clipText?: boolean
   asLink?: boolean
+  withPolkadotIdentity?: boolean
 }
 
 export default function Name({
@@ -50,6 +51,7 @@ export default function Name({
   clipText,
   profileSourceIconPosition = 'right',
   asLink,
+  withPolkadotIdentity,
   ...props
 }: NameProps) {
   const sendEvent = useSendEvent()
@@ -57,7 +59,8 @@ export default function Name({
 
   const { isLoading, name, textColor, profileSource, profile } = useName(
     address,
-    forceProfileSource
+    forceProfileSource,
+    withPolkadotIdentity
   )
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     address ?? '',
@@ -97,7 +100,7 @@ export default function Name({
           className
         )}
       >
-        <span className='my-1 mr-4 h-3 w-20 rounded-full bg-background-lighter font-medium' />
+        <span className='my-1 h-3 w-20 rounded-full bg-background-lighter font-medium' />
       </span>
     )
   }
@@ -196,7 +199,8 @@ LinkOrText.displayName = 'LinkOrText'
 
 export function useName(
   address: string,
-  forceProfileSource?: ForceProfileSource
+  forceProfileSource?: ForceProfileSource,
+  withPolkadotIdentity?: boolean
 ) {
   const { data: profile, isLoading: isLoadingProfile } =
     getProfileQuery.useQuery(address)

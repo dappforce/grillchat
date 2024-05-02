@@ -14,14 +14,17 @@ export type DefaultLayoutProps = ComponentProps<'div'> & {
   withBackButton?: LayoutNavbarExtensionProps
   withFixedHeight?: boolean
   withSidebar?: boolean
+  withSidebarBorder?: boolean
 }
 
 export default function DefaultLayout({
   children,
   navbarProps,
+  withSidebarBorder = true,
   withBackButton,
   withFixedHeight,
   withSidebar,
+  style,
   ...props
 }: DefaultLayoutProps) {
   if (currentNetwork === 'xsocial') {
@@ -30,14 +33,22 @@ export default function DefaultLayout({
 
   return (
     <div
+      {...props}
       className={cx(
         'flex flex-col bg-background text-text',
-        withFixedHeight && 'h-screen'
+        withFixedHeight && 'h-screen',
+        props.className
       )}
-      style={withFixedHeight ? { height: '100dvh' } : { minHeight: '100svh' }}
-      {...props}
+      style={
+        withFixedHeight
+          ? { height: '100dvh', ...style }
+          : { minHeight: '100svh', ...style }
+      }
     >
-      <Navbar {...navbarProps} withSidebar={withSidebar} />
+      <Navbar
+        {...navbarProps}
+        withLargerContainer={withSidebar || navbarProps?.withLargerContainer}
+      />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
         <Container className='flex flex-1 px-0 md:pl-3'>

@@ -1,9 +1,11 @@
 import useFirstVisitNotification from '@/hooks/useFirstVisitNotification'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
+import { FaArrowUpRightFromSquare } from 'react-icons/fa6'
 import Button, { ButtonProps } from './Button'
 import Card from './Card'
 import DotBlinkingNotification from './DotBlinkingNotification'
+import CustomLink from './referral/CustomLink'
 
 type Action = {
   text: string
@@ -11,6 +13,8 @@ type Action = {
   icon: (props: { className?: string }) => JSX.Element
   iconClassName?: string
   className?: string
+  href?: string
+  openInNewTab?: boolean
   onClick?: ButtonProps['onClick']
   disabled?: boolean
   isComingSoon?: boolean
@@ -20,6 +24,7 @@ type Action = {
 export type ActionCardProps = ComponentProps<'div'> & {
   actions: Action[]
   size?: 'md' | 'sm'
+  actionClassName?: string
 }
 
 /**
@@ -31,6 +36,7 @@ export type ActionCardProps = ComponentProps<'div'> & {
 export default function ActionCard({
   actions,
   size = 'md',
+  actionClassName,
   ...props
 }: ActionCardProps) {
   if (actions.length === 0) return null
@@ -58,6 +64,8 @@ function ActionItem({ action, size }: ActionItemProps) {
   const {
     icon: Icon,
     text,
+    href,
+    openInNewTab,
     className,
     description,
     disabled,
@@ -73,25 +81,15 @@ function ActionItem({ action, size }: ActionItemProps) {
 
   const showBlinking = firstVisitNotificationStorageName && showNotification
 
-  return (
-    <Button
-      disabled={disabled || isComingSoon}
-      variant='transparent'
-      interactive='none'
-      size='noPadding'
-      key={text}
-      className={cx(
-        'flex w-full items-center gap-3 rounded-none border-b border-background-lightest p-4 text-left last:border-none',
-        'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
-        size === 'md' ? 'p-4' : 'px-4 py-3',
-        className
-      )}
-      onClick={(e) => {
-        firstVisitNotificationStorageName && closeNotification()
-        onClick?.(e as any)
-      }}
-      disabledStyle='subtle'
-    >
+  const containerClassName = cx(
+    'w-full rounded-none block border-b border-background-lightest p-4 text-left last:border-none',
+    'transition hover:bg-background-lightest focus-visible:bg-background-lightest',
+    size === 'md' ? 'p-4' : 'px-4 py-3',
+    className
+  )
+
+  const content = (
+    <span className='flex w-full items-center gap-3 text-left'>
       <Icon
         className={cx(
           'flex-shrink-0 text-xl',
@@ -99,7 +97,7 @@ function ActionItem({ action, size }: ActionItemProps) {
           iconClassName
         )}
       />
-      <div className='flex flex-col items-start'>
+      <div className='flex flex-1 flex-col'>
         <span className='flex items-center gap-2'>
           {text}{' '}
           {isComingSoon && (
@@ -108,9 +106,45 @@ function ActionItem({ action, size }: ActionItemProps) {
             </Card>
           )}
           {showBlinking && <DotBlinkingNotification />}
+          {openInNewTab && (
+            <FaArrowUpRightFromSquare className='ml-auto text-[0.875em] text-text-muted' />
+          )}
         </span>
         <span className='text-sm text-text-muted'>{description}</span>
       </div>
+    </span>
+  )
+
+  if (href && !disabled) {
+    let anchorProps = {}
+    if (openInNewTab) {
+      anchorProps = {
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      }
+    }
+    return (
+      <CustomLink {...anchorProps} className={containerClassName} href={href}>
+        {content}
+      </CustomLink>
+    )
+  }
+
+  return (
+    <Button
+      disabled={disabled || isComingSoon}
+      variant='transparent'
+      interactive='none'
+      size='noPadding'
+      key={text}
+      className={containerClassName}
+      onClick={(e) => {
+        firstVisitNotificationStorageName && closeNotification()
+        onClick?.(e as any)
+      }}
+      disabledStyle='subtle'
+    >
+      {content}
     </Button>
   )
 }

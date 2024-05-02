@@ -1,5 +1,8 @@
 import { env } from '@/env.mjs'
 import { SubsocialIpfsApi } from '@subsocial/api'
+import axios from 'axios'
+
+const offchainUrl = 'https://api.subsocial.network'
 
 export function getIpfsApi() {
   const pinUrl = env.IPFS_PIN_URL
@@ -15,7 +18,7 @@ export function getIpfsApi() {
     ipfsNodeUrl: writeUrl,
     ipfsClusterUrl: pinUrl,
     headers,
-    offchainUrl: 'https://api.subsocial.network',
+    offchainUrl,
   })
   ipfs.setWriteHeaders(headers)
   ipfs.setPinHeaders(headers)
@@ -29,9 +32,15 @@ export function getIpfsApi() {
       return cid?.toString() ?? ''
     },
     saveAndPinImage: async (file: any) => {
-      const cid = await ipfs.saveFile(file)
-      await ipfs.pinContent(cid, props)
-      return cid?.toString() ?? ''
+      const res = await axios.post(`${offchainUrl}/v1/ipfs/addRaw`, file)
+
+      if (res.status !== 200) {
+        throw new Error('Error saving image' + res.statusText)
+      }
+
+      // const cid = await ipfs.saveFile(file)
+      // await ipfs.pinContent(cid, props)
+      return res.data?.toString() ?? ''
     },
   }
 }

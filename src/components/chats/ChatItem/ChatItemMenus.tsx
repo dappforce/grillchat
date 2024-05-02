@@ -225,7 +225,7 @@ export default function ChatItemMenus({
                           ]}
                         />
                         <div className='absolute bottom-0 flex w-full flex-col'>
-                          <div className='mx-4 h-px bg-border-gray' />
+                          <div className='mx-4 border-b border-border-gray' />
                         </div>
                       </div>
                     )

@@ -21,6 +21,7 @@ const GET_PROFILES = gql`
         tagsOriginal
         profileSource
         updatedAtTime
+        experimental
       }
     }
   }

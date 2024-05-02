@@ -4,8 +4,7 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getUserProfileLink } from '@/utils/links'
 import { decodeProfileSource } from '@/utils/profile'
-import * as bottts from '@dicebear/bottts'
-import { createAvatar } from '@dicebear/core'
+import Identicon from '@polkadot/react-identicon'
 import Image from 'next/image'
 import {
   ComponentProps,
@@ -36,20 +35,12 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   ) {
     const backgroundColor = useRandomColor(address, {
       isAddress: true,
-      theme: 'dark',
     })
 
     const [isAvatarError, setIsAvatarError] = useState(false)
     const onImageError = useCallback(() => setIsAvatarError(true), [])
 
     const { data: profile, isLoading } = getProfileQuery.useQuery(address)
-
-    const avatar = useMemo(() => {
-      return createAvatar(bottts, {
-        size: 128,
-        seed: address,
-      }).toDataUriSync()
-    }, [address])
 
     const profileSource = profile?.profileSpace?.content?.profileSource
     const subsocialProfileImage = profile?.profileSpace?.content?.image
@@ -86,7 +77,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           <div
             style={{ backgroundClip: 'padding-box' }}
             className={cx(
-              'bg-background-light',
+              'bg-background-lighter/50',
               'rounded-full',
               'h-9 w-9 self-center',
               props.className
@@ -131,21 +122,32 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           </div>
         )}
 
-        <div className={cx('relative h-full w-full p-[7.5%]')}>
-          <div className='relative h-full w-full'>
-            <Image
-              sizes='5rem'
-              className='relative rounded-full'
-              fill
-              src={avatar}
-              alt='avatar'
-            />
-          </div>
+        <div className={cx('relative h-full w-full')}>
+          <IdenticonAvatar
+            value={address}
+            className='h-full w-full !cursor-[inherit]'
+          />
         </div>
       </LinkOrText>
     )
   }
 )
+
+export function IdenticonAvatar({
+  value,
+  className,
+}: {
+  value: string
+  className?: string
+}) {
+  return (
+    <Identicon
+      theme='polkadot'
+      value={value}
+      className={cx('[&_svg]:h-full [&_svg]:w-full', className)}
+    />
+  )
+}
 
 const LinkOrText = forwardRef<
   any,
