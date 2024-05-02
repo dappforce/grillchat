@@ -3,7 +3,7 @@ import { apiInstance } from '@/services/api/utils'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils/mutation'
 import { getMyMainAddress } from '@/stores/my-account'
-import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
+import { MutationConfig } from '@/subsocial-query'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
 import {
@@ -149,9 +149,7 @@ function getMutatedSpaceId(data: UpsertSpaceParams) {
     account: getMyMainAddress() ?? '',
   })
 }
-function useUpsertSpaceRaw(
-  config?: TransactionMutationConfig<UpsertSpaceParams>
-) {
+function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
   const client = useQueryClient()
 
   return useMutation({

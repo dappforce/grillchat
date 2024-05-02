@@ -9,8 +9,8 @@ import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
-import { stringToU8a, u8aToHex } from '@polkadot/util'
-import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
+import { stringToU8a } from '@polkadot/util'
+import { blake2AsHex } from '@polkadot/util-crypto'
 import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
@@ -47,8 +47,7 @@ export function getDeterministicId({
 }: GetDeterministicIdInput): string {
   if (!isValidUUIDv4(uuid))
     throw new Error('Not valid uuid has been provided. Must be UUID v4.')
-  const pubKey = u8aToHex(decodeAddress(account), undefined, false)
-  const u8aKey = stringToU8a(pubKey + timestamp + uuid.replace(/-/g, ''))
+  const u8aKey = stringToU8a(account + timestamp + uuid.replace(/-/g, ''))
   return blake2AsHex(u8aKey, 128, null, true)
 }
 

@@ -1,8 +1,3 @@
-import Toast from '@/components/Toast'
-import {
-  setupTxCallbacks,
-  TxCallbackInfo,
-} from '@/subsocial-query/subsocial/config'
 import {
   Hydrate,
   isServer,
@@ -10,26 +5,6 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { useState } from 'react'
-import { toast } from 'react-hot-toast'
-import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
-
-setupTxCallbacks({
-  onError: ({ error }: TxCallbackInfo) => {
-    const errorMessage =
-      typeof error === 'string' ? error : (error as Error)?.message
-    toast.custom((t) => (
-      <Toast
-        t={t}
-        type='error'
-        title='Failed to send transaction'
-        description={errorMessage ?? 'Please refresh the page and try again'}
-        icon={(classNames) => (
-          <HiOutlineExclamationTriangle className={classNames} />
-        )}
-      />
-    ))
-  },
-})
 
 export let queryClient: QueryClient | null = new QueryClient({
   defaultOptions: {

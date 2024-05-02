@@ -1,7 +1,7 @@
 import { saveFile } from '@/services/api/mutation'
 import { getProfileQuery } from '@/services/api/query'
 import { getMyMainAddress } from '@/stores/my-account'
-import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
+import { MutationConfig } from '@/subsocial-query'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -25,9 +25,7 @@ function checkAction(data: UpsertProfileParams) {
   return { payload: data, action: 'create' } as const
 }
 const OPTIMISTIC_PROFILE_ID = 'optimistic-id'
-function useUpsertProfileRaw(
-  config?: TransactionMutationConfig<UpsertProfileParams>
-) {
+function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
   const client = useQueryClient()
 
   return useMutation({

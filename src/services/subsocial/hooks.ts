@@ -1,5 +1,11 @@
 import { useMyAccount } from '@/stores/my-account'
-import { WalletAccount } from '@/subsocial-query/subsocial/types'
+import { Signer } from '@/utils/account'
+
+type WalletAccount = {
+  address: string
+  signer: Signer | null
+  proxyToAddress?: string
+}
 
 export function getCurrentWallet(): WalletAccount {
   return {

@@ -11,7 +11,7 @@ import { getTotalStakeQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { BN } from '@polkadot/util'
+import { BN } from 'bn.js'
 import Image, { ImageProps } from 'next/image'
 import { ReactNode } from 'react'
 

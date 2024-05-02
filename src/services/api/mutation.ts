@@ -1,8 +1,4 @@
 import { CreateUserIdResponse } from '@/pages/api/create-user-id'
-import {
-  ApiDiscussionInput,
-  ApiDiscussionResponse,
-} from '@/pages/api/discussion'
 import { RevalidateChatInput } from '@/pages/api/revalidation/chat'
 import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import { SaveImageResponse } from '@/pages/api/save-image'
@@ -23,14 +19,6 @@ export async function createUserId(address: string) {
   if (!data.success || !data.userId) throw new Error(data.errors)
   return data.userId
 }
-
-export async function createDiscussion(content: ApiDiscussionInput) {
-  const res = await apiInstance.post('/api/discussion', content)
-  const data = res.data as ApiDiscussionResponse
-  if (!data.success) throw new Error(data.errors)
-  return data
-}
-export const useCreateDiscussion = mutationWrapper(createDiscussion)
 
 export async function saveImage(content: File) {
   const formData = new FormData()

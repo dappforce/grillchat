@@ -4,7 +4,8 @@ import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getUserProfileLink } from '@/utils/links'
 import { decodeProfileSource } from '@/utils/profile'
-import Identicon from '@polkadot/react-identicon'
+import * as bottts from '@dicebear/bottts'
+import { createAvatar } from '@dicebear/core'
 import Image from 'next/image'
 import {
   ComponentProps,
@@ -67,6 +68,13 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       setIsAvatarError(false)
     }, [profileAvatar])
 
+    const avatar = useMemo(() => {
+      return createAvatar(bottts, {
+        size: 128,
+        seed: address,
+      }).toDataUriSync()
+    }, [address])
+
     if (isLoading) {
       return (
         <div
@@ -123,7 +131,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
 
         <div className={cx('relative h-full w-full')}>
-          <IdenticonAvatar
+          <RandomAvatar
             value={address}
             className='h-full w-full !cursor-[inherit]'
           />
@@ -133,19 +141,32 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   }
 )
 
-export function IdenticonAvatar({
+export function RandomAvatar({
   value,
   className,
 }: {
   value: string
   className?: string
 }) {
+  const avatar = useMemo(() => {
+    return createAvatar(bottts, {
+      size: 128,
+      seed: value,
+    }).toDataUriSync()
+  }, [value])
+
   return (
-    <Identicon
-      theme='polkadot'
-      value={value}
-      className={cx('[&_svg]:h-full [&_svg]:w-full', className)}
-    />
+    <div className={cx('relative h-full w-full p-[7.5%]', className)}>
+      <div className='relative h-full w-full'>
+        <Image
+          sizes='5rem'
+          className='relative rounded-full'
+          fill
+          src={avatar}
+          alt='avatar'
+        />
+      </div>
+    </div>
   )
 }
 

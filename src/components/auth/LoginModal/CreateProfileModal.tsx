@@ -7,6 +7,7 @@ import Modal, {
   ModalProps,
 } from '@/components/modals/Modal'
 import { getProfileQuery } from '@/services/api/query'
+import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -114,13 +115,15 @@ function CreateProfileForm({
   const handleCreateProfileSubmit = handleSubmit(async (data) => {
     sendEvent('account_settings_changed', { profileSource: 'custom' })
     onSubmit?.()
-    await mutateAsync({
-      content: {
-        name: data.name,
-        image: data.image,
-        about: data.about,
-      },
-    })
+    await mutateAsync(
+      augmentDatahubParams({
+        content: {
+          name: data.name,
+          image: data.image,
+          about: data.about,
+        },
+      })
+    )
     onSuccessSent?.()
   })
 

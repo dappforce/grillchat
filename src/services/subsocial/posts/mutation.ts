@@ -1,14 +1,12 @@
 import { saveFile, useRevalidateChatPage } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
-import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import {
   getOwnedPostsQuery,
   getPostsBySpaceIdQuery,
 } from '@/services/datahub/posts/query'
 import { getMyMainAddress } from '@/stores/my-account'
-import { useTransactionMutation } from '@/subsocial-query/subsocial/mutation'
-import { TransactionMutationConfig } from '@/subsocial-query/subsocial/types'
+import { MutationConfig } from '@/subsocial-query'
 import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
@@ -71,9 +69,7 @@ function checkAction(data: UpsertPostParams) {
 
   return { payload: data, action: 'invalid' } as const
 }
-function useUpsertPostRaw(
-  config?: TransactionMutationConfig<UpsertPostParams, GeneratedMessageContent>
-) {
+function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
   const client = useQueryClient()
   const { mutate: revalidateChatPage } = useRevalidateChatPage()
   const router = useRouter()
@@ -158,9 +154,7 @@ export const useUpsertPost = createMutationWrapper(
 )
 
 export type HideUnhidePostParams = { postId: string; action: 'hide' | 'unhide' }
-function useHideUnhidePostRaw(
-  config?: TransactionMutationConfig<HideUnhidePostParams>
-) {
+function useHideUnhidePostRaw(config?: MutationConfig<HideUnhidePostParams>) {
   const client = useQueryClient()
 
   return useMutation({
@@ -207,57 +201,40 @@ export const useHideUnhidePost = createMutationWrapper(
 export type HideMessageParams = {
   messageId: string
 }
-export function useHideMessage(
-  config?: TransactionMutationConfig<HideMessageParams>
-) {
+export function useHideMessage(config?: MutationConfig<HideMessageParams>) {
   const client = useQueryClient()
 
-  return useTransactionMutation<HideMessageParams>(
-    {
-      getWallet: getCurrentWallet,
-      generateContext: undefined,
-      transactionGenerator: async ({ data: params }) => {
-        await datahubMutation.updatePostData({
-          ...getCurrentWallet(),
-          args: { postId: params.messageId, changes: { hidden: true } },
-        })
-
-        if (!isPersistentId(params.messageId)) {
-          throw new Error(
-            'Hiding offchain message, this error is expected to be supresssed'
-          )
-        }
-      },
+  return useMutation({
+    ...config,
+    mutationFn: async ({ messageId }: HideMessageParams) => {
+      await datahubMutation.updatePostData({
+        ...getCurrentWallet(),
+        args: { postId: messageId, changes: { hidden: true } },
+      })
     },
-    config,
-    {
-      supressSendingTxError: true,
-      txCallbacks: {
-        onStart: async ({ data }) => {
-          preventWindowUnload()
+    onMutate: async ({ messageId }) => {
+      preventWindowUnload()
 
-          getPostQuery.setQueryData(client, data.messageId, (message) => {
-            if (!message) return message
-            return {
-              ...message,
-              struct: {
-                ...message.struct,
-                hidden: true,
-              },
-            }
-          })
-        },
-        onError: async ({ data }) => {
-          allowWindowUnload()
-          getPostQuery.invalidate(client, data.messageId)
-        },
-        onSuccess: async ({ data }) => {
-          allowWindowUnload()
-          getPostQuery.invalidate(client, data.messageId)
-        },
-      },
-    }
-  )
+      getPostQuery.setQueryData(client, messageId, (message) => {
+        if (!message) return message
+        return {
+          ...message,
+          struct: {
+            ...message.struct,
+            hidden: true,
+          },
+        }
+      })
+    },
+    onError: async (_, { messageId }) => {
+      allowWindowUnload()
+      getPostQuery.invalidate(client, messageId)
+    },
+    onSuccess: async (_, { messageId }) => {
+      allowWindowUnload()
+      getPostQuery.invalidate(client, messageId)
+    },
+  })
 }
 
 export type PinMessageParams = {
@@ -265,65 +242,55 @@ export type PinMessageParams = {
   messageId: string
   action: 'pin' | 'unpin'
 }
-export function usePinMessage(
-  config?: TransactionMutationConfig<PinMessageParams>
-) {
+export function usePinMessage(config?: MutationConfig<PinMessageParams>) {
   const client = useQueryClient()
 
-  return useTransactionMutation<PinMessageParams>(
-    {
-      getWallet: getCurrentWallet,
-      generateContext: undefined,
-      transactionGenerator: async ({ data: params }) => {
-        const newContent = await getUpdatedPinPostContent(client, params)
-        const { success, cid } = await saveFile(newContent)
-        if (!success || !cid) throw new Error('Failed to save file')
+  return useMutation({
+    ...config,
+    mutationFn: async (params: PinMessageParams) => {
+      const newContent = await getUpdatedPinPostContent(client, params)
+      const { success, cid } = await saveFile(newContent)
+      if (!success || !cid) throw new Error('Failed to save file')
 
-        await datahubMutation.updatePostData({
-          ...getCurrentWallet(),
-          args: {
-            postId: params.chatId,
-            changes: {
-              content: {
-                cid,
-                content: newContent as PostContent,
-              },
+      await datahubMutation.updatePostData({
+        ...getCurrentWallet(),
+        args: {
+          postId: params.chatId,
+          changes: {
+            content: {
+              cid,
+              content: newContent as PostContent,
             },
           },
-        })
-      },
+        },
+      })
     },
-    config,
-    {
-      txCallbacks: {
-        onStart: async ({ data }) => {
-          preventWindowUnload()
+    onMutate: async (data) => {
+      preventWindowUnload()
 
-          const newContent = await getUpdatedPinPostContent(client, data)
-          getPostQuery.setQueryData(client, data.chatId, (chat) => {
-            if (!chat) return chat
-            return {
-              ...chat,
-              content: chat.content
-                ? {
-                    ...chat.content,
-                    ...newContent,
-                  }
-                : null,
-            }
-          })
-        },
-        onError: async ({ data }) => {
-          allowWindowUnload()
-          getPostQuery.invalidate(client, data.chatId)
-        },
-        onSuccess: async ({ data }) => {
-          allowWindowUnload()
-          getPostQuery.invalidate(client, data.chatId)
-        },
-      },
-    }
-  )
+      const newContent = await getUpdatedPinPostContent(client, data)
+      getPostQuery.setQueryData(client, data.chatId, (chat) => {
+        if (!chat) return chat
+        return {
+          ...chat,
+          content: chat.content
+            ? {
+                ...chat.content,
+                ...newContent,
+              }
+            : null,
+        }
+      })
+    },
+    onError: async (_, data) => {
+      allowWindowUnload()
+      getPostQuery.invalidate(client, data.chatId)
+    },
+    onSuccess: async (_, data) => {
+      allowWindowUnload()
+      getPostQuery.invalidate(client, data.chatId)
+    },
+  })
 }
 
 async function getUpdatedPinPostContent(

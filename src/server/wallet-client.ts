@@ -1,11 +1,9 @@
-import { Keyring } from '@polkadot/api'
-import { cryptoWaitReady } from '@polkadot/util-crypto'
-
 import { env } from '@/env.mjs'
-import { KeyringPair } from '@polkadot/keyring/types'
+import { Signer } from '@/utils/account'
+import { Wallet } from 'ethers'
 
 export type WalletClientAccounts = {
-  discussionCreator: KeyringPair | null
+  discussionCreator: Signer | null
 }
 
 export class WalletManager {
@@ -24,25 +22,10 @@ export class WalletManager {
   }
 
   public static async createKeyringPairFromMnem(mnem: string) {
-    if (!(await cryptoWaitReady())) {
-      throw 'cryptoWaitReady() resolved to false'
-    }
     if (!mnem) {
       throw 'suri cannot be undefined'
     }
-    let keyring = new Keyring({ type: 'sr25519' })
-    return keyring.addFromUri(mnem)
-  }
-
-  public static async createKeyringPairFromSeed(seed: Uint8Array) {
-    if (!(await cryptoWaitReady())) {
-      throw 'cryptoWaitReady() resolved to false'
-    }
-    if (!seed) {
-      throw 'suri cannot be undefined'
-    }
-    let keyring = new Keyring({ type: 'sr25519' })
-    return keyring.addFromSeed(seed)
+    return Wallet.fromPhrase(mnem)
   }
 
   public clientValid(): boolean {
