@@ -1,22 +1,22 @@
 import FormatBalance from '@/components/FormatBalance'
 import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
+import { ZERO } from '@/constants/config'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getRewardHistoryQuery } from '@/services/datahub/content-staking/query'
+import { LeaderboardRole } from '@/services/datahub/leaderboard'
 import { cx } from '@/utils/class-names'
 import { BN } from '@polkadot/util'
 import { convertToBalanceWithDecimal, isEmptyArray } from '@subsocial/utils'
-import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
-import { useLeaderboardContext } from '../LeaderboardContext'
 
 type StakerRewardsProps = {
   address: string
+  leaderboardRole: LeaderboardRole
 }
 
-const StakerRewards = ({ address }: StakerRewardsProps) => {
+const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
   const { data, isLoading } = getRewardHistoryQuery.useQuery(address)
-  const { leaderboardRole } = useLeaderboardContext()
 
   const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
 
@@ -58,7 +58,7 @@ const StakerRewards = ({ address }: StakerRewardsProps) => {
             const rewardValueWithDecumal =
               userRewardValue && decimal
                 ? convertToBalanceWithDecimal(userRewardValue, decimal)
-                : new BigNumber(0)
+                : ZERO
 
             return (
               <RewardsRow

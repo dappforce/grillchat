@@ -1,6 +1,9 @@
 import { cx } from '@/utils/class-names'
 import { RadioGroup } from '@headlessui/react'
-import { useLeaderboardContext } from './LeaderboardContext'
+import { useRouter } from 'next/router'
+import { useGetLeaderboardRole } from './utils'
+
+const labels = ['Staker', 'Creator']
 
 type LeaderboardRoleRadioGroupProps = {
   className?: string
@@ -9,13 +12,28 @@ type LeaderboardRoleRadioGroupProps = {
 export const LeaderboardRoleRadioGroup = ({
   className,
 }: LeaderboardRoleRadioGroupProps) => {
-  const { leaderboardRole, setLeaderboardRole } = useLeaderboardContext()
-  const labels = ['Staker', 'Creator']
+  const router = useRouter()
+
+  const leaderboardRole = useGetLeaderboardRole()
+
+  const onChange = (role: string) => {
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          role,
+        },
+      },
+      undefined,
+      { shallow: true }
+    )
+  }
 
   return (
     <RadioGroup
       value={leaderboardRole}
-      onChange={setLeaderboardRole}
+      onChange={onChange}
       className={cx(
         'flex h-[34px] items-center gap-[2px] rounded-lg bg-white px-[2px] dark:bg-white/10',
         className

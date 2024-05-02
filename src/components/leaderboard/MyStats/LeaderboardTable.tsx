@@ -4,13 +4,14 @@ import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
 import Table, { Column } from '@/components/Table'
 import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
+import { getLeaderboardLink } from '@/components/layouts/Sidebar'
+import { ZERO } from '@/constants/config'
 import { getProfileQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { cx } from '@/utils/class-names'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
-import BN from 'bignumber.js'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 import LeaderboardModal from './LeaderboardModal'
@@ -81,7 +82,7 @@ const parseTableRows = (
     data
       .map((item) => ({
         address: item.address,
-        rank: item.rank! + 1,
+        rank: item.rank!,
         'user-role': <UserPreview address={item.address} />,
         rewards: <UserReward reward={item.reward} />,
         className:
@@ -112,14 +113,14 @@ const LeaderboardTable = ({
     }
 
     return [
-      ...parseTableRows(leaderboardData?.pages[0].data || [], TABLE_LIMIT - 1),
       {
         address: currentUserRank.address,
-        rank: currentUserRank.rank! + 1,
+        rank: currentUserRank.rank!,
         'user-role': <UserPreview address={currentUserRank.address} />,
         rewards: <UserReward reward={currentUserRank.reward} />,
         className: 'dark:bg-slate-700 bg-[#EEF2FF]',
       },
+      ...parseTableRows(leaderboardData?.pages[0].data || [], TABLE_LIMIT - 1),
     ]
   }, [JSON.stringify(currentUserRank), role, leaderboardData?.pages[0]])
 
@@ -144,7 +145,7 @@ const LeaderboardTable = ({
             onRowClick={(item) =>
               router.replace(
                 '/leaderboard/[address]',
-                `/leaderboard/${item.address}`
+                `${getLeaderboardLink(item.address)}?role=${role}`
               )
             }
           />
@@ -176,7 +177,7 @@ export const UserReward = ({ reward }: UserRewardProps) => {
   const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
 
   const rewardWithDecimal =
-    reward && decimal ? convertToBalanceWithDecimal(reward, decimal) : new BN(0)
+    reward && decimal ? convertToBalanceWithDecimal(reward, decimal) : ZERO
 
   return (
     <FormatBalance

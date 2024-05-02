@@ -1,5 +1,6 @@
 import Loading from '@/components/Loading'
 import { Column, TableHeader } from '@/components/Table'
+import { getLeaderboardLink } from '@/components/layouts/Sidebar'
 import Modal from '@/components/modals/Modal'
 import { LeaderboardRole } from '@/services/datahub/leaderboard'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
@@ -114,7 +115,7 @@ const ModalTableRows = ({
 
   const tableData = data.map((item) => ({
     address: item.address,
-    rank: item.rank! + 1,
+    rank: item.rank!,
     'user-role': <UserPreview address={item.address} />,
     rewards: <UserReward reward={item.reward} />,
     className:
@@ -136,7 +137,7 @@ const ModalTableRows = ({
             onRowClick={() => {
               router.push(
                 '/leaderboard/[address]',
-                `/leaderboard/${item.address}`
+                getLeaderboardLink(item.address)
               )
               closeModal()
             }}

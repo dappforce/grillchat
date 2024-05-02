@@ -5,7 +5,7 @@ import { useReferralId } from './ReferralUrlChanger'
 export type CustomLinkProps = React.ComponentProps<typeof Link> & {
   forceHardNavigation?: boolean
 }
-export default function CustomLink({
+export default function ProfileLinkCustomLink({
   forceHardNavigation,
   ...props
 }: React.ComponentProps<typeof Link> & { forceHardNavigation?: boolean }) {

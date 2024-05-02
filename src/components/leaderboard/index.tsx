@@ -2,9 +2,10 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Tabs from '../Tabs'
+import { getLeaderboardLink } from '../layouts/Sidebar'
 import GlobalStats from './GlobalStats'
-import { LeaderboardContextWrapper } from './LeaderboardContext'
 import MyStats from './MyStats'
+import { useGetLeaderboardRole } from './utils'
 
 const getIndexById = (tabs: any[], id: string) => {
   return tabs.findIndex((tab) => tab.id === id)
@@ -17,6 +18,8 @@ type LeaderboardContentProps = {
 const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
   const myAddress = useMyMainAddress()
   const router = useRouter()
+
+  const role = useGetLeaderboardRole()
 
   const tabs = useMemo(() => {
     const values = [
@@ -89,13 +92,13 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
           setSelectedTab: (selectedTab, tabId) => {
             if (tabId === 'global-stats') {
               router.replace('/leaderboard', '/leaderboard', {
-                shallow: true,
+                shallow: false,
               })
             } else if (tabId === 'my-stats') {
               router.replace(
                 '/leaderboard/[address]',
-                `/leaderboard/${myAddress}`,
-                { shallow: true }
+                `${getLeaderboardLink(myAddress)}?role=${role}`,
+                { shallow: false }
               )
             } else if (tabId === 'grill-stats') {
               router.replace('https://grillapp.net/stats')
@@ -105,15 +108,9 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
         }}
       />
     )
-  }, [tabs.length, selectedTab])
+  }, [tabs.length, selectedTab, address])
 
-  return (
-    <>
-      <LeaderboardContextWrapper>
-        <TabsComp />
-      </LeaderboardContextWrapper>
-    </>
-  )
+  return <TabsComp />
 }
 
 export default LeaderboardContent

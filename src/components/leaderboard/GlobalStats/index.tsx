@@ -7,13 +7,18 @@ import GlobalStatsDashboard from './GlobalStatsDashboard'
 
 const customColumnsClassNames = ['md:w-[9.8%]', undefined, 'md:w-[30%]']
 
+const sizeStyle = isTouchDevice() ? '70px' : '88px'
+
 const GlobalStats = () => {
   return (
     <div className='flex w-full flex-col gap-5'>
-      <div className='grid grid-cols-2 flex-col gap-4 md:grid-cols-3'>
+      <div className='grid grid-cols-[calc(70%-8px),30%] gap-x-4'>
+        <div className='grid grid-cols-2 gap-4'>
+          <GlobalStatsDashboard />
+        </div>
         <div
           className={cx(
-            'col-[span_2] flex gap-4 rounded-[20px] border border-[#6366F1]/20 bg-[#0053FF]/10 md:col-auto md:row-[span_2]',
+            'flex gap-4 rounded-[20px] border border-[#6366F1]/20 bg-[#0053FF]/10 md:col-auto md:row-[span_2]',
             'items-center p-4 md:flex-col'
           )}
         >
@@ -21,8 +26,8 @@ const GlobalStats = () => {
             className='flex items-center justify-center rounded-full'
             style={{
               background: 'white',
-              width: isTouchDevice() ? '70px' : '88px',
-              height: isTouchDevice() ? '70px' : '88px',
+              width: sizeStyle,
+              height: sizeStyle,
             }}
           >
             <IoPeople style={{ fontSize: '42px', color: '#5089F8' }} />
@@ -34,7 +39,6 @@ const GlobalStats = () => {
             <span className={mutedTextColorStyles}>this week</span>
           </div>
         </div>
-        <GlobalStatsDashboard />
       </div>
       <div className='flex grid-cols-2 flex-col gap-4 md:grid'>
         <LeaderboardTable

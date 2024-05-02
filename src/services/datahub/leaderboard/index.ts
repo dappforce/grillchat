@@ -149,15 +149,20 @@ export async function getUserStatistics({
     variables: { address, timestamp: getDayAndWeekTimestamp().week.toString() },
   })
 
+  const creatorRank =
+    res.creator?.rankIndex !== undefined ? res.creator.rankIndex + 1 : null
+  const stakerRank =
+    res.staker?.rankIndex !== undefined ? res.staker.rankIndex + 1 : null
+
   return {
     address,
     creator: {
       ...res.activeStakingAccountActivityMetricsForFixedPeriod.creator,
-      rank: res.creator?.rankIndex ?? null,
+      rank: creatorRank,
     },
     staker: {
       ...res.activeStakingAccountActivityMetricsForFixedPeriod.staker,
-      rank: res.staker?.rankIndex ?? null,
+      rank: stakerRank,
     },
   }
 }
@@ -268,7 +273,7 @@ export async function getLeaderboardData({
 
   const leaderboardData = data.data.map(({ rank, ...other }) => ({
     ...other,
-    rank: rank ?? null,
+    rank: rank !== undefined ? rank + 1 : null,
   }))
 
   return {

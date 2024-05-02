@@ -40,8 +40,7 @@ export default function Sidebar() {
         <SidebarItem
           icon={MdOutlineLeaderboard}
           title='Leaderboard'
-          href={`/c/leaderboard${myAddress ? `/${myAddress}` : ''}`}
-          forceHardNavigation
+          href={getLeaderboardLink(myAddress)}
         />
         <SidebarItem
           icon={RiLineChartLine}
@@ -77,6 +76,9 @@ export default function Sidebar() {
     </aside>
   )
 }
+
+export const getLeaderboardLink = (address: string | null) =>
+  `/leaderboard${address ? `/${address}` : ''}`
 
 function SidebarItem({
   icon: Icon,

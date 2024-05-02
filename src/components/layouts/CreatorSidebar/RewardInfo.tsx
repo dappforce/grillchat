@@ -19,6 +19,7 @@ import { AiOutlineLineChart } from 'react-icons/ai'
 import { RiHistoryFill } from 'react-icons/ri'
 import { SlQuestion } from 'react-icons/sl'
 import CustomLink from 'src/components/referral/CustomLink'
+import { getLeaderboardLink } from '../Sidebar'
 import RewardHistoryModal from './RewardHistoryModal'
 import StakerRewardProgressBar, {
   StakerRewardProgressBarProps,
@@ -96,8 +97,7 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
 
         <CustomLink
           className='flex items-center justify-center gap-2 px-4 py-3.5 font-medium text-text-primary'
-          forceHardNavigation
-          href={`/leaderboard/${myAddress}?role=staker`}
+          href={`${getLeaderboardLink(myAddress)}?role=staker`}
           onClick={() => {
             sendEvent('leaderboard_my_stats_opened', {
               myStats: true,

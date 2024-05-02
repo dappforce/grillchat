@@ -1,21 +1,23 @@
 import FormatBalance from '@/components/FormatBalance'
 import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import PopOver from '@/components/floating/PopOver'
+import { ZERO } from '@/constants/config'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
+import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
-import BN from 'bignumber.js'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import { cx } from '../../../utils/class-names'
-import { useLeaderboardContext } from '../LeaderboardContext'
 
 type LeaderboardStatsDataProps = {
   address: string
+  leaderboardRole: LeaderboardRole
 }
 
-const LeaderboardStatsData = ({ address }: LeaderboardStatsDataProps) => {
-  const { leaderboardRole } = useLeaderboardContext()
-
+const LeaderboardStatsData = ({
+  address,
+  leaderboardRole,
+}: LeaderboardStatsDataProps) => {
   const { data: userStats, isLoading } = getUserStatisticsQuery.useQuery({
     address,
   })
@@ -62,7 +64,7 @@ export const UserStatsCard = ({
   const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
 
   const valueWithDecimals =
-    value && decimal ? convertToBalanceWithDecimal(value, decimal) : new BN(0)
+    value && decimal ? convertToBalanceWithDecimal(value, decimal) : ZERO
 
   const titleElement = (
     <span className={cx('text-sm leading-[22px]', mutedTextColorStyles)}>

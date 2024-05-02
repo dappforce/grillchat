@@ -2,12 +2,12 @@ import CoinsImage from '@/assets/graphics/coins.png'
 import Button from '@/components/Button'
 import FormatBalance from '@/components/FormatBalance'
 import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
+import { ZERO } from '@/constants/config'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
-import BN from 'bignumber.js'
 import Image from 'next/image'
 import { cx } from '../../../utils/class-names'
 
@@ -25,7 +25,7 @@ const IncreaseStakeBanner = () => {
   const balanceValue =
     decimal && freeBalance
       ? convertToBalanceWithDecimal(freeBalance, decimal)
-      : new BN(0)
+      : ZERO
 
   const balance = !balanceValue.isZero() ? (
     <>
@@ -41,7 +41,7 @@ const IncreaseStakeBanner = () => {
     <div
       className={cx(
         'relative flex h-full w-full flex-col justify-between gap-3 overflow-hidden md:flex-row md:items-center md:gap-2',
-        'rounded-2xl bg-[#EEF2FF] p-4 backdrop-blur-xl dark:bg-[#4F46E5] md:p-6 md:pl-[65px]'
+        'rounded-2xl border border-[#6366F1]/20 bg-[#EEF2FF] p-4 backdrop-blur-xl dark:border-none dark:bg-[#4F46E5] md:p-6 md:pl-[65px]'
       )}
     >
       <Image
@@ -56,7 +56,7 @@ const IncreaseStakeBanner = () => {
         <span className='text-base font-semibold leading-normal'>
           Increase your daily rewards by locking more SUB
         </span>
-        <span className={cx('text-xs font-medium', mutedTextColorStyles)}>
+        <span className={cx('text-sm font-medium', mutedTextColorStyles)}>
           You can lock {balance}more SUB to increase your future rewards
         </span>
       </div>
