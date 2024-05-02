@@ -25,7 +25,7 @@ const LeaderboardProfilePreview = ({
         'border-[#6366F1]/20 bg-[#EDF4FF] p-4 dark:bg-[#0053FF]/10'
       )}
     >
-      {rank && (
+      {rank !== null && (
         <span
           className={cx(
             mutedTextColorStyles,
