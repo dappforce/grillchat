@@ -1,3 +1,3 @@
-import HomePage from '@/modules/chat/HomePage'
-
-export default HomePage
+export default function Test() {
+  return <div>asdfasdf</div>
+}

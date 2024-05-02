@@ -1,4 +1,3 @@
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   SocialCallDataArgs,
   SocialEventDataApiInput,
@@ -53,10 +52,11 @@ const CREATE_SUPER_LIKE = gql`
 export async function createSuperLike(input: SocialEventDataApiInput) {
   const args: SocialCallDataArgs<'synth_active_staking_create_super_like'> =
     JSON.parse(input.callData?.args || '{}') as any
-  const substrateApi = await (await getSubsocialApi()).substrateApi
-  const blockHash = await substrateApi.rpc.chain.getBlockHash()
+  // const substrateApi = await (await getSubsocialApi()).substrateApi
+  // const blockHash = await substrateApi.rpc.chain.getBlockHash()
 
-  args.blockHash = blockHash.toString()
+  // TODO: how to get this
+  args.blockHash = ''
   input.callData.args = JSON.stringify(args)
 
   input.callData.timestamp = Date.now()
