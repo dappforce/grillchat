@@ -1,6 +1,4 @@
-import { cx } from '@/utils/class-names'
-import { sectionBg } from './content-staking/utils/SectionWrapper'
-import { mutedTextColorStyles } from './content-staking/utils/commonStyles'
+import { cx, mutedTextColorStyles, sectionBg } from '@/utils/class-names'
 
 export type Column = {
   index: string

@@ -65,3 +65,10 @@ const COMMON_CLASS_NAMES = {
 export function getCommonClassNames(type: keyof typeof COMMON_CLASS_NAMES) {
   return COMMON_CLASS_NAMES[type]
 }
+
+export const sectionBg = 'bg-white dark:bg-white/5'
+
+export const sectionTitleStyles =
+  'md:text-[28px] text-xl font-bold leading-none'
+
+export const mutedTextColorStyles = 'dark:text-slate-300 text-slate-500'

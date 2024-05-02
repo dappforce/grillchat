@@ -1,7 +1,6 @@
-import { cx } from '@/utils/class-names'
+import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import React, { useEffect, useState } from 'react'
 import { FaAngleRight } from 'react-icons/fa6'
-import { mutedTextColorStyles } from './content-staking/utils/commonStyles'
 
 type AccordionItemProps = {
   title: string
