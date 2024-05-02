@@ -7,7 +7,6 @@ import {
   SocialEventDataApiInput,
   SocialEventDataType,
   socialCallName,
-  socialEventProtVersion,
 } from '@subsocial/data-hub-sdk'
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { Client, createClient } from 'graphql-ws'
@@ -94,7 +93,7 @@ export function createSocialDataEventPayload<
 ) {
   const owner = proxyToAddress || address
   const payload: SocialEventDataApiInput = {
-    protVersion: socialEventProtVersion['0.1'],
+    protVersion: '0.1',
     dataType: SocialEventDataType.offChain,
     callData: {
       name: callName,

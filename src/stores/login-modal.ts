@@ -1,6 +1,6 @@
 import { LoginModalStep } from '@/components/auth/LoginModal/LoginModalContent'
 import { getUrlQuery } from '@/utils/links'
-import { useMyAccount } from './my-account'
+// import { useMyAccount } from './my-account'
 import { create, createSelectors } from './utils'
 
 type State = {
@@ -43,8 +43,8 @@ const useLoginModalBase = create<State & Actions>()((set, get) => ({
     }
 
     if (!isOpen) {
-      const { isTemporaryAccount, logout } = useMyAccount.getState()
-      if (isTemporaryAccount) logout()
+      // const { isTemporaryAccount, logout } = useMyAccount.getState()
+      // if (isTemporaryAccount) logout()
       set({ isOpen: false })
       return
     }

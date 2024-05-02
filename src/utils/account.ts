@@ -1,9 +1,10 @@
 import { useMyAccount } from '@/stores/my-account'
-import { HDNodeWallet, Wallet, isAddress } from 'ethers'
+import { HDNodeWallet } from 'ethers'
 
 export type Signer = HDNodeWallet
 
 export async function generateAccount() {
+  const { Wallet } = await import('ethers')
   const wallet = Wallet.createRandom()
   return { publicKey: wallet.address, secretKey: wallet.mnemonic?.phrase ?? '' }
 }
@@ -15,6 +16,7 @@ export function isSecretKeyUsingMiniSecret(secretKey: string) {
 export async function loginWithSecretKey(
   secretKey: string
 ): Promise<HDNodeWallet> {
+  const { Wallet } = await import('ethers')
   return Wallet.fromPhrase(secretKey)
 }
 
@@ -33,6 +35,7 @@ export function decodeSecretKey(encodedSecretKey: string) {
 }
 
 export async function validateAddress(address: string) {
+  const { isAddress } = await import('ethers')
   return isAddress(address)
 }
 

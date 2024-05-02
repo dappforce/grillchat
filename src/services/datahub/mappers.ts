@@ -8,7 +8,6 @@ import {
   PostData,
   SpaceData,
 } from '@subsocial/api/types'
-import { summarizeMd } from '@subsocial/utils'
 import {
   ContentExtensionSchemaId,
   DatahubPostFragmentFragment,
@@ -147,7 +146,8 @@ export const mapDatahubSpaceFragment = (
   return {
     id: space.id,
     content: {
-      ...summarizeMd(space.about ?? ''),
+      summary: space.about ?? '',
+      isShowMore: false,
       name: space.name ?? '',
       image: space.image ?? '',
       about: space.about ?? '',

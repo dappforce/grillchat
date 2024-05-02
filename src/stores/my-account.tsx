@@ -1,26 +1,23 @@
-import Toast from '@/components/Toast'
-import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
-import { sendEventWithRef } from '@/components/referral/analytics'
-import { IdentityProvider } from '@/services/datahub/generated-query'
-import { linkIdentity } from '@/services/datahub/identity/mutation'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { getReferrerIdQuery } from '@/services/datahub/referral/query'
-import { queryClient } from '@/services/provider'
-import { useParentData } from '@/stores/parent'
-import {
-  Signer,
-  decodeSecretKey,
-  encodeSecretKey,
-  generateAccount,
-  isSecretKeyUsingMiniSecret,
-  loginWithSecretKey,
-  validateAddress,
-} from '@/utils/account'
+// import Toast from '@/components/Toast'
+// import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+// import { sendEventWithRef } from '@/components/referral/analytics'
+// import { IdentityProvider } from '@/services/datahub/generated-query'
+// import { linkIdentity } from '@/services/datahub/identity/mutation'
+// import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+// import { getReferrerIdQuery } from '@/services/datahub/referral/query'
+// import { useParentData } from '@/stores/parent'
+// import {
+//   Signer,
+//   decodeSecretKey,
+//   encodeSecretKey,
+//   generateAccount,
+//   isSecretKeyUsingMiniSecret,
+//   loginWithSecretKey,
+// } from '@/utils/account'
+import { type Signer } from '@/utils/account'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
-import { isWebNotificationsEnabled } from '@/utils/window'
-import dayjs from 'dayjs'
-import toast from 'react-hot-toast'
-import { UserProperties, useAnalytics } from './analytics'
+// import { isWebNotificationsEnabled } from '@/utils/window'
+// import { UserProperties, useAnalytics } from './analytics'
 import { create, createSelectors } from './utils'
 
 type State = {
@@ -90,43 +87,43 @@ const sendLaunchEvent = async (
   address?: string | false,
   parentProxyAddress?: string | null
 ) => {
-  let userProperties: UserProperties = {
-    tgNotifsConnected: false,
-    evmLinked: false,
-    polkadotLinked: !!parentProxyAddress,
-    webNotifsEnabled: false,
-    ownedChat: false,
-  }
+  // let userProperties: UserProperties = {
+  //   tgNotifsConnected: false,
+  //   evmLinked: false,
+  //   polkadotLinked: !!parentProxyAddress,
+  //   webNotifsEnabled: false,
+  //   ownedChat: false,
+  // }
 
-  const sendEvent = useAnalytics.getState().sendEvent
+  // const sendEvent = useAnalytics.getState().sendEvent
 
   if (!address) {
-    sendEvent('app_launched', undefined, { ref: getReferralIdInUrl() })
+    // sendEvent('app_launched', undefined, { ref: getReferralIdInUrl() })
   } else {
     const [
       // linkedTgAccData,
-      linkedIdentity,
-      referrerId,
+      // linkedIdentity,
+      // referrerId,
     ] = await Promise.allSettled([
       // getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
       //   address,
       // }),
-      getLinkedIdentityQuery.fetchQuery(queryClient, address),
-      getReferrerIdQuery.fetchQuery(queryClient, address),
+      // getLinkedIdentityQuery.fetchQuery(queryClient, address),
+      // getReferrerIdQuery.fetchQuery(queryClient, address),
     ] as const)
 
     // if (linkedTgAccData.status === 'fulfilled')
     //   userProperties.tgNotifsConnected =
     //     (linkedTgAccData.value?.length || 0) > 0
-    if (linkedIdentity.status === 'fulfilled')
-      userProperties.twitterLinked =
-        linkedIdentity.value?.provider === IdentityProvider.Twitter
-    if (referrerId.status === 'fulfilled')
-      userProperties.ref = referrerId.value || getReferralIdInUrl()
+    // if (linkedIdentity.status === 'fulfilled')
+    //   userProperties.twitterLinked =
+    //     linkedIdentity.value?.provider === IdentityProvider.Twitter
+    // if (referrerId.status === 'fulfilled')
+    //   userProperties.ref = referrerId.value || getReferralIdInUrl()
 
-    userProperties.webNotifsEnabled = isWebNotificationsEnabled()
+    // userProperties.webNotifsEnabled = isWebNotificationsEnabled()
 
-    sendEvent('app_launched', undefined, userProperties)
+    // sendEvent('app_launched', undefined, userProperties)
   }
 }
 
@@ -146,43 +143,43 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       isInitialization,
       withErrorToast = true,
     } = config || {}
-    const analytics = useAnalytics.getState()
+    // const analytics = useAnalytics.getState()
     let address: string = ''
     try {
       if (!secretKey) {
-        secretKey = (await generateAccount()).secretKey
-        const { parentOrigin } = useParentData.getState()
-        sendEventWithRef(address, (refId) => {
-          analytics.sendEvent(
-            'account_created',
-            {},
-            {
-              cameFrom: parentOrigin,
-              cohortDate: dayjs().toDate(),
-              ref: refId,
-            }
-          )
-        })
+        // secretKey = (await generateAccount()).secretKey
+        // const { parentOrigin } = useParentData.getState()
+        // sendEventWithRef(address, (refId) => {
+        //   analytics.sendEvent(
+        //     'account_created',
+        //     {},
+        //     {
+        //       cameFrom: parentOrigin,
+        //       cohortDate: dayjs().toDate(),
+        //       ref: refId,
+        //     }
+        //   )
+        // })
       } else if (secretKey.startsWith('0x')) {
         const augmented = secretKey.substring(2)
-        if (isSecretKeyUsingMiniSecret(augmented)) {
-          secretKey = augmented
-        }
+        // if (isSecretKeyUsingMiniSecret(augmented)) {
+        //   secretKey = augmented
+        // }
       }
 
-      const signer = await loginWithSecretKey(secretKey)
-      const encodedSecretKey = encodeSecretKey(secretKey)
-      address = signer.address
+      // const signer = await loginWithSecretKey(secretKey)
+      // const encodedSecretKey = encodeSecretKey(secretKey)
+      // address = signer.address
 
-      set({
-        address,
-        signer,
-        encodedSecretKey,
-        isInitializedAddress: !!isInitialization,
-      })
+      // set({
+      //   address,
+      //   signer,
+      //   encodedSecretKey,
+      //   isInitializedAddress: !!isInitialization,
+      // })
 
       if (asTemporaryAccount) {
-        temporaryAccountStorage.set(encodedSecretKey)
+        // temporaryAccountStorage.set(encodedSecretKey)
       } else saveLoginInfoToStorage()
 
       if (!isInitialization) {
@@ -195,14 +192,14 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
             parentProxyAddress,
             onInvalidProxy: () => {
               get().logout()
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  type='error'
-                  title='Login failed'
-                  subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
-                />
-              ))
+              // toast.custom((t) => (
+              //   <Toast
+              //     t={t}
+              //     type='error'
+              //     title='Login failed'
+              //     subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
+              //   />
+              // ))
             },
           })
         }
@@ -210,14 +207,14 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     } catch (e) {
       console.error('Failed to login', e)
       if (!isInitialization && withErrorToast) {
-        toast.custom((t) => (
-          <Toast
-            t={t}
-            type='error'
-            title='Login Failed'
-            description='The Grill key you provided is not valid'
-          />
-        ))
+        // toast.custom((t) => (
+        //   <Toast
+        //     t={t}
+        //     type='error'
+        //     title='Login Failed'
+        //     description='The Grill key you provided is not valid'
+        //   />
+        // ))
       }
       return false
     }
@@ -227,7 +224,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     set({ isTemporaryAccount: true })
     const encodedTempAcc = temporaryAccountStorage.get()
     let tempAcc = undefined
-    if (encodedTempAcc) tempAcc = decodeSecretKey(encodedTempAcc)
+    // if (encodedTempAcc) tempAcc = decodeSecretKey(encodedTempAcc)
 
     const res = await get().login(tempAcc, {
       asTemporaryAccount: true,
@@ -266,16 +263,16 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       const storageAddress = accountAddressStorage.get()
       set({ address: storageAddress || undefined })
 
-      const secretKey = decodeSecretKey(encodedSecretKey)
-      const address = await login(secretKey, { isInitialization: true })
+      // const secretKey = decodeSecretKey(encodedSecretKey)
+      // const address = await login(secretKey, { isInitialization: true })
 
-      if (!address) {
-        accountStorage.remove()
-        accountAddressStorage.remove()
-        set({ address: null })
-      }
+      // if (!address) {
+      //   accountStorage.remove()
+      //   accountAddressStorage.remove()
+      //   set({ address: null })
+      // }
 
-      sendLaunchEvent(address, parentProxyAddressFromStorage)
+      // sendLaunchEvent(address, parentProxyAddressFromStorage)
     } else {
       sendLaunchEvent()
     }
@@ -296,14 +293,14 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         parentProxyAddress,
         onInvalidProxy: () => {
           get().logout()
-          toast.custom((t) => (
-            <Toast
-              t={t}
-              type='error'
-              title='Logged out'
-              subtitle='You seem to have logged in to your wallet in another device, please relogin to use it here'
-            />
-          ))
+          // toast.custom((t) => (
+          //   <Toast
+          //     t={t}
+          //     type='error'
+          //     title='Logged out'
+          //     subtitle='You seem to have logged in to your wallet in another device, please relogin to use it here'
+          //   />
+          // ))
         },
       })
     }
@@ -328,15 +325,15 @@ async function linkPolkadotIfNotLinked(
   if (linkedAddress ?? ''! === parentProxyAddress!) return
 
   try {
-    await linkIdentity({
-      address,
-      args: {
-        id: parentProxyAddress,
-        // @ts-expect-error because using IdentityProvider from generated types, but its same with the datahub sdk
-        provider: IdentityProvider.Polkadot,
-      },
-    })
-    if (queryClient) getLinkedIdentityQuery.invalidate(queryClient, address)
+    // await linkIdentity({
+    //   address,
+    //   args: {
+    //     id: parentProxyAddress,
+    //     // @ts-expect-error because using IdentityProvider from generated types, but its same with the datahub sdk
+    //     provider: IdentityProvider.Polkadot,
+    //   },
+    // })
+    // if (queryClient) getLinkedIdentityQuery.invalidate(queryClient, address)
   } catch (err) {
     console.error('Failed to link polkadot identity', err)
   }
@@ -364,17 +361,16 @@ async function validateParentProxyAddress({
 
 async function getParentProxyAddress(grillAddress: string) {
   try {
-    const linkedIdentity = await getLinkedIdentityQuery.fetchQuery(
-      queryClient,
-      grillAddress
-    )
-    if (linkedIdentity?.provider === IdentityProvider.Polkadot) {
-      const isValid = await validateAddress(linkedIdentity.substrateAccount)
-      if (!isValid) return null
-
-      return linkedIdentity.externalId
-    }
-    return null
+    // const linkedIdentity = await getLinkedIdentityQuery.fetchQuery(
+    //   queryClient,
+    //   grillAddress
+    // )
+    // if (linkedIdentity?.provider === IdentityProvider.Polkadot) {
+    //   const isValid = await validateAddress(linkedIdentity.substrateAccount)
+    //   if (!isValid) return null
+    //   return linkedIdentity.externalId
+    // }
+    // return null
   } catch (err) {
     console.error('Failed to get linked identity')
     return null
@@ -387,7 +383,7 @@ function saveLoginInfoToStorage() {
   accountStorage.set(encodedSecretKey)
   accountAddressStorage.set(address)
 
-  useAnalytics.getState().setUserId(signer.address)
+  // useAnalytics.getState().setUserId(signer.address)
 }
 
 export function getMyMainAddress() {

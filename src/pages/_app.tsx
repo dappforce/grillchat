@@ -1,4 +1,3 @@
-import BadgeManager from '@/components/BadgeManager'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import GlobalModals from '@/components/modals/GlobalModals'
@@ -20,17 +19,11 @@ import '@rainbow-me/rainbowkit/styles.css'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
-import dynamic from 'next/dynamic'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 import urlJoin from 'url-join'
-
-const ForegroundNotificationHandler = dynamic(
-  () => import('@/components/ForegroundNotificationHandler'),
-  { ssr: false }
-)
 
 export type AppCommonProps = {
   alwaysShowScrollbarOffset?: boolean
@@ -54,7 +47,6 @@ export default function App(props: AppProps<AppCommonProps>) {
           alwaysShowScrollbarOffset={props.pageProps.alwaysShowScrollbarOffset}
         />
         <AppContent {...props} />
-        {/* <PWAInstall /> */}
       </ConfigProvider>
     </SessionProvider>
   )
@@ -110,9 +102,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
     <ThemeProvider attribute='class' defaultTheme='light' forcedTheme={theme}>
       <QueryProvider dehydratedState={dehydratedState}>
         <DatahubSubscriber />
-        <BadgeManager />
         <ToasterConfig />
-        <ForegroundNotificationHandler />
         <ReferralUrlChanger />
         <NextNProgress
           color='#eb2f95'
