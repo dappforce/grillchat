@@ -62,7 +62,6 @@ export const LoginContent = (props: LoginModalContentProps) => {
           <Button
             variant='primaryOutline'
             onClick={() => {
-              // setCurrentState('polkadot-connect')
               sendEvent('login_polkadot_account_clicked')
             }}
             size='lg'
@@ -117,44 +116,4 @@ export const loginModalContents: LoginModalContents = {
   'enter-secret-key': LoginWithGrillKeyContent,
   'new-account': NewAccountContent,
   'account-created': AccountCreatedContent,
-  // 'polkadot-connect': PolkadotConnectWalletContent,
-  // 'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
-  // 'polkadot-connect-account': PolkadotConnectAccountContent,
-  // 'polkadot-connect-confirmation': PolkadotConnectConfirmation,
 }
-
-// function PolkadotConnectConfirmation({
-//   setCurrentState,
-//   closeModal,
-// }: LoginModalContentProps) {
-//   const connectedWalletAddress = useMyAccount(
-//     (state) => state.connectedWallet?.address
-//   )
-//   const { data: profile, isSuccess } = getProfileQuery.useQuery(
-//     connectedWalletAddress ?? ''
-//   )
-//   const { mutate: setReferrerId } = useSetReferrerId()
-
-//   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
-//   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-
-//   return (
-//     <PolkadotConnectConfirmationContent
-//       closeModal={closeModal}
-//       setCurrentState={setCurrentState}
-//       onSuccess={() => {
-//         finalizeTemporaryAccount()
-//         if (!profile?.profileSpace?.id && isSuccess) {
-//           useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
-//         } else {
-//           finishLogin(closeModal)
-//         }
-//       }}
-//       beforeAddProxy={async () => {
-//         await loginAsTemporaryAccount()
-//         setReferrerId({ refId: getReferralIdInUrl(), walletType: 'injected' })
-//         return true
-//       }}
-//     />
-//   )
-// }

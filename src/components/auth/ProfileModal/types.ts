@@ -3,7 +3,6 @@ import React from 'react'
 export type ProfileModalState =
   // | PolkadotConnectSteps
   | 'account'
-  | 'linked-addresses'
   | 'profile-settings'
   // | 'polkadot-connect-unlink'
   // | 'polkadot-connect-identity-removed'

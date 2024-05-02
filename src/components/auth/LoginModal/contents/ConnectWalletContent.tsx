@@ -17,7 +17,6 @@ export const ConnectWalletContent = ({
           text: 'EVM',
           icon: EthIcon,
           onClick: () => {
-            setCurrentState('evm-address-link')
             sendEvent('start_link_evm_address')
           },
         },
@@ -25,7 +24,6 @@ export const ConnectWalletContent = ({
           text: 'Polkadot',
           icon: PolkadotIcon,
           onClick: () => {
-            setCurrentState('polkadot-connect')
             sendEvent('start_link_polkadot_address')
           },
         },

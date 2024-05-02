@@ -25,7 +25,6 @@ export default function NewAccountContent({
         size='lg'
         variant='primaryOutline'
         onClick={() => {
-          setCurrentState('evm-address-link')
           sendEvent('login_evm_clicked')
         }}
       >

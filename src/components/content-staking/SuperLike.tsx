@@ -18,7 +18,6 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import { LocalStorage } from '@/utils/storage'
-import { u8aToHex } from '@polkadot/util'
 import { signatureVerify } from '@polkadot/util-crypto'
 import dayjs from 'dayjs'
 import {
@@ -147,7 +146,7 @@ export function SuperLikeWrapper({
     if (!sig) {
       const signer = useMyAccount.getState().signer
       if (signer && myGrillAddress) {
-        sig = u8aToHex(signer.sign?.(message))
+        sig = signer.signMessageSync?.(message)
         currentWeekSigStorage.set(sig)
       } else {
         toast.error('No signer provided')

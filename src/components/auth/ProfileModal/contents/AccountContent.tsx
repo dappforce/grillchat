@@ -242,10 +242,7 @@ export default function AccountContent({
                     Get SUB
                   </LinkText>
                 ) : (
-                  <LinkText
-                    variant={'primary'}
-                    onClick={() => setCurrentState('withdraw-tokens')}
-                  >
+                  <LinkText variant={'primary'} onClick={() => undefined}>
                     Withdraw
                   </LinkText>
                 )}

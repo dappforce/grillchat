@@ -1,6 +1,5 @@
 import LoadingContent from '@/components/community/content/LoadingContent'
 import UpsertChatForm from '@/components/community/content/UpsertChatForm'
-import { communityHubId } from '@/modules/chat/HomePage'
 import { getProfileQuery } from '@/services/api/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { ProfileModalContentProps } from '../types'
@@ -16,7 +15,7 @@ export const CreateChatContent = ({
 
   return (
     <UpsertChatForm
-      hubId={hubId ? hubId : communityHubId}
+      hubId={hubId}
       customModalStates={{
         onLoading: () => setCurrentState('create-chat-loading'),
       }}

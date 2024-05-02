@@ -13,7 +13,6 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
-import { encodeProfileSource } from '@/utils/profile'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { Session } from 'next-auth'
@@ -75,14 +74,12 @@ export default function useOauthLogin({
   const { mutate: setReferrerId } = useSetReferrerId()
 
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
-    txCallbacks: {
-      onSuccess: () => {
-        replaceUrl(getCurrentUrlWithoutQuery('login'))
-        sendEvent('login_oauth_successful', { provider })
-        finalizeTemporaryAccount()
-        onSuccess()
-        signOut({ redirect: false })
-      },
+    onSuccess: () => {
+      replaceUrl(getCurrentUrlWithoutQuery('login'))
+      sendEvent('login_oauth_successful', { provider })
+      finalizeTemporaryAccount()
+      onSuccess()
+      signOut({ redirect: false })
     },
   })
   useToastError(
@@ -136,9 +133,6 @@ export default function useOauthLogin({
         content: {
           image: session?.user?.image ?? '',
           name: session?.user.name ?? '',
-          profileSource: encodeProfileSource({
-            source: 'subsocial-profile',
-          }),
         },
       })
     }
