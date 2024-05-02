@@ -59,9 +59,11 @@ export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
       const mainAddress = parentProxyAddress || address
       if (!mainAddress) return
 
-      getLinkedTelegramAccountsQuery.invalidate(queryClient, {
-        address: mainAddress,
-      })
+      if (queryClient) {
+        getLinkedTelegramAccountsQuery.invalidate(queryClient, {
+          address: mainAddress,
+        })
+      }
     }
   },
 })

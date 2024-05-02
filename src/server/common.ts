@@ -1,6 +1,5 @@
 import { env } from '@/env.mjs'
-import { Keyring } from '@polkadot/keyring'
-import { waitReady } from '@polkadot/wasm-crypto'
+import { Wallet } from 'ethers'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -87,7 +86,6 @@ export function convertNonce(nonce: number) {
 
 export async function getServerAccount() {
   const mnemonic = env.SERVER_MNEMONIC
-  const keyring = new Keyring()
-  await waitReady()
-  return keyring.addFromMnemonic(mnemonic, {}, 'sr25519')
+  const signer = Wallet.fromPhrase(mnemonic)
+  return signer
 }

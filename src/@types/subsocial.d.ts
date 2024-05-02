@@ -50,10 +50,6 @@ declare module '@subsocial/api/types' {
     id: 'subsocial-image'
     properties: ImageProperties
   }
-  export type DecodedPromoExtension = {
-    id: 'subsocial-decoded-promo'
-    properties: SecretBoxProperties
-  }
   export type PinsExtension = {
     id: 'subsocial-pinned-posts'
     properties: PinsProperties
@@ -63,7 +59,6 @@ declare module '@subsocial/api/types' {
     | NftExtension
     | DonateExtension
     | ImageExtension
-    | DecodedPromoExtension
     | PinsExtension
 
   export type LinkMetadata = {

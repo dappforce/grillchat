@@ -1,12 +1,8 @@
 import Button from '@/components/Button'
-import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
-import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
-import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
-import PopOver from '@/components/floating/PopOver'
 import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
@@ -28,23 +24,20 @@ import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { currentNetwork, estimatedWaitTime } from '@/utils/network'
+import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { BiGift } from 'react-icons/bi'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
 import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
-import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
-import { SuperLikeWrapper } from '../../content-staking/SuperLike'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 
 export type ChatItemMenusProps = {
@@ -81,10 +74,6 @@ export default function ChatItemMenus({
 
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
-  )
-  const openDonateExtension = useOpenDonateExtension(
-    message?.id,
-    message?.struct.ownerId ?? ''
   )
 
   const setReplyTo = useMessageData((state) => state.setReplyTo)
@@ -150,19 +139,6 @@ export default function ChatItemMenus({
 
     if (isOptimisticMessage) return menus
 
-    if (address && canUsePromoExtensionAccounts.includes(address)) {
-      menus.unshift({
-        text: 'Secret Box',
-        icon: BiGift,
-        onClick: () => {
-          openExtensionModal('subsocial-decoded-promo', {
-            recipient: ownerId ?? '',
-            messageId,
-          })
-        },
-      })
-    }
-
     const donateMenuItem: FloatingMenusProps['menus'][number] = {
       text: 'Donate',
       icon: RiCopperCoinLine,
@@ -173,7 +149,6 @@ export default function ChatItemMenus({
         }
 
         sendEvent('open_donate_action_modal', { hubId, chatId })
-        openDonateExtension()
       },
     }
     const replyItem: FloatingMenusProps['menus'][number] = {
@@ -202,49 +177,8 @@ export default function ChatItemMenus({
     <>
       <FloatingMenus
         beforeMenus={
-          isOptimisticMessage
-            ? message && <MintingMessageNotice message={message} />
-            : currentNetwork === 'subsocial' && (
-                <SuperLikeWrapper postId={messageId} withPostReward={false}>
-                  {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
-                    if (hasILiked) return null
-                    const menuList = (
-                      <div className='relative w-full'>
-                        <MenuList
-                          size='sm'
-                          menus={[
-                            {
-                              icon: IoDiamondOutline,
-                              text: 'Like Message',
-                              disabled: isDisabled,
-                              onClick: () => {
-                                handleClick()
-                                setIsOpenChatMenu(null)
-                              },
-                            },
-                          ]}
-                        />
-                        <div className='absolute bottom-0 flex w-full flex-col'>
-                          <div className='mx-4 border-b border-border-gray' />
-                        </div>
-                      </div>
-                    )
-                    return disabledCause ? (
-                      <PopOver
-                        triggerClassName='w-full'
-                        trigger={menuList}
-                        panelSize='sm'
-                        triggerOnHover
-                        placement='top'
-                      >
-                        <p>{disabledCause}</p>
-                      </PopOver>
-                    ) : (
-                      menuList
-                    )
-                  }}
-                </SuperLikeWrapper>
-              )
+          isOptimisticMessage &&
+          message && <MintingMessageNotice message={message} />
         }
         menus={menus}
         allowedPlacements={[

@@ -27,7 +27,6 @@ export default function ProfileAvatar({
     if (!evmLinking) return
 
     replaceUrl(getCurrentUrlWithoutQuery('evmLinking'))
-    openModal({ defaultOpenState: 'link-evm-address' })
   }, [openModal])
 
   return (

@@ -1,4 +1,3 @@
-import { useGetMyCreatorsIds } from '@/components/content-staking/hooks/useGetMyCreatorsIds'
 import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { useMemo } from 'react'
@@ -15,11 +14,12 @@ export const useGetBackerRewards = (account: string) => {
     [creatorsList?.length]
   )
 
-  const myCreatorsIds = useGetMyCreatorsIds(creatorsSpaceIds)
+  // const myCreatorsIds = useGetMyCreatorsIds(creatorsSpaceIds)
 
   const backerRewards = getBackerRewardsQuery.useQuery({
     account: account,
-    spaceIds: myCreatorsIds || creatorsSpaceIds,
+    // spaceIds: myCreatorsIds || creatorsSpaceIds,
+    spaceIds: creatorsSpaceIds,
   })
 
   return backerRewards

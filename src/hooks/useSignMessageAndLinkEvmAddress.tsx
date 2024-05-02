@@ -1,4 +1,3 @@
-import { useLinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { decodeAddress } from '@polkadot/keyring'
 import { u8aToHex } from '@polkadot/util'
@@ -78,16 +77,6 @@ export default function useSignMessageAndLinkEvmAddress({
   } = useSignEvmLinkMessage()
   const { disconnect } = useDisconnect()
 
-  const {
-    mutate: linkEvmAddress,
-    isLoading: isLinkingEvmAddress,
-    onCallbackLoading,
-  } = useLinkEvmAddress({
-    onSuccess,
-    onError,
-    linkedEvmAddress,
-  })
-
   useEffect(() => {
     if (isSignMessageError) {
       if (!linkedEvmAddress) {
@@ -96,7 +85,7 @@ export default function useSignMessageAndLinkEvmAddress({
       onError?.()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignMessageError, linkEvmAddress])
+  }, [isSignMessageError])
 
   const signAndLinkEvmAddress = async (
     evmAddress?: string,
@@ -112,15 +101,11 @@ export default function useSignMessageAndLinkEvmAddress({
     )
     if (data) {
       onFinishSignMessage?.()
-      linkEvmAddress({
-        evmAddress,
-        evmSignature: data,
-      })
     }
   }
 
   return {
     signAndLinkEvmAddress,
-    isLoading: onCallbackLoading || isSigningMessage || isLinkingEvmAddress,
+    isLoading: isSigningMessage,
   }
 }

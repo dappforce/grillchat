@@ -36,36 +36,40 @@ export const useCreateSuperLike = mutationWrapper(
       preventWindowUnload()
       const mainAddress = getMyMainAddress()
       if (!mainAddress) return
-      getSuperLikeCountQuery.setQueryData(queryClient, postId, (oldData) => {
-        if (!oldData)
+      if (queryClient) {
+        getSuperLikeCountQuery.setQueryData(queryClient, postId, (oldData) => {
+          if (!oldData)
+            return {
+              count: 1,
+              postId,
+            }
           return {
-            count: 1,
-            postId,
+            ...oldData,
+            count: oldData.count + 1,
           }
-        return {
-          ...oldData,
-          count: oldData.count + 1,
-        }
-      })
-      getAddressLikeCountToPostQuery.setQueryData(
-        queryClient,
-        { address: mainAddress, postId },
-        () => {
-          return {
-            address: mainAddress,
-            count: 1,
-            postId,
+        })
+        getAddressLikeCountToPostQuery.setQueryData(
+          queryClient,
+          { address: mainAddress, postId },
+          () => {
+            return {
+              address: mainAddress,
+              count: 1,
+              postId,
+            }
           }
-        }
-      )
+        )
+      }
     },
     onError: (_, { postId }) => {
       const mainAddress = getMyMainAddress()
       if (!mainAddress) return
-      getAddressLikeCountToPostQuery.invalidate(queryClient, {
-        postId,
-        address: mainAddress,
-      })
+      if (queryClient) {
+        getAddressLikeCountToPostQuery.invalidate(queryClient, {
+          postId,
+          address: mainAddress,
+        })
+      }
       allowWindowUnload()
     },
     onSuccess: () => {

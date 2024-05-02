@@ -9,7 +9,6 @@ import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import Linkify from 'linkify-react'
 import { useState } from 'react'
-import SuperLike from '../../../content-staking/SuperLike'
 import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
 import { getRepliedMessageId } from '../../utils'
 import ChatRelativeTime from '../ChatRelativeTime'
@@ -166,11 +165,11 @@ export default function DefaultChatItem({
         <div
           className={cx('mt-1 flex items-center', !showSuperLike && 'hidden')}
         >
-          <SuperLike
+          {/* <SuperLike
             isMyMessage={isMyMessage}
             withPostReward
             postId={message.id}
-          />
+          /> */}
           <span className='pointer-events-none ml-4 select-none opacity-0'>
             {relativeTime()}
           </span>

@@ -24,16 +24,13 @@ export default function ProposalDetailPage(props: ProposalDetailPageProps) {
           defaultBackLink: '/opengov',
           forceUseDefaultBackLink: false,
         },
-        customContent: ({ backButton, authComponent, notificationBell }) => (
+        customContent: ({ backButton, authComponent }) => (
           <div className='flex w-full items-center justify-between gap-4'>
             <NavbarProposalInfo
               backButton={backButton}
               proposal={props.proposal}
             />
-            <div className='flex items-center gap-3'>
-              {notificationBell}
-              {authComponent}
-            </div>
+            <div className='flex items-center gap-3'>{authComponent}</div>
           </div>
         ),
       }}

@@ -42,7 +42,9 @@ function getValidatedChatId(slugParam: string) {
 async function getChatsData(client: QueryClient, chatId: string) {
   const { messageIds, messages } = await getMessageIds(client, chatId)
 
-  const owners = messages.map((message) => message.struct.ownerId)
+  const owners = messages
+    .map((message) => message?.struct.ownerId)
+    .filter(Boolean)
 
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)

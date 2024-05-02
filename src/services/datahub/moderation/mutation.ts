@@ -69,7 +69,8 @@ export const useModerationActions = mutationWrapper(
       const completeArgs = augmentModerationActionParams(variables)
       if (completeArgs.callName === 'synth_moderation_init_moderator') {
         setTimeout(() => {
-          getModeratorQuery.invalidate(queryClient, completeArgs.address)
+          if (queryClient)
+            getModeratorQuery.invalidate(queryClient, completeArgs.address)
         }, 1_000)
       } else if (
         completeArgs.callName === 'synth_moderation_block_resource' ||

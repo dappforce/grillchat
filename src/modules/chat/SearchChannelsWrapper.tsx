@@ -1,9 +1,7 @@
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
-import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NoChatsFound from '@/components/chats/NoChatsFound'
 import useDebounce from '@/hooks/useDebounce'
 import useSearch from '@/hooks/useSearch'
-import { getPostsBySpaceContentQuery } from '@/services/subsocial/posts/query'
 import { removeDoubleSpaces } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
@@ -29,25 +27,29 @@ export default function SearchChannelsWrapper({
   const shouldUseGlobalSearch = !localSearch
 
   const debouncedSearch = useDebounce(cleanedSearch)
-  const { data: searchResults, isLoading } =
-    getPostsBySpaceContentQuery.useQuery(cleanedSearch, {
-      enabled: shouldUseGlobalSearch && cleanedSearch === debouncedSearch,
-    })
+  // const { data: searchResults, isLoading } =
+  //   getPostsBySpaceContentQuery.useQuery(cleanedSearch, {
+  //     enabled: shouldUseGlobalSearch && cleanedSearch === debouncedSearch,
+  //   })
 
-  let usedSearchResults = searchResults
-  if (localSearch) {
-    const filteredData = (localSearch.data?.filter(Boolean) ?? []) as PostData[]
-    usedSearchResults = matchSorter(filteredData, cleanedSearch, {
-      keys: localSearch.searchKeys,
-    })
-  }
+  const filteredData = (localSearch?.data?.filter(Boolean) ?? []) as PostData[]
+  const usedSearchResults = matchSorter(filteredData, cleanedSearch, {
+    keys: localSearch?.searchKeys,
+  })
+  // let usedSearchResults = searchResults
+  // if (localSearch) {
+  //   const filteredData = (localSearch.data?.filter(Boolean) ?? []) as PostData[]
+  //   usedSearchResults = matchSorter(filteredData, cleanedSearch, {
+  //     keys: localSearch.searchKeys,
+  //   })
+  // }
 
   if (!cleanedSearch) {
     return <div className='flex flex-col'>{children}</div>
   }
 
-  if (isLoading && shouldUseGlobalSearch)
-    return <ChatPreviewSkeleton.SkeletonList />
+  // if (isLoading && shouldUseGlobalSearch)
+  //   return <ChatPreviewSkeleton.SkeletonList />
 
   if (!usedSearchResults || usedSearchResults.length === 0) {
     return <NoChatsFound search={search} />

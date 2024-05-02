@@ -1,5 +1,4 @@
 import { Skeleton } from '@/components/SkeletonFallback'
-import getAmountRange from '@/components/content-staking/utils/getAmountRangeForAnalytics'
 import PopOver from '@/components/floating/PopOver'
 import {
   PostRewards,
@@ -80,9 +79,7 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
         <div
           className='flex items-center justify-center gap-2 border-r border-border-gray px-4 py-3.5 font-medium text-text-primary'
           onClick={() => {
-            sendEvent('astake_reward_history_opened', {
-              amountRange: getAmountRange(totalStake?.amount),
-            })
+            sendEvent('astake_reward_history_opened', {})
             setIsOpenRewardHistoryModal(true)
           }}
           style={{
@@ -103,7 +100,6 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
               myStats: true,
               eventSource: 'my_stats_banner',
               role: 'staker',
-              amountRange: getAmountRange(totalStake?.amount),
             })
           }}
           style={{ cursor: 'pointer', flex: 1 }}

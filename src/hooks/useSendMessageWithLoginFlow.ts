@@ -1,6 +1,6 @@
 import { useSendMessage } from '@/services/datahub/posts/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
-import { SendMessageParams } from '@/services/subsocial/commentIds'
+import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { useMyMainAddress } from '@/stores/my-account'
 import { UseMutationOptions, useMutation } from '@tanstack/react-query'
 import useLoginOption from './useLoginOption'

@@ -6,9 +6,6 @@ const ImageModal = dynamic(() => import('./image/ImageModal'), {
 const NftModal = dynamic(() => import('./nft/NftModal'), {
   ssr: false,
 })
-const SecretBoxModal = dynamic(() => import('./secret-box/SecretBoxModal'), {
-  ssr: false,
-})
 
 export type ExtensionModalsProps = {
   hubId: string
@@ -21,7 +18,6 @@ export default function ExtensionModals({ ...props }: ExtensionModalsProps) {
     <>
       <NftModal {...props} />
       <ImageModal {...props} />
-      <SecretBoxModal {...props} />
     </>
   )
 }

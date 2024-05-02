@@ -6,7 +6,7 @@ import { getProposalDetailServer } from '@/pages/api/opengov/proposals/[id]'
 import { getPostsServer } from '@/pages/api/posts'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
-import { getPaginatedPostsByPostIdFromDatahubQuery } from '@/services/datahub/posts/query'
+import { getPaginatedPostIdsByPostId } from '@/services/datahub/posts/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 
@@ -27,15 +27,11 @@ export const getStaticProps = getCommonStaticProps<ProposalDetailPageProps>(
     const { data } = await getProposalDetailServer({ id: parsedId })
     const queryClient = new QueryClient()
     if (data.chatId) {
-      const res =
-        await getPaginatedPostsByPostIdFromDatahubQuery.fetchFirstPageQuery(
-          queryClient,
-          data.chatId
-        )
-      getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(
+      const res = await getPaginatedPostIdsByPostId.fetchFirstPageQuery(
         queryClient,
         data.chatId
       )
+      getPaginatedPostIdsByPostId.invalidateFirstQuery(queryClient, data.chatId)
       const [messages] = await Promise.all([
         getPostsServer(res.data),
         prefetchBlockedEntities(

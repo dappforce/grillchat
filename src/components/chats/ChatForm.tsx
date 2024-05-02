@@ -11,7 +11,7 @@ import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
 import { useSendMessage } from '@/services/datahub/posts/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
-import { SendMessageParams } from '@/services/subsocial/commentIds'
+import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
@@ -320,20 +320,8 @@ function useLoadUnsentMessage(chatId: string) {
       case 'subsocial-image':
         openExtensionModal(firstExtension.id, firstExtension.properties.image)
         break
-      case 'subsocial-decoded-promo':
-        openExtensionModal(firstExtension.id, {
-          recipient: firstExtension.properties.recipient,
-          messageId: firstExtension.properties.message,
-        })
-        break
       case 'subsocial-evm-nft':
         openExtensionModal(firstExtension.id, firstExtension.properties.url)
-        break
-      case 'subsocial-donations':
-        openExtensionModal(firstExtension.id, {
-          recipient: firstExtension.properties.to,
-          messageId: unsentMessage.replyTo ?? '',
-        })
         break
     }
   }, [chatId, setMessageBody, setReplyTo, openExtensionModal])

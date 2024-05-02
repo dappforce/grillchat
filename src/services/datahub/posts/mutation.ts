@@ -1,11 +1,11 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
 import { apiInstance } from '@/services/api/utils'
-import { SendMessageParams } from '@/services/subsocial/commentIds'
 import {
   addOptimisticData,
   deleteOptimisticData,
 } from '@/services/subsocial/commentIds/optimistic'
+import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
