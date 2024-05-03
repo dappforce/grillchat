@@ -1,7 +1,6 @@
 import CoinsImage from '@/assets/graphics/coins.png'
 import Button from '@/components/Button'
 import FormatBalance from '@/components/FormatBalance'
-import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import { ZERO } from '@/constants/config'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
@@ -9,7 +8,7 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import Image from 'next/image'
-import { cx } from '../../../utils/class-names'
+import { cx, mutedTextColorStyles } from '../../../utils/class-names'
 
 const IncreaseStakeBanner = () => {
   const myAddress = useMyMainAddress()

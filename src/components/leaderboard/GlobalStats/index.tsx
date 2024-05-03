@@ -1,7 +1,6 @@
-import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import { isTouchDevice } from '@/utils/device'
 import { IoPeople } from 'react-icons/io5'
-import { cx } from '../../../utils/class-names'
+import { cx, mutedTextColorStyles } from '../../../utils/class-names'
 import LeaderboardTable from '../MyStats/LeaderboardTable'
 import GlobalStatsDashboard from './GlobalStatsDashboard'
 

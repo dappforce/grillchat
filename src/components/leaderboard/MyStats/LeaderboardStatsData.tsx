@@ -1,5 +1,4 @@
 import FormatBalance from '@/components/FormatBalance'
-import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import PopOver from '@/components/floating/PopOver'
 import { ZERO } from '@/constants/config'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
@@ -7,7 +6,7 @@ import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
-import { cx } from '../../../utils/class-names'
+import { cx, mutedTextColorStyles } from '../../../utils/class-names'
 
 type LeaderboardStatsDataProps = {
   address: string

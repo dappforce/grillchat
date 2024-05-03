@@ -1,10 +1,9 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import Name from '@/components/Name'
-import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import PopOver from '@/components/floating/PopOver'
 import { getProfileQuery } from '@/services/api/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
-import { cx } from '@/utils/class-names'
+import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import CustomLink from '../../referral/CustomLink'
 import LeaderboardRoleRadioGroup from '../LeaderboardRadioGroup'
 
