@@ -51,6 +51,9 @@ export default function Sidebar() {
   )
 }
 
+export const getLeaderboardLink = (address: string | null) =>
+  `/leaderboard${address ? `/${address}` : ''}`
+
 function SidebarItem({
   icon: Icon,
   title,

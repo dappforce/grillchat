@@ -15,6 +15,7 @@ export type DefaultLayoutProps = ComponentProps<'div'> & {
   withFixedHeight?: boolean
   withSidebar?: boolean
   withSidebarBorder?: boolean
+  withRightSidebar?: boolean
 }
 
 export default function DefaultLayout({
@@ -24,6 +25,7 @@ export default function DefaultLayout({
   withBackButton,
   withFixedHeight,
   withSidebar,
+  withRightSidebar = true,
   style,
   ...props
 }: DefaultLayoutProps) {
