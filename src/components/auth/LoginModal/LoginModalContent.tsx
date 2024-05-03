@@ -4,7 +4,7 @@ import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
-import LoginNeynarButton from '@/components/navbar/Navbar/LoginNeynarButton'
+import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
@@ -30,6 +30,7 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
 export const LoginContent = (props: LoginModalContentProps) => {
   const { setCurrentState } = props
   const sendEvent = useSendEvent()
+  const { loginNeynar } = useNeynarLogin()
 
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {
@@ -71,7 +72,19 @@ export const LoginContent = (props: LoginModalContentProps) => {
               Connect via Polkadot
             </div>
           </Button>
-          <LoginNeynarButton />
+          <Button
+            variant='primaryOutline'
+            onClick={() => {
+              sendEvent('login_neynar')
+              loginNeynar()
+            }}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <WalletIcon className={cx('text-text-muted')} />
+              Connect via Farcaster
+            </div>
+          </Button>
           <div className='mt-1 flex flex-col'>
             <div className='relative mb-4 flex items-center justify-center text-center text-text-muted'>
               <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
