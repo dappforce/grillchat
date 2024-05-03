@@ -4,7 +4,6 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useIsMounted from '@/hooks/useIsMounted'
 import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
-import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useState } from 'react'
 import ChatContent, { MobileChatContent } from './ChatContent'
@@ -20,7 +19,7 @@ export default function HomePage() {
 
   return (
     <DefaultLayout withSidebar>
-      <Button
+      {/* <Button
         onClick={async () => {
           if (!address) {
             await login()
@@ -34,7 +33,7 @@ export default function HomePage() {
         }}
       >
         adsfasdf
-      </Button>
+      </Button> */}
       <Container className='grid flex-1 grid-cols-1 gap-4 px-4 lg:grid-cols-[1fr_325px] xl:grid-cols-[1fr_375px]'>
         <MainContent />
         <ChatContentRenderer isOpen={isOpen} setIsOpen={setIsOpen} />
