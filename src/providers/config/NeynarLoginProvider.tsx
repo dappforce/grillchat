@@ -1,6 +1,21 @@
 import { env } from '@/env.mjs'
+import { useLinkIdentity } from '@/services/datahub/identity/mutation'
+import { useMyAccount } from '@/stores/my-account'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import Script from 'next/script'
-import { ReactNode, createContext, useCallback, useContext } from 'react'
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+} from 'react'
+
+declare global {
+  interface Window {
+    onSignInSuccess?: (data: { signer_uuid: string; fid: string }) => void
+  }
+}
 
 type State = {
   loginNeynar: () => void
@@ -16,6 +31,36 @@ export default function NeynarLoginProvider({
 }: {
   children: ReactNode
 }) {
+  const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
+  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
+  const { mutate } = useLinkIdentity({
+    onSuccess: () => {
+      finalizeTemporaryAccount()
+    },
+  })
+
+  useEffect(() => {
+    window.onSignInSuccess = async (data) => {
+      const address = await loginAsTemporaryAccount()
+      if (!address) {
+        console.error('Failed to login account')
+        return
+      }
+
+      mutate({
+        session: address,
+        externalProvider: {
+          provider: IdentityProvider.FARCASTER,
+          id: data.fid,
+        },
+      })
+    }
+
+    return () => {
+      delete window.onSignInSuccess
+    }
+  }, [loginAsTemporaryAccount])
+
   const loginNeynar = useCallback(() => {
     const loginBtnContainer = document.getElementById('neynar_signin')
     const loginBtn = loginBtnContainer?.querySelector('button')

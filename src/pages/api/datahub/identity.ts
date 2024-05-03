@@ -34,11 +34,14 @@ const POST_handler = handlerWrapper({
   dataGetter: (req) => req.body,
 })({
   allowedMethods: ['POST'],
-  errorLabel: 'moderation-action',
+  errorLabel: 'identity-action',
   handler: async (data, req, res) => {
     const { id, payload, provider } = data as ApiDatahubIdentityBody
 
-    if (provider !== IdentityProvider.POLKADOT) {
+    if (
+      provider !== IdentityProvider.POLKADOT &&
+      provider !== IdentityProvider.FARCASTER
+    ) {
       const authObj = await auth(req, res)
       const user = authObj?.user
       if (!user || user.id !== id) {
@@ -59,7 +62,7 @@ const POST_handler = handlerWrapper({
 
 async function datahubIdentityActionMapping(data: SocialEventDataApiInput) {
   const callName = data.callData?.name
-  if (callName === 'synth_create_linked_identity') {
+  if (callName === 'synth_init_linked_identity') {
     await linkIdentity(data)
   } else {
     throw Error('Unknown identity action')
