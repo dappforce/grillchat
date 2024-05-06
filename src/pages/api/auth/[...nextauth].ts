@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user }) {
-      const [{ blockedInAppIds }, linkedAddresses] = await Promise.all([
+      const [{ blockedInAppIds }, linkedAddress] = await Promise.all([
         getBlockedResources({
           appIds: [env.NEXT_PUBLIC_APP_ID],
           postEntityIds: [],
@@ -46,9 +46,7 @@ export const authOptions: NextAuthOptions = {
       const blockedAddressesSet = new Set(
         blockedInAppIds.map((data) => data.blockedResources.address).flat()
       )
-      const blockedAddress = linkedAddresses.find((address) =>
-        blockedAddressesSet.has(address)
-      )
+      const blockedAddress = blockedAddressesSet.has(linkedAddress ?? '')
 
       if (!blockedAddress) return true
       return `/?auth-blocked=${blockedAddress}`

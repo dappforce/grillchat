@@ -48,8 +48,10 @@ export type Account = {
   followingSpaces: Array<SpaceFollowers>
   followingSpacesCount?: Maybe<Scalars['Int']['output']>
   id: Scalars['String']['output']
+  /** is core account of Linked Identity */
+  isLinkedIdentityAccount: Scalars['Boolean']['output']
   linkedEvmAccounts: Array<EvmSubstrateAccountLink>
-  linkedIdentities: Array<LinkedIdentity>
+  linkedIdentity?: Maybe<LinkedIdentity>
   moderationProfile?: Maybe<Moderator>
   ownedModerationOrganizations?: Maybe<Array<ModerationOrganization>>
   ownedPostsCount?: Maybe<Scalars['Int']['output']>
@@ -351,6 +353,10 @@ export enum DataHubSubscriptionEventEnum {
   EvmAddressLinkedToAccount = 'EVM_ADDRESS_LINKED_TO_ACCOUNT',
   EvmAddressLinkToAccountStateUpdated = 'EVM_ADDRESS_LINK_TO_ACCOUNT_STATE_UPDATED',
   LinkedIdentityCreated = 'LINKED_IDENTITY_CREATED',
+  LinkedIdentityExternalProviderCreated = 'LINKED_IDENTITY_EXTERNAL_PROVIDER_CREATED',
+  LinkedIdentityExternalProviderStateUpdated = 'LINKED_IDENTITY_EXTERNAL_PROVIDER_STATE_UPDATED',
+  LinkedIdentitySessionCreated = 'LINKED_IDENTITY_SESSION_CREATED',
+  LinkedIdentitySessionStateUpdated = 'LINKED_IDENTITY_SESSION_STATE_UPDATED',
   LinkedIdentityStateUpdated = 'LINKED_IDENTITY_STATE_UPDATED',
   ModerationBlockedResourceCreated = 'MODERATION_BLOCKED_RESOURCE_CREATED',
   ModerationBlockedResourceStateUpdated = 'MODERATION_BLOCKED_RESOURCE_STATE_UPDATED',
@@ -534,8 +540,10 @@ export enum IdentityProvider {
   Email = 'EMAIL',
   Evm = 'EVM',
   Facebook = 'FACEBOOK',
+  Farcaster = 'FARCASTER',
   Google = 'GOOGLE',
   Polkadot = 'POLKADOT',
+  Telegram = 'TELEGRAM',
   Twitter = 'TWITTER',
 }
 
@@ -567,21 +575,49 @@ export type LikedPostsCountByDayItem = {
   dayUnixTimestamp: Scalars['String']['output']
 }
 
-export type LinkedIdentitiesArgs = {
-  externalId?: InputMaybe<Scalars['String']['input']>
-  id?: InputMaybe<Scalars['String']['input']>
-  provider?: InputMaybe<IdentityProvider>
-  substrateAddress?: InputMaybe<Scalars['String']['input']>
-}
-
 export type LinkedIdentity = {
   __typename?: 'LinkedIdentity'
+  account: Account
+  createdAtTime: Scalars['DateTime']['output']
+  externalProviders?: Maybe<Array<LinkedIdentityExternalProvider>>
+  id: Scalars['String']['output']
+  sessions?: Maybe<Array<LinkedIdentitySession>>
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+}
+
+export type LinkedIdentityArgs = {
+  externalProvider?: InputMaybe<LinkedIdentityExternalProviderArgs>
+  id?: InputMaybe<Scalars['String']['input']>
+  sessionAddress?: InputMaybe<Scalars['String']['input']>
+}
+
+export type LinkedIdentityExternalProvider = {
+  __typename?: 'LinkedIdentityExternalProvider'
   createdAtTime: Scalars['DateTime']['output']
   enabled: Scalars['Boolean']['output']
   externalId: Scalars['String']['output']
+  farcasterCustodyAddress?: Maybe<Scalars['String']['output']>
+  farcasterSignerUuid?: Maybe<Scalars['String']['output']>
+  farcasterVerifiedEthAddresses: Array<Scalars['String']['output']>
+  farcasterVerifiedSolAddresses: Array<Scalars['String']['output']>
   id: Scalars['String']['output']
+  linkedIdentity: LinkedIdentity
   provider: IdentityProvider
-  substrateAccount: Account
+  updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+}
+
+export type LinkedIdentityExternalProviderArgs = {
+  externalId?: InputMaybe<Scalars['String']['input']>
+  provider?: InputMaybe<IdentityProvider>
+}
+
+export type LinkedIdentitySession = {
+  __typename?: 'LinkedIdentitySession'
+  createdAtTime: Scalars['DateTime']['output']
+  enabled: Scalars['Boolean']['output']
+  id: Scalars['String']['output']
+  linkedIdentity: LinkedIdentity
+  sessionDetails?: Maybe<Scalars['String']['output']>
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
 }
 
@@ -815,6 +851,7 @@ export type Post = {
   downvotesCount?: Maybe<Scalars['Int']['output']>
   experimental?: Maybe<Scalars['JSON']['output']>
   extensions: Array<ContentExtension>
+  farcasterCastHash?: Maybe<Scalars['String']['output']>
   followersCount?: Maybe<Scalars['Int']['output']>
   format?: Maybe<Scalars['String']['output']>
   hidden: Scalars['Boolean']['output']
@@ -845,6 +882,8 @@ export type Post = {
   sharedPost?: Maybe<Post>
   sharesCount?: Maybe<Scalars['Int']['output']>
   slug?: Maybe<Scalars['String']['output']>
+  /** Data protocol version */
+  source?: Maybe<Scalars['String']['output']>
   space?: Maybe<Space>
   summary?: Maybe<Scalars['String']['output']>
   tagsOriginal?: Maybe<Scalars['String']['output']>
@@ -948,7 +987,7 @@ export type Query = {
   domains: DomainsResponse
   findPosts: FindPostsResponseDto
   isBalanceSufficientForSocialAction: IsBalanceSufficientForSocialActionResponse
-  linkedIdentities: Array<LinkedIdentity>
+  linkedIdentity?: Maybe<LinkedIdentity>
   moderationBlockedResourceIds: Array<Scalars['String']['output']>
   moderationBlockedResourceIdsBatch: BlockedResourceIdsBatchResponse
   moderationBlockedResourcesDetailed: Array<ModerationBlockedResource>
@@ -1047,8 +1086,8 @@ export type QueryIsBalanceSufficientForSocialActionArgs = {
   args: IsBalanceSufficientForSocialActionInput
 }
 
-export type QueryLinkedIdentitiesArgs = {
-  where: LinkedIdentitiesArgs
+export type QueryLinkedIdentityArgs = {
+  where: LinkedIdentityArgs
 }
 
 export type QueryModerationBlockedResourceIdsArgs = {
@@ -1243,6 +1282,8 @@ export enum ServiceMessageStatusCode {
   Info = 'INFO',
   InsufficientBalance = 'INSUFFICIENT_BALANCE',
   InternalServerError = 'INTERNAL_SERVER_ERROR',
+  InvalidProxyForSigner = 'INVALID_PROXY_FOR_SIGNER',
+  InvalidSigner = 'INVALID_SIGNER',
   Moved = 'MOVED',
   PaymentRequired = 'PAYMENT_REQUIRED',
   Processed = 'PROCESSED',
@@ -1293,6 +1334,7 @@ export enum SocialCallName {
   SetProfile = 'set_profile',
   SynthActiveStakingCreateSuperLike = 'synth_active_staking_create_super_like',
   SynthActiveStakingDeleteSuperLike = 'synth_active_staking_delete_super_like',
+  SynthAddLinkedIdentityExternalProvider = 'synth_add_linked_identity_external_provider',
   SynthAddPostView = 'synth_add_post_view',
   SynthAddPostViewsBatch = 'synth_add_post_views_batch',
   SynthCreateLinkedIdentity = 'synth_create_linked_identity',
@@ -1301,6 +1343,7 @@ export enum SocialCallName {
   SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
   SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
+  SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
   SynthModerationBlockResource = 'synth_moderation_block_resource',
@@ -1371,7 +1414,7 @@ export type Space = {
   dataType: DataType
   email?: Maybe<Scalars['String']['output']>
   experimental?: Maybe<Scalars['JSON']['output']>
-  farcasterId?: Maybe<Scalars['String']['output']>
+  farcasterChannelId?: Maybe<Scalars['String']['output']>
   followers: Array<SpaceFollowers>
   followersCount?: Maybe<Scalars['Int']['output']>
   handle?: Maybe<Scalars['String']['output']>
@@ -1435,7 +1478,7 @@ export type StakerActivityMetricsForFixedPeriodInput = {
 export type Subscription = {
   __typename?: 'Subscription'
   activeStakingSuperLike: SuperLikeSubscriptionPayload
-  linkedIdentity: LinkedIdentitySubscriptionPayload
+  linkedIdentitySubscription: LinkedIdentitySubscriptionPayload
   moderationBlockedResource: ModerationBlockedResourceSubscriptionPayload
   moderationModerator: ModeratorSubscriptionPayload
   moderationOrganization: ModerationOrganizationSubscriptionPayload
@@ -1658,6 +1701,53 @@ export type GetPostRewardsQuery = {
   }>
 }
 
+export type GetRewardReportQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  day: Scalars['Int']['input']
+  week: Scalars['Int']['input']
+}>
+
+export type GetRewardReportQuery = {
+  __typename?: 'Query'
+  activeStakingDailyStatsByStaker: {
+    __typename?: 'DailyStatsByStakerResponse'
+    superLikesCount: number
+    currentRewardAmount: string
+  }
+  activeStakingRewardsByWeek: Array<{
+    __typename?: 'TotalRewardsByWeekResponse'
+    staker: string
+    creator: {
+      __typename?: 'SuperLikesCreatorRewards'
+      total: string
+      rewardsBySource?: {
+        __typename?: 'PostRewardsBySourceResponseDto'
+        fromDirectSuperLikes?: string | null
+        fromCommentSuperLikes?: string | null
+        fromShareSuperLikes?: string | null
+      } | null
+      posts: Array<{
+        __typename?: 'SuperLikesCreatorRewardsByPost'
+        superLikesCount: number
+      }>
+    }
+  }>
+}
+
+export type GetRewardHistoryQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetRewardHistoryQuery = {
+  __typename?: 'Query'
+  activeStakingRewardsByWeek: Array<{
+    __typename?: 'TotalRewardsByWeekResponse'
+    staker: string
+    week: number
+    creator: { __typename?: 'SuperLikesCreatorRewards'; total: string }
+  }>
+}
+
 export type SubscribeSuperLikeSubscriptionVariables = Exact<{
   [key: string]: never
 }>
@@ -1689,19 +1779,22 @@ export type GetGeneralStatsQuery = {
 }
 
 export type GetLinkedIdentitiesQueryVariables = Exact<{
-  substrateAddress: Scalars['String']['input']
+  session: Scalars['String']['input']
 }>
 
 export type GetLinkedIdentitiesQuery = {
   __typename?: 'Query'
-  linkedIdentities: Array<{
+  linkedIdentity?: {
     __typename?: 'LinkedIdentity'
     id: string
-    externalId: string
-    provider: IdentityProvider
-    enabled: boolean
-    substrateAccount: { __typename?: 'Account'; id: string }
-  }>
+    externalProviders?: Array<{
+      __typename?: 'LinkedIdentityExternalProvider'
+      id: string
+      externalId: string
+      provider: IdentityProvider
+      enabled: boolean
+    }> | null
+  } | null
 }
 
 export type GetLinkedIdentitiesFromTwitterIdQueryVariables = Exact<{
@@ -1710,14 +1803,14 @@ export type GetLinkedIdentitiesFromTwitterIdQueryVariables = Exact<{
 
 export type GetLinkedIdentitiesFromTwitterIdQuery = {
   __typename?: 'Query'
-  linkedIdentities: Array<{
+  linkedIdentity?: {
     __typename?: 'LinkedIdentity'
     id: string
-    externalId: string
-    provider: IdentityProvider
-    enabled: boolean
-    substrateAccount: { __typename?: 'Account'; id: string }
-  }>
+    externalProviders?: Array<{
+      __typename?: 'LinkedIdentityExternalProvider'
+      enabled: boolean
+    }> | null
+  } | null
 }
 
 export type SubscribeIdentitySubscriptionVariables = Exact<{
@@ -1726,12 +1819,16 @@ export type SubscribeIdentitySubscriptionVariables = Exact<{
 
 export type SubscribeIdentitySubscription = {
   __typename?: 'Subscription'
-  linkedIdentity: {
+  linkedIdentitySubscription: {
     __typename?: 'LinkedIdentitySubscriptionPayload'
     event: DataHubSubscriptionEventEnum
     entity: {
       __typename?: 'LinkedIdentity'
-      substrateAccount: { __typename?: 'Account'; id: string }
+      id: string
+      sessions?: Array<{
+        __typename?: 'LinkedIdentitySession'
+        id: string
+      }> | null
     }
   }
 }
@@ -2608,6 +2705,43 @@ export const GetPostRewards = gql`
     }
   }
 `
+export const GetRewardReport = gql`
+  query GetRewardReport($address: String!, $day: Int!, $week: Int!) {
+    activeStakingDailyStatsByStaker(
+      args: { address: $address, dayTimestamp: $day }
+    ) {
+      superLikesCount
+      currentRewardAmount
+    }
+    activeStakingRewardsByWeek(
+      args: { weeks: [$week], filter: { account: $address } }
+    ) {
+      staker
+      creator {
+        total
+        rewardsBySource {
+          fromDirectSuperLikes
+          fromCommentSuperLikes
+          fromShareSuperLikes
+        }
+        posts {
+          superLikesCount
+        }
+      }
+    }
+  }
+`
+export const GetRewardHistory = gql`
+  query GetRewardHistory($address: String!) {
+    activeStakingRewardsByWeek(args: { filter: { account: $address } }) {
+      staker
+      week
+      creator {
+        total
+      }
+    }
+  }
+`
 export const SubscribeSuperLike = gql`
   subscription SubscribeSuperLike {
     activeStakingSuperLike {
@@ -2642,37 +2776,37 @@ export const GetGeneralStats = gql`
   }
 `
 export const GetLinkedIdentities = gql`
-  query GetLinkedIdentities($substrateAddress: String!) {
-    linkedIdentities(where: { substrateAddress: $substrateAddress }) {
+  query GetLinkedIdentities($session: String!) {
+    linkedIdentity(where: { sessionAddress: $session }) {
       id
-      externalId
-      provider
-      enabled
-      substrateAccount {
+      externalProviders {
         id
+        externalId
+        provider
+        enabled
       }
     }
   }
 `
 export const GetLinkedIdentitiesFromTwitterId = gql`
   query GetLinkedIdentitiesFromTwitterId($twitterId: String!) {
-    linkedIdentities(where: { externalId: $twitterId, provider: TWITTER }) {
+    linkedIdentity(
+      where: { externalProvider: { provider: TWITTER, externalId: $twitterId } }
+    ) {
       id
-      externalId
-      provider
-      enabled
-      substrateAccount {
-        id
+      externalProviders {
+        enabled
       }
     }
   }
 `
 export const SubscribeIdentity = gql`
   subscription SubscribeIdentity {
-    linkedIdentity {
+    linkedIdentitySubscription {
       event
       entity {
-        substrateAccount {
+        id
+        sessions {
           id
         }
       }

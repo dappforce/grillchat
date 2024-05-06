@@ -12,10 +12,7 @@ import {
 import { DatahubParams, createSocialDataEventPayload } from '../utils'
 
 export async function linkIdentity(
-  params: Omit<
-    DatahubParams<SocialCallDataArgs<'synth_init_linked_identity'>>,
-    'signer'
-  >
+  params: DatahubParams<SocialCallDataArgs<'synth_init_linked_identity'>>
 ) {
   params.isOffchain = true
 

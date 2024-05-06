@@ -59,7 +59,7 @@ export default function NeynarLoginProvider({
     return () => {
       delete window.onSignInSuccess
     }
-  }, [loginAsTemporaryAccount])
+  }, [loginAsTemporaryAccount, mutate])
 
   const loginNeynar = useCallback(() => {
     const loginBtnContainer = document.getElementById('neynar_signin')

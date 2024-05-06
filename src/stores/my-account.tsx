@@ -14,7 +14,6 @@ import {
   generateAccount,
   isSecretKeyUsingMiniSecret,
   loginWithSecretKey,
-  validateAddress,
 } from '@/utils/account'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
@@ -120,7 +119,9 @@ const sendLaunchEvent = async (
     //     (linkedTgAccData.value?.length || 0) > 0
     if (linkedIdentity.status === 'fulfilled')
       userProperties.twitterLinked =
-        linkedIdentity.value?.provider === IdentityProvider.Twitter
+        !!linkedIdentity.value?.externalProviders.find(
+          (el) => el.provider === IdentityProvider.Twitter
+        )
     if (referrerId.status === 'fulfilled')
       userProperties.ref = referrerId.value || getReferralIdInUrl()
 
@@ -368,13 +369,7 @@ async function getParentProxyAddress(grillAddress: string) {
       queryClient,
       grillAddress
     )
-    if (linkedIdentity?.provider === IdentityProvider.Polkadot) {
-      const isValid = await validateAddress(linkedIdentity.substrateAccount)
-      if (!isValid) return null
-
-      return linkedIdentity.externalId
-    }
-    return null
+    return linkedIdentity?.mainAddress
   } catch (err) {
     console.error('Failed to get linked identity')
     return null
