@@ -9,7 +9,7 @@ import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useUpsertProfile } from '@/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery } from '@/utils/links'
@@ -44,10 +44,10 @@ export default function useOauthLogin({
     asTemporaryAccount: true,
   })
 
-  const myAddress = useMyMainAddress()
+  const grillAddress = useMyGrillAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
-    myAddress ?? ''
+    grillAddress ?? ''
   )
   const linkedIdentityRef = useWrapInRef(linkedIdentity)
   const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity({
@@ -118,7 +118,11 @@ export default function useOauthLogin({
     const foundIdentity =
       linkedIdentity &&
       session &&
-      linkedIdentity?.externalId === session?.user?.id
+      linkedIdentity?.externalProviders.find(
+        (p) =>
+          (p.provider as string) === identity &&
+          p.externalId === session?.user?.id
+      )
 
     if (foundIdentity && !upsertedProfile.current) {
       sendEvent(
@@ -154,8 +158,11 @@ export default function useOauthLogin({
       if (!address || !identity) return
       setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({
-        id: session.user?.id,
-        provider: identity,
+        session: address,
+        externalProvider: {
+          id: session.user?.id,
+          provider: identity,
+        },
       })
 
       sendEventWithRef(address, async (refId) => {

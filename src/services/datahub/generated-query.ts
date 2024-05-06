@@ -1779,7 +1779,7 @@ export type GetGeneralStatsQuery = {
 }
 
 export type GetLinkedIdentitiesQueryVariables = Exact<{
-  session: Scalars['String']['input']
+  where: LinkedIdentityArgs
 }>
 
 export type GetLinkedIdentitiesQuery = {
@@ -2776,8 +2776,8 @@ export const GetGeneralStats = gql`
   }
 `
 export const GetLinkedIdentities = gql`
-  query GetLinkedIdentities($session: String!) {
-    linkedIdentity(where: { sessionAddress: $session }) {
+  query GetLinkedIdentities($where: LinkedIdentityArgs!) {
+    linkedIdentity(where: $where) {
       id
       externalProviders {
         id

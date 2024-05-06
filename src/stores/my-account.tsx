@@ -396,6 +396,10 @@ export function useMyMainAddress() {
   return parentProxyAddress || address
 }
 
+export function useMyGrillAddress() {
+  return useMyAccount((state) => state.address)
+}
+
 export function getIsLoggedIn() {
   return !!accountStorage.get()
 }

@@ -1,6 +1,6 @@
 import PopOver from '@/components/floating/PopOver'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 
 export type UnlinkAddressWrapperProps = {
   children: (canUnlinkAddress: boolean) => JSX.Element
@@ -28,12 +28,12 @@ export default function UnlinkAddressWrapper({
 }
 
 function useCanUnlinkAddress() {
-  const address = useMyMainAddress()
+  const grillAddress = useMyGrillAddress()
 
   const hasProxy = useMyAccount((state) => !!state.parentProxyAddress)
 
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    address ?? ''
+    grillAddress ?? ''
   )
   const hasLinkedIdentity = !!linkedIdentity
 

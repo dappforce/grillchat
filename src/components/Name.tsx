@@ -1,23 +1,15 @@
-import useAddressIdentityId from '@/hooks/useAddressIdentityId'
 import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/api/query'
-import { IdentityProvider } from '@/services/datahub/generated-query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { getLinkedIdentityFromMainAddressQuery } from '@/services/datahub/identity/query'
 import { useSendEvent } from '@/stores/analytics'
 import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import { getUserProfileLink } from '@/utils/links'
-import {
-  ProfileSource,
-  ProfileSourceIncludingOffchain,
-  decodeProfileSource,
-  profileSourceData,
-} from '@/utils/profile'
+import { profileSourceData } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps, ComponentPropsWithoutRef, forwardRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import LinkText from './LinkText'
-import { ForceProfileSource } from './ProfilePreview'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
 import CustomLink from './referral/CustomLink'
@@ -26,70 +18,83 @@ export type NameProps = ComponentProps<'span'> & {
   address: string
   additionalText?: string
   className?: string
-  showOnlyCustomIdentityIcon?: boolean
   profileSourceIconClassName?: string
   showModeratorChip?: boolean
   profileSourceIconPosition?: 'none' | 'left' | 'right'
   color?: string
   labelingData?: { chatId: string }
-  forceProfileSource?: ForceProfileSource
   clipText?: boolean
   asLink?: boolean
-  withPolkadotIdentity?: boolean
 }
 
 export default function Name({
   address,
   className,
   additionalText,
-  showOnlyCustomIdentityIcon,
   profileSourceIconClassName,
   color,
   labelingData,
   showModeratorChip,
-  forceProfileSource,
   clipText,
-  profileSourceIconPosition = 'right',
+  profileSourceIconPosition = 'none',
   asLink,
-  withPolkadotIdentity,
   ...props
 }: NameProps) {
   const sendEvent = useSendEvent()
   const { inView, ref } = useInView({ triggerOnce: true })
 
-  const { isLoading, name, textColor, profileSource, profile } = useName(
-    address,
-    forceProfileSource,
-    withPolkadotIdentity
+  const { isLoading, name, textColor, profile } = useName(address)
+
+  const { data: linkedIdentity } =
+    getLinkedIdentityFromMainAddressQuery.useQuery(address, {
+      enabled: profileSourceIconPosition !== 'none',
+    })
+
+  const identitiesIcons = (
+    <div className='flex items-center'>
+      {linkedIdentity?.externalProviders?.map((p) => {
+        const {
+          icon: Icon,
+          tooltip,
+          link,
+        } = profileSourceData[p.provider] || {}
+
+        return (
+          <div
+            key={p.externalId}
+            className={cx(
+              'relative top-px flex-shrink-0 text-[0.9em] text-text-muted',
+              clipText && 'overflow-hidden',
+              profileSourceIconClassName
+            )}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PopOver
+              trigger={
+                <LinkText
+                  href={link?.(p.externalId, address)}
+                  openInNewTab
+                  onClick={() =>
+                    sendEvent('idenity_link_clicked', {
+                      eventSource: getCurrentPageChatId(),
+                    })
+                  }
+                >
+                  <Icon />
+                </LinkText>
+              }
+              panelSize='sm'
+              yOffset={6}
+              placement='top'
+              triggerOnHover
+            >
+              <span>{tooltip}</span>
+            </PopOver>
+          </div>
+        )
+      })}
+    </div>
   )
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    address ?? '',
-    { enabled: inView && profileSource === 'subsocial-profile' }
-  )
-
-  let usedProfileSource: ProfileSourceIncludingOffchain | undefined =
-    profileSource
-  let usedTooltipLinkId = name
-  if (profileSource === 'subsocial-profile') {
-    if (linkedIdentity?.provider === IdentityProvider.Twitter) {
-      usedProfileSource = 'x'
-      usedTooltipLinkId = linkedIdentity.externalId
-    } else if (linkedIdentity?.provider === IdentityProvider.Google) {
-      usedProfileSource = 'google'
-      usedTooltipLinkId = linkedIdentity.externalId
-    }
-  }
-
-  let {
-    icon: Icon,
-    tooltip,
-    link,
-  } = profileSourceData[usedProfileSource || ('' as ProfileSource)] || {}
-
-  if (showOnlyCustomIdentityIcon && profileSource !== 'subsocial-profile') {
-    Icon = undefined
-    tooltip = ''
-  }
 
   if (isLoading) {
     return (
@@ -104,39 +109,6 @@ export default function Name({
       </span>
     )
   }
-
-  const iconElement = Icon && (
-    <div
-      className={cx(
-        'relative top-px flex-shrink-0 text-[0.9em] text-text-muted',
-        clipText && 'overflow-hidden',
-        profileSourceIconClassName
-      )}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <PopOver
-        trigger={
-          <LinkText
-            href={link?.(usedTooltipLinkId, address)}
-            openInNewTab
-            onClick={() =>
-              sendEvent('idenity_link_clicked', {
-                eventSource: getCurrentPageChatId(),
-              })
-            }
-          >
-            <Icon />
-          </LinkText>
-        }
-        panelSize='sm'
-        yOffset={6}
-        placement='top'
-        triggerOnHover
-      >
-        <span>{tooltip}</span>
-      </PopOver>
-    </div>
-  )
 
   const profileLink = asLink
     ? getUserProfileLink(profile?.profileSpace?.id)
@@ -154,7 +126,7 @@ export default function Name({
       )}
       style={{ color: color || textColor }}
     >
-      {profileSourceIconPosition === 'left' && iconElement}
+      {profileSourceIconPosition === 'left' && identitiesIcons}
       <span
         className={cx(
           clipText && 'overflow-hidden text-ellipsis whitespace-nowrap'
@@ -162,7 +134,7 @@ export default function Name({
       >
         {additionalText} {name}{' '}
       </span>
-      {profileSourceIconPosition === 'right' && iconElement}
+      {profileSourceIconPosition === 'right' && identitiesIcons}
       {inView && showModeratorChip && (
         <ChatModerateChip
           className='relative top-px flex items-center'
@@ -197,45 +169,20 @@ const LinkOrText = forwardRef<
 })
 LinkOrText.displayName = 'LinkOrText'
 
-export function useName(
-  address: string,
-  forceProfileSource?: ForceProfileSource,
-  withPolkadotIdentity?: boolean
-) {
+export function useName(address: string) {
   const { data: profile, isLoading: isLoadingProfile } =
     getProfileQuery.useQuery(address)
-  const textColor = useRandomColor(address, { isAddress: true })
+  const textColor = useRandomColor(address)
 
-  const userProfileSource = profile?.profileSpace?.content?.profileSource
+  let name = generateRandomName(address)
 
-  const randomSeed = useAddressIdentityId(address)
-  let name = generateRandomName(randomSeed)
-
-  function getNameFromSource(profileSource?: ProfileSource, content?: string) {
-    switch (profileSource) {
-      case 'subsocial-profile':
-        return content || profile?.profileSpace?.content?.name
-    }
-  }
-
-  let profileSource = forceProfileSource?.profileSource
-  const forceName = getNameFromSource(
-    profileSource,
-    forceProfileSource?.content?.name
-  )
-  if (forceName) name = forceName
-  else {
-    const { source, content } = decodeProfileSource(userProfileSource ?? '')
-    const userProfileName = getNameFromSource(source, content)
-    if (userProfileName) {
-      name = userProfileName
-      profileSource = source
-    }
+  const userProfileName = profile?.profileSpace?.content?.name
+  if (userProfileName) {
+    name = userProfileName
   }
 
   return {
     name,
-    profileSource,
     profile,
     isLoading: isLoadingProfile,
     textColor,

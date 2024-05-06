@@ -18,8 +18,8 @@ export type Identity = {
 
 // TODO: need batch call pool query to improve performance
 const GET_LINKED_IDENTITIES = gql`
-  query GetLinkedIdentities($session: String!) {
-    linkedIdentity(where: { sessionAddress: $session }) {
+  query GetLinkedIdentities($where: LinkedIdentityArgs!) {
+    linkedIdentity(where: $where) {
       id
       externalProviders {
         id
@@ -31,7 +31,7 @@ const GET_LINKED_IDENTITIES = gql`
   }
 `
 export async function getLinkedIdentity(
-  address: string
+  where: GetLinkedIdentitiesQueryVariables['where']
 ): Promise<Identity | null> {
   const data = await datahubQueryRequest<
     GetLinkedIdentitiesQuery,
@@ -39,7 +39,7 @@ export async function getLinkedIdentity(
   >({
     document: GET_LINKED_IDENTITIES,
     variables: {
-      session: address,
+      where,
     },
   })
 

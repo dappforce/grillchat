@@ -3,14 +3,11 @@ import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
-import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
 import { fcmPushNotificationStorage } from './notifications/PushNotificationContent'
 
 function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
   const closeModal = useProfileModal((state) => state.closeModal)
-
-  const canUseGrillKey = useCanUseGrillKey()
 
   const address = useMyAccount((state) => state.address)
   const logout = useMyAccount((state) => state.logout)
@@ -35,15 +32,9 @@ function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
-      {canUseGrillKey ? (
-        <Button size='lg' onClick={onShowPrivateKeyClick}>
-          No, show me my Grill key
-        </Button>
-      ) : (
-        <Button size='lg' onClick={() => setCurrentState('account')}>
-          No, keep me logged in
-        </Button>
-      )}
+      <Button size='lg' onClick={onShowPrivateKeyClick}>
+        No, show me my Grill key
+      </Button>
       <Button
         isLoading={isLoading}
         size='lg'
