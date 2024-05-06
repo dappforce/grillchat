@@ -52,6 +52,7 @@ export default function NeynarLoginProvider({
         externalProvider: {
           provider: IdentityProvider.FARCASTER,
           id: data.fid,
+          farcasterSignerUuid: data.signer_uuid,
         },
       })
     }

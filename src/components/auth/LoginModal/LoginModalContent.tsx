@@ -23,7 +23,6 @@ import NewAccountContent from './contents/NewAccountContent'
 import ScanQrContent from './contents/ScanQrContent'
 
 export type LoginModalStep =
-  // | PolkadotConnectSteps
   | 'login'
   | 'scan-qr'
   | 'enter-secret-key'
