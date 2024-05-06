@@ -4,12 +4,18 @@ import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
+import { CommonEVMLoginContent } from '../common/evm/CommonEvmModalContent'
 import ScanQRButton from './ScanQRButton'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
@@ -18,7 +24,13 @@ import ScanQrContent from './contents/ScanQrContent'
 
 export type LoginModalStep =
   // | PolkadotConnectSteps
-  'login' | 'scan-qr' | 'enter-secret-key' | 'new-account' | 'account-created'
+  | 'login'
+  | 'scan-qr'
+  | 'enter-secret-key'
+  | 'new-account'
+  | 'account-created'
+  | 'evm-address-link'
+  | 'evm-linking-error'
 
 export type LoginModalContentProps = ModalFunctionalityProps & {
   setCurrentState: Dispatch<SetStateAction<LoginModalStep>>
@@ -129,4 +141,66 @@ export const loginModalContents: LoginModalContents = {
   'enter-secret-key': LoginWithGrillKeyContent,
   'new-account': NewAccountContent,
   'account-created': AccountCreatedContent,
+  'evm-address-link': EvmLoginStep,
+  'evm-linking-error': (props) => <EvmLoginStep isErrorStep {...props} />,
+}
+
+export function EvmLoginStep({
+  setCurrentState,
+  isErrorStep,
+  closeModal,
+}: LoginModalContentProps & { isErrorStep?: boolean }) {
+  const { mutate, isLoading } = useLoginBeforeSignEvm()
+  const { mutate: setReferrerId } = useSetReferrerId()
+  const sendEvent = useSendEvent()
+
+  return (
+    <CommonEVMLoginContent
+      buttonLabel={isErrorStep ? 'Try again' : undefined}
+      isLoading={isLoading}
+      beforeSignEvmAddress={() => mutate()}
+      onFinishSignMessage={() => {
+        setReferrerId({ refId: getReferralIdInUrl() })
+        useLoginModal
+          .getState()
+          .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
+      }}
+      onError={() => {
+        setCurrentState('evm-linking-error')
+      }}
+      onSuccess={async () => {
+        useMyAccount.getState().finalizeTemporaryAccount()
+
+        const address = useMyAccount.getState().address
+        sendEventWithRef(address ?? '', (refId) => {
+          sendEvent('account_created', { loginBy: 'evm' }, { ref: refId })
+        })
+
+        closeModal()
+        useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+      }}
+    />
+  )
+}
+function useLoginBeforeSignEvm() {
+  const [isCreatingAcc, setIsCreatingAcc] = useState(false)
+  const loginAsTemporaryAccount = useMyAccount(
+    (state) => state.loginAsTemporaryAccount
+  )
+  const myAddress = useMyMainAddress()
+
+  return {
+    mutate: async () => {
+      if (myAddress) return
+
+      setIsCreatingAcc(true)
+      try {
+        const address = await loginAsTemporaryAccount()
+        if (!address) throw new Error('Login failed')
+      } finally {
+        setIsCreatingAcc(false)
+      }
+    },
+    isLoading: isCreatingAcc,
+  }
 }

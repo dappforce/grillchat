@@ -39,8 +39,8 @@ const POST_handler = handlerWrapper({
     const { id, payload, provider } = data as ApiDatahubIdentityBody
 
     if (
-      provider !== IdentityProvider.POLKADOT &&
-      provider !== IdentityProvider.FARCASTER
+      provider !== IdentityProvider.FARCASTER &&
+      provider !== IdentityProvider.EVM
     ) {
       const authObj = await auth(req, res)
       const user = authObj?.user

@@ -27,13 +27,15 @@ const walletOptions = {
   projectId: walletConnectProjectId,
   appName: 'Grill',
 }
-const commonWallets = [metaMaskWallet(walletOptions)]
+const commonWallets = [
+  coinbaseWallet(walletOptions),
+  metaMaskWallet(walletOptions),
+]
 
 const desktopWallets = [
   ...commonWallets,
   talismanWallet(walletOptions),
   argentWallet(walletOptions),
-  coinbaseWallet(walletOptions),
   ledgerWallet(walletOptions),
   subWalletWallet(walletOptions),
 ]

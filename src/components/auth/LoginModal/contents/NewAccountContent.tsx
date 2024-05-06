@@ -26,6 +26,7 @@ export default function NewAccountContent({
         variant='primaryOutline'
         onClick={() => {
           sendEvent('login_evm_clicked')
+          setCurrentState('evm-address-link')
         }}
       >
         <div className='flex items-center justify-center gap-2'>
