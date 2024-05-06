@@ -6,9 +6,10 @@ export const useGetLeaderboardRole = () => {
   const router = useRouter()
 
   const role = router.query.role as LeaderboardRole
+  const address = router.query.address as string
 
   useEffect(() => {
-    if (!role && router.isReady) {
+    if (!role && router.isReady && address) {
       router.push({
         pathname: router.pathname,
         query: {
@@ -17,7 +18,7 @@ export const useGetLeaderboardRole = () => {
         },
       })
     }
-  }, [role])
+  }, [role, address])
 
   return role || 'staker'
 }

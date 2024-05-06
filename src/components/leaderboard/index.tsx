@@ -108,7 +108,7 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
         }}
       />
     )
-  }, [tabs.length, selectedTab, address])
+  }, [tabs.length, selectedTab, address, myAddress])
 
   return <TabsComp />
 }
