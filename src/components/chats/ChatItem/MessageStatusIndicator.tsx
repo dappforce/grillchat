@@ -38,7 +38,7 @@ export default function MessageStatusIndicator({
       onClick={onCheckMarkClick}
     >
       {(() => {
-        if (messageStatus === 'sending') {
+        if (!message.struct.dataType) {
           return (
             <IoCheckmarkOutline
               className={cx('text-sm text-text-muted-on-primary-light')}

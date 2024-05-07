@@ -3,12 +3,9 @@ import KeyIcon from '@/assets/icons/key.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
-import Button from '@/components/Button'
-import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
-import SkeletonFallback from '@/components/SkeletonFallback'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -33,7 +30,6 @@ import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/router'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
-import { LuRefreshCcw } from 'react-icons/lu'
 import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
@@ -196,7 +192,7 @@ export default function AccountContent({
             address={address}
           />
 
-          <div
+          {/* <div
             className={
               'flex items-center justify-between gap-4 rounded-2xl bg-background-lighter p-4'
             }
@@ -242,7 +238,7 @@ export default function AccountContent({
                 )}
               </SkeletonFallback>
             </div>
-          </div>
+          </div> */}
         </div>
         <MenuList menus={menus} />
         <NewCommunityModal hubId={profile?.profileSpace?.id} />
