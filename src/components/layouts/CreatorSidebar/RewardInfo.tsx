@@ -1,6 +1,7 @@
 import { Skeleton } from '@/components/SkeletonFallback'
 import getAmountRange from '@/components/content-staking/utils/getAmountRangeForAnalytics'
 import PopOver from '@/components/floating/PopOver'
+import { getLeaderboardLink } from '@/components/leaderboard/utils'
 import {
   PostRewards,
   RewardReport,
@@ -19,7 +20,6 @@ import { AiOutlineLineChart } from 'react-icons/ai'
 import { RiHistoryFill } from 'react-icons/ri'
 import { SlQuestion } from 'react-icons/sl'
 import CustomLink from 'src/components/referral/CustomLink'
-import { getLeaderboardLink } from '../Sidebar'
 import RewardHistoryModal from './RewardHistoryModal'
 import StakerRewardProgressBar, {
   StakerRewardProgressBarProps,
@@ -98,6 +98,7 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
         <CustomLink
           className='flex items-center justify-center gap-2 px-4 py-3.5 font-medium text-text-primary'
           href={`${getLeaderboardLink(myAddress)}?role=staker`}
+          forceHardNavigation
           onClick={() => {
             sendEvent('leaderboard_my_stats_opened', {
               myStats: true,

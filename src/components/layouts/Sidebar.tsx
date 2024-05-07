@@ -11,6 +11,7 @@ import { MdOutlineLeaderboard } from 'react-icons/md'
 import { RiLineChartLine } from 'react-icons/ri'
 import { TbCoins, TbWorld } from 'react-icons/tb'
 import { TiFlashOutline } from 'react-icons/ti'
+import { getLeaderboardLink } from '../leaderboard/utils'
 import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
@@ -41,6 +42,7 @@ export default function Sidebar() {
           icon={MdOutlineLeaderboard}
           title='Leaderboard'
           href={getLeaderboardLink(myAddress)}
+          forceHardNavigation
         />
         <SidebarItem
           icon={RiLineChartLine}
@@ -76,9 +78,6 @@ export default function Sidebar() {
     </aside>
   )
 }
-
-export const getLeaderboardLink = (address: string | null) =>
-  `/leaderboard${address ? `/${address}` : ''}`
 
 function SidebarItem({
   icon: Icon,

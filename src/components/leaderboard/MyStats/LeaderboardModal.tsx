@@ -1,6 +1,5 @@
 import Loading from '@/components/Loading'
 import { Column, TableHeader } from '@/components/Table'
-import { getLeaderboardLink } from '@/components/layouts/Sidebar'
 import Modal from '@/components/modals/Modal'
 import { LeaderboardRole } from '@/services/datahub/leaderboard'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
@@ -8,6 +7,7 @@ import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { TableRow } from '../../Table'
+import { getLeaderboardLink } from '../utils'
 import { UserPreview, UserReward, leaderboardColumns } from './LeaderboardTable'
 
 type LeaderboardModalProps = {

@@ -2,10 +2,9 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Tabs from '../Tabs'
-import { getLeaderboardLink } from '../layouts/Sidebar'
 import GlobalStats from './GlobalStats'
 import MyStats from './MyStats'
-import { useGetLeaderboardRole } from './utils'
+import { getLeaderboardLink, useGetLeaderboardRole } from './utils'
 
 const getIndexById = (tabs: any[], id: string) => {
   return tabs.findIndex((tab) => tab.id === id)

@@ -22,3 +22,6 @@ export const useGetLeaderboardRole = () => {
 
   return role || 'staker'
 }
+
+export const getLeaderboardLink = (address: string | null) =>
+  `/leaderboard${address ? `/${address}` : ''}`
