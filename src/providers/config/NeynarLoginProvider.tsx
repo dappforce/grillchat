@@ -1,6 +1,6 @@
 import { env } from '@/env.mjs'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import Script from 'next/script'
@@ -36,11 +36,16 @@ export default function NeynarLoginProvider({
 }) {
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  const { mutate, isSuccess, isLoading } = useLinkIdentity({
+  const { mutate, isSuccess, isLoading, reset } = useLinkIdentity({
     onSuccess: () => {
       finalizeTemporaryAccount()
     },
   })
+
+  const mainAddress = useMyMainAddress()
+  useEffect(() => {
+    if (!mainAddress) reset()
+  }, [mainAddress, reset])
 
   useEffect(() => {
     window.onSignInSuccess = async (data) => {

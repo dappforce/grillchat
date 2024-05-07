@@ -148,6 +148,11 @@ export type LatestColdSocialEventArgsDto = {
   queueStatus?: InputMaybe<QueueJobStatus>;
 };
 
+export type LinkedIdentityExternalProviderEvmProofMsgResponse = {
+  __typename?: 'LinkedIdentityExternalProviderEvmProofMsgResponse';
+  message: Scalars['String']['output'];
+};
+
 export type ModerationCallInput = {
   callData?: InputMaybe<SocialCallDataInput>;
   dataType: SocialEventDataType;
@@ -170,6 +175,7 @@ export type Mutation = {
   ingestDataFromIndexerNeynar: IngestPersistentDataFromSquidResponseDto;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
   initLinkedIdentity: IngestDataResponseDto;
+  linkedIdentityExternalProviderEvmProofMsg: LinkedIdentityExternalProviderEvmProofMsgResponse;
   moderationAddContextToOrganization: IngestDataResponseDto;
   moderationBlockResource: IngestDataResponseDto;
   moderationExecuteForceCall: IngestDataResponseDto;
@@ -239,6 +245,11 @@ export type MutationIngestPersistentDataSquidArgs = {
 
 export type MutationInitLinkedIdentityArgs = {
   args: CreateMutateLinkedIdentityInput;
+};
+
+
+export type MutationLinkedIdentityExternalProviderEvmProofMsgArgs = {
+  address: Scalars['String']['input'];
 };
 
 

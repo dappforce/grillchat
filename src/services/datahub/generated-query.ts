@@ -621,9 +621,16 @@ export type LinkedIdentitySession = {
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
 }
 
-export type LinkedIdentitySubscriptionPayload = {
-  __typename?: 'LinkedIdentitySubscriptionPayload'
-  entity: LinkedIdentity
+export type LinkedIdentitySubscriptionGenericEntityPayload = {
+  __typename?: 'LinkedIdentitySubscriptionGenericEntityPayload'
+  externalProvider?: Maybe<LinkedIdentityExternalProvider>
+  linkedIdentity?: Maybe<LinkedIdentity>
+  session?: Maybe<LinkedIdentitySession>
+}
+
+export type LinkedIdentitySubscriptionGenericPayload = {
+  __typename?: 'LinkedIdentitySubscriptionGenericPayload'
+  entity: LinkedIdentitySubscriptionGenericEntityPayload
   event: DataHubSubscriptionEventEnum
 }
 
@@ -1478,7 +1485,7 @@ export type StakerActivityMetricsForFixedPeriodInput = {
 export type Subscription = {
   __typename?: 'Subscription'
   activeStakingSuperLike: SuperLikeSubscriptionPayload
-  linkedIdentitySubscription: LinkedIdentitySubscriptionPayload
+  linkedIdentitySubscription: LinkedIdentitySubscriptionGenericPayload
   moderationBlockedResource: ModerationBlockedResourceSubscriptionPayload
   moderationModerator: ModeratorSubscriptionPayload
   moderationOrganization: ModerationOrganizationSubscriptionPayload
@@ -1820,15 +1827,35 @@ export type SubscribeIdentitySubscriptionVariables = Exact<{
 export type SubscribeIdentitySubscription = {
   __typename?: 'Subscription'
   linkedIdentitySubscription: {
-    __typename?: 'LinkedIdentitySubscriptionPayload'
+    __typename?: 'LinkedIdentitySubscriptionGenericPayload'
     event: DataHubSubscriptionEventEnum
     entity: {
-      __typename?: 'LinkedIdentity'
-      id: string
-      sessions?: Array<{
+      __typename?: 'LinkedIdentitySubscriptionGenericEntityPayload'
+      linkedIdentity?: {
+        __typename?: 'LinkedIdentity'
+        id: string
+        externalProviders?: Array<{
+          __typename?: 'LinkedIdentityExternalProvider'
+          id: string
+          externalId: string
+          provider: IdentityProvider
+          enabled: boolean
+        }> | null
+      } | null
+      session?: {
         __typename?: 'LinkedIdentitySession'
         id: string
-      }> | null
+        linkedIdentity: {
+          __typename?: 'LinkedIdentity'
+          externalProviders?: Array<{
+            __typename?: 'LinkedIdentityExternalProvider'
+            id: string
+            externalId: string
+            provider: IdentityProvider
+            enabled: boolean
+          }> | null
+        }
+      } | null
     }
   }
 }
@@ -2805,9 +2832,25 @@ export const SubscribeIdentity = gql`
     linkedIdentitySubscription {
       event
       entity {
-        id
-        sessions {
+        linkedIdentity {
           id
+          externalProviders {
+            id
+            externalId
+            provider
+            enabled
+          }
+        }
+        session {
+          id
+          linkedIdentity {
+            externalProviders {
+              id
+              externalId
+              provider
+              enabled
+            }
+          }
         }
       }
     }
