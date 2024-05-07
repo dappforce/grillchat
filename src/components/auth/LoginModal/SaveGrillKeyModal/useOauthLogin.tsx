@@ -115,14 +115,7 @@ export default function useOauthLogin({
 
   const upsertedProfile = useRef(false)
   useEffect(() => {
-    const foundIdentity =
-      linkedIdentity &&
-      session &&
-      linkedIdentity?.externalProviders.find(
-        (p) =>
-          (p.provider as string) === identity &&
-          p.externalId === session?.user?.id
-      )
+    const foundIdentity = linkedIdentity && session
 
     if (foundIdentity && !upsertedProfile.current) {
       sendEvent(
