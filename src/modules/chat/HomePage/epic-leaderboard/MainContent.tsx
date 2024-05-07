@@ -1,8 +1,6 @@
 import DummyProfilePic from '@/assets/graphics/dummy-profile-pic.png'
 import EpicTokenIllust from '@/assets/graphics/epic-token-illust.svg'
 import PointsBorder from '@/assets/graphics/home/points-border.svg'
-import FarcasterLogo from '@/assets/logo/farcaster.svg'
-import GalxeLogo from '@/assets/logo/galxe.svg'
 import Button from '@/components/Button'
 import Card, { CardProps } from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
@@ -16,49 +14,18 @@ import LeaderboardSection from './LeaderboardSection'
 
 export default function MainContent() {
   return (
-    <div className='flex flex-col gap-8 pt-4'>
+    <div className='flex flex-col gap-4 pt-4'>
       <MainCard />
-      <div className='flex flex-col gap-4 @container'>
-        <span className='text-lg font-semibold'>Earn more points</span>
-        <div className='grid grid-cols-1 gap-4 @lg:grid-cols-2'>
-          <Card className='relative flex flex-col bg-[#8A63D20D]'>
-            <FarcasterLogo className='absolute right-2 top-2 text-5xl text-[#8A63D2]' />
-            <div className='mb-1 flex items-center gap-2'>
-              <span className='font-semibold'>Farcaster Memes</span>
-              <HiOutlineInformationCircle className='text-text-muted' />
-            </div>
-            <p className='mb-4 pr-10 text-sm text-text-muted'>
-              You earn points every time your memes are liked.
-            </p>
-            <Button variant='primaryOutline' className='font-medium'>
-              Earn on Farcaster
-            </Button>
-          </Card>
-          <Card className='relative flex flex-col bg-[#1D5AF70D]'>
-            <GalxeLogo className='absolute right-2 top-2 text-4xl text-[#1D5AF7]' />
-            <div className='mb-1 flex items-center gap-2'>
-              <span className='font-semibold'>Galxe Quests</span>
-              <HiOutlineInformationCircle className='text-text-muted' />
-            </div>
-            <p className='mb-4 pr-10 text-sm text-text-muted'>
-              Earn points by completing tasks on Galxe.
-            </p>
-            <Button variant='primaryOutline' className='font-medium'>
-              Earn on Galxe
-            </Button>
-          </Card>
+      <Card className='flex flex-col gap-1 bg-background-light'>
+        <div className='mb-1 flex items-center gap-2'>
+          <span className='font-semibold'>Earn With Friends</span>
+          <HiOutlineInformationCircle className='text-text-muted' />
         </div>
-        <Card className='flex flex-col gap-1 bg-background-light'>
-          <div className='mb-1 flex items-center gap-2'>
-            <span className='font-semibold'>Earn With Friends</span>
-            <HiOutlineInformationCircle className='text-text-muted' />
-          </div>
-          <p className='text-sm text-text-muted'>
-            Earn points when your friends join Epic using your link.
-          </p>
-        </Card>
-        <LeaderboardSection />
-      </div>
+        <p className='text-sm text-text-muted'>
+          Earn points when your friends join Epic using your link.
+        </p>
+      </Card>
+      <LeaderboardSection />
     </div>
   )
 }

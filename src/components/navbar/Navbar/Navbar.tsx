@@ -1,3 +1,5 @@
+import FarcasterLogo from '@/assets/graphics/farcaster.svg'
+import TwitterLogo from '@/assets/graphics/twitter.svg'
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
@@ -145,6 +147,14 @@ export default function Navbar({
               {logoLink}
               <div className='flex items-center'>
                 {newPostButton}
+                <div className='flex items-center gap-4'>
+                  <CustomLink href=''>
+                    <TwitterLogo />
+                  </CustomLink>
+                  <CustomLink href=''>
+                    <FarcasterLogo />
+                  </CustomLink>
+                </div>
                 <div className='ml-2.5'>{authComponent}</div>
               </div>
             </div>

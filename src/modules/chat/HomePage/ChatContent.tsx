@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
+import Tabs from '@/components/Tabs'
 import { cx } from '@/utils/class-names'
-import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
@@ -10,39 +10,39 @@ type Props = {
   isOpen: boolean
 }
 
+const tabs = [
+  {
+    id: 'trending-memes',
+    text: 'Trending Memes',
+    content: () => <></>,
+  },
+  {
+    id: 'recent-memes',
+    text: 'Recent Memes',
+    content: () => <></>,
+  },
+]
+
 export default function ChatContent(props: { hubId: string }) {
-  const [selectedTab, setSelectedTab] = useState<'trending' | 'recent'>(
-    'trending'
-  )
   return (
     <div className='flex flex-col border-x border-border-gray bg-background-light'>
-      <div className='flex items-center justify-between gap-4 border-b border-border-gray px-2 py-2'>
-        <span className='font-semibold'>Meme2earn</span>
-        <div className='flex whitespace-nowrap rounded-md bg-[#eceff4] text-sm font-medium text-text-muted dark:bg-[#11172a]'>
-          <Button
-            size='noPadding'
-            variant='transparent'
-            className={cx(
-              'rounded-md rounded-r-none px-3 py-1.5',
-              selectedTab === 'trending' && 'bg-background-primary text-white'
-            )}
-            onClick={() => setSelectedTab('trending')}
-          >
-            Trending
-          </Button>
-          <Button
-            size='noPadding'
-            variant='transparent'
-            className={cx(
-              'rounded-md rounded-l-none px-3 py-1.5',
-              selectedTab === 'recent' && 'bg-background-primary text-white'
-            )}
-            onClick={() => setSelectedTab('recent')}
-          >
-            Recent
-          </Button>
-        </div>
-      </div>
+      <Tabs
+        className='p-0 first:[&>span]:rounded-s-none last:[&>span]:rounded-e-none'
+        panelClassName='mt-0 w-full max-w-full'
+        tabClassName={(selected) =>
+          cx(
+            {
+              ['border-none bg-[#EFF4FF] [&>span]:!text-text-primary']:
+                selected,
+            },
+            'border-t-0 border-r-0 border-l-0 [&>span]:text-slate-500 leading-6 font-medium py-[10px]'
+          )
+        }
+        asContainer
+        tabStyle='buttons'
+        defaultTab={0}
+        tabs={tabs}
+      />
     </div>
   )
 }
