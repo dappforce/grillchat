@@ -2,7 +2,6 @@ import Toast from '@/components/Toast'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { IdentityProvider } from '@/services/datahub/generated-query'
-import { linkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
@@ -309,39 +308,9 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       })
     }
     set({ isInitializedProxy: true })
-
-    // if we use parentProxy from storage, then need to check whether the account is linked in datahub or not, and link if not yet
-    // this is a background process, so it needs to be done after all other init is done
-    const finalAddress = get().address
-    const finalParentProxyAddress = get().parentProxyAddress
-    if (finalAddress && finalParentProxyAddress) {
-      linkPolkadotIfNotLinked(finalAddress, finalParentProxyAddress)
-    }
   },
 }))
 export const useMyAccount = createSelectors(useMyAccountBase)
-
-async function linkPolkadotIfNotLinked(
-  address: string,
-  parentProxyAddress: string
-) {
-  const linkedAddress = await getParentProxyAddress(address)
-  if (linkedAddress ?? ''! === parentProxyAddress!) return
-
-  try {
-    await linkIdentity({
-      address,
-      args: {
-        id: parentProxyAddress,
-        // @ts-expect-error because using IdentityProvider from generated types, but its same with the datahub sdk
-        provider: IdentityProvider.Polkadot,
-      },
-    })
-    if (queryClient) getLinkedIdentityQuery.invalidate(queryClient, address)
-  } catch (err) {
-    console.error('Failed to link polkadot identity', err)
-  }
-}
 
 async function validateParentProxyAddress({
   grillAddress,

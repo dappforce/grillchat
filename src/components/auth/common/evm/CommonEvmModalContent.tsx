@@ -1,16 +1,19 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import Button from '@/components/Button'
+import { Identity } from '@/services/datahub/identity/fetcher'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
-import { useMyAccount } from '@/stores/my-account'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import Image from 'next/image'
+import { useEffect } from 'react'
 import { useSignMessage } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
   onFinishSignMessage?: () => void
-  onSuccess?: () => void
+  onSuccess?: (linkedIdentity: Identity) => void
   onError?: () => void
   beforeSignEvmAddress?: () => Promise<void>
   isLoading?: boolean
@@ -35,16 +38,26 @@ export const CommonEVMLoginContent = ({
     isSuccess: isSigned,
     reset,
   } = useSignMessage()
+  const grillAddress = useMyGrillAddress()
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    grillAddress ?? ''
+  )
   const { mutate: linkIdentity, isLoading } = useLinkIdentity({
     onSuccess: () => {
       reset()
-      onSuccess?.()
     },
     onError: () => {
       reset()
       onError?.()
     },
   })
+
+  useEffect(() => {
+    if (linkedIdentity) {
+      onSuccess?.(linkedIdentity)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedIdentity])
 
   const signAndLinkEvmAddress = async (evmAddress: string) => {
     await beforeSignEvmAddress?.()

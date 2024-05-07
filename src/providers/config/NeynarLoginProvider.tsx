@@ -1,6 +1,7 @@
 import { env } from '@/env.mjs'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { useMyAccount } from '@/stores/my-account'
+import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import Script from 'next/script'
 import {
@@ -19,11 +20,13 @@ declare global {
 
 type State = {
   loginNeynar: () => void
+  isLoadingOrSubmitted: boolean
 }
 const NeynarLoginContext = createContext<State>({
   loginNeynar: () => {
     throw new Error('loginNeynar not implemented')
   },
+  isLoadingOrSubmitted: false,
 })
 
 export default function NeynarLoginProvider({
@@ -33,7 +36,7 @@ export default function NeynarLoginProvider({
 }) {
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  const { mutate } = useLinkIdentity({
+  const { mutate, isSuccess, isLoading } = useLinkIdentity({
     onSuccess: () => {
       finalizeTemporaryAccount()
     },
@@ -47,6 +50,9 @@ export default function NeynarLoginProvider({
         return
       }
 
+      useSubscriptionState
+        .getState()
+        .setSubscriptionState('identity', 'always-sub')
       mutate({
         externalProvider: {
           provider: IdentityProvider.FARCASTER,
@@ -68,7 +74,9 @@ export default function NeynarLoginProvider({
   }, [])
 
   return (
-    <NeynarLoginContext.Provider value={{ loginNeynar }}>
+    <NeynarLoginContext.Provider
+      value={{ loginNeynar, isLoadingOrSubmitted: isSuccess || isLoading }}
+    >
       <Script src='https://neynarxyz.github.io/siwn/raw/1.2.0/index.js' defer />
       <div
         id='neynar_signin'
