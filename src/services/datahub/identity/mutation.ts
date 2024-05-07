@@ -4,43 +4,37 @@ import { getCurrentWallet } from '@/services/subsocial/hooks'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import {
+  IdentityProvider,
   SocialCallDataArgs,
-  SynthCreateLinkedIdentityCallParsedArgs,
+  SynthInitLinkedIdentityCallParsedArgs,
   socialCallName,
 } from '@subsocial/data-hub-sdk'
 import { DatahubParams, createSocialDataEventPayload } from '../utils'
 
 export async function linkIdentity(
-  params: Omit<
-    DatahubParams<SocialCallDataArgs<'synth_create_linked_identity'>>,
-    'signer'
-  >
+  params: DatahubParams<SocialCallDataArgs<'synth_init_linked_identity'>>
 ) {
-  const { id, provider } = params.args
   params.isOffchain = true
 
-  const eventArgs: SynthCreateLinkedIdentityCallParsedArgs = {
-    id,
-    provider,
-  }
   const input = createSocialDataEventPayload(
-    socialCallName.synth_create_linked_identity,
+    socialCallName.synth_init_linked_identity,
     params,
-    eventArgs
+    params.args
   )
 
   await apiInstance.post<any, any, ApiDatahubIdentityBody>(
     '/api/datahub/identity',
     {
       payload: input,
-      id,
-      provider,
+      id: params.args.externalProvider?.id ?? '',
+      provider:
+        params.args.externalProvider?.provider ?? IdentityProvider.FARCASTER,
     }
   )
 }
 
 export const useLinkIdentity = mutationWrapper(
-  async (data: SynthCreateLinkedIdentityCallParsedArgs) => {
+  async (data: SynthInitLinkedIdentityCallParsedArgs) => {
     await linkIdentity({
       ...getCurrentWallet(),
       args: data,

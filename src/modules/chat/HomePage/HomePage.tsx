@@ -34,8 +34,8 @@ export default function HomePage() {
         }}
       >
         adsfasdf
-      </Button> */}
-      <Container className='grid flex-1 grid-cols-1 gap-4 px-4 lg:grid-cols-[1fr_325px] xl:grid-cols-[1fr_375px]'>
+      </Button>
+      <Container className='grid flex-1 grid-cols-1 gap-4 px-4 lg:grid-cols-[1fr_325px] xl:grid-cols-[1fr_400px]'>
         <MainContent />
         <ChatContentRenderer isOpen={isOpen} setIsOpen={setIsOpen} />
         <div className='sticky bottom-0 -mx-4 flex self-end border-t border-border-gray bg-background-light p-4 lg:hidden'>

@@ -7,7 +7,6 @@ import { getPricesFromCache } from '@/pages/api/prices'
 import { getProfilesServer } from '@/pages/api/profiles'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery, getProfileQuery } from '@/services/api/query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import {
   getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
@@ -52,9 +51,6 @@ async function getChatsData(client: QueryClient, chatId: string) {
   const [profilesPromise, prices] = await Promise.allSettled([
     getProfilesServer(chatPageOwnerIds),
     getPricesFromCache(Object.values(coingeckoTokenIds)),
-    ...chatPageOwnerIds.map((ownerId) =>
-      getLinkedIdentityQuery.fetchQuery(client, ownerId)
-    ),
   ] as const)
   if (profilesPromise.status === 'fulfilled') {
     profilesPromise.value.forEach((profile) => {

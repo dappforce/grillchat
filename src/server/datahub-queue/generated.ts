@@ -159,6 +159,7 @@ export type ModerationCallInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   activeStakingCreateSuperLike: IngestDataResponseDto;
+  addNewLinkedIdentityExternalProvider: IngestDataResponseDto;
   addPostView: IngestDataResponseDto;
   addPostViewsBatch: IngestDataResponseDto;
   createLinkedIdentity: IngestDataResponseDto;
@@ -168,6 +169,7 @@ export type Mutation = {
   deleteLinkedIdentity: IngestDataResponseDto;
   ingestDataFromIndexerNeynar: IngestPersistentDataFromSquidResponseDto;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
+  initLinkedIdentity: IngestDataResponseDto;
   moderationAddContextToOrganization: IngestDataResponseDto;
   moderationBlockResource: IngestDataResponseDto;
   moderationExecuteForceCall: IngestDataResponseDto;
@@ -182,6 +184,11 @@ export type Mutation = {
 
 export type MutationActiveStakingCreateSuperLikeArgs = {
   args: CreateMutateActiveStakingSuperLikeInput;
+};
+
+
+export type MutationAddNewLinkedIdentityExternalProviderArgs = {
+  args: CreateMutateLinkedIdentityInput;
 };
 
 
@@ -227,6 +234,11 @@ export type MutationIngestDataFromIndexerNeynarArgs = {
 
 export type MutationIngestPersistentDataSquidArgs = {
   ingestPersistentDataSquidInput: IngestPersistentDataFromSquidInputDto;
+};
+
+
+export type MutationInitLinkedIdentityArgs = {
+  args: CreateMutateLinkedIdentityInput;
 };
 
 
@@ -356,6 +368,7 @@ export enum SocialCallName {
   SetProfile = 'set_profile',
   SynthActiveStakingCreateSuperLike = 'synth_active_staking_create_super_like',
   SynthActiveStakingDeleteSuperLike = 'synth_active_staking_delete_super_like',
+  SynthAddLinkedIdentityExternalProvider = 'synth_add_linked_identity_external_provider',
   SynthAddPostView = 'synth_add_post_view',
   SynthAddPostViewsBatch = 'synth_add_post_views_batch',
   SynthCreateLinkedIdentity = 'synth_create_linked_identity',
@@ -364,6 +377,7 @@ export enum SocialCallName {
   SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
   SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
+  SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
   SynthModerationBlockResource = 'synth_moderation_block_resource',
@@ -428,11 +442,11 @@ export type UpdatePostOptimisticInput = {
 };
 
 export type LinkIdentityMutationVariables = Exact<{
-  createLinkedIdentityInput: CreateMutateLinkedIdentityInput;
+  args: CreateMutateLinkedIdentityInput;
 }>;
 
 
-export type LinkIdentityMutation = { __typename?: 'Mutation', createLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+export type LinkIdentityMutation = { __typename?: 'Mutation', initLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
 export type InitModerationOrgMutationVariables = Exact<{
   input: ModerationCallInput;
@@ -518,9 +532,10 @@ export type CreateSuperLikeMutation = { __typename?: 'Mutation', activeStakingCr
 
 
 export const LinkIdentity = gql`
-    mutation LinkIdentity($createLinkedIdentityInput: CreateMutateLinkedIdentityInput!) {
-  createLinkedIdentity(createLinkedIdentityInput: $createLinkedIdentityInput) {
+    mutation LinkIdentity($args: CreateMutateLinkedIdentityInput!) {
+  initLinkedIdentity(args: $args) {
     processed
+    callId
     message
   }
 }

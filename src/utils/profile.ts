@@ -1,5 +1,6 @@
 import EnsIcon from '@/assets/icons/ens-dynamic-size.svg'
 import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
+import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { IoLogoGoogle } from 'react-icons/io'
 
 type ProfileSourceData =
@@ -38,25 +39,24 @@ export function decodeProfileSource(encoded: string | undefined): {
   return { source, content }
 }
 
-export type ProfileSourceIncludingOffchain = ProfileSource | 'x' | 'google'
 export const profileSourceData: {
-  [key in ProfileSourceIncludingOffchain]?: {
+  [key in IdentityProvider]?: {
     icon: any
     tooltip: string
     link?: (id: string, address: string) => string
   }
 } = {
-  ens: {
+  EVM: {
     icon: EnsIcon,
     tooltip: 'ENS',
     link: (id) => `https://app.ens.domains/${id}`,
   },
-  x: {
+  TWITTER: {
     icon: XLogoIcon,
     tooltip: 'X Profile',
     link: (id) => `https://twitter.com/intent/user?user_id=${id}`,
   },
-  google: {
+  GOOGLE: {
     icon: IoLogoGoogle,
     tooltip: 'Linked with Google',
   },

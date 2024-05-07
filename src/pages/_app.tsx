@@ -8,6 +8,7 @@ import {
   ConfigProvider,
   useConfigContext,
 } from '@/providers/config/ConfigProvider'
+import NeynarLoginProvider from '@/providers/config/NeynarLoginProvider'
 import { getAugmentedGaId } from '@/providers/config/utils'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
@@ -101,24 +102,29 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' defaultTheme='light' forcedTheme={'light'}>
       <QueryProvider dehydratedState={dehydratedState}>
-        <DatahubSubscriber />
-        <ToasterConfig />
-        <ReferralUrlChanger />
-        <NextNProgress
-          color='#eb2f95'
-          options={{ showSpinner: false }}
-          showOnShallow={false}
-        />
-        <HeadConfig {...head} />
-        <GoogleAnalytics trackPageViews gaMeasurementId={getAugmentedGaId()} />
-        <GlobalModals />
-        <div className={cx('font-sans')}>
-          <ErrorBoundary>
-            <EvmProvider>
-              <Component {...props} />
-            </EvmProvider>
-          </ErrorBoundary>
-        </div>
+        <NeynarLoginProvider>
+          <DatahubSubscriber />
+          <ToasterConfig />
+          <ReferralUrlChanger />
+          <NextNProgress
+            color='#eb2f95'
+            options={{ showSpinner: false }}
+            showOnShallow={false}
+          />
+          <HeadConfig {...head} />
+          <GoogleAnalytics
+            trackPageViews
+            gaMeasurementId={getAugmentedGaId()}
+          />
+          <GlobalModals />
+          <div className={cx('font-sans')}>
+            <ErrorBoundary>
+              <EvmProvider>
+                <Component {...props} />
+              </EvmProvider>
+            </ErrorBoundary>
+          </div>
+        </NeynarLoginProvider>
       </QueryProvider>
     </ThemeProvider>
   )

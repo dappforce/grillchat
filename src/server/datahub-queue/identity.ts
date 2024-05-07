@@ -11,13 +11,10 @@ import {
 } from './utils'
 
 const LINK_IDENTITY_MUTATION = gql`
-  mutation LinkIdentity(
-    $createLinkedIdentityInput: CreateMutateLinkedIdentityInput!
-  ) {
-    createLinkedIdentity(
-      createLinkedIdentityInput: $createLinkedIdentityInput
-    ) {
+  mutation LinkIdentity($args: CreateMutateLinkedIdentityInput!) {
+    initLinkedIdentity(args: $args) {
       processed
+      callId
       message
     }
   }
@@ -31,8 +28,8 @@ export async function linkIdentity(input: SocialEventDataApiInput) {
   >({
     document: LINK_IDENTITY_MUTATION,
     variables: {
-      createLinkedIdentityInput: input as any,
+      args: input as any,
     },
   })
-  throwErrorIfNotProcessed(res.createLinkedIdentity, 'Failed to link identity')
+  throwErrorIfNotProcessed(res.initLinkedIdentity, 'Failed to link identity')
 }
