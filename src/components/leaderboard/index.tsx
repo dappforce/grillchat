@@ -100,7 +100,7 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
                 { shallow: false }
               )
             } else if (tabId === 'grill-stats') {
-              router.replace('https://grillapp.net/stats')
+              router.push('https://grillapp.net/stats')
             }
             setSelectedTabIndex(selectedTab)
           },
