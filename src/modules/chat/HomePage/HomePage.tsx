@@ -5,6 +5,7 @@ import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useIsMounted from '@/hooks/useIsMounted'
 import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
+import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useState } from 'react'
 import ChatContent, { MobileChatContent } from './ChatContent'
@@ -15,6 +16,7 @@ export type HomePageProps = {}
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false)
   const { mutate } = useUpsertSpace()
+  const { mutate: upsertPost } = useUpsertPost()
   const login = useMyAccount.use.login()
   const address = useMyMainAddress()
 
@@ -26,11 +28,19 @@ export default function HomePage() {
             await login()
           }
 
-          mutate(
+          upsertPost(
             augmentDatahubParams({
-              content: { name: 'Hey!', about: 'Testing...' },
+              spaceId: '0xc75507f88e6a7d555c15ac95c49cb426',
+              title: 'test',
+              body: 'test chat',
+              image: '',
             })
           )
+          // mutate(
+          //   augmentDatahubParams({
+          //     content: { name: 'Hey!', about: 'Testing...' },
+          //   })
+          // )
         }}
       >
         adsfasdf

@@ -199,27 +199,6 @@ export default function AboutChatModal({
     )
   }
 
-  if (space) {
-    const { content: spaceContent } = space || {}
-
-    const chats =
-      ((spaceContent as any)?.experimental.chats as { id: string }[]) ||
-      undefined
-
-    const isProfileChat = chats?.[0]?.id === chatId
-
-    if (isProfileChat && spaceContent) {
-      const title = spaceContent.name
-
-      subtitle = (
-        <span className='font-normal leading-normal'>
-          <span className='text-text-muted'>by</span>{' '}
-          <span className='text-text'>{title}</span>
-        </span>
-      )
-    }
-  }
-
   return (
     <>
       <AboutModal
