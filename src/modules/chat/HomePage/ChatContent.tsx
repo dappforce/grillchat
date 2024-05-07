@@ -1,4 +1,5 @@
 import Button from '@/components/Button'
+import ChatRoom from '@/components/chats/ChatRoom'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -6,11 +7,10 @@ import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
 type Props = {
   hubId: string
-  close: () => void
-  isOpen: boolean
+  chatId: string
 }
 
-export default function ChatContent(props: { hubId: string }) {
+export default function ChatContent(props: Props) {
   const [selectedTab, setSelectedTab] = useState<'trending' | 'recent'>(
     'trending'
   )
@@ -43,11 +43,20 @@ export default function ChatContent(props: { hubId: string }) {
           </Button>
         </div>
       </div>
+      <ChatRoom asContainer chatId={props.chatId} hubId={props.hubId} />
     </div>
   )
 }
 
-export function MobileChatContent({ hubId, close, isOpen }: Props) {
+export function MobileChatContent({
+  hubId,
+  close,
+  isOpen,
+  chatId,
+}: Props & {
+  close: () => void
+  isOpen: boolean
+}) {
   return createPortal(
     <>
       <div
@@ -71,7 +80,7 @@ export function MobileChatContent({ hubId, close, isOpen }: Props) {
         >
           <MdKeyboardDoubleArrowRight />
         </Button>
-        <ChatContent hubId={hubId} />
+        <ChatContent hubId={hubId} chatId={chatId} />
       </div>
     </>,
     document.body
