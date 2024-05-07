@@ -15,6 +15,7 @@ export type DefaultLayoutProps = ComponentProps<'div'> & {
   withFixedHeight?: boolean
   withSidebar?: boolean
   withSidebarBorder?: boolean
+  withRightSidebar?: boolean
 }
 
 export default function DefaultLayout({
@@ -24,6 +25,7 @@ export default function DefaultLayout({
   withBackButton,
   withFixedHeight,
   withSidebar,
+  withRightSidebar = true,
   style,
   ...props
 }: DefaultLayoutProps) {
@@ -65,7 +67,15 @@ export default function DefaultLayout({
             <Sidebar />
           </div>
           <div className='flex-1'>{children}</div>
-          <CreatorSidebar className='hidden h-fit max-h-none w-[275px] py-4 lg:flex' />
+          {withRightSidebar && (
+            <div
+              className={cx(
+                'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[275px] py-4 lg:block'
+              )}
+            >
+              <CreatorSidebar />
+            </div>
+          )}
         </div>
       ) : (
         children

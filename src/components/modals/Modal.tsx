@@ -7,6 +7,8 @@ import Button from '../Button'
 import LinkText from '../LinkText'
 
 export type ModalFunctionalityProps = {
+  ref?: React.RefObject<any>
+  id?: string
   isOpen: boolean
   closeModal: () => void
   onBackClick?: () => void
@@ -53,6 +55,8 @@ export type ModalProps = ModalFunctionalityProps &
   }
 
 export default function Modal({
+  id,
+  ref,
   children,
   className,
   titleClassName,
@@ -76,6 +80,8 @@ export default function Modal({
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
         as='div'
+        ref={ref}
+        id={id}
         initialFocus={initialFocus}
         className={cx('relative z-40 text-text', className)}
         onClick={(e) => e.stopPropagation()}

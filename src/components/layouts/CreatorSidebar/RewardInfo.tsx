@@ -1,6 +1,7 @@
 import { Skeleton } from '@/components/SkeletonFallback'
 import getAmountRange from '@/components/content-staking/utils/getAmountRangeForAnalytics'
 import PopOver from '@/components/floating/PopOver'
+import { getLeaderboardLink } from '@/components/leaderboard/utils'
 import {
   PostRewards,
   RewardReport,
@@ -96,8 +97,8 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
 
         <CustomLink
           className='flex items-center justify-center gap-2 px-4 py-3.5 font-medium text-text-primary'
+          href={`${getLeaderboardLink(myAddress)}?role=staker`}
           forceHardNavigation
-          href={`/leaderboard/${myAddress}?role=staker`}
           onClick={() => {
             sendEvent('leaderboard_my_stats_opened', {
               myStats: true,
