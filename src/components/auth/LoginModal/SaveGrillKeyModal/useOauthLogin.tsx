@@ -158,7 +158,6 @@ export default function useOauthLogin({
       if (!address || !identity) return
       setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({
-        session: address,
         externalProvider: {
           id: session.user?.id,
           provider: identity,

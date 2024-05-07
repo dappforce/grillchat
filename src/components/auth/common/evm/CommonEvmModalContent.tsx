@@ -59,7 +59,6 @@ export const CommonEVMLoginContent = ({
     onFinishSignMessage?.()
 
     linkIdentity({
-      session: grillAddress,
       externalProvider: {
         id: evmAddress,
         provider: IdentityProvider.EVM,

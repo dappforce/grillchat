@@ -48,7 +48,6 @@ export default function NeynarLoginProvider({
       }
 
       mutate({
-        session: address,
         externalProvider: {
           provider: IdentityProvider.FARCASTER,
           id: data.fid,
