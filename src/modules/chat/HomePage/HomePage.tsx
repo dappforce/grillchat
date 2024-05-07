@@ -47,10 +47,12 @@ function ChatContentRenderer({
   return (
     <>
       {lgUp ? (
-        <ChatContent
-          hubId='0xc75507f88e6a7d555c15ac95c49cb426'
-          chatId='0x3b1bf91da3fd7e5d790c19039110a5a7'
-        />
+        <div className='h-[calc(100dvh_-_3.5rem)]'>
+          <ChatContent
+            hubId='0xc75507f88e6a7d555c15ac95c49cb426'
+            chatId='0x3b1bf91da3fd7e5d790c19039110a5a7'
+          />
+        </div>
       ) : (
         <MobileChatContent
           isOpen={isOpen}

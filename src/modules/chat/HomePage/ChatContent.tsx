@@ -15,7 +15,7 @@ export default function ChatContent(props: Props) {
     'trending'
   )
   return (
-    <div className='flex flex-col border-x border-border-gray bg-background-light'>
+    <div className='flex h-full flex-col border-x border-border-gray bg-background-light'>
       <div className='flex items-center justify-between gap-4 border-b border-border-gray px-2 py-2'>
         <span className='font-semibold'>Meme2earn</span>
         <div className='flex whitespace-nowrap rounded-md bg-[#eceff4] text-sm font-medium text-text-muted dark:bg-[#11172a]'>
@@ -68,7 +68,7 @@ export function MobileChatContent({
       />
       <div
         className={cx(
-          'pointer-events-none fixed right-0 top-0 z-30 flex h-screen w-full max-w-[500px] translate-x-1/3 flex-col bg-[#eceff4] opacity-0 transition dark:bg-[#11172a]',
+          'pointer-events-none fixed right-0 top-0 z-30 flex h-screen w-[500px] max-w-[85vw] translate-x-1/3 flex-col bg-[#eceff4] opacity-0 transition dark:bg-[#11172a]',
           isOpen && 'pointer-events-auto translate-x-0 opacity-100'
         )}
       >
