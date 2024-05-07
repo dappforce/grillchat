@@ -2,10 +2,14 @@ import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import Button from '@/components/Button'
 import { Identity } from '@/services/datahub/identity/fetcher'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import {
+  getEvmLinkedIdentityMessageQuery,
+  getLinkedIdentityQuery,
+} from '@/services/datahub/identity/query'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useEffect } from 'react'
 import { useSignMessage } from 'wagmi'
@@ -32,6 +36,7 @@ export const CommonEVMLoginContent = ({
   beforeSignEvmAddress,
   isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
+  const client = useQueryClient()
   const {
     signMessageAsync,
     isLoading: isSigning,
@@ -66,7 +71,10 @@ export const CommonEVMLoginContent = ({
       throw new Error('Grill address is not found')
     }
 
-    const message = getLinkMessage(grillAddress)
+    const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
+      client,
+      evmAddress
+    )
     const sig = await signMessageAsync({ message })
 
     onFinishSignMessage?.()

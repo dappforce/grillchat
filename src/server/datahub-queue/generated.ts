@@ -459,6 +459,13 @@ export type LinkIdentityMutationVariables = Exact<{
 
 export type LinkIdentityMutation = { __typename?: 'Mutation', initLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
+export type LinkIdentityEvmMessageMutationVariables = Exact<{
+  address: Scalars['String']['input'];
+}>;
+
+
+export type LinkIdentityEvmMessageMutation = { __typename?: 'Mutation', linkedIdentityExternalProviderEvmProofMsg: { __typename?: 'LinkedIdentityExternalProviderEvmProofMsgResponse', message: string } };
+
 export type InitModerationOrgMutationVariables = Exact<{
   input: ModerationCallInput;
 }>;
@@ -547,6 +554,13 @@ export const LinkIdentity = gql`
   initLinkedIdentity(args: $args) {
     processed
     callId
+    message
+  }
+}
+    `;
+export const LinkIdentityEvmMessage = gql`
+    mutation LinkIdentityEvmMessage($address: String!) {
+  linkedIdentityExternalProviderEvmProofMsg(address: $address) {
     message
   }
 }
