@@ -7,6 +7,19 @@ export type Column = {
   className?: string
 }
 
+const getAlignTextStyle = (align: Column['align']) => {
+  switch (align) {
+    case 'left':
+      return 'text-left'
+    case 'center':
+      return 'text-center'
+    case 'right':
+      return 'text-right'
+    default:
+      return 'text-left'
+  }
+}
+
 type TableProps = {
   columns: Column[]
   data: any[]
@@ -77,7 +90,7 @@ export const TableHeader = ({
             scope='col'
             className={cx(
               'px-6 py-4 font-normal',
-              `text-${align || 'left'}`,
+              getAlignTextStyle(align),
               className
             )}
           >

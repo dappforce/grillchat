@@ -12,6 +12,7 @@ import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { FiShare } from 'react-icons/fi'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import LeaderboardSection from './LeaderboardSection'
 
 export default function MainContent() {
   return (
@@ -56,6 +57,7 @@ export default function MainContent() {
             Earn points when your friends join Epic using your link.
           </p>
         </Card>
+        <LeaderboardSection />
       </div>
     </div>
   )

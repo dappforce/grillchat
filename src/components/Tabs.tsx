@@ -16,7 +16,7 @@ export type TabsProps = ComponentProps<'div'> & {
   tabs: Tab[]
   tabsRightElement?: ReactNode
   panelClassName?: string
-  tabClassName?: string
+  tabClassName?: ((selected: boolean) => string) | string
   defaultTab?: number
   withHashIntegration?: boolean
   hideBeforeHashLoaded?: boolean
@@ -111,7 +111,9 @@ export default function Tabs({
                           'border-r border-background-primary bg-background-primary/30'
                       ),
 
-                    tabClassName
+                    typeof tabClassName === 'string'
+                      ? tabClassName
+                      : tabClassName?.(selected)
                   )}
                 >
                   <span

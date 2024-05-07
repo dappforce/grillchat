@@ -8,7 +8,7 @@ import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useState } from 'react'
 import ChatContent, { MobileChatContent } from './ChatContent'
-import MainContent from './MainContent'
+import MainContent from './epic-leaderboard/MainContent'
 
 export type HomePageProps = {}
 
@@ -20,7 +20,7 @@ export default function HomePage() {
 
   return (
     <DefaultLayout withSidebar>
-      <Button
+      {/* <Button
         onClick={async () => {
           if (!address) {
             await login()
@@ -34,7 +34,7 @@ export default function HomePage() {
         }}
       >
         adsfasdf
-      </Button>
+      </Button> */}
       <Container className='grid flex-1 grid-cols-1 gap-4 px-4 lg:grid-cols-[1fr_325px] xl:grid-cols-[1fr_375px]'>
         <MainContent />
         <ChatContentRenderer isOpen={isOpen} setIsOpen={setIsOpen} />
