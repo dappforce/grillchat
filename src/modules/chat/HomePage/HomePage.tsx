@@ -3,10 +3,6 @@ import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useIsMounted from '@/hooks/useIsMounted'
-import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
-import { augmentDatahubParams } from '@/services/datahub/utils'
-import { useUpsertPost } from '@/services/subsocial/posts/mutation'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useState } from 'react'
 import ChatContent, { MobileChatContent } from './ChatContent'
 import MainContent from './MainContent'
@@ -15,36 +11,9 @@ export type HomePageProps = {}
 
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false)
-  const { mutate } = useUpsertSpace()
-  const { mutate: upsertPost } = useUpsertPost()
-  const login = useMyAccount.use.login()
-  const address = useMyMainAddress()
 
   return (
     <DefaultLayout withSidebar>
-      <Button
-        onClick={async () => {
-          if (!address) {
-            await login()
-          }
-
-          upsertPost(
-            augmentDatahubParams({
-              spaceId: '0xc75507f88e6a7d555c15ac95c49cb426',
-              title: 'test',
-              body: 'test chat',
-              image: '',
-            })
-          )
-          // mutate(
-          //   augmentDatahubParams({
-          //     content: { name: 'Hey!', about: 'Testing...' },
-          //   })
-          // )
-        }}
-      >
-        adsfasdf
-      </Button>
       <Container className='grid flex-1 grid-cols-1 gap-4 px-4 lg:grid-cols-[1fr_325px] xl:grid-cols-[1fr_400px]'>
         <MainContent />
         <ChatContentRenderer isOpen={isOpen} setIsOpen={setIsOpen} />

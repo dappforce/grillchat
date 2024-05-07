@@ -194,7 +194,7 @@ export function useSendMessage(
         params: data,
         ipfsContent: content,
         client,
-        customId: newId,
+        newId,
       })
       config?.onMutate?.(data)
     },

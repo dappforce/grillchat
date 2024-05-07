@@ -99,8 +99,6 @@ export default function ChatForm({
   const [isDisabledInput, setIsDisabledInput] = useState(false)
   const reloadUnsentMessage = useLoadUnsentMessage(chatId)
 
-  const [isOpenCtaModal, setIsOpenCtaModal] = useState(false)
-
   const sendEvent = useSendEvent()
   const incrementMessageCount = useMessageData(
     (state) => state.incrementMessageCount
@@ -130,7 +128,6 @@ export default function ChatForm({
   const { mutate: sendMessage } = useSendMessage({
     onSuccess: () => {
       unsentMessageStorage.remove(chatId)
-      resetForm()
     },
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
@@ -199,13 +196,7 @@ export default function ChatForm({
       resetForm()
       return
     }
-
-    const willOpenLoginModal = !isLoggedIn
-    if (!hasSentMessageStorage.get() && !willOpenLoginModal) {
-      setTimeout(() => {
-        setIsOpenCtaModal(true)
-      }, 2000)
-    }
+    resetForm()
 
     unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')

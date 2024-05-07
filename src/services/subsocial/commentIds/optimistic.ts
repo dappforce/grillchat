@@ -5,6 +5,11 @@ import { QueryClient } from '@tanstack/react-query'
 //   getPaginatedPostIdsByPostId,
 //   getPostMetadataQuery,
 // } from '../../datahub/posts/query'
+import { getPostQuery } from '@/services/api/query'
+import {
+  getPaginatedPostIdsByPostId,
+  getPostMetadataQuery,
+} from '@/services/datahub/posts/query'
 import type { SendMessageParams } from './types'
 
 export const commentIdsOptimisticEncoder = {
@@ -18,44 +23,42 @@ type OptimisticGeneratorParams = {
   params: SendMessageParams
   ipfsContent: PostContent
   address: string
-  customId?: string
+  newId: string
 }
 export function addOptimisticData({
   client,
   params,
   ipfsContent,
-  customId,
+  newId,
   address,
 }: OptimisticGeneratorParams) {
-  const id = customId || ipfsContent.optimisticId
-  if (!id) return
+  if (!newId) return
 
-  const tempId = commentIdsOptimisticEncoder.encode(id)
-  // getPostQuery.setQueryData(client, tempId, {
-  //   id: tempId,
-  //   struct: {
-  //     createdAtTime: Date.now(),
-  //     ownerId: address,
-  //     rootPostId: params.chatId,
-  //     parentPostId: params.replyTo,
-  //   },
-  //   content: ipfsContent,
-  // } as unknown as PostData)
-  // getPaginatedPostIdsByPostId.setQueryFirstPageData(
-  //   client,
-  //   params.chatId,
-  //   (oldData) => {
-  //     return [tempId, ...(oldData ?? [])]
-  //   }
-  // )
-  // getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
-  //   if (!oldData) return oldData
-  //   return {
-  //     ...oldData,
-  //     totalCommentsCount: oldData.totalCommentsCount + 1,
-  //     lastCommentId: tempId,
-  //   }
-  // })
+  getPostQuery.setQueryData(client, newId, {
+    id: newId,
+    struct: {
+      createdAtTime: Date.now(),
+      ownerId: address,
+      rootPostId: params.chatId,
+      parentPostId: params.replyTo,
+    },
+    content: ipfsContent,
+  } as unknown as PostData)
+  getPaginatedPostIdsByPostId.setQueryFirstPageData(
+    client,
+    params.chatId,
+    (oldData) => {
+      return [newId, ...(oldData ?? [])]
+    }
+  )
+  getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
+    if (!oldData) return oldData
+    return {
+      ...oldData,
+      totalCommentsCount: oldData.totalCommentsCount + 1,
+      lastCommentId: newId,
+    }
+  })
 }
 export function deleteOptimisticData({
   client,

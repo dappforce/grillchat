@@ -18,7 +18,7 @@ type CommonEVMLoginErrorProps = {
 }
 
 function getLinkMessage(session: string) {
-  return `Link ${session} to your EVM Address`
+  return `Link to address ${session}`
 }
 
 export const CommonEVMLoginContent = ({

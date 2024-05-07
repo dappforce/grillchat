@@ -44,17 +44,9 @@ export default function MessageStatusIndicator({
               className={cx('text-sm text-text-muted-on-primary-light')}
             />
           )
-        } else if (messageStatus === 'blockchain') {
-          return (
-            <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
-          )
-        } else if (messageStatus === 'optimistic') {
-          return (
-            <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
-          )
         } else if (messageStatus === 'offChain') {
           return (
-            <IoCheckmarkDoneOutline className='text-sm text-blue-600 dark:text-blue-300' />
+            <IoCheckmarkDoneOutline className='text-sm dark:text-text-on-primary' />
           )
         }
       })()}
