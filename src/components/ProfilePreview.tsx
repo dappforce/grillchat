@@ -108,7 +108,6 @@ const ProfilePreview = ({
             profileSourceIconPosition='right'
             address={address}
             className={cx('gap-2 text-lg', nameClassName)}
-            forceProfileSource={forceProfileSource}
           />
           {onEditClick && !isLoading && editButton}
         </div>
