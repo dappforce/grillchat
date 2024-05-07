@@ -48,7 +48,7 @@ export default function RepliedMessagePreview({
     isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
 
   const replySender = message?.struct.ownerId ?? ''
-  const replySenderColor = useRandomColor(replySender, { isAddress: true })
+  const replySenderColor = useRandomColor(replySender)
 
   const extensions = message?.content?.extensions
 
