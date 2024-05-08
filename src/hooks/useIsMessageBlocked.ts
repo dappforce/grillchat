@@ -1,5 +1,4 @@
 import { env } from '@/env.mjs'
-import { getPostQuery } from '@/services/api/query'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { isMessageBlocked } from '@/utils/chat'
 import { PostData } from '@subsocial/api/types'
@@ -39,12 +38,10 @@ export default function useIsMessageBlocked(
   const { data: hubModerationData } = getBlockedResourcesQuery.useQuery({
     spaceId: hubId,
   })
-  const { data: chat } = getPostQuery.useQuery(chatId)
-
-  const entityId = chat?.entityId ?? ''
   const { data: chatModerationData } = getBlockedResourcesQuery.useQuery({
-    postEntityId: entityId,
+    postEntityId: chatId,
   })
+
   const blockedInApp = appModerationData?.blockedResources
   const blockedInHub = hubModerationData?.blockedResources
   const blockedInChat = chatModerationData?.blockedResources
