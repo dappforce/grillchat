@@ -16,7 +16,6 @@ export type Identity = {
   }[]
 }
 
-// TODO: need batch call pool query to improve performance
 const GET_LINKED_IDENTITIES = gql`
   query GetLinkedIdentities($where: LinkedIdentityArgs!) {
     linkedIdentity(where: $where) {

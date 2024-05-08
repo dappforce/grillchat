@@ -34,9 +34,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     { address, forceProfileSource, asLink, ...props }: AddressAvatarProps,
     ref
   ) {
-    const backgroundColor = useRandomColor(address, {
-      isAddress: true,
-    })
+    const backgroundColor = useRandomColor(address)
 
     const [isAvatarError, setIsAvatarError] = useState(false)
     const onImageError = useCallback(() => setIsAvatarError(true), [])

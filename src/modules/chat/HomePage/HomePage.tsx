@@ -67,8 +67,8 @@ const MobileHomePageView = () => {
                   }
                 )}
               >
-                <Icon className='w-[20px] h-[20px]' />
-                <span className='leading-none text-sm'>{text}</span>
+                <Icon className='h-[20px] w-[20px]' />
+                <span className='text-sm leading-none'>{text}</span>
               </div>
             }
           />
@@ -110,12 +110,18 @@ function ChatContentRenderer({
   return (
     <>
       {lgUp ? (
-        <ChatContent hubId='' />
+        <div className='h-[calc(100dvh_-_3.5rem)]'>
+          <ChatContent
+            hubId='0xc75507f88e6a7d555c15ac95c49cb426'
+            chatId='0x3b1bf91da3fd7e5d790c19039110a5a7'
+          />
+        </div>
       ) : (
         <MobileChatContent
-          hubId=''
           isOpen={isOpen}
           close={() => setIsOpen(false)}
+          hubId='0xc75507f88e6a7d555c15ac95c49cb426'
+          chatId='0x3b1bf91da3fd7e5d790c19039110a5a7'
         />
       )}
     </>

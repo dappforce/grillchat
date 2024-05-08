@@ -215,6 +215,7 @@ export const getPaginatedPostIdsByPostId = {
         const res = await getPaginatedPostIdsByRootPostId({
           postId,
           page: pageParam,
+          client,
         })
 
         // hotfix because in offchain chat (/offchain/18634) its not updating cache when first invalidated from server

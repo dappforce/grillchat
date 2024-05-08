@@ -148,6 +148,11 @@ export type LatestColdSocialEventArgsDto = {
   queueStatus?: InputMaybe<QueueJobStatus>;
 };
 
+export type LinkedIdentityExternalProviderEvmProofMsgResponse = {
+  __typename?: 'LinkedIdentityExternalProviderEvmProofMsgResponse';
+  message: Scalars['String']['output'];
+};
+
 export type ModerationCallInput = {
   callData?: InputMaybe<SocialCallDataInput>;
   dataType: SocialEventDataType;
@@ -170,6 +175,7 @@ export type Mutation = {
   ingestDataFromIndexerNeynar: IngestPersistentDataFromSquidResponseDto;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
   initLinkedIdentity: IngestDataResponseDto;
+  linkedIdentityExternalProviderEvmProofMsg: LinkedIdentityExternalProviderEvmProofMsgResponse;
   moderationAddContextToOrganization: IngestDataResponseDto;
   moderationBlockResource: IngestDataResponseDto;
   moderationExecuteForceCall: IngestDataResponseDto;
@@ -239,6 +245,11 @@ export type MutationIngestPersistentDataSquidArgs = {
 
 export type MutationInitLinkedIdentityArgs = {
   args: CreateMutateLinkedIdentityInput;
+};
+
+
+export type MutationLinkedIdentityExternalProviderEvmProofMsgArgs = {
+  address: Scalars['String']['input'];
 };
 
 
@@ -448,6 +459,13 @@ export type LinkIdentityMutationVariables = Exact<{
 
 export type LinkIdentityMutation = { __typename?: 'Mutation', initLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
+export type LinkIdentityEvmMessageMutationVariables = Exact<{
+  address: Scalars['String']['input'];
+}>;
+
+
+export type LinkIdentityEvmMessageMutation = { __typename?: 'Mutation', linkedIdentityExternalProviderEvmProofMsg: { __typename?: 'LinkedIdentityExternalProviderEvmProofMsgResponse', message: string } };
+
 export type InitModerationOrgMutationVariables = Exact<{
   input: ModerationCallInput;
 }>;
@@ -536,6 +554,13 @@ export const LinkIdentity = gql`
   initLinkedIdentity(args: $args) {
     processed
     callId
+    message
+  }
+}
+    `;
+export const LinkIdentityEvmMessage = gql`
+    mutation LinkIdentityEvmMessage($address: String!) {
+  linkedIdentityExternalProviderEvmProofMsg(address: $address) {
     message
   }
 }

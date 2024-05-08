@@ -1,7 +1,6 @@
 import Container from '@/components/Container'
 import Loading from '@/components/Loading'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
@@ -56,7 +55,6 @@ function ChatListContent({
   newMessageNoticeClassName,
   ...props
 }: ChatListProps) {
-  const lgUp = useBreakpointThreshold('lg')
   const sendEvent = useSendEvent()
   const { enableBackButton } = useConfigContext()
   const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId)

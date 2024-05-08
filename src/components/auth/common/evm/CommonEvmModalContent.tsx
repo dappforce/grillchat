@@ -1,16 +1,23 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import Button from '@/components/Button'
+import { Identity } from '@/services/datahub/identity/fetcher'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
-import { useMyAccount } from '@/stores/my-account'
+import {
+  getEvmLinkedIdentityMessageQuery,
+  getLinkedIdentityQuery,
+} from '@/services/datahub/identity/query'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
+import { useEffect } from 'react'
 import { useSignMessage } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
   onFinishSignMessage?: () => void
-  onSuccess?: () => void
+  onSuccess?: (linkedIdentity: Identity) => void
   onError?: () => void
   beforeSignEvmAddress?: () => Promise<void>
   isLoading?: boolean
@@ -18,7 +25,7 @@ type CommonEVMLoginErrorProps = {
 }
 
 function getLinkMessage(session: string) {
-  return `Link ${session} to your EVM Address`
+  return `Link to address ${session}`
 }
 
 export const CommonEVMLoginContent = ({
@@ -29,22 +36,33 @@ export const CommonEVMLoginContent = ({
   beforeSignEvmAddress,
   isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
+  const client = useQueryClient()
   const {
     signMessageAsync,
     isLoading: isSigning,
     isSuccess: isSigned,
     reset,
   } = useSignMessage()
+  const grillAddress = useMyGrillAddress()
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    grillAddress ?? ''
+  )
   const { mutate: linkIdentity, isLoading } = useLinkIdentity({
     onSuccess: () => {
       reset()
-      onSuccess?.()
     },
     onError: () => {
       reset()
       onError?.()
     },
   })
+
+  useEffect(() => {
+    if (linkedIdentity) {
+      onSuccess?.(linkedIdentity)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedIdentity])
 
   const signAndLinkEvmAddress = async (evmAddress: string) => {
     await beforeSignEvmAddress?.()
@@ -53,13 +71,15 @@ export const CommonEVMLoginContent = ({
       throw new Error('Grill address is not found')
     }
 
-    const message = getLinkMessage(grillAddress)
+    const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
+      client,
+      evmAddress
+    )
     const sig = await signMessageAsync({ message })
 
     onFinishSignMessage?.()
 
     linkIdentity({
-      session: grillAddress,
       externalProvider: {
         id: evmAddress,
         provider: IdentityProvider.EVM,

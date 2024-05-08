@@ -6,15 +6,14 @@ import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
 type Props = {
   hubId: string
-  close: () => void
-  isOpen: boolean
+  chatId: string
 }
 
 const tabs = [
   {
     id: 'trending-memes',
     text: 'Trending Memes',
-    content: () => <div className='w-full h-full'>Top memes chat ever </div>,
+    content: () => <div className='h-full w-full'>Top memes chat ever </div>,
   },
   {
     id: 'recent-memes',
@@ -25,7 +24,7 @@ const tabs = [
 
 export default function ChatContent(props: { hubId: string }) {
   return (
-    <div className='flex flex-col border-x border-border-gray bg-background-light h-[calc(100%-56px)]'>
+    <div className='flex h-[calc(100%-56px)] flex-col border-x border-border-gray bg-background-light'>
       <Tabs
         className='p-0 first:[&>span]:rounded-s-none last:[&>span]:rounded-e-none'
         panelClassName='mt-0 w-full max-w-full'
@@ -47,7 +46,15 @@ export default function ChatContent(props: { hubId: string }) {
   )
 }
 
-export function MobileChatContent({ hubId, close, isOpen }: Props) {
+export function MobileChatContent({
+  hubId,
+  close,
+  isOpen,
+  chatId,
+}: Props & {
+  close: () => void
+  isOpen: boolean
+}) {
   return createPortal(
     <>
       <div
@@ -59,7 +66,7 @@ export function MobileChatContent({ hubId, close, isOpen }: Props) {
       />
       <div
         className={cx(
-          'pointer-events-none fixed right-0 top-0 z-30 flex h-screen w-full max-w-[500px] translate-x-1/3 flex-col bg-[#eceff4] opacity-0 transition dark:bg-[#11172a]',
+          'pointer-events-none fixed right-0 top-0 z-30 flex h-screen w-[500px] max-w-[85vw] translate-x-1/3 flex-col bg-[#eceff4] opacity-0 transition dark:bg-[#11172a]',
           isOpen && 'pointer-events-auto translate-x-0 opacity-100'
         )}
       >
@@ -71,7 +78,7 @@ export function MobileChatContent({ hubId, close, isOpen }: Props) {
         >
           <MdKeyboardDoubleArrowRight />
         </Button>
-        <ChatContent hubId={hubId} />
+        <ChatContent hubId={hubId} chatId={chatId} />
       </div>
     </>,
     document.body

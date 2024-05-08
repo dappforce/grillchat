@@ -50,14 +50,14 @@ export default function Name({
       enabled: profileSourceIconPosition !== 'none',
     })
 
-  const identitiesIcons = (
+  const identitiesIcons = (linkedIdentity?.externalProviders.length ?? 0) >
+    0 && (
     <div className='flex items-center'>
       {linkedIdentity?.externalProviders?.map((p) => {
-        const {
-          icon: Icon,
-          tooltip,
-          link,
-        } = profileSourceData[p.provider] || {}
+        // TODO: add farcaster data
+        const data = profileSourceData[p.provider]
+        if (!data) return null
+        const { icon: Icon, tooltip, link } = data
 
         return (
           <div

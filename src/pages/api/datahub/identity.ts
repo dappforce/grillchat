@@ -1,5 +1,8 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { linkIdentity } from '@/server/datahub-queue/identity'
+import {
+  getLinkIdentityMessage,
+  linkIdentity,
+} from '@/server/datahub-queue/identity'
 import { datahubMutationWrapper } from '@/server/datahub-queue/utils'
 import {
   IdentityProvider,
@@ -10,6 +13,9 @@ import { z } from 'zod'
 import { auth } from '../auth/[...nextauth]'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'GET') {
+    return GET_handler(req, res)
+  }
   if (req.method === 'POST') {
     return POST_handler(req, res)
   }
@@ -68,3 +74,15 @@ async function datahubIdentityActionMapping(data: SocialEventDataApiInput) {
     throw Error('Unknown identity action')
   }
 }
+
+const GET_handler = handlerWrapper({
+  inputSchema: z.object({ address: z.string() }),
+  dataGetter: (req) => req.query,
+})<{ data: string }>({
+  allowedMethods: ['GET'],
+  errorLabel: 'identity-query',
+  handler: async (data, req, res) => {
+    const message = await getLinkIdentityMessage(data.address)
+    res.json({ success: true, message: 'OK', data: message })
+  },
+})

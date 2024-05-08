@@ -7,12 +7,19 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
+import { getProfileQuery } from '@/services/api/query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import {
+  useMyAccount,
+  useMyGrillAddress,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
+import { useQueryClient } from '@tanstack/react-query'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
 import { CommonEVMLoginContent } from '../common/evm/CommonEvmModalContent'
@@ -39,9 +46,19 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
 }
 
 export const LoginContent = (props: LoginModalContentProps) => {
-  const { setCurrentState } = props
+  const { setCurrentState, closeModal } = props
   const sendEvent = useSendEvent()
-  const { loginNeynar } = useNeynarLogin()
+  const { loginNeynar, isLoadingOrSubmitted } = useNeynarLogin()
+  const grillAddress = useMyGrillAddress()
+
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    grillAddress ?? ''
+  )
+  useEffect(() => {
+    if (linkedIdentity) {
+      closeModal()
+    }
+  }, [linkedIdentity, closeModal])
 
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {
@@ -89,6 +106,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
               sendEvent('login_neynar')
               loginNeynar()
             }}
+            isLoading={isLoadingOrSubmitted}
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
@@ -152,6 +170,7 @@ export function EvmLoginStep({
   const { mutate, isLoading } = useLoginBeforeSignEvm()
   const { mutate: setReferrerId } = useSetReferrerId()
   const sendEvent = useSendEvent()
+  const client = useQueryClient()
 
   return (
     <CommonEVMLoginContent
@@ -160,14 +179,15 @@ export function EvmLoginStep({
       beforeSignEvmAddress={() => mutate()}
       onFinishSignMessage={() => {
         setReferrerId({ refId: getReferralIdInUrl() })
-        useLoginModal
-          .getState()
-          .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
+        // TODO: if want to have grill key step, uncomment this
+        // useLoginModal
+        //   .getState()
+        //   .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
       }}
       onError={() => {
         setCurrentState('evm-linking-error')
       }}
-      onSuccess={async () => {
+      onSuccess={async (linkedIdentity) => {
         useMyAccount.getState().finalizeTemporaryAccount()
 
         const address = useMyAccount.getState().address
@@ -175,8 +195,14 @@ export function EvmLoginStep({
           sendEvent('account_created', { loginBy: 'evm' }, { ref: refId })
         })
 
+        const profile = await getProfileQuery.fetchQuery(
+          null,
+          linkedIdentity.mainAddress
+        )
+        if (!profile) {
+          useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+        }
         closeModal()
-        useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
       }}
     />
   )

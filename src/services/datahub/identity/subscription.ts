@@ -49,9 +49,25 @@ const SUBSCRIBE_IDENTITY = gql`
     linkedIdentitySubscription {
       event
       entity {
-        id
-        sessions {
+        linkedIdentity {
           id
+          externalProviders {
+            id
+            externalId
+            provider
+            enabled
+          }
+        }
+        session {
+          id
+          linkedIdentity {
+            externalProviders {
+              id
+              externalId
+              provider
+              enabled
+            }
+          }
         }
       }
     }
@@ -96,15 +112,14 @@ async function processSubscriptionEvent(
     eventData.event ===
     DataHubSubscriptionEventEnum.LinkedIdentitySessionCreated
   ) {
-    await processIdentity(queryClient, eventData)
+    await processIdentity(queryClient, eventData.entity.session)
   }
 }
 
 async function processIdentity(
   queryClient: QueryClient,
-  eventData: SubscribeIdentitySubscription['linkedIdentitySubscription']
+  session: SubscribeIdentitySubscription['linkedIdentitySubscription']['entity']['session']
 ) {
-  eventData.entity.sessions?.forEach((session) => {
-    getLinkedIdentityQuery.invalidate(queryClient, session.id)
-  })
+  if (!session?.id) return
+  getLinkedIdentityQuery.invalidate(queryClient, session.id)
 }

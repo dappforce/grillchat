@@ -11,8 +11,14 @@ import {
 import NeynarLoginProvider from '@/providers/config/NeynarLoginProvider'
 import { getAugmentedGaId } from '@/providers/config/utils'
 import EvmProvider from '@/providers/evm/EvmProvider'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
+import {
+  useMyAccount,
+  useMyGrillAddress,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
@@ -117,6 +123,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
             gaMeasurementId={getAugmentedGaId()}
           />
           <GlobalModals />
+          <SessionAccountChecker />
           <div className={cx('font-sans')}>
             <ErrorBoundary>
               <EvmProvider>
@@ -137,4 +144,20 @@ function DatahubSubscriber() {
 
 function ToasterConfig() {
   return <Toaster position='top-center' />
+}
+
+function SessionAccountChecker() {
+  const grillAddress = useMyGrillAddress()
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    grillAddress ?? ''
+  )
+  const mainAddress = useMyMainAddress()
+
+  useEffect(() => {
+    if (linkedIdentity && linkedIdentity.mainAddress !== mainAddress) {
+      useMyAccount.getState().saveProxyAddress(linkedIdentity.mainAddress)
+    }
+  }, [linkedIdentity, mainAddress])
+
+  return null
 }
