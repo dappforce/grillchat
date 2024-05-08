@@ -87,8 +87,6 @@ jobs:
           push: true
           build-args: |
             GH_NEXT_PUBLIC_AMP_ID=71bf5a46800fedba5e9a01243b988164
-            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
-            GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12467
             GH_NEXT_PUBLIC_GA_ID=fake
             GH_IPFS_WRITE_URL=https://gw-seattle.crustcloud.io
             GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
@@ -99,11 +97,9 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gl-notifications-dev.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=581626459774
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
-            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.subsocial.network
-            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.subsocial.network
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://ownership-pallet-data-hub-core.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://ownership-pallet-data-hub-core.subsocial.network/graphql-ws
-            GH_DATAHUB_QUEUE_URL=https://ownership-pallet-data-hub-queue.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://epic-login-data-hub-core.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://epic-login-data-hub-core.subsocial.network/graphql-ws
+            GH_DATAHUB_QUEUE_URL=https://epic-login-data-hub-queue.subsocial.network/graphql
             GH_NOTIFICATIONS_URL=https://ownership-pallet-notif-data-hub-core.subsocial.network/graphql
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_PROPOSALS_HUB=12364
