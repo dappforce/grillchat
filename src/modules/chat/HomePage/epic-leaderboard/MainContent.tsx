@@ -1,14 +1,13 @@
 import DummyProfilePic from '@/assets/graphics/dummy-profile-pic.png'
 import EpicTokenIllust from '@/assets/graphics/epic-token-illust.svg'
-import PointsBorder from '@/assets/graphics/home/points-border.svg'
 import Button from '@/components/Button'
 import Card, { CardProps } from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
+import PopOver from '@/components/floating/PopOver'
 import { spaceMono } from '@/fonts'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
-import { FiShare } from 'react-icons/fi'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import LeaderboardSection from './LeaderboardSection'
 
@@ -74,7 +73,7 @@ function ProfileCard() {
           <Image
             src={DummyProfilePic}
             alt=''
-            className='hidden w-28 rounded-lg border-[3px] border-white/20 object-cover @lg:block'
+            className='hidden w-9 rounded-lg border-[3px] border-white/20 object-cover @lg:block'
           />
           <div className='flex flex-1 flex-col gap-1'>
             <div className='mb-2 flex items-center gap-3 @lg:mb-0'>
@@ -85,33 +84,42 @@ function ProfileCard() {
               />
               <span className='text-lg font-semibold'>Vit</span>
             </div>
-            <div className='relative flex flex-col gap-1 rounded-xl px-4 py-3'>
-              <PointsBorder className='pointer-events-none absolute inset-0 h-full w-full' />
-              <span
-                className={cx(
-                  'font-mono text-2xl font-bold @lg:text-3xl',
-                  spaceMono.className
-                )}
+            <div className='flex flex-col gap-4'>
+              <div className='relative flex flex-col gap-2 rounded-xl'>
+                <span
+                  className={cx(
+                    'font-mono text-[26px] font-bold leading-none',
+                    spaceMono.className
+                  )}
+                >
+                  10,000 Points
+                </span>
+                <span className='text-sm leading-none text-slate-200'>
+                  earned this week
+                </span>
+              </div>
+              <PopOver
+                yOffset={6}
+                panelSize='sm'
+                placement='top'
+                triggerClassName='w-fit'
+                triggerOnHover
+                trigger={
+                  <div className='flex items-start gap-2 md:items-center '>
+                    <span className='text-sm leading-[22px] text-slate-200'>
+                      Distribution in{' '}
+                      <span className='font-bold text-white'>7 days</span>
+                    </span>
+                    <span className='mt-[4px] md:mt-0'>
+                      <HiOutlineInformationCircle className={cx('h-4 w-4')} />
+                    </span>
+                  </div>
+                }
               >
-                10,000 Points
-              </span>
-              <span className='text-sm'>
-                +45 Points <span className='text-white/70'>yesterday</span>
-              </span>
+                <p>Some text</p>
+              </PopOver>
             </div>
           </div>
-        </div>
-        <div className='flex gap-3'>
-          <Button className='flex items-center gap-2' variant='white'>
-            <span>Share</span>
-            <FiShare />
-          </Button>
-          <Button
-            className='flex items-center gap-2 bg-white/10'
-            variant='transparent'
-          >
-            <span>Rewards Details</span>
-          </Button>
         </div>
       </div>
     </MainCardTemplate>

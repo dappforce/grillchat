@@ -27,6 +27,7 @@ type TableProps = {
   className?: string
   withDivider?: boolean
   onRowClick?: (item: any) => void
+  rowsClassName?: string
 }
 
 const Table = ({
@@ -36,6 +37,7 @@ const Table = ({
   className,
   withDivider = true,
   onRowClick,
+  rowsClassName
 }: TableProps) => {
   return (
     <div
@@ -57,6 +59,7 @@ const Table = ({
                 withDivider={withDivider}
                 showLastDivider={i === data.length - 1}
                 onRowClick={onRowClick}
+                className={rowsClassName}
               />
             )
           })}

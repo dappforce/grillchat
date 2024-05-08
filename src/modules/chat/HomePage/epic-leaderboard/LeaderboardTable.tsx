@@ -120,6 +120,7 @@ const LeaderboardTable = ({
           data={data}
           className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
           headerClassName='!bg-transparent dark:!bg-transparent'
+          rowsClassName='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl'
           withDivider={false}
           onRowClick={(item) =>
             router.replace(
