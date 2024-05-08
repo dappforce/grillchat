@@ -82,7 +82,7 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
     return (
       <Tabs
         className='w-full max-w-full border-b border-border-gray bg-background-light text-sm md:bg-background-light/50'
-        panelClassName='mt-0 w-full max-w-full px-4 pt-5'
+        panelClassName='mt-0 w-full max-w-full px-4 md:pt-5 pt-4'
         asContainer
         defaultTab={0}
         tabs={tabs}

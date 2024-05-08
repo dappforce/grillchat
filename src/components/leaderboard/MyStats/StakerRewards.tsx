@@ -1,4 +1,5 @@
 import FormatBalance from '@/components/FormatBalance'
+import LinkText from '@/components/LinkText'
 import { mutedTextColorStyles } from '@/components/content-staking/utils/commonStyles'
 import { ZERO } from '@/constants/config'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
@@ -8,7 +9,7 @@ import { cx } from '@/utils/class-names'
 import { BN } from '@polkadot/util'
 import { convertToBalanceWithDecimal, isEmptyArray } from '@subsocial/utils'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 type StakerRewardsProps = {
   address: string
@@ -17,6 +18,7 @@ type StakerRewardsProps = {
 
 const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
   const { data, isLoading } = getRewardHistoryQuery.useQuery(address)
+  const [isViewMore, setIsViewMore] = useState(false)
 
   const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
 
@@ -31,6 +33,11 @@ const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
   }, [data, leaderboardRole])
 
   const sectionTitle = leaderboardRole === 'staker' ? 'Staker' : 'Creator'
+
+  const rewardsData = useMemo(
+    () => (isViewMore ? rewards : rewards.slice(0, 13)),
+    [rewards.length, isViewMore]
+  )
 
   return (
     <div className='flex h-fit flex-col gap-4 rounded-2xl bg-white p-4 dark:bg-slate-800 md:gap-5'>
@@ -49,7 +56,7 @@ const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
       </div>
       {rewards && !isEmptyArray(rewards) ? (
         <div className='flex flex-col gap-5'>
-          {rewards.map((reward) => {
+          {rewardsData.map((reward) => {
             const userRewardValue =
               leaderboardRole === 'staker'
                 ? reward.reward
@@ -80,6 +87,15 @@ const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
               />
             )
           })}
+          {!isViewMore && (
+            <LinkText
+              className='w-full text-center hover:no-underline'
+              onClick={() => setIsViewMore(true)}
+              variant={'primary'}
+            >
+              View more
+            </LinkText>
+          )}
         </div>
       ) : (
         <span className={mutedTextColorStyles}>No rewards yet</span>

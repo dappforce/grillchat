@@ -53,10 +53,10 @@ const IncreaseStakeBanner = () => {
         )}
       />
       <div className='flex flex-col gap-2'>
-        <span className='text-base font-semibold leading-normal'>
+        <span className='text-lg font-semibold leading-normal'>
           Increase your daily rewards by locking more SUB
         </span>
-        <span className={cx('text-sm font-medium', mutedTextColorStyles)}>
+        <span className={cx('text-base font-medium', mutedTextColorStyles)}>
           You can lock {balance}more SUB to increase your future rewards
         </span>
       </div>
