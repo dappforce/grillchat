@@ -90,14 +90,15 @@ export async function createSpaceData(
 
 export async function updateSpaceData(
   params: DatahubParams<{
+    spaceId: string
     cid?: string
     content: SpaceContent
   }>
 ) {
   const { args } = params
-  const { content, cid } = args
-  // TODO: ADD SPACE ID
+  const { content, cid, spaceId } = args
   const eventArgs: UpdateSpaceCallParsedArgs = {
+    spaceId,
     ipfsSrc: cid,
   }
 
@@ -154,10 +155,6 @@ function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
       if (!currentWallet.address) throw new Error('Please login')
 
       const { payload, action } = checkAction(params)
-      if (action === 'update')
-        throw new Error(
-          'Please wait until we finalized your previous name change'
-        )
 
       if (action === 'create') {
         createSpaceData({
@@ -169,7 +166,7 @@ function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
       } else if (action === 'update') {
         updateSpaceData({
           ...currentWallet,
-          args: { content: content as any },
+          args: { content: content as any, spaceId: payload.spaceId },
         })
       }
     },

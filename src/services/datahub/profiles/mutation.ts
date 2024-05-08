@@ -62,6 +62,7 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
           ...getCurrentWallet(),
           args: {
             content: content as SpaceContent,
+            spaceId: payload.spaceId,
           },
         })
       }

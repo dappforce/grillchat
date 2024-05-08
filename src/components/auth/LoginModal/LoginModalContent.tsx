@@ -1,3 +1,4 @@
+import FarcasterIcon from '@/assets/icons/farcaster.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
@@ -20,7 +21,7 @@ import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
-import { SiEthereum, SiFarcaster } from 'react-icons/si'
+import { SiEthereum } from 'react-icons/si'
 import { CommonEVMLoginContent } from '../common/evm/CommonEvmModalContent'
 import ScanQRButton from './ScanQRButton'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
@@ -97,7 +98,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <SiFarcaster className={cx('text-text-muted')} />
+              <FarcasterIcon className={cx('text-xl text-text-muted')} />
               Connect via Farcaster
             </div>
           </Button>
@@ -110,7 +111,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <SiEthereum className={cx('text-text-muted')} />
+              <SiEthereum className={cx('text-xl text-text-muted')} />
               Connect via Wallet
             </div>
           </Button>
