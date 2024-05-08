@@ -1,5 +1,6 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
 import {
   addOptimisticData,
@@ -161,18 +162,36 @@ export function useSendMessage(
           'Your message is too long, please split it up to multiple messages'
         )
 
-      await datahubMutation.createPostData({
-        ...getCurrentWallet(),
-        uuid: data.uuid,
-        timestamp: data.timestamp,
-        isOffchain: true,
-        args: {
-          parentPostId: ParentPostIdWrapper(data.replyTo),
-          content: content,
-          rootPostId: data.chatId,
-          spaceId: data.hubId,
-        },
-      })
+      if (data.messageIdToEdit) {
+        datahubMutation.updatePostData({
+          ...getCurrentWallet(),
+          uuid: data.uuid,
+          timestamp: data.timestamp,
+          isOffchain: true,
+          args: {
+            postId: data.messageIdToEdit,
+            changes: {
+              content: {
+                cid: '',
+                content,
+              },
+            },
+          },
+        })
+      } else {
+        await datahubMutation.createPostData({
+          ...getCurrentWallet(),
+          uuid: data.uuid,
+          timestamp: data.timestamp,
+          isOffchain: true,
+          args: {
+            parentPostId: ParentPostIdWrapper(data.replyTo),
+            content: content,
+            rootPostId: data.chatId,
+            spaceId: data.hubId,
+          },
+        })
+      }
     },
     onMutate: async (data) => {
       config?.onMutate?.(data)
@@ -190,20 +209,28 @@ export function useSendMessage(
         uuid: data.uuid,
       })
 
-      console.log('optimistic', newId, {
-        account:
-          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
-        timestamp: data.timestamp.toString(),
-        uuid: data.uuid,
-      })
-      addOptimisticData({
-        address:
-          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
-        params: data,
-        ipfsContent: content,
-        client,
-        newId,
-      })
+      if (data.messageIdToEdit) {
+        getPostQuery.setQueryData(client, data.messageIdToEdit, (oldData) => {
+          if (!oldData) return null
+          return {
+            ...oldData,
+            struct: {
+              ...oldData.struct,
+              isUpdated: true,
+            },
+            content,
+          }
+        })
+      } else {
+        addOptimisticData({
+          address:
+            getCurrentWallet().proxyToAddress || getCurrentWallet().address,
+          params: data,
+          ipfsContent: content,
+          client,
+          newId,
+        })
+      }
       config?.onMutate?.(data)
     },
     onError: (err, data, context) => {
