@@ -1,17 +1,9 @@
 import { env } from '@/env.mjs'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { getProfileQuery } from '@/services/datahub/profiles/query'
-import { useLoginModal } from '@/stores/login-modal'
-import {
-  useMyAccount,
-  useMyGrillAddress,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
-import { useQueryClient } from '@tanstack/react-query'
 import Script from 'next/script'
 import {
   ReactNode,
@@ -45,29 +37,6 @@ export default function NeynarLoginProvider({
 }) {
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  const grillAddress = useMyGrillAddress()
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    grillAddress ?? ''
-  )
-  const client = useQueryClient()
-
-  useEffect(() => {
-    if (linkedIdentity) {
-      getProfileQuery
-        .fetchQuery(client, linkedIdentity?.mainAddress)
-        .then((profile) => {
-          if (!profile) {
-            useLoginModal
-              .getState()
-              .openNextStepModal({ step: 'create-profile' })
-          }
-        })
-
-      useSubscriptionState
-        .getState()
-        .setSubscriptionState('identity', 'dynamic')
-    }
-  }, [linkedIdentity, client])
 
   const { mutate, isSuccess, isLoading, reset } = useLinkIdentity({
     onSuccess: () => {
