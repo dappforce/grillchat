@@ -1807,11 +1807,12 @@ export type GetLinkedIdentitiesQuery = {
   } | null
 }
 
-export type GetLinkedIdentitiesFromTwitterIdQueryVariables = Exact<{
-  twitterId: Scalars['String']['input']
+export type GetLinkedIdentitiesFromProviderIdQueryVariables = Exact<{
+  provider: IdentityProvider
+  externalId: Scalars['String']['input']
 }>
 
-export type GetLinkedIdentitiesFromTwitterIdQuery = {
+export type GetLinkedIdentitiesFromProviderIdQuery = {
   __typename?: 'Query'
   linkedIdentity?: {
     __typename?: 'LinkedIdentity'
@@ -2841,10 +2842,15 @@ export const GetLinkedIdentities = gql`
     }
   }
 `
-export const GetLinkedIdentitiesFromTwitterId = gql`
-  query GetLinkedIdentitiesFromTwitterId($twitterId: String!) {
+export const GetLinkedIdentitiesFromProviderId = gql`
+  query GetLinkedIdentitiesFromProviderId(
+    $provider: IdentityProvider!
+    $externalId: String!
+  ) {
     linkedIdentity(
-      where: { externalProvider: { provider: TWITTER, externalId: $twitterId } }
+      where: {
+        externalProvider: { provider: $provider, externalId: $externalId }
+      }
     ) {
       id
       externalProviders {

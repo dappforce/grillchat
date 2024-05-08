@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
 import {
-  GetLinkedIdentitiesFromTwitterIdQuery,
-  GetLinkedIdentitiesFromTwitterIdQueryVariables,
+  GetLinkedIdentitiesFromProviderIdQuery,
+  GetLinkedIdentitiesFromProviderIdQueryVariables,
   GetLinkedIdentitiesQuery,
   GetLinkedIdentitiesQueryVariables,
   IdentityProvider,
@@ -54,10 +54,15 @@ export async function getLinkedIdentity(
   }
 }
 
-const GET_LINKED_IDENTITIES_FROM_TWITTER_ID = gql`
-  query GetLinkedIdentitiesFromTwitterId($twitterId: String!) {
+const GET_LINKED_IDENTITIES_FROM_PROVIDER_ID = gql`
+  query GetLinkedIdentitiesFromProviderId(
+    $provider: IdentityProvider!
+    $externalId: String!
+  ) {
     linkedIdentity(
-      where: { externalProvider: { provider: TWITTER, externalId: $twitterId } }
+      where: {
+        externalProvider: { provider: $provider, externalId: $externalId }
+      }
     ) {
       id
       externalProviders {
@@ -66,15 +71,16 @@ const GET_LINKED_IDENTITIES_FROM_TWITTER_ID = gql`
     }
   }
 `
-export async function getLinkedIdentityFromTwitterId(
-  twitterId: string
-): Promise<string | null> {
+export async function getLinkedIdentityFromProviderId(args: {
+  provider: IdentityProvider
+  externalId: string
+}): Promise<string | null> {
   const data = await datahubQueryRequest<
-    GetLinkedIdentitiesFromTwitterIdQuery,
-    GetLinkedIdentitiesFromTwitterIdQueryVariables
+    GetLinkedIdentitiesFromProviderIdQuery,
+    GetLinkedIdentitiesFromProviderIdQueryVariables
   >({
-    document: GET_LINKED_IDENTITIES_FROM_TWITTER_ID,
-    variables: { twitterId },
+    document: GET_LINKED_IDENTITIES_FROM_PROVIDER_ID,
+    variables: args,
   })
 
   return data.linkedIdentity?.id ?? null
