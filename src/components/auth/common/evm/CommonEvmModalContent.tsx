@@ -11,7 +11,7 @@ import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSignMessage } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
 
@@ -24,10 +24,6 @@ type CommonEVMLoginErrorProps = {
   buttonLabel?: string
 }
 
-function getLinkMessage(session: string) {
-  return `Link to address ${session}`
-}
-
 export const CommonEVMLoginContent = ({
   buttonLabel,
   onFinishSignMessage,
@@ -37,6 +33,7 @@ export const CommonEVMLoginContent = ({
   isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
   const client = useQueryClient()
+  const [isGettingMessage, setIsGettingMessage] = useState(false)
   const {
     signMessageAsync,
     isLoading: isSigning,
@@ -73,10 +70,12 @@ export const CommonEVMLoginContent = ({
       throw new Error('Grill address is not found')
     }
 
+    setIsGettingMessage(true)
     const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
       client,
       evmAddress
     )
+    setIsGettingMessage(false)
     const sig = await signMessageAsync({ message })
 
     onFinishSignMessage?.()
@@ -94,7 +93,11 @@ export const CommonEVMLoginContent = ({
   return (
     <CustomConnectButton
       isLoading={
-        _isLoading || isLoading || isSigning || (!linkedIdentity && isSuccess)
+        _isLoading ||
+        isLoading ||
+        isSigning ||
+        (!linkedIdentity && isSuccess) ||
+        isGettingMessage
       }
       onSuccessConnect={signAndLinkEvmAddress}
       className='w-full'
