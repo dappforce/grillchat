@@ -1,4 +1,5 @@
 import EnsIcon from '@/assets/icons/ens-dynamic-size.svg'
+import FarcasterIcon from '@/assets/icons/farcaster.svg'
 import XLogoIcon from '@/assets/icons/x-logo-dynamic-size.svg'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { IoLogoGoogle } from 'react-icons/io'
@@ -46,6 +47,11 @@ export const profileSourceData: {
     link?: (id: string, address: string) => string
   }
 } = {
+  FARCASTER: {
+    icon: FarcasterIcon,
+    tooltip: 'Farcaster',
+    link: (id) => `https://farcaster.io/${id}`,
+  },
   EVM: {
     icon: EnsIcon,
     tooltip: 'ENS',
