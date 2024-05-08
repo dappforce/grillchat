@@ -47,10 +47,11 @@ export const CommonEVMLoginContent = ({
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     grillAddress ?? ''
   )
-  const { mutate: linkIdentity, isLoading } = useLinkIdentity({
-    onSuccess: () => {
-      reset()
-    },
+  const {
+    mutate: linkIdentity,
+    isLoading,
+    isSuccess,
+  } = useLinkIdentity({
     onError: () => {
       reset()
       onError?.()
@@ -59,6 +60,7 @@ export const CommonEVMLoginContent = ({
 
   useEffect(() => {
     if (linkedIdentity) {
+      reset()
       onSuccess?.(linkedIdentity)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +93,9 @@ export const CommonEVMLoginContent = ({
 
   return (
     <CustomConnectButton
-      isLoading={_isLoading || isLoading || isSigning}
+      isLoading={
+        _isLoading || isLoading || isSigning || (!linkedIdentity && isSuccess)
+      }
       onSuccessConnect={signAndLinkEvmAddress}
       className='w-full'
       label={buttonLabel}
