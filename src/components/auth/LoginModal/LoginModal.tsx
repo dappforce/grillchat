@@ -1,6 +1,5 @@
 import { linkTextStyles } from '@/components/LinkText'
 import Modal from '@/components/modals/Modal'
-import useLoginOption from '@/hooks/useLoginOption'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -46,7 +45,6 @@ export default function LoginModal({
   const closeNextStepModal = useLoginModal.use.closeNextStepModal()
 
   // const [isOpenStayUpdatedModal, setIsOpenStayUpdatedModal] = useState(false)
-  const { loginOption } = useLoginOption()
 
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [currentState, setCurrentState] =
@@ -86,7 +84,6 @@ export default function LoginModal({
       title: '🔑 Connect EVM',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
       withBackButton: true,
-      backToStep: 'new-account',
     },
     'evm-linking-error': {
       title: '😕 Something went wrong',

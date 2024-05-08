@@ -1,5 +1,4 @@
 import KeyIcon from '@/assets/icons/key.svg'
-import WalletIcon from '@/assets/icons/wallet.svg'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
@@ -22,6 +21,7 @@ import { getUrlQuery } from '@/utils/links'
 import { useQueryClient } from '@tanstack/react-query'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
+import { SiEthereum, SiFarcaster } from 'react-icons/si'
 import { CommonEVMLoginContent } from '../common/evm/CommonEvmModalContent'
 import ScanQRButton from './ScanQRButton'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
@@ -91,18 +91,6 @@ export const LoginContent = (props: LoginModalContentProps) => {
           <Button
             variant='primaryOutline'
             onClick={() => {
-              sendEvent('login_polkadot_account_clicked')
-            }}
-            size='lg'
-          >
-            <div className='flex items-center justify-center gap-2'>
-              <WalletIcon className={cx('text-text-muted')} />
-              Connect via Polkadot
-            </div>
-          </Button>
-          <Button
-            variant='primaryOutline'
-            onClick={() => {
               sendEvent('login_neynar')
               loginNeynar()
             }}
@@ -110,8 +98,21 @@ export const LoginContent = (props: LoginModalContentProps) => {
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <WalletIcon className={cx('text-text-muted')} />
+              <SiFarcaster className={cx('text-text-muted')} />
               Connect via Farcaster
+            </div>
+          </Button>
+          <Button
+            variant='primaryOutline'
+            onClick={() => {
+              sendEvent('login_evm_clicked')
+              setCurrentState('evm-address-link')
+            }}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <SiEthereum className={cx('text-text-muted')} />
+              Connect via Wallet
             </div>
           </Button>
           <div className='mt-1 flex flex-col'>
