@@ -45,7 +45,7 @@ export const leaderboardColumns = (
     name: 'Rewards',
     align: 'right',
     className: cx(
-      'p-0 py-2 pr-4 md:w-[20%] w-[38%] font-semibold',
+      'p-0 py-2 pr-4 md:w-[20%] w-[38%]',
       customColumnsClassNames?.[2]
     ),
   },
@@ -134,7 +134,9 @@ const LeaderboardTable = ({
       <div className='flex h-fit flex-col gap-4 rounded-2xl bg-white py-4 dark:bg-slate-800 md:gap-6'>
         <div className='flex flex-col gap-2 px-4'>
           <span className='text-lg font-bold leading-normal'>{title}</span>
-          <span className={cx('text-sm leading-normal', mutedTextColorStyles)}>
+          <span
+            className={cx('text-base leading-normal', mutedTextColorStyles)}
+          >
             {desc}
           </span>
         </div>
@@ -210,6 +212,7 @@ export const UserReward = ({ reward }: UserRewardProps) => {
       value={rewardWithDecimal.toString()}
       symbol={tokenSymbol}
       defaultMaximumFractionDigits={2}
+      className='font-semibold'
     />
   )
 }

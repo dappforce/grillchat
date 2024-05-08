@@ -47,7 +47,7 @@ const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
         </span>
         <span
           className={cx(
-            'text-sm font-normal leading-[22px]',
+            'text-base font-normal leading-[22px]',
             mutedTextColorStyles
           )}
         >
