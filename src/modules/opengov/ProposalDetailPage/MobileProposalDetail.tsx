@@ -54,7 +54,7 @@ export default function MobileProposalDetailPage({
                 {proposal.title}
               </h1>
               <MdRenderer
-                className='prose-sm line-clamp-6'
+                className='line-clamp-6'
                 removeEmptyParagraph
                 source={proposal.content}
               />
