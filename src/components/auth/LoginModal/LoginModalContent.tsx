@@ -1,5 +1,4 @@
 import FarcasterIcon from '@/assets/icons/farcaster.svg'
-import KeyIcon from '@/assets/icons/key.svg'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
@@ -20,20 +19,18 @@ import {
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { HiPlus } from 'react-icons/hi2'
 import { SiEthereum } from 'react-icons/si'
 import { CommonEVMLoginContent } from '../common/evm/CommonEvmModalContent'
 import ScanQRButton from './ScanQRButton'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
-import NewAccountContent from './contents/NewAccountContent'
 import ScanQrContent from './contents/ScanQrContent'
+import { GoogleButton, XLoginButton } from './contents/oauth-buttons'
 
 export type LoginModalStep =
   | 'login'
   | 'scan-qr'
   | 'enter-secret-key'
-  | 'new-account'
   | 'account-created'
   | 'evm-address-link'
   | 'evm-linking-error'
@@ -75,17 +72,25 @@ export const LoginContent = (props: LoginModalContentProps) => {
       <div className='flex w-full flex-col justify-center'>
         <Logo className='mb-8 mt-4 text-5xl' />
         <div className={cx('flex flex-col gap-4')}>
+          {showErrorPanel && (
+            <InfoPanel variant='error' className='mb-4'>
+              😕 Sorry there is some issue with logging you in, please try again
+              or try different account
+            </InfoPanel>
+          )}
           <Button
             variant='primary'
             onClick={() => {
-              sendEvent('login_grill_key_clicked')
-              setCurrentState('enter-secret-key')
+              sendEvent('login_evm_clicked')
+              setCurrentState('evm-address-link')
             }}
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <KeyIcon className='text-text-muted-on-primary' />
-              Log in with Grill key
+              <SiEthereum
+                className={cx('text-xl text-text-muted-on-primary')}
+              />
+              Connect Wallet
             </div>
           </Button>
           <Button
@@ -102,48 +107,8 @@ export const LoginContent = (props: LoginModalContentProps) => {
               Connect via Farcaster
             </div>
           </Button>
-          <Button
-            variant='primaryOutline'
-            onClick={() => {
-              sendEvent('login_evm_clicked')
-              setCurrentState('evm-address-link')
-            }}
-            size='lg'
-          >
-            <div className='flex items-center justify-center gap-2'>
-              <SiEthereum className={cx('text-xl text-text-muted')} />
-              Connect via Wallet
-            </div>
-          </Button>
-          <div className='mt-1 flex flex-col'>
-            <div className='relative mb-4 flex items-center justify-center text-center text-text-muted'>
-              <div className='absolute top-1/2 h-px w-full bg-background-lightest dark:bg-background-lightest/50' />
-              <span className='relative inline-block bg-background-light px-4 text-xs'>
-                OR
-              </span>
-            </div>
-            {showErrorPanel && (
-              <InfoPanel variant='error' className='mb-4'>
-                😕 Sorry there is some issue with logging you in, please try
-                again or try different account
-              </InfoPanel>
-            )}
-            <Button
-              variant='primaryOutline'
-              size='lg'
-              onClick={() => {
-                setCurrentState('new-account')
-                sendEvent('login_create_new_clicked')
-              }}
-            >
-              <div className='flex items-center justify-center gap-2'>
-                <HiPlus className='text-[20px] text-text-muted' />
-                <div className='flex flex-col text-left'>
-                  <span>Create new Grill account</span>
-                </div>
-              </div>
-            </Button>
-          </div>
+          <GoogleButton />
+          <XLoginButton />
         </div>
       </div>
     </div>
@@ -157,7 +122,6 @@ export const loginModalContents: LoginModalContents = {
   login: LoginContent,
   'scan-qr': ScanQrContent,
   'enter-secret-key': LoginWithGrillKeyContent,
-  'new-account': NewAccountContent,
   'account-created': AccountCreatedContent,
   'evm-address-link': EvmLoginStep,
   'evm-linking-error': (props) => <EvmLoginStep isErrorStep {...props} />,
