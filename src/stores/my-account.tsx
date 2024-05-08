@@ -391,9 +391,11 @@ export function getMyMainAddress() {
 }
 
 export function useMyMainAddress() {
-  const address = useMyAccount((state) => state.address)
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-  return parentProxyAddress || address
+  // const address = useMyAccount((state) => state.address)
+  // const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+  // return parentProxyAddress || address
+
+  return '3rSaMDDFoqsduRDxcAidDX4hx6zKhFaTFmbpJtxyT8QK4hib'
 }
 
 export function useMyGrillAddress() {

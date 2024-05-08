@@ -14,18 +14,18 @@ const tabs = [
   {
     id: 'trending-memes',
     text: 'Trending Memes',
-    content: () => <></>,
+    content: () => <div className='w-full h-full'>Top memes chat ever </div>,
   },
   {
     id: 'recent-memes',
     text: 'Recent Memes',
-    content: () => <></>,
+    content: () => <div className='w-full'></div>,
   },
 ]
 
 export default function ChatContent(props: { hubId: string }) {
   return (
-    <div className='flex flex-col border-x border-border-gray bg-background-light'>
+    <div className='flex flex-col border-x border-border-gray bg-background-light h-[calc(100%-56px)]'>
       <Tabs
         className='p-0 first:[&>span]:rounded-s-none last:[&>span]:rounded-e-none'
         panelClassName='mt-0 w-full max-w-full'
