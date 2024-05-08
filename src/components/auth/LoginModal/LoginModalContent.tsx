@@ -179,10 +179,6 @@ export function EvmLoginStep({
       beforeSignEvmAddress={() => mutate()}
       onFinishSignMessage={() => {
         setReferrerId({ refId: getReferralIdInUrl() })
-        // TODO: if want to have grill key step, uncomment this
-        // useLoginModal
-        //   .getState()
-        //   .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
       }}
       onError={() => {
         setCurrentState('evm-linking-error')

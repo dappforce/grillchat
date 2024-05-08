@@ -17,7 +17,7 @@ import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
   onFinishSignMessage?: () => void
-  onSuccess?: (linkedIdentity: Identity) => void
+  onSuccess?: (linkedIdentity: Identity) => void | Promise<void>
   onError?: () => void
   beforeSignEvmAddress?: () => Promise<void>
   isLoading?: boolean
@@ -57,8 +57,12 @@ export const CommonEVMLoginContent = ({
 
   useEffect(() => {
     if (linkedIdentity) {
-      reset()
-      onSuccess?.(linkedIdentity)
+      const res = onSuccess?.(linkedIdentity)
+      if (res) {
+        res.then(() => reset())
+      } else {
+        reset()
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkedIdentity])
@@ -93,11 +97,7 @@ export const CommonEVMLoginContent = ({
   return (
     <CustomConnectButton
       isLoading={
-        _isLoading ||
-        isLoading ||
-        isSigning ||
-        (!linkedIdentity && isSuccess) ||
-        isGettingMessage
+        _isLoading || isLoading || isSigning || isSuccess || isGettingMessage
       }
       onSuccessConnect={signAndLinkEvmAddress}
       className='w-full'
