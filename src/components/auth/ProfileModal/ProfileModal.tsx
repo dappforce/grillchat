@@ -2,7 +2,7 @@ import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoadin
 import useRedirectToNewChatPage from '@/components/community/useRedirectToNewChatPage'
 import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import { getProfileQuery } from '@/services/api/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'

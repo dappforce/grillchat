@@ -4,18 +4,17 @@ import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { AppCommonProps } from '@/pages/_app'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPricesFromCache } from '@/pages/api/prices'
-import { getProfilesServer } from '@/pages/api/profiles'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
-import { getPostQuery, getProfileQuery } from '@/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import {
   getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
 } from '@/services/datahub/posts/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
-import { removeUndefinedValues } from '@/utils/general'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -48,19 +47,10 @@ async function getChatsData(client: QueryClient, chatId: string) {
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
 
-  const [profilesPromise, prices] = await Promise.allSettled([
-    getProfilesServer(chatPageOwnerIds),
+  const [, prices] = await Promise.allSettled([
+    getProfileQuery.fetchQueries(client, chatPageOwnerIds),
     getPricesFromCache(Object.values(coingeckoTokenIds)),
   ] as const)
-  if (profilesPromise.status === 'fulfilled') {
-    profilesPromise.value.forEach((profile) => {
-      getProfileQuery.setQueryData(
-        client,
-        profile.address,
-        removeUndefinedValues(profile)
-      )
-    })
-  }
 
   return {
     messages,

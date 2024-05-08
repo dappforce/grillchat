@@ -96,6 +96,7 @@ export async function updateSpaceData(
 ) {
   const { args } = params
   const { content, cid } = args
+  // TODO: ADD SPACE ID
   const eventArgs: UpdateSpaceCallParsedArgs = {
     ipfsSrc: cid,
   }

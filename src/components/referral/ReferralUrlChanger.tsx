@@ -1,4 +1,4 @@
-import { getProfileQuery } from '@/services/api/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import {
   getCurrentSearchParams,

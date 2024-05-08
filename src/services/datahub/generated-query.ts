@@ -502,6 +502,7 @@ export type FindPostsWithFilterArgs = {
 }
 
 export type FindSpacesFilter = {
+  asProfileForAccounts?: InputMaybe<Array<Scalars['String']['input']>>
   createdByAccountAddress?: InputMaybe<Scalars['String']['input']>
   ids?: InputMaybe<Array<Scalars['String']['input']>>
   ownedByAccountAddress?: InputMaybe<Scalars['String']['input']>
@@ -595,6 +596,8 @@ export type LinkedIdentityExternalProvider = {
   __typename?: 'LinkedIdentityExternalProvider'
   createdAtTime: Scalars['DateTime']['output']
   enabled: Scalars['Boolean']['output']
+  evmProofMsg?: Maybe<Scalars['String']['output']>
+  evmProofMsgSig?: Maybe<Scalars['String']['output']>
   externalId: Scalars['String']['output']
   farcasterCustodyAddress?: Maybe<Scalars['String']['output']>
   farcasterSignerUuid?: Maybe<Scalars['String']['output']>
@@ -2525,6 +2528,29 @@ export type SubscribePostSubscription = {
   }
 }
 
+export type GetProfilesQueryVariables = Exact<{
+  addresses?: InputMaybe<
+    Array<Scalars['String']['input']> | Scalars['String']['input']
+  >
+}>
+
+export type GetProfilesQuery = {
+  __typename?: 'Query'
+  spaces: {
+    __typename?: 'FindSpacesWithFilterResponseDto'
+    data: Array<{
+      __typename?: 'Space'
+      id: string
+      name?: string | null
+      image?: string | null
+      about?: string | null
+      updatedAtTime?: any | null
+      createdAtTime?: any | null
+      profileSpace?: { __typename?: 'Account'; id: string } | null
+    }>
+  }
+}
+
 export type GetReferrerIdQueryVariables = Exact<{
   address: Scalars['String']['input']
 }>
@@ -3054,6 +3080,23 @@ export const SubscribePost = gql`
         dataType
         rootPost {
           persistentId
+        }
+      }
+    }
+  }
+`
+export const GetProfiles = gql`
+  query GetProfiles($addresses: [String!]) {
+    spaces(args: { filter: { asProfileForAccounts: $addresses } }) {
+      data {
+        id
+        name
+        image
+        about
+        updatedAtTime
+        createdAtTime
+        profileSpace {
+          id
         }
       }
     }

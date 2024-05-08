@@ -1,6 +1,6 @@
 import useRandomColor from '@/hooks/useRandomColor'
-import { getProfileQuery } from '@/services/api/query'
 import { getLinkedIdentityFromMainAddressQuery } from '@/services/datahub/identity/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
 import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'

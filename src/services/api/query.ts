@@ -7,8 +7,7 @@ import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
-import { SubsocialProfile } from '../subsocial/profiles/fetcher'
-import { getPosts, getProfiles } from './fetcher'
+import { getPosts } from './fetcher'
 import { apiInstance } from './utils'
 
 const getPost = poolQuery<string, PostData>({
@@ -102,25 +101,6 @@ async function getNft(nft: ApiNftParams | null) {
 export const getNftQuery = createQuery({
   key: 'nft',
   fetcher: getNft,
-})
-
-const getProfile = poolQuery<string, SubsocialProfile>({
-  name: 'getProfile',
-  multiCall: async (addresses) => {
-    if (addresses.length === 0) return []
-    return getProfiles(addresses)
-  },
-  resultMapper: {
-    paramToKey: (address) => address,
-    resultToKey: (result) => result?.address ?? '',
-  },
-})
-export const getProfileQuery = createQuery({
-  key: 'profile',
-  fetcher: getProfile,
-  defaultConfigGenerator: (data) => ({
-    enabled: !!data,
-  }),
 })
 
 async function getCanUserDoDatahubAction(input: DatahubPostQueryInput) {

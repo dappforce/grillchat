@@ -6,8 +6,8 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
-import { getProfileQuery } from '@/services/api/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
@@ -18,7 +18,6 @@ import {
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
-import { useQueryClient } from '@tanstack/react-query'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
 import { SiEthereum, SiFarcaster } from 'react-icons/si'
@@ -171,7 +170,6 @@ export function EvmLoginStep({
   const { mutate, isLoading } = useLoginBeforeSignEvm()
   const { mutate: setReferrerId } = useSetReferrerId()
   const sendEvent = useSendEvent()
-  const client = useQueryClient()
 
   return (
     <CommonEVMLoginContent

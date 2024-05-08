@@ -3,14 +3,13 @@ import { getHubIdFromAlias } from '@/constants/config'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
 import { AppCommonProps } from '@/pages/_app'
 import { getPostsServer } from '@/pages/api/posts'
-import { getProfilesServer } from '@/pages/api/profiles'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
-import { getPostQuery, getProfileQuery } from '@/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import {
   getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
 } from '@/services/datahub/posts/query'
-import { removeUndefinedValues } from '@/utils/general'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -43,18 +42,7 @@ async function getChatsMessagesData(client: QueryClient, chatId: string) {
   const ownersSet = new Set(owners)
   const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
 
-  const [profilesPromise] = await Promise.allSettled([
-    getProfilesServer(chatPageOwnerIds),
-  ])
-  if (profilesPromise.status === 'fulfilled') {
-    profilesPromise.value.forEach((profile) => {
-      getProfileQuery.setQueryData(
-        client,
-        profile.address,
-        removeUndefinedValues(profile)
-      )
-    })
-  }
+  await getProfileQuery.fetchQueries(client, chatPageOwnerIds)
 
   return {
     messages,

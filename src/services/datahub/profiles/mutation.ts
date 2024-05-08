@@ -1,6 +1,6 @@
 import { ApiDatahubSpaceMutationBody } from '@/pages/api/datahub/space'
-import { getProfileQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { updateSpaceData } from '@/services/datahub/spaces/mutation'
 import {
   DatahubParams,
@@ -15,8 +15,8 @@ import {
   socialCallName,
 } from '@subsocial/data-hub-sdk'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getCurrentWallet } from '../hooks'
-import { createMutationWrapper } from '../utils/mutation'
+import { getCurrentWallet } from '../../subsocial/hooks'
+import { createMutationWrapper } from '../../subsocial/utils/mutation'
 
 type CommonParams = {
   content: {
@@ -91,9 +91,6 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
     },
     onSuccess: async () => {
       allowWindowUnload()
-      const mainAddress = getMyMainAddress() ?? ''
-      // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
-      // getProfileQuery.invalidate(client, address)
     },
   })
 }
