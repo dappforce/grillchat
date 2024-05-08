@@ -28,7 +28,7 @@ const LeaderboardProfilePreview = ({
   return (
     <div
       className={cx(
-        'relative flex gap-4 rounded-[20px] border md:flex-col md:items-center',
+        'relative flex justify-center gap-4 rounded-[20px] border md:flex-col md:items-center',
         ' p-4',
         {
           ['border-[rgba(99,102,241,.2)] bg-[#edf4ff] dark:bg-[rgba(0,83,255,0.10)]']:
@@ -90,6 +90,7 @@ const ProfileLink = ({ children, spaceId }: ProfileLinkProps) => {
         </CustomLink>
       }
       panelSize='sm'
+      triggerClassName='min-w-fit'
       yOffset={4}
       placement='top'
       triggerOnHover

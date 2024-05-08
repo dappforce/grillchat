@@ -67,7 +67,7 @@ export const UserStatsCard = ({
     value && decimal ? convertToBalanceWithDecimal(value, decimal) : ZERO
 
   const titleElement = (
-    <span className={cx('text-sm leading-[22px]', mutedTextColorStyles)}>
+    <span className={cx('text-base leading-[22px]', mutedTextColorStyles)}>
       {title}
     </span>
   )

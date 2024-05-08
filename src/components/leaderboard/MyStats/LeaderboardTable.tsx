@@ -45,7 +45,7 @@ export const leaderboardColumns = (
     name: 'Rewards',
     align: 'right',
     className: cx(
-      'p-0 py-2 pr-4 md:w-[20%] w-[38%]',
+      'p-0 py-2 pr-4 md:w-[20%] w-[38%] font-semibold',
       customColumnsClassNames?.[2]
     ),
   },
@@ -225,16 +225,16 @@ export const UserPreview = ({ address }: UserPreviewProps) => {
 
   return (
     <div className='flex items-center gap-2'>
-      <AddressAvatar address={address} className='h-[38px] w-[38px]' />
+      <AddressAvatar address={address} className='h-[40px] w-[40px]' />
       <div className='flex flex-col gap-2'>
         <Name
           address={address}
-          className='text-sm font-medium leading-none !text-text'
+          className='text-base font-medium leading-none !text-text'
         />
         {about && (
           <div
             className={cx(
-              'overflow-hidden overflow-ellipsis whitespace-nowrap text-xs leading-none',
+              'overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none',
               mutedTextColorStyles
             )}
           >
