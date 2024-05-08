@@ -1,10 +1,21 @@
-import { saveFile } from '@/services/api/mutation'
+import { ApiDatahubSpaceMutationBody } from '@/pages/api/datahub/space'
 import { getProfileQuery } from '@/services/api/query'
+import { apiInstance } from '@/services/api/utils'
+import { updateSpaceData } from '@/services/datahub/spaces/mutation'
+import {
+  DatahubParams,
+  createSignedSocialDataEvent,
+} from '@/services/datahub/utils'
 import { getMyMainAddress } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
+import {
+  CreateSpaceAsProfileCallParsedArgs,
+  socialCallName,
+} from '@subsocial/data-hub-sdk'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils/mutation'
 
 type CommonParams = {
@@ -39,8 +50,21 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
           'Please wait until we finalized your previous name change'
         )
 
-      const { success, cid } = await saveFile(content)
-      if (!success || !cid) throw new Error('Failed to save file')
+      if (action === 'create') {
+        await createProfileData({
+          ...getCurrentWallet(),
+          args: {
+            content: content as SpaceContent,
+          },
+        })
+      } else {
+        await updateSpaceData({
+          ...getCurrentWallet(),
+          args: {
+            content: content as SpaceContent,
+          },
+        })
+      }
     },
     onMutate: (data) => {
       preventWindowUnload()
@@ -77,3 +101,31 @@ export const useUpsertProfile = createMutationWrapper(
   useUpsertProfileRaw,
   'Failed to upsert profile'
 )
+
+export async function createProfileData(
+  params: DatahubParams<{
+    cid?: string
+    content: SpaceContent
+  }>
+) {
+  const { args } = params
+  const { content, cid } = args
+  const eventArgs: CreateSpaceAsProfileCallParsedArgs = {
+    ipfsSrc: cid,
+  }
+
+  const input = createSignedSocialDataEvent(
+    socialCallName.create_space_as_profile,
+    params,
+    eventArgs,
+    content
+  )
+
+  await apiInstance.post<any, any, ApiDatahubSpaceMutationBody>(
+    '/api/datahub/space',
+    {
+      action: 'create-space',
+      payload: input as any,
+    }
+  )
+}
