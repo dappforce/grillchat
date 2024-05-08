@@ -82,13 +82,6 @@ export default function ProfileModal({
 
   const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
   const address = useMyMainAddress() ?? ''
-  // Prefetch telegram linked account data
-  getLinkedTelegramAccountsQuery.useQuery(
-    { address },
-    {
-      enabled: isOpen,
-    }
-  )
   const { data: profile } = getProfileQuery.useQuery(address)
 
   useRedirectToNewChatPage(profile?.profileSpace?.id, closeModal)
