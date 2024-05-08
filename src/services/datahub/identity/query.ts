@@ -1,5 +1,5 @@
+import { apiInstance } from '@/services/api/utils'
 import { createQuery } from '@/subsocial-query'
-import axios from 'axios'
 import { getLinkedIdentity } from './fetcher'
 
 export const getLinkedIdentityQuery = createQuery({
@@ -21,7 +21,9 @@ export const getLinkedIdentityFromMainAddressQuery = createQuery({
 export const getEvmLinkedIdentityMessageQuery = createQuery({
   key: 'getEvmLinkedIdentityMessage',
   fetcher: async (address: string) => {
-    const message = await axios.get(`/api/datahub/identity?address=${address}`)
+    const message = await apiInstance.get(
+      `/api/datahub/identity?address=${address}`
+    )
     return message.data.data as string
   },
   defaultConfigGenerator: (data) => ({
