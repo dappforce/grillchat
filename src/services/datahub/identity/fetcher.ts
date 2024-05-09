@@ -13,6 +13,7 @@ export type Identity = {
   externalProviders: {
     provider: IdentityProvider
     externalId: string
+    username?: string | null
   }[]
 }
 
@@ -23,6 +24,7 @@ const GET_LINKED_IDENTITIES = gql`
       externalProviders {
         id
         externalId
+        username
         provider
         enabled
       }

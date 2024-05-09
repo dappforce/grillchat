@@ -607,6 +607,7 @@ export type LinkedIdentityExternalProvider = {
   linkedIdentity: LinkedIdentity
   provider: IdentityProvider
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
+  username?: Maybe<Scalars['String']['output']>
 }
 
 export type LinkedIdentityExternalProviderArgs = {
@@ -1287,6 +1288,7 @@ export type RewardsReportItem = {
 export enum ServiceMessageStatusCode {
   BadRequest = 'BAD_REQUEST',
   Created = 'CREATED',
+  EntityAlreadyExists = 'ENTITY_ALREADY_EXISTS',
   EntityNotFound = 'ENTITY_NOT_FOUND',
   Forbidden = 'FORBIDDEN',
   Info = 'INFO',
@@ -1801,6 +1803,7 @@ export type GetLinkedIdentitiesQuery = {
       __typename?: 'LinkedIdentityExternalProvider'
       id: string
       externalId: string
+      username?: string | null
       provider: IdentityProvider
       enabled: boolean
     }> | null
@@ -1841,6 +1844,7 @@ export type SubscribeIdentitySubscription = {
         externalProviders?: Array<{
           __typename?: 'LinkedIdentityExternalProvider'
           id: string
+          username?: string | null
           externalId: string
           provider: IdentityProvider
           enabled: boolean
@@ -1851,14 +1855,24 @@ export type SubscribeIdentitySubscription = {
         id: string
         linkedIdentity: {
           __typename?: 'LinkedIdentity'
+          id: string
           externalProviders?: Array<{
             __typename?: 'LinkedIdentityExternalProvider'
             id: string
+            username?: string | null
             externalId: string
             provider: IdentityProvider
             enabled: boolean
           }> | null
         }
+      } | null
+      externalProvider?: {
+        __typename?: 'LinkedIdentityExternalProvider'
+        externalId: string
+        provider: IdentityProvider
+        enabled: boolean
+        username?: string | null
+        linkedIdentity: { __typename?: 'LinkedIdentity'; id: string }
       } | null
     }
   }
@@ -2836,6 +2850,7 @@ export const GetLinkedIdentities = gql`
       externalProviders {
         id
         externalId
+        username
         provider
         enabled
       }
@@ -2868,6 +2883,7 @@ export const SubscribeIdentity = gql`
           id
           externalProviders {
             id
+            username
             externalId
             provider
             enabled
@@ -2876,12 +2892,23 @@ export const SubscribeIdentity = gql`
         session {
           id
           linkedIdentity {
+            id
             externalProviders {
               id
+              username
               externalId
               provider
               enabled
             }
+          }
+        }
+        externalProvider {
+          externalId
+          provider
+          enabled
+          username
+          linkedIdentity {
+            id
           }
         }
       }

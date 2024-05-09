@@ -248,6 +248,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     accountAddressStorage.remove()
     hasSentMessageStorage.remove()
     parentProxyAddressStorage.remove()
+    temporaryAccountStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
     set({ ...initialState, isInitialized: true, isInitializedProxy: true })

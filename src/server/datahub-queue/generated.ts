@@ -459,6 +459,13 @@ export type LinkIdentityMutationVariables = Exact<{
 
 export type LinkIdentityMutation = { __typename?: 'Mutation', initLinkedIdentity: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
+export type AddExternalProviderToIdentityMutationVariables = Exact<{
+  args: CreateMutateLinkedIdentityInput;
+}>;
+
+
+export type AddExternalProviderToIdentityMutation = { __typename?: 'Mutation', addNewLinkedIdentityExternalProvider: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
+
 export type LinkIdentityEvmMessageMutationVariables = Exact<{
   address: Scalars['String']['input'];
 }>;
@@ -552,6 +559,15 @@ export type CreateSuperLikeMutation = { __typename?: 'Mutation', activeStakingCr
 export const LinkIdentity = gql`
     mutation LinkIdentity($args: CreateMutateLinkedIdentityInput!) {
   initLinkedIdentity(args: $args) {
+    processed
+    callId
+    message
+  }
+}
+    `;
+export const AddExternalProviderToIdentity = gql`
+    mutation AddExternalProviderToIdentity($args: CreateMutateLinkedIdentityInput!) {
+  addNewLinkedIdentityExternalProvider(args: $args) {
     processed
     callId
     message

@@ -1,5 +1,6 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import OauthLoadingModal from '@/components/auth/OauthLoadingModal'
 import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
@@ -124,6 +125,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
           />
           <GlobalModals />
           <SessionAccountChecker />
+          <OauthLoadingModal />
           <div className={cx('font-sans')}>
             <ErrorBoundary>
               <EvmProvider>

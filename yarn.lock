@@ -3913,9 +3913,9 @@
   integrity sha512-9WEbVRRAqJ3YFVqEZIxUqkiO8l1nool1LmNxygr5HWF8AcSYsEpneUDhmjUVJEzO2A04+oPtZdombzzPPkTtgg==
 
 "@neynar/nodejs-sdk@^1.19.3":
-  version "1.21.2"
-  resolved "https://registry.yarnpkg.com/@neynar/nodejs-sdk/-/nodejs-sdk-1.21.2.tgz#42285cca0039fa238f4991a7bab02c6c2b21501c"
-  integrity sha512-Uc2hZtatJrxLjUOOWpBUFt8fTP0mlQf3hBLNQvV84vctAnkOGQYgv6tP1Kr1xHf8HUSov30FP6QsMbe68Gwr0A==
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/@neynar/nodejs-sdk/-/nodejs-sdk-1.22.0.tgz#bbf61ddd22dcf632a12c53c8a439347945b2ecdf"
+  integrity sha512-8azg9svAzQd6iimHtRXNfQT0w44Vk08250qTf4CHPDpa0J0qZtc6hhoLVqlUHtAF0Vs86BvRySpaAYOtk0fVdA==
   dependencies:
     "@openapitools/openapi-generator-cli" "^2.7.0"
     axios "^1.6.2"
@@ -5276,8 +5276,8 @@
   integrity sha512-jHMVmIAjkhSzswZEid2xhWtQb7yyux/8Am/i5xBQfDw6azwSPdr1nfXCKaIYs5R/NRcqi543V9roDQQQogTaKQ==
 
 "@subsocial/data-hub-sdk@dappforce/subsocial-data-hub-sdk#staging":
-  version "0.0.66"
-  resolved "https://codeload.github.com/dappforce/subsocial-data-hub-sdk/tar.gz/4479839299e6a8f91b0607eaba4163626124e587"
+  version "0.0.68"
+  resolved "https://codeload.github.com/dappforce/subsocial-data-hub-sdk/tar.gz/ffd29634cc622e306029da15b0c893a0f9e1550c"
   dependencies:
     "@neynar/nodejs-sdk" "^1.19.3"
     "@subsocial/api" "^0.8.13"

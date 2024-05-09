@@ -6,6 +6,7 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import {
   IdentityProvider,
   SocialCallDataArgs,
+  SynthAddLinkedIdentityExternalProviderCallParsedArgs,
   SynthInitLinkedIdentityCallParsedArgs,
   socialCallName,
 } from '@subsocial/data-hub-sdk'
@@ -50,5 +51,36 @@ export const useLinkIdentity = mutationWrapper(
     onSuccess: () => {
       allowWindowUnload()
     },
+  }
+)
+
+async function addExternalProviderToIdentity(
+  params: DatahubParams<
+    SocialCallDataArgs<'synth_add_linked_identity_external_provider'>
+  >
+) {
+  const input = createSocialDataEventPayload(
+    socialCallName.synth_add_linked_identity_external_provider,
+    params,
+    params.args
+  )
+
+  await apiInstance.post<any, any, ApiDatahubIdentityBody>(
+    '/api/datahub/identity',
+    {
+      payload: input,
+      id: params.args.externalProvider?.id ?? '',
+      provider:
+        params.args.externalProvider?.provider ?? IdentityProvider.FARCASTER,
+    }
+  )
+}
+
+export const useAddExternalProviderToIdentity = mutationWrapper(
+  async (data: SynthAddLinkedIdentityExternalProviderCallParsedArgs) => {
+    await addExternalProviderToIdentity({
+      ...getCurrentWallet(),
+      args: data,
+    })
   }
 )

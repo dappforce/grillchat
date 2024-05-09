@@ -1,6 +1,6 @@
+import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import login from '@/hooks/useLogin'
 import useToastError from '@/hooks/useToastError'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -12,12 +12,18 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
-import { getCurrentUrlWithoutQuery } from '@/utils/links'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
+import { estimatedWaitTime } from '@/utils/network'
 import { replaceUrl } from '@/utils/window'
-import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import {
+  IdentityProvider,
+  LinkedIdentityExternalProviderDetails,
+} from '@subsocial/data-hub-sdk'
 import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import Modal from '../modals/Modal'
 
 const providerMapper: Record<
   Session['provider'],
@@ -26,12 +32,62 @@ const providerMapper: Record<
   google: { name: 'Google', providerId: IdentityProvider.GOOGLE },
   twitter: { name: 'X', providerId: IdentityProvider.TWITTER },
 }
+export default function OauthLoadingModal() {
+  const [isOpen, setIsOpen] = useState(false)
+  const { data: session } = useSession()
+  const provider = session?.provider
 
-export default function useOauthLogin({
-  onSuccess,
-}: {
-  onSuccess: () => void
-}) {
+  useEffect(() => {
+    const isAfterOauthLogin = getUrlQuery('login')
+    if (isAfterOauthLogin === 'x' || isAfterOauthLogin === 'google') {
+      setIsOpen(true)
+    }
+  }, [])
+
+  return (
+    <Modal
+      title={`🕔 Connecting to ${providerMapper[provider ?? 'google'].name}`}
+      description={`We are connecting your ${
+        providerMapper[provider ?? 'google'].name
+      } account to Grill. Please wait for a few seconds.`}
+      isOpen={isOpen}
+      closeModal={() => undefined}
+    >
+      {isOpen && <DoOauthLogin onSuccess={() => setIsOpen(false)} />}
+      <div className='flex flex-col items-center gap-4'>
+        <DynamicLoadedHamsterLoading />
+        <span className='text-sm text-text-muted'>
+          It may take up to {estimatedWaitTime} seconds
+        </span>
+      </div>
+    </Modal>
+  )
+}
+
+function DoOauthLogin({ onSuccess }: { onSuccess: () => void }) {
+  useOauthLogin({ onSuccess })
+  return null
+}
+
+export function getExternalProviderPayload(
+  session: Session
+): LinkedIdentityExternalProviderDetails | null {
+  if (session.provider === 'google') {
+    return {
+      id: session.user.email ?? session.user.id,
+      provider: IdentityProvider.GOOGLE,
+    }
+  } else if (session.provider === 'twitter') {
+    return {
+      id: session.user?.id,
+      provider: IdentityProvider.TWITTER,
+      username: session.user?.name ?? undefined,
+    }
+  }
+  return null
+}
+
+function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
   const sendEvent = useSendEvent()
   const { mutate: subscribeViaLoginGoogle } = useSubscribeViaLoginGoogle()
 
@@ -40,9 +96,7 @@ export default function useOauthLogin({
   const { providerId: identity, name } =
     (provider && providerMapper[provider]) || {}
 
-  const { mutateAsync: loginAsTemporaryAccount } = login({
-    asTemporaryAccount: true,
-  })
+  const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
 
   const grillAddress = useMyGrillAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
@@ -147,15 +201,16 @@ export default function useOauthLogin({
     isAlreadyCalled.current = true
     sendEvent('oauth_login_linking', { provider })
     ;(async () => {
-      const address = await loginAsTemporaryAccount(null)
+      const address = await loginAsTemporaryAccount()
       if (!address || !identity) return
+
       setReferrerId({ refId: getReferralIdInUrl() })
-      linkIdentity({
-        externalProvider: {
-          id: session.user?.id,
-          provider: identity,
-        },
-      })
+      const payload = getExternalProviderPayload(session)
+      if (!payload) {
+        toast.error('Provider not supported')
+        return
+      }
+      linkIdentity({ externalProvider: payload })
 
       sendEventWithRef(address, async (refId) => {
         sendEvent('account_created', { loginBy: provider }, { ref: refId })
