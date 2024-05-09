@@ -8,4 +8,4 @@ export const currentNetwork: Network = env.NEXT_PUBLIC_SUBSTRATE_WSS.includes(
   ? 'xsocial'
   : 'subsocial'
 
-export const estimatedWaitTime = currentNetwork === 'xsocial' ? 15 : 30
+export const estimatedWaitTime = 5
