@@ -1,15 +1,11 @@
 import useRandomColor from '@/hooks/useRandomColor'
-import { getLinkedIdentityFromMainAddressQuery } from '@/services/datahub/identity/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
-import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import { getUserProfileLink } from '@/utils/links'
-import { profileSourceData } from '@/utils/profile'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps, ComponentPropsWithoutRef, forwardRef } from 'react'
 import { useInView } from 'react-intersection-observer'
-import LinkText from './LinkText'
 import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
 import CustomLink from './referral/CustomLink'
@@ -45,55 +41,55 @@ export default function Name({
 
   const { isLoading, name, textColor, profile } = useName(address)
 
-  const { data: linkedIdentity } =
-    getLinkedIdentityFromMainAddressQuery.useQuery(address, {
-      enabled: profileSourceIconPosition !== 'none',
-    })
+  // const { data: linkedIdentity } =
+  //   getLinkedIdentityFromMainAddressQuery.useQuery(address, {
+  //     enabled: profileSourceIconPosition !== 'none',
+  //   })
 
-  const identitiesIcons = (linkedIdentity?.externalProviders.length ?? 0) >
-    0 && (
-    <div className='flex items-center'>
-      {linkedIdentity?.externalProviders?.map((p) => {
-        const data = profileSourceData[p.provider]
-        if (!data) return null
-        const { icon: Icon, tooltip, link } = data
+  // const identitiesIcons = (linkedIdentity?.externalProviders.length ?? 0) >
+  //   0 && (
+  //   <div className='flex items-center'>
+  //     {linkedIdentity?.externalProviders?.map((p) => {
+  //       const data = profileSourceData[p.provider]
+  //       if (!data) return null
+  //       const { icon: Icon, tooltip, link } = data
 
-        return (
-          <div
-            key={p.externalId}
-            className={cx(
-              'relative top-px flex-shrink-0 text-[0.9em] text-text-muted',
-              clipText && 'overflow-hidden',
-              profileSourceIconClassName
-            )}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <PopOver
-              trigger={
-                <LinkText
-                  href={link?.(p.externalId, address)}
-                  openInNewTab
-                  onClick={() =>
-                    sendEvent('idenity_link_clicked', {
-                      eventSource: getCurrentPageChatId(),
-                    })
-                  }
-                >
-                  <Icon />
-                </LinkText>
-              }
-              panelSize='sm'
-              yOffset={6}
-              placement='top'
-              triggerOnHover
-            >
-              <span>{tooltip}</span>
-            </PopOver>
-          </div>
-        )
-      })}
-    </div>
-  )
+  //       return (
+  //         <div
+  //           key={p.externalId}
+  //           className={cx(
+  //             'relative top-px flex-shrink-0 text-[0.9em] text-text-muted',
+  //             clipText && 'overflow-hidden',
+  //             profileSourceIconClassName
+  //           )}
+  //           onClick={(e) => e.stopPropagation()}
+  //         >
+  //           <PopOver
+  //             trigger={
+  //               <LinkText
+  //                 href={link?.(p.externalId, address)}
+  //                 openInNewTab
+  //                 onClick={() =>
+  //                   sendEvent('idenity_link_clicked', {
+  //                     eventSource: getCurrentPageChatId(),
+  //                   })
+  //                 }
+  //               >
+  //                 <Icon />
+  //               </LinkText>
+  //             }
+  //             panelSize='sm'
+  //             yOffset={6}
+  //             placement='top'
+  //             triggerOnHover
+  //           >
+  //             <span>{tooltip}</span>
+  //           </PopOver>
+  //         </div>
+  //       )
+  //     })}
+  //   </div>
+  // )
 
   if (isLoading) {
     return (
@@ -125,7 +121,7 @@ export default function Name({
       )}
       style={{ color: color || textColor }}
     >
-      {profileSourceIconPosition === 'left' && identitiesIcons}
+      {/* {profileSourceIconPosition === 'left' && identitiesIcons} */}
       <span
         className={cx(
           clipText && 'overflow-hidden text-ellipsis whitespace-nowrap'
@@ -133,7 +129,7 @@ export default function Name({
       >
         {additionalText} {name}{' '}
       </span>
-      {profileSourceIconPosition === 'right' && identitiesIcons}
+      {/* {profileSourceIconPosition === 'right' && identitiesIcons} */}
       {inView && showModeratorChip && (
         <ChatModerateChip
           className='relative top-px flex items-center'
