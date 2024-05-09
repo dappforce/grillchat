@@ -19,6 +19,7 @@ import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import Modal from '../modals/Modal'
 
 const providerMapper: Record<
@@ -182,12 +183,26 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
       const address = await loginAsTemporaryAccount()
       if (!address || !identity) return
       setReferrerId({ refId: getReferralIdInUrl() })
-      linkIdentity({
-        externalProvider: {
-          id: session.user?.id,
-          provider: identity,
-        },
-      })
+
+      if (provider === 'google') {
+        linkIdentity({
+          externalProvider: {
+            id: session.user.email ?? session.user.id,
+            provider: identity,
+          },
+        })
+      } else if (provider === 'twitter') {
+        linkIdentity({
+          externalProvider: {
+            id: session.user?.id,
+            provider: identity,
+            username: session.user?.name ?? undefined,
+          },
+        })
+      } else {
+        toast.error('Provider not supported')
+        return
+      }
 
       sendEventWithRef(address, async (refId) => {
         sendEvent('account_created', { loginBy: provider }, { ref: refId })

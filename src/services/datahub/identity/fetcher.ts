@@ -23,6 +23,7 @@ const GET_LINKED_IDENTITIES = gql`
       externalProviders {
         id
         externalId
+        # username
         provider
         enabled
       }

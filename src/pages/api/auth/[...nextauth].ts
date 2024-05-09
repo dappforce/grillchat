@@ -36,6 +36,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
+      console.log(user, account)
       let provider = IdentityProvider.Google
       if (account?.provider === 'twitter') {
         provider = IdentityProvider.Twitter

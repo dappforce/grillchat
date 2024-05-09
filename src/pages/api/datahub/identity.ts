@@ -50,7 +50,7 @@ const POST_handler = handlerWrapper({
     ) {
       const authObj = await auth(req, res)
       const user = authObj?.user
-      if (!user || user.id !== id) {
+      if (!user || (user.id !== id && user.email !== id)) {
         res.status(403).json({ message: 'Unauthorized', success: false })
         return
       }
