@@ -32,7 +32,11 @@ export const CustomConnectButton = ({
   }
 
   const { disconnect } = useDisconnect()
-  const { isConnecting } = useAccount()
+  const { isConnecting } = useAccount({
+    onConnect: ({ address }) => {
+      if (address) onSuccessConnect(address)
+    },
+  })
 
   useEffect(() => {
     disconnect()

@@ -11,7 +11,7 @@ import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSignMessage } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
 
@@ -45,7 +45,7 @@ export const CommonEVMLoginContent = ({
     grillAddress ?? ''
   )
   const {
-    mutate: linkIdentity,
+    mutateAsync: linkIdentity,
     isLoading,
     isSuccess,
   } = useLinkIdentity({
@@ -67,31 +67,39 @@ export const CommonEVMLoginContent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkedIdentity])
 
+  const isCalledRef = useRef(false)
   const signAndLinkEvmAddress = async (evmAddress: string) => {
-    await beforeSignEvmAddress?.()
-    const grillAddress = useMyAccount.getState().address
-    if (!grillAddress) {
-      throw new Error('Grill address is not found')
+    if (isCalledRef.current) return
+    isCalledRef.current = true
+
+    try {
+      await beforeSignEvmAddress?.()
+      const grillAddress = useMyAccount.getState().address
+      if (!grillAddress) {
+        throw new Error('Grill address is not found')
+      }
+
+      setIsGettingMessage(true)
+      const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
+        client,
+        evmAddress
+      )
+      setIsGettingMessage(false)
+      const sig = await signMessageAsync({ message })
+
+      onFinishSignMessage?.()
+
+      await linkIdentity({
+        externalProvider: {
+          id: evmAddress,
+          provider: IdentityProvider.EVM,
+          evmProofMsg: message,
+          evmProofMsgSig: sig,
+        },
+      })
+    } finally {
+      isCalledRef.current = false
     }
-
-    setIsGettingMessage(true)
-    const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
-      client,
-      evmAddress
-    )
-    setIsGettingMessage(false)
-    const sig = await signMessageAsync({ message })
-
-    onFinishSignMessage?.()
-
-    linkIdentity({
-      externalProvider: {
-        id: evmAddress,
-        provider: IdentityProvider.EVM,
-        evmProofMsg: message,
-        evmProofMsgSig: sig,
-      },
-    })
   }
 
   return (

@@ -1,14 +1,20 @@
 import Farcaster from '@/assets/icons/farcaster.svg'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import useToastError from '@/hooks/useToastError'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useAddExternalProviderToIdentity } from '@/services/datahub/identity/mutation'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import {
+  getEvmLinkedIdentityMessageQuery,
+  getLinkedIdentityQuery,
+} from '@/services/datahub/identity/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyGrillAddress } from '@/stores/my-account'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
+import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
+import { useQueryClient } from '@tanstack/react-query'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -16,7 +22,9 @@ import { IconType } from 'react-icons'
 import { FaXTwitter } from 'react-icons/fa6'
 import { IoLogoGoogle } from 'react-icons/io5'
 import { SiEthereum } from 'react-icons/si'
+import { useSignMessage } from 'wagmi'
 import { getExternalProviderPayload } from '../../OauthLoadingModal'
+import { CustomConnectButton } from '../../common/evm/CustomConnectButton'
 
 type ProviderData = {
   name: string
@@ -50,7 +58,7 @@ const externalProviders: ProviderData[] = [
     icon: SiEthereum,
     shortName: 'EVM',
     provider: IdentityProvider.Evm,
-    connectButton: () => <Button size='sm'>Connect</Button>,
+    connectButton: () => <EvmConnectButton />,
   },
 ]
 
@@ -97,12 +105,94 @@ export default function LinkedIdentitiesContent() {
   )
 }
 
+function EvmConnectButton() {
+  const sendEvent = useSendEvent()
+  const client = useQueryClient()
+  const [isGettingMessage, setIsGettingMessage] = useState(false)
+  const { signMessageAsync, isLoading: isSigning, reset } = useSignMessage()
+  const grillAddress = useMyGrillAddress()
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    grillAddress ?? ''
+  )
+
+  const hasEvmProvider = linkedIdentity?.externalProviders.some(
+    (p) => p.provider === IdentityProvider.Evm
+  )
+
+  const {
+    mutateAsync: addProvider,
+    isLoading: isAddingProvider,
+    error,
+  } = useAddExternalProviderToIdentity({
+    onError: () => {
+      reset()
+    },
+  })
+  useToastError(error, 'Failed to link EVM address')
+
+  const hasTriedSigning = useRef(false)
+  const signAndLinkEvmAddress = async (evmAddress: string) => {
+    if (hasTriedSigning.current) return
+    hasTriedSigning.current = true
+
+    const grillAddress = useMyAccount.getState().address
+    if (!grillAddress) {
+      hasTriedSigning.current = false
+      throw new Error('Grill address is not found')
+    }
+
+    try {
+      setIsGettingMessage(true)
+      const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
+        client,
+        evmAddress
+      )
+      setIsGettingMessage(false)
+      const sig = await signMessageAsync({ message })
+
+      await addProvider({
+        externalProvider: {
+          id: evmAddress,
+          provider: SDKIdentityProvider.EVM,
+          evmProofMsg: message,
+          evmProofMsgSig: sig,
+        },
+      })
+    } finally {
+      hasTriedSigning.current = false
+    }
+  }
+
+  const isLoading =
+    !hasEvmProvider && (isGettingMessage || isSigning || isAddingProvider)
+
+  return (
+    <CustomConnectButton
+      label='Connect'
+      withWalletActionImage={false}
+      size='sm'
+      loadingText={isSigning ? 'Pending' : undefined}
+      onSuccessConnect={async (evmAddress) => {
+        sendEvent('add_provider_evm_clicked')
+        signAndLinkEvmAddress(evmAddress)
+      }}
+      isLoading={isLoading}
+    >
+      Connect
+    </CustomConnectButton>
+  )
+}
+
 function FarcasterConnectButton() {
+  const sendEvent = useSendEvent()
   const { loginNeynar, isLoadingOrSubmitted } = useNeynarLogin()
   return (
     <Button
       size='sm'
-      onClick={() => loginNeynar()}
+      onClick={() => {
+        sendEvent('add_provider_farcaster_clicked')
+        loginNeynar()
+      }}
       isLoading={isLoadingOrSubmitted}
     >
       Connect
@@ -118,14 +208,14 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   const { mutate, isLoading } = useAddExternalProviderToIdentity({
     onSuccess: () => {
       signOut({ redirect: false })
-      replaceUrl(getCurrentUrlWithoutQuery('login'))
     },
   })
 
   useEffect(() => {
     const loginProvider = getUrlQuery('login')
-    if (loginProvider === provider && session) {
+    if (loginProvider === provider && session && !calledRef.current) {
       calledRef.current = true
+      replaceUrl(getCurrentUrlWithoutQuery('login'))
       const externalProvider = getExternalProviderPayload(session)
       if (!externalProvider) {
         toast.error('Provider not supported')
@@ -141,7 +231,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
       isLoading={isRedirecting || isLoading}
       onClick={() => {
         setIsRedirecting(true)
-        sendEvent('add_provider_google_clicked')
+        sendEvent(`add_provider_${provider}_clicked`)
         signIn(provider, {
           callbackUrl:
             getCurrentUrlWithoutQuery() +
