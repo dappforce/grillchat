@@ -30,10 +30,16 @@ export default function MobileProposalDetailPage({
 
   const [isOpenDetailModal, setIsOpenDetailModal] = useState(false)
 
-  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
+  const { data: postMetadata, isLoading: isLoadingMetadata } =
+    getPostMetadataQuery.useQuery(chatId ?? '')
 
   const { selectedTab, setSelectedTab, isOpen, setIsOpen } =
     useCommentDrawer(proposal)
+
+  const usedIsLoadingMetadata = isLoadingMetadata && chatId
+  const totalComment = usedIsLoadingMetadata
+    ? 0
+    : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
 
   return (
     <div
@@ -72,10 +78,7 @@ export default function MobileProposalDetailPage({
         </div>
         <div className='container-page absolute bottom-0 h-20 w-full border-t border-border-gray bg-background-light py-4'>
           <Button size='lg' className='w-full' onClick={() => setIsOpen(true)}>
-            Comment{' '}
-            {postMetadata?.totalCommentsCount
-              ? `(${postMetadata.totalCommentsCount})`
-              : ''}
+            Comment {totalComment > 0 ? `(${totalComment})` : ''}
           </Button>
         </div>
       </div>
@@ -86,24 +89,31 @@ export default function MobileProposalDetailPage({
           variant='transparent'
           className={cx(
             'flex items-center justify-center gap-1 rounded-lg py-1 text-sm',
-            selectedTab === 'grill' && 'bg-background-primary text-white'
+            selectedTab === 'grill' &&
+              'bg-background-primary/10 text-background-primary'
           )}
           interactive='none'
           onClick={() => setSelectedTab('grill')}
         >
-          <span>Grill</span>
+          <span>
+            Grill
+            {usedIsLoadingMetadata
+              ? ''
+              : ` (${postMetadata?.totalCommentsCount ?? 0})`}
+          </span>
         </Button>
         <Button
           size='noPadding'
           variant='transparent'
           className={cx(
             'flex items-center justify-center gap-1 rounded-lg py-1 text-sm',
-            selectedTab === 'others' && 'bg-background-primary text-white'
+            selectedTab === 'others' &&
+              'bg-background-primary/10 text-background-primary'
           )}
           interactive='none'
           onClick={() => setSelectedTab('others')}
         >
-          <span>Other Sources</span>
+          <span>Other Sources ({proposal.comments.length ?? 0})</span>
         </Button>
       </div>
       <div className='relative z-10 w-full'>

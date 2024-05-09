@@ -34,12 +34,11 @@ export default function DesktopProposalDetail({
   const { chatId } = useProposalDetailContext()
   const { allIds, isOpen, isLoading, selectedTab, setIsOpen, setSelectedTab } =
     useCommentDrawer(proposal)
-  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
+  const { data: postMetadata, isLoading: isLoadingMetadata } =
+    getPostMetadataQuery.useQuery(chatId ?? '')
   const lastThreeMessageIds = allIds.slice(0, 3)
   const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
   const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
-
-  const ref = useRef<HTMLDivElement | null>(null)
 
   const hasGrillComments = !isLoading && allIds.length > 0
 
@@ -54,6 +53,11 @@ export default function DesktopProposalDetail({
       document.documentElement.style.overflow = 'visible'
     }
   }, [isOpen])
+
+  const totalCommentsCount =
+    isLoadingMetadata && chatId
+      ? 0
+      : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
 
   return (
     <>
@@ -96,6 +100,7 @@ export default function DesktopProposalDetail({
                   <LatestCommentFromExternalSources
                     setIsOpenDrawer={setIsOpen}
                     proposal={proposal}
+                    totalCommentsCount={totalCommentsCount}
                   />
                 )
               }
@@ -105,7 +110,7 @@ export default function DesktopProposalDetail({
                     lastThreeMessages={lastThreeMessages}
                     chatId={chatId}
                     setIsOpenDrawer={setIsOpen}
-                    totalCommentsCount={postMetadata?.totalCommentsCount || 0}
+                    totalCommentsCount={totalCommentsCount}
                   />
                 )
               }
@@ -162,9 +167,11 @@ function StickyRightPanel({
 function LatestCommentFromExternalSources({
   proposal,
   setIsOpenDrawer,
+  totalCommentsCount,
 }: {
   proposal: Proposal
   setIsOpenDrawer: (isOpen: boolean) => void
+  totalCommentsCount: number
 }) {
   const lastThreeComments = proposal.comments.slice(0, 3).toReversed()
   const length = proposal.comments.length
@@ -188,8 +195,8 @@ function LatestCommentFromExternalSources({
         onClick={() => setIsOpenDrawer(true)}
         className='mt-auto w-full'
       >
-        Show {length > 1 && 'all '}
-        {length ? `${length} ` : ''} Comments
+        Show {totalCommentsCount > 1 && 'all '}
+        {totalCommentsCount ? `${totalCommentsCount} ` : ''} Comments
       </Button>
     </div>
   )

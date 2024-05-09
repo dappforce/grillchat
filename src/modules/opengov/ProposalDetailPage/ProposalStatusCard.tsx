@@ -39,6 +39,10 @@ export default function ProposalStatusCard({
 
   const isLoadingMetadata = isLoading && !!chatId
 
+  const totalComment = isLoadingMetadata
+    ? 0
+    : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
+
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>
       <div className='flex items-center justify-between gap-4'>
@@ -136,12 +140,7 @@ export default function ProposalStatusCard({
           onClick={() => onCommentButtonClick()}
           className='w-full'
         >
-          {isLoadingMetadata
-            ? ''
-            : postMetadata?.totalCommentsCount ||
-              proposal.comments.length ||
-              ''}{' '}
-          Comments
+          {!totalComment ? '' : totalComment} Comments
         </Button>
       )}
       <ProposalMetadataModal
