@@ -12,7 +12,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useTheme } from 'next-themes'
-import { FaUserCog } from 'react-icons/fa'
+import { RiUserSettingsLine } from 'react-icons/ri'
 import { TbDeviceMobilePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
@@ -39,7 +39,7 @@ export default function AccountContent({
   const menus: MenuListProps['menus'] = [
     {
       text: 'Linked Accounts',
-      icon: FaUserCog,
+      icon: RiUserSettingsLine,
       onClick: () => {
         sendEvent('open_linked_accounts_modal', commonEventProps)
         setCurrentState('linked-accounts')
