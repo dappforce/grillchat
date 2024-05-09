@@ -325,7 +325,6 @@ async function validateParentProxyAddress({
   try {
     // Remove proxy with type 'Any'
     const currentProxy = await getParentProxyAddress(grillAddress)
-    console.log(currentProxy, parentProxyAddress)
     if (!currentProxy || currentProxy !== parentProxyAddress) {
       onInvalidProxy()
     }

@@ -15,7 +15,10 @@ import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { estimatedWaitTime } from '@/utils/network'
 import { replaceUrl } from '@/utils/window'
-import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import {
+  IdentityProvider,
+  LinkedIdentityExternalProviderDetails,
+} from '@subsocial/data-hub-sdk'
 import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
@@ -63,6 +66,24 @@ export default function OauthLoadingModal() {
 
 function DoOauthLogin({ onSuccess }: { onSuccess: () => void }) {
   useOauthLogin({ onSuccess })
+  return null
+}
+
+export function getExternalProviderPayload(
+  session: Session
+): LinkedIdentityExternalProviderDetails | null {
+  if (session.provider === 'google') {
+    return {
+      id: session.user.email ?? session.user.id,
+      provider: IdentityProvider.GOOGLE,
+    }
+  } else if (session.provider === 'twitter') {
+    return {
+      id: session.user?.id,
+      provider: IdentityProvider.TWITTER,
+      username: session.user?.name ?? undefined,
+    }
+  }
   return null
 }
 
@@ -182,27 +203,14 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     ;(async () => {
       const address = await loginAsTemporaryAccount()
       if (!address || !identity) return
-      setReferrerId({ refId: getReferralIdInUrl() })
 
-      if (provider === 'google') {
-        linkIdentity({
-          externalProvider: {
-            id: session.user.email ?? session.user.id,
-            provider: identity,
-          },
-        })
-      } else if (provider === 'twitter') {
-        linkIdentity({
-          externalProvider: {
-            id: session.user?.id,
-            provider: identity,
-            username: session.user?.name ?? undefined,
-          },
-        })
-      } else {
+      setReferrerId({ refId: getReferralIdInUrl() })
+      const payload = getExternalProviderPayload(session)
+      if (!payload) {
         toast.error('Provider not supported')
         return
       }
+      linkIdentity({ externalProvider: payload })
 
       sendEventWithRef(address, async (refId) => {
         sendEvent('account_created', { loginBy: provider }, { ref: refId })

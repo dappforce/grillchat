@@ -1,5 +1,6 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
+  addExternalProviderToIdentity,
   getLinkIdentityMessage,
   linkIdentity,
 } from '@/server/datahub-queue/identity'
@@ -70,6 +71,8 @@ async function datahubIdentityActionMapping(data: SocialEventDataApiInput) {
   const callName = data.callData?.name
   if (callName === 'synth_init_linked_identity') {
     await linkIdentity(data)
+  } else if (callName === 'synth_add_linked_identity_external_provider') {
+    await addExternalProviderToIdentity(data)
   } else {
     throw Error('Unknown identity action')
   }

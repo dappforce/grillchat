@@ -1,6 +1,9 @@
 import { env } from '@/env.mjs'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { useLinkIdentity } from '@/services/datahub/identity/mutation'
+import {
+  useAddExternalProviderToIdentity,
+  useLinkIdentity,
+} from '@/services/datahub/identity/mutation'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
@@ -38,31 +41,59 @@ export default function NeynarLoginProvider({
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
 
-  const { mutate, isSuccess, isLoading, reset } = useLinkIdentity({
+  const {
+    mutate: addExternalProvider,
+    isSuccess: isSuccessAdding,
+    isLoading: isAddingProvider,
+    reset: resetAdding,
+  } = useAddExternalProviderToIdentity()
+  const {
+    mutate: linkIdentity,
+    isSuccess: isSuccessLinking,
+    isLoading: isLinking,
+    reset: resetLinking,
+  } = useLinkIdentity({
     onSuccess: () => {
       finalizeTemporaryAccount()
     },
   })
+  const isLoading = isLinking || isAddingProvider
+  const isSuccess = isSuccessLinking || isSuccessAdding
+
   const isLoadingRef = useWrapInRef(isLoading)
 
   const mainAddress = useMyMainAddress()
   useEffect(() => {
-    if (!mainAddress) reset()
-  }, [mainAddress, reset])
+    if (!mainAddress) {
+      resetAdding()
+      resetLinking()
+    }
+  }, [mainAddress, resetLinking, resetAdding])
 
   useEffect(() => {
     window.onSignInSuccess = async (data) => {
-      const address = await loginAsTemporaryAccount()
-      if (!address) {
-        console.error('Failed to login account')
-        return
-      }
-
       useSubscriptionState
         .getState()
         .setSubscriptionState('identity', 'always-sub')
-      if (!isLoadingRef.current) {
-        mutate({
+      if (isLoadingRef.current) return
+
+      let currentAddress = useMyAccount.getState().address
+      if (currentAddress) {
+        addExternalProvider({
+          externalProvider: {
+            provider: IdentityProvider.FARCASTER,
+            id: data.fid,
+            farcasterSignerUuid: data.signer_uuid,
+          },
+        })
+      } else {
+        const address = await loginAsTemporaryAccount()
+        if (!address) {
+          console.error('Failed to login account')
+          return
+        }
+
+        linkIdentity({
           externalProvider: {
             provider: IdentityProvider.FARCASTER,
             id: data.fid,
@@ -75,7 +106,7 @@ export default function NeynarLoginProvider({
     return () => {
       delete window.onSignInSuccess
     }
-  }, [loginAsTemporaryAccount, mutate, isLoadingRef])
+  }, [loginAsTemporaryAccount, linkIdentity, isLoadingRef, addExternalProvider])
 
   const loginNeynar = useCallback(() => {
     const loginBtnContainer = document.getElementById('neynar_signin')

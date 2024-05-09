@@ -7,7 +7,9 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
+import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { SessionStorage } from '@/utils/storage'
+import { replaceUrl } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import React, { useCallback, useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
@@ -28,7 +30,11 @@ import PushNotificationContent, {
   getPushNotificationUsableStatus,
 } from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
-import { ProfileModalContentProps, ProfileModalState } from './types'
+import {
+  ProfileModalContentProps,
+  ProfileModalState,
+  profileModalStates,
+} from './types'
 
 const modalContents: {
   [key in ProfileModalState]: (props: ProfileModalContentProps) => JSX.Element
@@ -79,7 +85,7 @@ export default function ProfileModal({
   ...props
 }: ProfileModalProps) {
   const queryClient = useQueryClient()
-  const { isOpen, defaultOpenState, closeModal, onBackClick } =
+  const { isOpen, defaultOpenState, closeModal, onBackClick, openModal } =
     useProfileModal()
 
   const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
@@ -214,6 +220,20 @@ export default function ProfileModal({
       withBackButton: false,
     },
   }
+
+  useEffect(() => {
+    const openProfileStep = getUrlQuery('profile')
+    if (openProfileStep) {
+      const isValidState = profileModalStates.includes(openProfileStep)
+      if (isValidState) {
+        openModal({ defaultOpenState: openProfileStep })
+      } else {
+        openModal()
+      }
+      replaceUrl(getCurrentUrlWithoutQuery('profile'))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (!isOpen) forceBackFlowStorage.remove()

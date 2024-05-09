@@ -1,6 +1,8 @@
 import { SocialEventDataApiInput } from '@subsocial/data-hub-sdk'
 import { gql } from 'graphql-request'
 import {
+  AddExternalProviderToIdentityMutation,
+  AddExternalProviderToIdentityMutationVariables,
   LinkIdentityEvmMessageMutation,
   LinkIdentityEvmMessageMutationVariables,
   LinkIdentityMutation,
@@ -34,6 +36,37 @@ export async function linkIdentity(input: SocialEventDataApiInput) {
     },
   })
   throwErrorIfNotProcessed(res.initLinkedIdentity, 'Failed to link identity')
+}
+
+const ADD_EXTERNAL_PROVIDER_TO_IDENTITY_MUTATION = gql`
+  mutation AddExternalProviderToIdentity(
+    $args: CreateMutateLinkedIdentityInput!
+  ) {
+    addNewLinkedIdentityExternalProvider(args: $args) {
+      processed
+      callId
+      message
+    }
+  }
+`
+
+export async function addExternalProviderToIdentity(
+  input: SocialEventDataApiInput
+) {
+  await backendSigWrapper(input)
+  const res = await datahubQueueRequest<
+    AddExternalProviderToIdentityMutation,
+    AddExternalProviderToIdentityMutationVariables
+  >({
+    document: ADD_EXTERNAL_PROVIDER_TO_IDENTITY_MUTATION,
+    variables: {
+      args: input as any,
+    },
+  })
+  throwErrorIfNotProcessed(
+    res.addNewLinkedIdentityExternalProvider,
+    'Failed to add external provider to identity'
+  )
 }
 
 const LINK_IDENTITY_EVM_MESSAGE = gql`
