@@ -1,5 +1,6 @@
 import { env } from '@/env.mjs'
-import { getLinkedIdentityFromTwitterId } from '@/services/datahub/identity/fetcher'
+import { IdentityProvider } from '@/services/datahub/generated-query'
+import { getLinkedIdentityFromProviderId } from '@/services/datahub/identity/fetcher'
 import { getBlockedResources } from '@/services/datahub/moderation/query'
 import type {
   GetServerSidePropsContext,
@@ -34,14 +35,18 @@ export const authOptions: NextAuthOptions = {
     signIn: '/?auth=true',
   },
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
+      let provider = IdentityProvider.Google
+      if (account?.provider === 'twitter') {
+        provider = IdentityProvider.Twitter
+      }
       const [{ blockedInAppIds }, linkedAddress] = await Promise.all([
         getBlockedResources({
           appIds: [env.NEXT_PUBLIC_APP_ID],
           postEntityIds: [],
           spaceIds: [],
         }),
-        getLinkedIdentityFromTwitterId(user.id),
+        getLinkedIdentityFromProviderId({ externalId: user.id, provider }),
       ])
       const blockedAddressesSet = new Set(
         blockedInAppIds.map((data) => data.blockedResources.address).flat()

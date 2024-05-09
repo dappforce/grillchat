@@ -8,6 +8,7 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
 import {
   CreateSpaceCallParsedArgs,
+  UpdateSpaceCallParsedArgs,
   socialCallName,
 } from '@subsocial/data-hub-sdk'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -87,41 +88,35 @@ export async function createSpaceData(
   )
 }
 
-// async function updatePostData(
-//   params: DatahubParams<{
-//     postId: string
-//     changes: {
-//       content?: {
-//         cid: string
-//         content: PostContent
-//       }
-//       hidden?: boolean
-//     }
-//   }>
-// ) {
-//   const { postId, changes } = params.args
-//   const { content, hidden } = changes
-//   const eventArgs: UpdatePostCallParsedArgs = {
-//     spaceId: null,
-//     hidden: hidden ?? null,
-//     postId,
-//     ipfsSrc: content?.cid ?? null,
-//   }
-//   const input = createSignedSocialDataEvent(
-//     socialCallName.update_post,
-//     params,
-//     eventArgs,
-//     content?.content
-//   )
+export async function updateSpaceData(
+  params: DatahubParams<{
+    spaceId: string
+    cid?: string
+    content: SpaceContent
+  }>
+) {
+  const { args } = params
+  const { content, cid, spaceId } = args
+  const eventArgs: UpdateSpaceCallParsedArgs = {
+    spaceId,
+    ipfsSrc: cid,
+  }
 
-//   await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
-//     '/api/datahub/post',
-//     {
-//       action: 'update-post',
-//       payload: input as any,
-//     }
-//   )
-// }
+  const input = createSignedSocialDataEvent(
+    socialCallName.update_space,
+    params,
+    eventArgs,
+    content
+  )
+
+  await apiInstance.post<any, any, ApiDatahubSpaceMutationBody>(
+    '/api/datahub/space',
+    {
+      action: 'update-space',
+      payload: input as any,
+    }
+  )
+}
 
 type CommonParams = {
   content: {
@@ -160,10 +155,6 @@ function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
       if (!currentWallet.address) throw new Error('Please login')
 
       const { payload, action } = checkAction(params)
-      if (action === 'update')
-        throw new Error(
-          'Please wait until we finalized your previous name change'
-        )
 
       if (action === 'create') {
         createSpaceData({
@@ -173,8 +164,10 @@ function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
           args: { content: content as any },
         })
       } else if (action === 'update') {
-        // TODO: implement
-        throw new Error('Not implemented')
+        updateSpaceData({
+          ...currentWallet,
+          args: { content: content as any, spaceId: payload.spaceId },
+        })
       }
     },
     onMutate: (data) => {

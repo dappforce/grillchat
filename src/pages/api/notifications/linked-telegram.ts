@@ -1,5 +1,4 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getTelegramAccountsLinked } from '@/server/notifications'
 import { GetTelegramAccountsLinkedQuery } from '@/server/notifications/generated'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
@@ -21,11 +20,16 @@ export default handlerWrapper({
   allowedMethods: ['GET'],
   errorLabel: 'linked-telegram',
   handler: async (data, _, res) => {
-    const linkedAccounts = await getTelegramAccountsLinked(data.address)
     return res.status(200).send({
       success: true,
       message: 'OK',
-      accounts: linkedAccounts,
+      accounts: [],
     })
+    // const linkedAccounts = await getTelegramAccountsLinked(data.address)
+    // return res.status(200).send({
+    //   success: true,
+    //   message: 'OK',
+    //   accounts: linkedAccounts,
+    // })
   },
 })

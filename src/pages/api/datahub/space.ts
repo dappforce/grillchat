@@ -67,7 +67,8 @@ function datahubPostActionMapping(data: ApiDatahubSpaceMutationBody) {
       return createSpaceServer(data.payload)
     case 'update-space':
       return updateSpaceServer(data.payload)
-    // TODO: implement create profile
+    case 'create-profile':
+      return createSpaceServer(data.payload)
     default:
       throw new Error('Unknown action')
   }

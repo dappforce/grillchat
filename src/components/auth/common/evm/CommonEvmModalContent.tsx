@@ -11,21 +11,17 @@ import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSignMessage } from 'wagmi'
 import { CustomConnectButton } from './CustomConnectButton'
 
 type CommonEVMLoginErrorProps = {
   onFinishSignMessage?: () => void
-  onSuccess?: (linkedIdentity: Identity) => void
+  onSuccess?: (linkedIdentity: Identity) => void | Promise<void>
   onError?: () => void
   beforeSignEvmAddress?: () => Promise<void>
   isLoading?: boolean
   buttonLabel?: string
-}
-
-function getLinkMessage(session: string) {
-  return `Link to address ${session}`
 }
 
 export const CommonEVMLoginContent = ({
@@ -37,6 +33,7 @@ export const CommonEVMLoginContent = ({
   isLoading: _isLoading,
 }: CommonEVMLoginErrorProps) => {
   const client = useQueryClient()
+  const [isGettingMessage, setIsGettingMessage] = useState(false)
   const {
     signMessageAsync,
     isLoading: isSigning,
@@ -47,10 +44,11 @@ export const CommonEVMLoginContent = ({
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     grillAddress ?? ''
   )
-  const { mutate: linkIdentity, isLoading } = useLinkIdentity({
-    onSuccess: () => {
-      reset()
-    },
+  const {
+    mutate: linkIdentity,
+    isLoading,
+    isSuccess,
+  } = useLinkIdentity({
     onError: () => {
       reset()
       onError?.()
@@ -59,7 +57,12 @@ export const CommonEVMLoginContent = ({
 
   useEffect(() => {
     if (linkedIdentity) {
-      onSuccess?.(linkedIdentity)
+      const res = onSuccess?.(linkedIdentity)
+      if (res) {
+        res.then(() => reset())
+      } else {
+        reset()
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkedIdentity])
@@ -71,10 +74,12 @@ export const CommonEVMLoginContent = ({
       throw new Error('Grill address is not found')
     }
 
+    setIsGettingMessage(true)
     const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
       client,
       evmAddress
     )
+    setIsGettingMessage(false)
     const sig = await signMessageAsync({ message })
 
     onFinishSignMessage?.()
@@ -91,7 +96,9 @@ export const CommonEVMLoginContent = ({
 
   return (
     <CustomConnectButton
-      isLoading={_isLoading || isLoading || isSigning}
+      isLoading={
+        _isLoading || isLoading || isSigning || isSuccess || isGettingMessage
+      }
       onSuccessConnect={signAndLinkEvmAddress}
       className='w-full'
       label={buttonLabel}

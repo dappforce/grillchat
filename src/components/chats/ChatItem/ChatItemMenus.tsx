@@ -14,11 +14,9 @@ import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
-import { useExtensionData } from '@/stores/extension'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -72,15 +70,11 @@ export default function ChatItemMenus({
 
   const sendEvent = useSendEvent()
 
-  const openExtensionModal = useExtensionData(
-    (state) => state.openExtensionModal
-  )
-
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
-  const { ownerId, dataType } = message?.struct || {}
+  const { dataType } = message?.struct || {}
 
   const isOptimisticMessage = dataType === 'optimistic'
 
@@ -165,8 +159,7 @@ export default function ChatItemMenus({
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
-    if (isDatahubAvailable && canSendMessage && isMessageOwner)
-      menus.unshift(editItem)
+    if (canSendMessage && isMessageOwner) menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
 
     return menus

@@ -34,6 +34,7 @@ export type ChatListProps = ComponentProps<'div'> & {
 
 export default function ChatList(props: ChatListProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
+
   return (
     <ChatListContent
       key={props.chatId}

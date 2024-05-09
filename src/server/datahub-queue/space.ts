@@ -4,8 +4,8 @@ import {
   CreateSpaceOffChainMutation,
   CreateSpaceOffChainMutationVariables,
   UpdatePostOptimisticInput,
-  UpdatePostOptimisticMutation,
-  UpdatePostOptimisticMutationVariables,
+  UpdateSpaceOffChainMutation,
+  UpdateSpaceOffChainMutationVariables,
 } from './generated'
 import { datahubQueueRequest, throwErrorIfNotProcessed } from './utils'
 
@@ -46,13 +46,13 @@ const UPDATE_SPACE_OFFCHAIN_MUTATION = gql`
 `
 export async function updateSpaceServer(input: UpdatePostOptimisticInput) {
   const res = await datahubQueueRequest<
-    UpdatePostOptimisticMutation,
-    UpdatePostOptimisticMutationVariables
+    UpdateSpaceOffChainMutation,
+    UpdateSpaceOffChainMutationVariables
   >({
     document: UPDATE_SPACE_OFFCHAIN_MUTATION,
     variables: {
-      updatePostOptimisticInput: input,
+      updateSpaceOffChainInput: input,
     },
   })
-  throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to update post')
+  throwErrorIfNotProcessed(res.updateSpaceOffChain, 'Failed to update space')
 }

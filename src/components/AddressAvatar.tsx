@@ -1,5 +1,5 @@
 import useRandomColor from '@/hooks/useRandomColor'
-import { getProfileQuery } from '@/services/api/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getUserProfileLink } from '@/utils/links'

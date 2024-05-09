@@ -1,4 +1,5 @@
 import { env } from '@/env.mjs'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
@@ -36,11 +37,13 @@ export default function NeynarLoginProvider({
 }) {
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
+
   const { mutate, isSuccess, isLoading, reset } = useLinkIdentity({
     onSuccess: () => {
       finalizeTemporaryAccount()
     },
   })
+  const isLoadingRef = useWrapInRef(isLoading)
 
   const mainAddress = useMyMainAddress()
   useEffect(() => {
@@ -58,19 +61,21 @@ export default function NeynarLoginProvider({
       useSubscriptionState
         .getState()
         .setSubscriptionState('identity', 'always-sub')
-      mutate({
-        externalProvider: {
-          provider: IdentityProvider.FARCASTER,
-          id: data.fid,
-          farcasterSignerUuid: data.signer_uuid,
-        },
-      })
+      if (!isLoadingRef.current) {
+        mutate({
+          externalProvider: {
+            provider: IdentityProvider.FARCASTER,
+            id: data.fid,
+            farcasterSignerUuid: data.signer_uuid,
+          },
+        })
+      }
     }
 
     return () => {
       delete window.onSignInSuccess
     }
-  }, [loginAsTemporaryAccount, mutate])
+  }, [loginAsTemporaryAccount, mutate, isLoadingRef])
 
   const loginNeynar = useCallback(() => {
     const loginBtnContainer = document.getElementById('neynar_signin')

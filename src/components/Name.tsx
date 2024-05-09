@@ -1,6 +1,6 @@
 import useRandomColor from '@/hooks/useRandomColor'
-import { getProfileQuery } from '@/services/api/query'
 import { getLinkedIdentityFromMainAddressQuery } from '@/services/datahub/identity/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
 import { getCurrentPageChatId } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
@@ -54,7 +54,6 @@ export default function Name({
     0 && (
     <div className='flex items-center'>
       {linkedIdentity?.externalProviders?.map((p) => {
-        // TODO: add farcaster data
         const data = profileSourceData[p.provider]
         if (!data) return null
         const { icon: Icon, tooltip, link } = data

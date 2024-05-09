@@ -1,5 +1,4 @@
 import { ApiPostsResponse } from '@/pages/api/posts'
-import { ApiProfilesResponse } from '@/pages/api/profiles'
 import { apiInstance } from './utils'
 
 export async function getPosts(postIds: string[]) {
@@ -9,13 +8,4 @@ export async function getPosts(postIds: string[]) {
     '/api/posts?' + requestedIds.map((n) => `postIds=${n}`).join('&')
   )
   return (res.data as ApiPostsResponse).data ?? []
-}
-
-export async function getProfiles(addresses: string[]) {
-  const requestedIds = addresses.filter((id) => !!id)
-  if (requestedIds.length === 0) return []
-  const res = await apiInstance.get(
-    '/api/profiles?' + requestedIds.map((n) => `addresses=${n}`).join('&')
-  )
-  return (res.data as ApiProfilesResponse).data ?? []
 }

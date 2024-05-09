@@ -1,11 +1,22 @@
-import { saveFile } from '@/services/api/mutation'
-import { getProfileQuery } from '@/services/api/query'
+import { ApiDatahubSpaceMutationBody } from '@/pages/api/datahub/space'
+import { apiInstance } from '@/services/api/utils'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
+import { updateSpaceData } from '@/services/datahub/spaces/mutation'
+import {
+  DatahubParams,
+  createSignedSocialDataEvent,
+} from '@/services/datahub/utils'
 import { getMyMainAddress } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
+import {
+  CreateSpaceAsProfileCallParsedArgs,
+  socialCallName,
+} from '@subsocial/data-hub-sdk'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createMutationWrapper } from '../utils/mutation'
+import { getCurrentWallet } from '../../subsocial/hooks'
+import { createMutationWrapper } from '../../subsocial/utils/mutation'
 
 type CommonParams = {
   content: {
@@ -39,8 +50,22 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
           'Please wait until we finalized your previous name change'
         )
 
-      const { success, cid } = await saveFile(content)
-      if (!success || !cid) throw new Error('Failed to save file')
+      if (action === 'create') {
+        await createProfileData({
+          ...getCurrentWallet(),
+          args: {
+            content: content as SpaceContent,
+          },
+        })
+      } else {
+        await updateSpaceData({
+          ...getCurrentWallet(),
+          args: {
+            content: content as SpaceContent,
+            spaceId: payload.spaceId,
+          },
+        })
+      }
     },
     onMutate: (data) => {
       preventWindowUnload()
@@ -67,9 +92,6 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
     },
     onSuccess: async () => {
       allowWindowUnload()
-      const mainAddress = getMyMainAddress() ?? ''
-      // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
-      // getProfileQuery.invalidate(client, address)
     },
   })
 }
@@ -77,3 +99,31 @@ export const useUpsertProfile = createMutationWrapper(
   useUpsertProfileRaw,
   'Failed to upsert profile'
 )
+
+export async function createProfileData(
+  params: DatahubParams<{
+    cid?: string
+    content: SpaceContent
+  }>
+) {
+  const { args } = params
+  const { content, cid } = args
+  const eventArgs: CreateSpaceAsProfileCallParsedArgs = {
+    ipfsSrc: cid,
+  }
+
+  const input = createSignedSocialDataEvent(
+    socialCallName.create_space_as_profile,
+    params,
+    eventArgs,
+    content
+  )
+
+  await apiInstance.post<any, any, ApiDatahubSpaceMutationBody>(
+    '/api/datahub/space',
+    {
+      action: 'create-space',
+      payload: input as any,
+    }
+  )
+}
