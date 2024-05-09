@@ -11,6 +11,7 @@ import {
 } from '@/services/datahub/identity/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
+import { truncateAddress } from '@/utils/account'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
@@ -31,6 +32,7 @@ type ProviderData = {
   icon: IconType
   shortName?: string
   provider: IdentityProvider
+  customName?: (usernameOrId: string) => string
   connectButton: () => JSX.Element
 }
 
@@ -58,6 +60,7 @@ const externalProviders: ProviderData[] = [
     icon: SiEthereum,
     shortName: 'EVM',
     provider: IdentityProvider.Evm,
+    customName: (nameOrId) => truncateAddress(nameOrId),
     connectButton: () => <EvmConnectButton />,
   },
 ]
@@ -75,20 +78,27 @@ export default function LinkedIdentitiesContent() {
           shortName,
           provider,
           connectButton: ConnectButton,
+          customName,
         }) => {
           const isLinked = linkedIdentity?.externalProviders.find(
             (p) => p.provider === provider
           )
+          let text = `Connect your ${shortName ?? name}`
+          if (isLinked) {
+            const usernameOrId = isLinked.username || isLinked.externalId
+            if (customName) {
+              text = customName(usernameOrId)
+            } else {
+              text = usernameOrId
+            }
+          }
+
           return (
             <div className='flex flex-col gap-2' key={name}>
               <span>{name}</span>
               <Card className='flex items-center gap-4 bg-background p-4'>
                 <Icon className='flex-shrink-0 text-xl text-text-muted' />
-                <span className='flex-1 break-words'>
-                  {isLinked
-                    ? isLinked.username || isLinked.externalId
-                    : `Connect your ${shortName ?? name}`}
-                </span>
+                <span className='flex-1 break-words'>{text}</span>
                 {isLinked ? (
                   <Button className='flex-shrink-0' size='sm' disabled>
                     Connected

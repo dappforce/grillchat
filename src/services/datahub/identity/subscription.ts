@@ -1,3 +1,4 @@
+import { useMyAccount } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
@@ -53,6 +54,7 @@ const SUBSCRIBE_IDENTITY = gql`
           id
           externalProviders {
             id
+            username
             externalId
             provider
             enabled
@@ -61,12 +63,23 @@ const SUBSCRIBE_IDENTITY = gql`
         session {
           id
           linkedIdentity {
+            id
             externalProviders {
               id
+              username
               externalId
               provider
               enabled
             }
+          }
+        }
+        externalProvider {
+          externalId
+          provider
+          enabled
+          username
+          linkedIdentity {
+            id
           }
         }
       }
@@ -112,14 +125,70 @@ async function processSubscriptionEvent(
     eventData.event ===
     DataHubSubscriptionEventEnum.LinkedIdentitySessionCreated
   ) {
-    await processIdentity(queryClient, eventData.entity.session)
+    await processSessionCreated(queryClient, eventData.entity.session)
+  } else if (
+    eventData.event ===
+      DataHubSubscriptionEventEnum.LinkedIdentityExternalProviderCreated ||
+    eventData.event ===
+      DataHubSubscriptionEventEnum.LinkedIdentityExternalProviderStateUpdated
+  ) {
+    await processExternalProviderUpdate(
+      queryClient,
+      eventData.entity.externalProvider
+    )
   }
 }
 
-async function processIdentity(
+async function processSessionCreated(
   queryClient: QueryClient,
   session: SubscribeIdentitySubscription['linkedIdentitySubscription']['entity']['session']
 ) {
   if (!session?.id) return
-  getLinkedIdentityQuery.invalidate(queryClient, session.id)
+  getLinkedIdentityQuery.setQueryData(queryClient, session.id, {
+    mainAddress: session.linkedIdentity.id,
+    externalProviders:
+      session.linkedIdentity.externalProviders?.map((p) => ({
+        externalId: p.externalId,
+        provider: p.provider,
+        username: p.username,
+      })) ?? [],
+  })
+}
+
+async function processExternalProviderUpdate(
+  queryClient: QueryClient,
+  externalProvider: SubscribeIdentitySubscription['linkedIdentitySubscription']['entity']['externalProvider']
+) {
+  const myGrillAddress = useMyAccount.getState().address
+  if (!myGrillAddress || !externalProvider) return
+
+  const currentLinkedIdentity = await getLinkedIdentityQuery.fetchQuery(
+    queryClient,
+    myGrillAddress
+  )
+  if (externalProvider.linkedIdentity.id !== currentLinkedIdentity?.mainAddress)
+    return
+
+  getLinkedIdentityQuery.setQueryData(queryClient, myGrillAddress, (data) => {
+    if (!data) return data
+    const hasIncludedCurrentProvider = data.externalProviders.some((p) => {
+      return (
+        p.provider === externalProvider.provider &&
+        p.externalId === externalProvider.externalId
+      )
+    })
+    if (hasIncludedCurrentProvider) return data
+    return {
+      ...data,
+      externalProviders: [
+        ...data.externalProviders,
+        {
+          externalId: externalProvider.externalId,
+          provider: externalProvider.provider,
+          enabled: externalProvider.enabled,
+          username: externalProvider.username,
+        },
+      ],
+    }
+  })
 }

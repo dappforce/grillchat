@@ -33,13 +33,14 @@ export const CustomConnectButton = ({
 
   const { disconnect } = useDisconnect()
   const { isConnecting } = useAccount({
-    onConnect: ({ address }) => {
-      if (address) onSuccessConnect(address)
+    onConnect: ({ address, connector, isReconnected }) => {
+      if (address && connector && !isReconnected) onSuccessConnect(address)
     },
   })
 
   useEffect(() => {
     disconnect()
+    return () => disconnect()
   }, [disconnect])
 
   const commonButtonProps: ButtonProps = {
