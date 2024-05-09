@@ -1,6 +1,5 @@
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import login from '@/hooks/useLogin'
 import useToastError from '@/hooks/useToastError'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -40,9 +39,7 @@ export default function useOauthLogin({
   const { providerId: identity, name } =
     (provider && providerMapper[provider]) || {}
 
-  const { mutateAsync: loginAsTemporaryAccount } = login({
-    asTemporaryAccount: true,
-  })
+  const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
 
   const grillAddress = useMyGrillAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
@@ -147,7 +144,7 @@ export default function useOauthLogin({
     isAlreadyCalled.current = true
     sendEvent('oauth_login_linking', { provider })
     ;(async () => {
-      const address = await loginAsTemporaryAccount(null)
+      const address = await loginAsTemporaryAccount()
       if (!address || !identity) return
       setReferrerId({ refId: getReferralIdInUrl() })
       linkIdentity({

@@ -8,7 +8,6 @@ import { isTouchDevice } from '@/utils/device'
 import { useEffect, useRef, useState } from 'react'
 import CreateProfileModal from './CreateProfileModal'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
-import SaveGrillKeyModal from './SaveGrillKeyModal'
 import { prevScanQrStep } from './ScanQRButton'
 
 export type LoginModalProps = {
@@ -178,19 +177,6 @@ export default function LoginModal({
           closeModal={() => setIsOpenStayUpdatedModal(false)}
         />
       )} */}
-      <SaveGrillKeyModal
-        withoutOverlay={withoutOverlay}
-        withoutShadow={withoutShadow}
-        isOpen={openedNextStepsModal?.step === 'save-grill-key'}
-        closeModal={() => {
-          closeNextStepModal()
-        }}
-        provider={
-          openedNextStepsModal?.step === 'save-grill-key'
-            ? openedNextStepsModal.provider
-            : undefined
-        }
-      />
       <CreateProfileModal
         withoutOverlay={withoutOverlay}
         withoutShadow={withoutShadow}

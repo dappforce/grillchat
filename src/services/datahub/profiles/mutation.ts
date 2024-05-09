@@ -68,6 +68,7 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
       }
     },
     onMutate: (data) => {
+      config?.onMutate?.(data)
       preventWindowUnload()
       const mainAddress = getMyMainAddress() ?? ''
       getProfileQuery.setQueryData(client, mainAddress, (oldData) => {
@@ -86,11 +87,13 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
         }
       })
     },
-    onError: async () => {
+    onError: async (...params) => {
+      config?.onError?.(...params)
       const mainAddress = getMyMainAddress() ?? ''
       getProfileQuery.invalidate(client, mainAddress)
     },
-    onSuccess: async () => {
+    onSuccess: async (...params) => {
+      config?.onSuccess?.(...params)
       allowWindowUnload()
     },
   })
