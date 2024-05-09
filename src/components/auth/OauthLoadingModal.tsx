@@ -130,6 +130,13 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
   const { mutate: setReferrerId } = useSetReferrerId()
 
   const client = useQueryClient()
+  const onFinishFlow = () => {
+    replaceUrl(getCurrentUrlWithoutQuery('login'))
+    sendEvent('login_oauth_successful', { provider })
+    finalizeTemporaryAccount()
+    onSuccess()
+    signOut({ redirect: false })
+  }
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
@@ -175,6 +182,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     const foundIdentity = linkedIdentity && session
 
     if (foundIdentity && !upsertedProfile.current) {
+      console.log('masuk upsert')
       sendEvent(
         'oauth_login_creating_profile',
         { provider },
@@ -193,6 +201,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
                 name: session?.user.name ?? '',
               },
             })
+          else onFinishFlow()
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
