@@ -5,19 +5,14 @@ import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import useGetTheme from '@/hooks/useGetTheme'
-import useIsInIframe from '@/hooks/useIsInIframe'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import { getPostQuery } from '@/services/api/query'
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
-import { useProfileModal } from '@/stores/profile-modal'
-import { getCreatorChatIdFromProfile } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
 import { useTheme } from 'next-themes'
-import { useRouter } from 'next/router'
+import { FaUserCog } from 'react-icons/fa'
 import { TbDeviceMobilePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
@@ -27,37 +22,17 @@ export default function AccountContent({
   address,
   setCurrentState,
 }: ProfileModalContentProps) {
-  const isInIframe = useIsInIframe()
-  const { closeModal } = useProfileModal()
-  const router = useRouter()
-
-  const chainData = useGetChainDataByNetwork('subsocial')
-
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
   const { disconnect } = useDisconnect()
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
-  const chatId = getCreatorChatIdFromProfile(profile)
-
-  const { data: chat } = getPostQuery.useQuery(chatId || '', {
-    showHiddenPost: { type: 'all' },
-  })
-
-  const haveChat = !!chatId && chat?.struct.spaceId
-
   const colorModeOptions = useColorModeOptions()
-
-  const {
-    count: activatedNotificationCount,
-    maxCount: maxNotificationCount,
-    isLoading: isLoadingActivatedNotificationCount,
-  } = useActivatedNotificationCount()
 
   const onPrivacySecurityKeyClick = () => {
     sendEvent('open_privacy_security_modal', commonEventProps)
-    setCurrentState('privacy-security')
+    setCurrentState('share-session')
   }
 
   const onLogoutClick = () => {
@@ -67,6 +42,13 @@ export default function AccountContent({
   }
 
   const menus: MenuListProps['menus'] = [
+    {
+      text: 'Linked Accounts',
+      icon: FaUserCog,
+      onClick: () => {
+        onPrivacySecurityKeyClick()
+      },
+    },
     {
       text: 'Share Session',
       icon: TbDeviceMobilePlus,

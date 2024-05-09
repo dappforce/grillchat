@@ -32,14 +32,14 @@
   --background-light: 32 41 58;
   --background-lighter: 44 56 79;
   --background-lightest: 54 74 102;
-  --background-primary: 77 70 220;
+  --background-primary: 0 83 255;
   --background-primary-light: 77 70 220;
   --background-warning: 225 181 62;
   --background-info: 77 70 220;
   --background-accent: 104 4 231;
   --background-red: 54 40 55;
   --text: 255 255 255;
-  --text-primary: 136 131 232;
+  --text-primary: 99 149 253;
   --text-secondary: 130 161 248;
   --text-secondary-light: 191 219 254;
   --text-muted: 163 172 190;
