@@ -55,6 +55,9 @@ export default function DesktopProposalDetail({
     }
   }, [isOpen])
 
+  const totalCommentsCount =
+    (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
+
   return (
     <>
       <div
@@ -96,6 +99,7 @@ export default function DesktopProposalDetail({
                   <LatestCommentFromExternalSources
                     setIsOpenDrawer={setIsOpen}
                     proposal={proposal}
+                    totalCommentsCount={totalCommentsCount}
                   />
                 )
               }
@@ -105,7 +109,7 @@ export default function DesktopProposalDetail({
                     lastThreeMessages={lastThreeMessages}
                     chatId={chatId}
                     setIsOpenDrawer={setIsOpen}
-                    totalCommentsCount={postMetadata?.totalCommentsCount || 0}
+                    totalCommentsCount={totalCommentsCount}
                   />
                 )
               }
@@ -162,9 +166,11 @@ function StickyRightPanel({
 function LatestCommentFromExternalSources({
   proposal,
   setIsOpenDrawer,
+  totalCommentsCount,
 }: {
   proposal: Proposal
   setIsOpenDrawer: (isOpen: boolean) => void
+  totalCommentsCount: number
 }) {
   const lastThreeComments = proposal.comments.slice(0, 3).toReversed()
   const length = proposal.comments.length
@@ -188,8 +194,8 @@ function LatestCommentFromExternalSources({
         onClick={() => setIsOpenDrawer(true)}
         className='mt-auto w-full'
       >
-        Show {length > 1 && 'all '}
-        {length ? `${length} ` : ''} Comments
+        Show {totalCommentsCount > 1 && 'all '}
+        {totalCommentsCount ? `${totalCommentsCount} ` : ''} Comments
       </Button>
     </div>
   )
