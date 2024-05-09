@@ -16,6 +16,7 @@ import {
   CreateChatContent,
   CreateChatLoadingContent,
 } from './contents/CreateChatContent'
+import LinkedIdentitiesContent from './contents/LinkedIdentitiesContent'
 import LogoutContent from './contents/LogoutContent'
 import PrivacySecurityContent from './contents/PrivacySecurityContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
@@ -36,6 +37,7 @@ const modalContents: {
   'profile-settings': SimpleProfileSettingsContent,
   'privacy-security': PrivacySecurityContent,
   'private-key': PrivateKeyContent,
+  'linked-accounts': LinkedIdentitiesContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
   about: AboutContent,
@@ -141,6 +143,10 @@ export default function ProfileModal({
       title: <span className='font-medium'>My Account</span>,
       withoutDefaultPadding: true,
       withFooter: true,
+    },
+    'linked-accounts': {
+      title: '🔗 Linked Identities',
+      withBackButton: true,
     },
     'profile-settings': {
       title: '✏️ Edit Profile',

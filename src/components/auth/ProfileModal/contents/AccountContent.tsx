@@ -30,11 +30,6 @@ export default function AccountContent({
 
   const colorModeOptions = useColorModeOptions()
 
-  const onPrivacySecurityKeyClick = () => {
-    sendEvent('open_privacy_security_modal', commonEventProps)
-    setCurrentState('share-session')
-  }
-
   const onLogoutClick = () => {
     disconnect()
     sendEvent('open_log_out_modal', commonEventProps)
@@ -46,14 +41,16 @@ export default function AccountContent({
       text: 'Linked Accounts',
       icon: FaUserCog,
       onClick: () => {
-        onPrivacySecurityKeyClick()
+        sendEvent('open_linked_accounts_modal', commonEventProps)
+        setCurrentState('linked-accounts')
       },
     },
     {
       text: 'Share Session',
       icon: TbDeviceMobilePlus,
       onClick: () => {
-        onPrivacySecurityKeyClick()
+        sendEvent('open_privacy_security_modal', commonEventProps)
+        setCurrentState('share-session')
       },
     },
     ...colorModeOptions,

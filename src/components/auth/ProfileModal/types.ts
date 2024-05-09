@@ -6,6 +6,7 @@ export type ProfileModalState =
   | 'profile-settings'
   // | 'polkadot-connect-unlink'
   // | 'polkadot-connect-identity-removed'
+  | 'linked-accounts'
   | 'privacy-security'
   | 'private-key'
   | 'logout'
