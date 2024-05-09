@@ -38,7 +38,10 @@ export default function ChatRoom({
   return (
     <div
       {...props}
-      className={cx('flex flex-1 flex-col overflow-hidden', className)}
+      className={cx(
+        'flex flex-1 flex-col overflow-auto max-lg:h-[calc(100dvh-11rem)] lg:h-[calc(100dvh-6.5rem)]',
+        className
+      )}
     >
       <ChatList
         hubId={hubId}

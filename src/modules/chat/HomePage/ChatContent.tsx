@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Tabs from '@/components/Tabs'
+import ChatRoom from '@/components/chats/ChatRoom'
 import { cx } from '@/utils/class-names'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
@@ -9,25 +10,29 @@ type Props = {
   chatId: string
 }
 
-const tabs = [
-  {
-    id: 'trending-memes',
-    text: 'Trending Memes',
-    content: () => <div className='h-full w-full'>Top memes chat ever </div>,
-  },
-  {
-    id: 'recent-memes',
-    text: 'Recent Memes',
-    content: () => <div className='w-full'></div>,
-  },
-]
+export default function ChatContent(props: Props) {
+  const tabs = [
+    {
+      id: 'trending-memes',
+      text: 'Trending Memes',
+      content: () => (
+        <div className='w-full'>
+          <ChatRoom asContainer chatId={props.chatId} hubId={props.hubId} />{' '}
+        </div>
+      ),
+    },
+    {
+      id: 'recent-memes',
+      text: 'Recent Memes',
+      content: () => <div className='w-full'></div>,
+    },
+  ]
 
-export default function ChatContent(props: { hubId: string }) {
   return (
-    <div className='flex h-[calc(100%-56px)] flex-col border-x border-border-gray bg-background-light'>
+    <div className='flex flex-col border-x border-border-gray bg-background-light'>
       <Tabs
         className='p-0 first:[&>span]:rounded-s-none last:[&>span]:rounded-e-none'
-        panelClassName='mt-0 w-full max-w-full'
+        panelClassName='mt-0 w-full max-w-full '
         tabClassName={(selected) =>
           cx(
             {

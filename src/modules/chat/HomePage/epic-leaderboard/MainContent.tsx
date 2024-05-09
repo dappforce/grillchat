@@ -1,13 +1,14 @@
-import DummyProfilePic from '@/assets/graphics/dummy-profile-pic.png'
 import EpicTokenIllust from '@/assets/graphics/epic-token-illust.svg'
+
+import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card, { CardProps } from '@/components/Card'
+import Name from '@/components/Name'
 import { Skeleton } from '@/components/SkeletonFallback'
 import PopOver from '@/components/floating/PopOver'
 import { spaceMono } from '@/fonts'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import Image from 'next/image'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import LeaderboardSection from './LeaderboardSection'
 
@@ -54,72 +55,64 @@ function MainCard() {
     return <GuestCard />
   }
 
-  return <ProfileCard />
+  return <ProfileCardNew />
 }
 
-function ProfileCard() {
-  const address = useMyMainAddress()
+const ProfileCardNew = () => {
+  const myAddress = useMyMainAddress()
 
   return (
-    <MainCardTemplate className='relative'>
-      <div className='relative flex w-full flex-col gap-4'>
-        <Button
-          variant='transparent'
-          className='absolute right-0 top-0 bg-white/10'
-        >
-          How does it work?
-        </Button>
-        <div className='flex w-full gap-4'>
-          <Image
-            src={DummyProfilePic}
-            alt=''
-            className='hidden w-9 rounded-lg border-[3px] border-white/20 object-cover @lg:block'
-          />
-          <div className='flex flex-1 flex-col gap-1'>
-            <div className='mb-2 flex items-center gap-3 @lg:mb-0'>
-              <Image
-                src={DummyProfilePic}
-                alt=''
-                className='h-9 w-9 rounded-lg border-[3px] border-white/20 object-cover @lg:hidden'
-              />
-              <span className='text-lg font-semibold'>Vit</span>
-            </div>
-            <div className='flex flex-col gap-4'>
-              <div className='relative flex flex-col gap-2 rounded-xl'>
-                <span
-                  className={cx(
-                    'font-mono text-[26px] font-bold leading-none',
-                    spaceMono.className
-                  )}
-                >
-                  10,000 Points
+    <MainCardTemplate>
+      <div className='flex w-full flex-col gap-4'>
+        <div className='flex w-full items-center justify-between gap-2'>
+          <div className='flex items-center gap-2'>
+            <AddressAvatar
+              address={myAddress || ''}
+              className='h-[33px] w-[33px] rounded-lg object-cover outline outline-[3px] outline-white/20'
+            />
+            <Name
+              address={myAddress || ''}
+              className='text-lg font-semibold !text-white'
+            />
+          </div>
+          <Button variant='transparent' className='bg-white/10'>
+            How does it work?
+          </Button>
+        </div>
+        <div className='flex flex-col gap-4'>
+          <div className='relative flex flex-col gap-2 rounded-xl'>
+            <span
+              className={cx(
+                'font-mono text-[26px] font-bold leading-none',
+                spaceMono.className
+              )}
+            >
+              10,000 Points
+            </span>
+            <span className='text-sm leading-none text-slate-200'>
+              earned this week
+            </span>
+          </div>
+          <PopOver
+            yOffset={6}
+            panelSize='sm'
+            placement='top'
+            triggerClassName='w-fit'
+            triggerOnHover
+            trigger={
+              <div className='flex items-start gap-2 md:items-center '>
+                <span className='text-sm leading-[22px] text-slate-200'>
+                  Distribution in{' '}
+                  <span className='font-bold text-white'>7 days</span>
                 </span>
-                <span className='text-sm leading-none text-slate-200'>
-                  earned this week
+                <span className='mt-[4px] md:mt-0'>
+                  <HiOutlineInformationCircle className={cx('h-4 w-4')} />
                 </span>
               </div>
-              <PopOver
-                yOffset={6}
-                panelSize='sm'
-                placement='top'
-                triggerClassName='w-fit'
-                triggerOnHover
-                trigger={
-                  <div className='flex items-start gap-2 md:items-center '>
-                    <span className='text-sm leading-[22px] text-slate-200'>
-                      Distribution in{' '}
-                      <span className='font-bold text-white'>7 days</span>
-                    </span>
-                    <span className='mt-[4px] md:mt-0'>
-                      <HiOutlineInformationCircle className={cx('h-4 w-4')} />
-                    </span>
-                  </div>
-                }
-              >
-                <p>Some text</p>
-              </PopOver>
-            </div>
-          </div>
+            }
+          >
+            <p>Some text</p>
+          </PopOver>
         </div>
       </div>
     </MainCardTemplate>
@@ -157,19 +150,22 @@ function MainCardTemplate({
       )}
       style={{
         backgroundImage:
-          'radial-gradient(ellipse at top right, #7996F9, #2756F5)',
+          'linear-gradient(93deg, #8056E4 30.82%, #5B3EA6 100.41%)',
         ...props.style,
       }}
     >
-      <div className='relative z-10 flex w-full flex-1 flex-col items-start'>
-        {props.children}
-      </div>
-      <EpicTokenIllust
+      <div
         className={cx(
           'pointer-events-none absolute -bottom-1/4 right-0 h-full w-[125%] translate-x-[40%] @lg:-bottom-1/3',
           illustClassName
         )}
-      />
+      >
+        <EpicTokenIllust />
+      </div>
+
+      <div className='relative z-10 flex w-full flex-1 flex-col items-start'>
+        {props.children}
+      </div>
     </Card>
   )
 }
