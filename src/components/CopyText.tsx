@@ -231,7 +231,7 @@ export function CopyTextInline({
       {withButton && (
         <Button
           variant='transparent'
-          className='p-1 text-text-primary'
+          className='flex-shrink-0 p-1 text-text-primary'
           onClick={handleClick}
         >
           <MdOutlineContentCopy />
