@@ -1,5 +1,4 @@
 import GrillIcon from '@/assets/icons/grill.svg'
-import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
@@ -113,25 +112,12 @@ const ProfilePreview = ({
         </div>
         {showAddress && (
           <div className='flex flex-col gap-1'>
-            {showGrillAddress && (
+            {showPolkadotAddress && (
               <div className='flex flex-row items-center gap-2'>
                 <GrillIcon className='text-xl text-text-muted' />
                 <CopyTextInline
                   text={truncateAddress(address)}
-                  tooltip={`Copy${isMyAddressPart} Grill public address`}
-                  textToCopy={address}
-                  textClassName={cx(
-                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
-                  )}
-                />
-              </div>
-            )}
-            {showPolkadotAddress && (
-              <div className='flex flex-row items-center gap-2'>
-                <PolkadotIcon className='relative left-1 text-xl text-text-muted' />
-                <CopyTextInline
-                  text={truncateAddress(address)}
-                  tooltip={`Copy${isMyAddressPart} Polkadot address`}
+                  tooltip={`Copy${isMyAddressPart} address`}
                   textToCopy={address}
                   textClassName={cx(
                     'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'

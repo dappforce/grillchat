@@ -1,13 +1,9 @@
 import ExitIcon from '@/assets/icons/exit.svg'
-import KeyIcon from '@/assets/icons/key.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
-import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
 import MenuList, { MenuListProps } from '@/components/MenuList'
-import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
-import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
@@ -15,23 +11,14 @@ import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/que
 import { getPostQuery } from '@/services/api/query'
 import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { getCreatorChatIdFromProfile } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
-import { currentNetwork } from '@/utils/network'
-import {
-  getIsAnIframeInSameOrigin,
-  sendMessageToParentWindow,
-} from '@/utils/window'
-import BigNumber from 'bignumber.js'
-import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/router'
-import { FaRegBell, FaRegUser } from 'react-icons/fa'
-import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
+import { TbDeviceMobilePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
 import { ProfileModalContentProps } from '../types'
 import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
@@ -44,22 +31,7 @@ export default function AccountContent({
   const { closeModal } = useProfileModal()
   const router = useRouter()
 
-  const {
-    data: balance,
-    isLoading,
-    isRefetching,
-    refetch,
-  } = getBalancesQuery.useQuery({
-    address,
-    chainName: 'subsocial',
-  })
   const chainData = useGetChainDataByNetwork('subsocial')
-  const { freeBalance } = balance?.balances['SUB'] || {}
-
-  const { decimal, tokenSymbol } = chainData || {}
-
-  const balanceValue =
-    decimal && freeBalance ? formatUnits(freeBalance, decimal) : '0'
 
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
@@ -95,94 +67,16 @@ export default function AccountContent({
   }
 
   const menus: MenuListProps['menus'] = [
-    ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
-      ? [
-          {
-            text: 'My Profile',
-            icon: FaRegUser,
-            onClick: () => {
-              const isInGrillSoPolkaverseSide = getIsAnIframeInSameOrigin()
-              if (isInGrillSoPolkaverseSide) {
-                sendMessageToParentWindow(
-                  'redirect',
-                  `/${profile?.profileSpace?.id}`
-                )
-              } else {
-                window.location.href = `/${profile?.profileSpace?.id}`
-              }
-            },
-          },
-        ]
-      : []),
-    ...(haveChat
-      ? [
-          {
-            text: 'Creator Chat',
-            icon: TbMessageCircle,
-            onClick: (e: any) => {
-              closeModal()
-
-              const createChatLink = `/${profile?.profileSpace?.id}/${chatId}`
-              if (getIsAnIframeInSameOrigin()) {
-                e.preventDefault()
-                sendMessageToParentWindow(
-                  'redirect-hard',
-                  `/c${createChatLink}`
-                )
-              } else {
-                router.push(createChatLink)
-              }
-            },
-          },
-        ]
-      : [
-          {
-            text: 'Create Chat',
-            icon: TbMessageCirclePlus,
-            onClick: () => {
-              setCurrentState('create-chat')
-            },
-          },
-        ]),
     {
-      text: 'My Key & Session',
-      icon: KeyIcon,
+      text: 'Share Session',
+      icon: TbDeviceMobilePlus,
       onClick: () => {
         onPrivacySecurityKeyClick()
       },
     },
-    {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Notifications Settings</span>
-          {!isLoadingActivatedNotificationCount && (
-            <Notice size='sm' noticeType='grey'>
-              {activatedNotificationCount} / {maxNotificationCount}
-            </Notice>
-          )}
-        </span>
-      ),
-      icon: FaRegBell,
-      onClick: () => {
-        setCurrentState('notifications')
-      },
-    },
-    {
-      text: 'Suggest Feature',
-      icon: SuggestFeatureIcon,
-      href: SUGGEST_FEATURE_LINK,
-      onClick: (e) => {
-        if (getIsAnIframeInSameOrigin()) {
-          e.preventDefault()
-          sendMessageToParentWindow('redirect-hard', SUGGEST_FEATURE_LINK)
-        }
-      },
-    },
-    ...(!isInIframe ? colorModeOptions : []),
+    ...colorModeOptions,
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
-
-  const balanceValueBN = new BigNumber(balanceValue)
 
   return (
     <>

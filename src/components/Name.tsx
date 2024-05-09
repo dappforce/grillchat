@@ -1,6 +1,5 @@
 import useRandomColor from '@/hooks/useRandomColor'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
-import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { getUserProfileLink } from '@/utils/links'
 import { generateRandomName } from '@/utils/random-name'
@@ -36,7 +35,6 @@ export default function Name({
   asLink,
   ...props
 }: NameProps) {
-  const sendEvent = useSendEvent()
   const { inView, ref } = useInView({ triggerOnce: true })
 
   const { isLoading, name, textColor, profile } = useName(address)
