@@ -41,7 +41,11 @@ export default function LinkedIdentitiesContent() {
             <span>{name}</span>
             <Card className='flex items-center gap-4 bg-background p-4'>
               <Icon className='flex-shrink-0 text-xl text-text-muted' />
-              <span className='flex-1'>Connect your {shortName ?? name}</span>
+              <span className='flex-1 break-words'>
+                {isLinked
+                  ? isLinked.username || isLinked.externalId
+                  : `Connect your ${shortName ?? name}`}
+              </span>
               {isLinked ? (
                 <Button className='flex-shrink-0' size='sm' disabled>
                   Connected

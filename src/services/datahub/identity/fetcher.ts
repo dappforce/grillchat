@@ -13,6 +13,7 @@ export type Identity = {
   externalProviders: {
     provider: IdentityProvider
     externalId: string
+    username?: string
   }[]
 }
 
