@@ -36,10 +36,10 @@ export default function MobileProposalDetailPage({
   const { selectedTab, setSelectedTab, isOpen, setIsOpen } =
     useCommentDrawer(proposal)
 
-  const totalComment =
-    isLoadingMetadata && chatId
-      ? 0
-      : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
+  const usedIsLoadingMetadata = isLoadingMetadata && chatId
+  const totalComment = usedIsLoadingMetadata
+    ? 0
+    : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
 
   return (
     <div
@@ -89,14 +89,15 @@ export default function MobileProposalDetailPage({
           variant='transparent'
           className={cx(
             'flex items-center justify-center gap-1 rounded-lg py-1 text-sm',
-            selectedTab === 'grill' && 'bg-background-primary text-white'
+            selectedTab === 'grill' &&
+              'bg-background-primary/10 text-background-primary'
           )}
           interactive='none'
           onClick={() => setSelectedTab('grill')}
         >
           <span>
             Grill
-            {isLoadingMetadata
+            {usedIsLoadingMetadata
               ? ''
               : ` (${postMetadata?.totalCommentsCount ?? 0})`}
           </span>
@@ -106,7 +107,8 @@ export default function MobileProposalDetailPage({
           variant='transparent'
           className={cx(
             'flex items-center justify-center gap-1 rounded-lg py-1 text-sm',
-            selectedTab === 'others' && 'bg-background-primary text-white'
+            selectedTab === 'others' &&
+              'bg-background-primary/10 text-background-primary'
           )}
           interactive='none'
           onClick={() => setSelectedTab('others')}
