@@ -35,7 +35,7 @@ export const LeaderboardRoleRadioGroup = ({
       value={leaderboardRole}
       onChange={onChange}
       className={cx(
-        'flex h-[34px] items-center gap-[2px] rounded-lg bg-white px-[2px] dark:bg-white/10',
+        'flex h-[36px] items-center gap-[2px] rounded-lg bg-white px-[2px] dark:bg-white/10 md:h-[34px]',
         className
       )}
     >

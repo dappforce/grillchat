@@ -42,7 +42,6 @@ export default function Sidebar() {
           icon={MdOutlineLeaderboard}
           title='Leaderboard'
           href={getLeaderboardLink(myAddress)}
-          forceHardNavigation
         />
         <SidebarItem
           icon={RiLineChartLine}

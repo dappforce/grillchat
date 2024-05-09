@@ -59,7 +59,7 @@ const LeaderboardModal = ({
       isOpen={openModal}
       closeModal={closeModal}
       className='h-full !max-h-[500px]'
-      contentClassName='!p-2 !py-4'
+      contentClassName='!p-2 !pt-4 !pb-0'
       titleClassName='px-3'
       descriptionClassName='px-3'
       title={title}
@@ -72,7 +72,8 @@ const LeaderboardModal = ({
           next={fetchNextPage}
           hasMore={!!hasNextPage}
           scrollableTarget='leaderboard'
-          loader={<Loading />}
+          loader={<Loading className='pt-2' />}
+          className='pb-4'
         >
           <table className='w-full table-fixed text-left'>
             <TableHeader

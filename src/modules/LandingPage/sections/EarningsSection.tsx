@@ -1,7 +1,9 @@
 import ActivitiesImage from '@/assets/graphics/landing/activities.png'
 import Diamond from '@/assets/graphics/landing/diamond.png'
 import Button from '@/components/Button'
+import { getLeaderboardLink } from '@/components/leaderboard/utils'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx, getBlurFallbackStyles } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
@@ -10,6 +12,8 @@ import Heading from '../common/Heading'
 
 export default function EarningsSection(props: ComponentProps<'section'>) {
   const sendEvent = useSendEvent()
+  const myAddress = useMyMainAddress()
+
   return (
     <section
       {...props}
@@ -62,7 +66,7 @@ export default function EarningsSection(props: ComponentProps<'section'>) {
               variant='landingPrimary'
               size='xl'
               roundings='xl'
-              href='https://grillapp.net/leaderboard'
+              href={getLeaderboardLink(myAddress)}
               onClick={() => sendEvent('lp_live_stats')}
             >
               See Live Stats

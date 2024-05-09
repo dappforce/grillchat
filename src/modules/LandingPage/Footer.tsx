@@ -3,8 +3,10 @@ import Button from '@/components/Button'
 import LinkText, { LinkTextProps } from '@/components/LinkText'
 import Toast from '@/components/Toast'
 import Input from '@/components/inputs/Input'
+import { getLeaderboardLink } from '@/components/leaderboard/utils'
 import { useSubscribeInLanding } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ComponentProps } from 'react'
@@ -18,6 +20,8 @@ import HighlightedText from './common/HighlightedText'
 
 export default function Footer(props: ComponentProps<'footer'>) {
   const sendEvent = useSendEvent()
+  const myAddress = useMyMainAddress()
+
   return (
     <footer
       className={cx(
@@ -116,7 +120,7 @@ export default function Footer(props: ComponentProps<'footer'>) {
             Lock SUB
           </OpenInNewTabLink>
           <OpenInNewTabLink
-            href='https://grillapp.net/leaderboard'
+            href={getLeaderboardLink(myAddress)}
             onClick={() => sendEvent('lp_leaderboard_clicked')}
           >
             Leaderboard

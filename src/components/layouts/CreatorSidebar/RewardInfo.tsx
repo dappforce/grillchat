@@ -98,7 +98,6 @@ export default function RewardInfo({ size, ...props }: RewardInfoProps) {
         <CustomLink
           className='flex items-center justify-center gap-2 px-4 py-3.5 font-medium text-text-primary'
           href={`${getLeaderboardLink(myAddress)}?role=staker`}
-          forceHardNavigation
           onClick={() => {
             sendEvent('leaderboard_my_stats_opened', {
               myStats: true,
