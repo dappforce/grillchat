@@ -6,6 +6,7 @@ import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
@@ -19,6 +20,7 @@ import {
   IdentityProvider,
   LinkedIdentityExternalProviderDetails,
 } from '@subsocial/data-hub-sdk'
+import { useQueryClient } from '@tanstack/react-query'
 import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
@@ -127,6 +129,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
 
   const { mutate: setReferrerId } = useSetReferrerId()
 
+  const client = useQueryClient()
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
@@ -180,12 +183,17 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
         }
       )
       upsertedProfile.current = true
-      upsertProfile({
-        content: {
-          image: session?.user?.image ?? '',
-          name: session?.user.name ?? '',
-        },
-      })
+      getProfileQuery
+        .fetchQuery(client, linkedIdentity.mainAddress)
+        .then((profile) => {
+          if (!profile)
+            upsertProfile({
+              content: {
+                image: session?.user?.image ?? '',
+                name: session?.user.name ?? '',
+              },
+            })
+        })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkedIdentity, sendEvent, session, upsertProfile, setReferrerId])
