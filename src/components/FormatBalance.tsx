@@ -8,6 +8,7 @@ type FormatBalanceProps = {
   loading?: boolean
   startFromSymbol?: boolean
   className?: string
+  sceletonClassName?: string
 }
 
 const FormatBalance = ({
@@ -17,6 +18,7 @@ const FormatBalance = ({
   startFromSymbol: startFromSybmol,
   symbol,
   className,
+  sceletonClassName,
 }: FormatBalanceProps) => {
   const formattedValue = formatBalance({
     value: value,
@@ -28,7 +30,7 @@ const FormatBalance = ({
     : `${formattedValue} ${symbol}`
 
   return (
-    <SkeletonFallback isLoading={loading}>
+    <SkeletonFallback className={sceletonClassName} isLoading={loading}>
       <span className={className}>
         {symbol ? formattedValueWithSymbol : formattedValue}
       </span>

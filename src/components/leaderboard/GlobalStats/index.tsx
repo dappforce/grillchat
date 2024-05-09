@@ -12,13 +12,13 @@ const sizeStyle = isTouchDevice() ? '70px' : '88px'
 const GlobalStats = () => {
   return (
     <div className='flex w-full flex-col gap-5'>
-      <div className='grid grid-cols-[calc(70%-8px),30%] gap-x-4'>
+      <div className='flex flex-col-reverse gap-4 md:grid md:grid-cols-[calc(70%-8px),30%] md:gap-x-4'>
         <div className='grid grid-cols-2 gap-4'>
           <GlobalStatsDashboard />
         </div>
         <div
           className={cx(
-            'flex gap-4 rounded-[20px] border border-[#6366F1]/20 bg-[#0053FF]/10 md:col-auto md:row-[span_2]',
+            'flex gap-4 rounded-[20px] border border-[#6366F1]/20 bg-[#0053FF]/10',
             'items-center p-4 md:flex-col'
           )}
         >

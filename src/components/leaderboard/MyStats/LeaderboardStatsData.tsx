@@ -107,6 +107,7 @@ export const UserStatsCard = ({
               loading={isLoading}
               defaultMaximumFractionDigits={2}
               symbol={tokenSymbol}
+              sceletonClassName='max-w-full'
             />
           )}
         </span>

@@ -131,7 +131,7 @@ const LeaderboardTable = ({
 
   return (
     <>
-      <div className='flex h-fit flex-col gap-4 rounded-2xl bg-white py-4 dark:bg-slate-800 md:gap-6'>
+      <div className='flex h-fit flex-col gap-4 rounded-2xl bg-white py-4 dark:bg-slate-800 md:gap-4'>
         <div className='flex flex-col gap-2 px-4'>
           <span className='text-lg font-bold leading-normal'>{title}</span>
           <span
@@ -212,7 +212,7 @@ export const UserReward = ({ reward }: UserRewardProps) => {
       value={rewardWithDecimal.toString()}
       symbol={tokenSymbol}
       defaultMaximumFractionDigits={2}
-      className='font-semibold'
+      className='font-medium'
     />
   )
 }

@@ -2,12 +2,12 @@ import { HOVER_MENU_DELAY_OPT } from '@/constants/interaction'
 import useIsMounted from '@/hooks/useIsMounted'
 import { cx } from '@/utils/class-names'
 import {
+  FloatingFocusManager,
+  Placement,
   arrow,
   autoUpdate,
   flip,
-  FloatingFocusManager,
   offset,
-  Placement,
   safePolygon,
   useClick,
   useDismiss,
@@ -18,7 +18,7 @@ import {
   useTransitionStyles,
 } from '@floating-ui/react'
 import { Transition } from '@headlessui/react'
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps, cva } from 'class-variance-authority'
 import React, { ComponentProps, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { HiXMark } from 'react-icons/hi2'
@@ -166,7 +166,7 @@ export default function PopOver({
                   position: strategy,
                   top: y ?? 0,
                   left: x ?? 0,
-                  width: 'max-content',
+                  width: 'auto',
                 }}
                 ref={refs.setFloating}
                 className={cx(
