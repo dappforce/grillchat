@@ -39,8 +39,9 @@ export default function ProposalStatusCard({
 
   const isLoadingMetadata = isLoading && !!chatId
 
-  const totalComment =
-    (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
+  const totalComment = isLoadingMetadata
+    ? 0
+    : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
 
   return (
     <Card className='flex flex-col gap-4 bg-background-light'>

@@ -37,7 +37,9 @@ export default function MobileProposalDetailPage({
     useCommentDrawer(proposal)
 
   const totalComment =
-    (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
+    isLoadingMetadata && chatId
+      ? 0
+      : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
 
   return (
     <div

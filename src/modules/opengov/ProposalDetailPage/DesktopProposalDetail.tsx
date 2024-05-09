@@ -34,12 +34,11 @@ export default function DesktopProposalDetail({
   const { chatId } = useProposalDetailContext()
   const { allIds, isOpen, isLoading, selectedTab, setIsOpen, setSelectedTab } =
     useCommentDrawer(proposal)
-  const { data: postMetadata } = getPostMetadataQuery.useQuery(chatId ?? '')
+  const { data: postMetadata, isLoading: isLoadingMetadata } =
+    getPostMetadataQuery.useQuery(chatId ?? '')
   const lastThreeMessageIds = allIds.slice(0, 3)
   const lastThreeMessages = getPostQuery.useQueries(lastThreeMessageIds)
   const isLoadingMessages = useIsAnyQueriesLoading(lastThreeMessages)
-
-  const ref = useRef<HTMLDivElement | null>(null)
 
   const hasGrillComments = !isLoading && allIds.length > 0
 
@@ -56,7 +55,9 @@ export default function DesktopProposalDetail({
   }, [isOpen])
 
   const totalCommentsCount =
-    (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
+    isLoadingMetadata && chatId
+      ? 0
+      : (postMetadata?.totalCommentsCount ?? 0) + proposal.comments.length
 
   return (
     <>
