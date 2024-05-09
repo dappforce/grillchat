@@ -7,7 +7,6 @@ import {
 } from '@/services/datahub/posts/query'
 import { getMyMainAddress } from '@/stores/my-account'
 import { MutationConfig } from '@/subsocial-query'
-import { getChatPageLink } from '@/utils/links'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -93,7 +92,6 @@ function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
             },
           },
         })
-        revalidateChatPage({ pathname: getChatPageLink(router) })
       } else if (action === 'create') {
         await datahubMutation.createPostData({
           ...getCurrentWallet(),

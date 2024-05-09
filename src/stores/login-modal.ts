@@ -1,5 +1,4 @@
 import { LoginModalStep } from '@/components/auth/LoginModal/LoginModalContent'
-import { getUrlQuery } from '@/utils/links'
 // import { useMyAccount } from './my-account'
 import { create, createSelectors } from './utils'
 
@@ -58,23 +57,6 @@ const useLoginModalBase = create<State & Actions>()((set, get) => ({
   },
   closeNextStepModal: () => {
     set({ openedNextStepModal: undefined })
-  },
-  init: () => {
-    const loginQuery = getUrlQuery('login')
-    if (supportedExternalProviders.includes(loginQuery)) {
-      set({
-        openedNextStepModal: {
-          step: 'save-grill-key',
-          provider: loginQuery as SupportedExternalProvider,
-        },
-      })
-      return
-    }
-
-    const auth = getUrlQuery('auth') === 'true'
-    if (auth) {
-      set({ isOpen: true })
-    }
   },
 }))
 export const useLoginModal = createSelectors(useLoginModalBase)

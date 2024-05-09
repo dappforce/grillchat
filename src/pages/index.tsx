@@ -26,8 +26,13 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
         ['0x3b1bf91da3fd7e5d790c19039110a5a7']
       ),
     ])
+    getPaginatedPostIdsByPostId.invalidateFirstQuery(
+      client,
+      '0x3b1bf91da3fd7e5d790c19039110a5a7'
+    )
 
     return {
+      revalidate: 5,
       props: {
         dehydratedState: dehydrate(client),
       },
