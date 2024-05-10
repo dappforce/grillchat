@@ -3,28 +3,23 @@ import EpicTokenIllust from '@/assets/graphics/epic-token-illust.svg'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card, { CardProps } from '@/components/Card'
+import FormatBalance from '@/components/FormatBalance'
 import Name from '@/components/Name'
 import { Skeleton } from '@/components/SkeletonFallback'
 import PopOver from '@/components/floating/PopOver'
 import { spaceMono } from '@/fonts'
+import { getActiveStakingStatsByUserQuery } from '@/services/datahub/leaderboard/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import LeaderboardSection from './LeaderboardSection'
+import ReferralSection from './ReferralSection'
 
 export default function MainContent() {
   return (
-    <div className='flex flex-col gap-4 pt-4'>
+    <div className='flex flex-col gap-4 px-4 pt-4 lg:px-0'>
       <MainCard />
-      <Card className='flex flex-col gap-1 bg-background-light'>
-        <div className='mb-1 flex items-center gap-2'>
-          <span className='font-semibold'>Earn With Friends</span>
-          <HiOutlineInformationCircle className='text-text-muted' />
-        </div>
-        <p className='text-sm text-text-muted'>
-          Earn points when your friends join Epic using your link.
-        </p>
-      </Card>
+      <ReferralSection />
       <LeaderboardSection />
     </div>
   )
@@ -60,6 +55,12 @@ function MainCard() {
 
 const ProfileCardNew = () => {
   const myAddress = useMyMainAddress()
+  const { data: userStats, isLoading } =
+    getActiveStakingStatsByUserQuery.useQuery({
+      address: myAddress || '',
+    })
+
+  const { currentRewardAmount } = userStats || {}
 
   return (
     <MainCardTemplate>
@@ -87,7 +88,11 @@ const ProfileCardNew = () => {
                 spaceMono.className
               )}
             >
-              10,000 Points
+              <FormatBalance
+                value={currentRewardAmount || '0'}
+                symbol='$DEGEN'
+                loading={isLoading}
+              />
             </span>
             <span className='text-sm leading-none text-slate-200'>
               earned this week

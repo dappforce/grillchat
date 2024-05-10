@@ -19,18 +19,11 @@ export default function HomePage() {
 
   return (
     <DefaultLayout className='relative'>
-      {/* <EpicTokenIllust
-        key={'epic-token-illust'}
-        id='epic-token-illust'
-        className={cx(
-          ''
-        )}
-      /> */}
       <Container className='hidden flex-1 gap-4 px-4 lg:grid lg:grid-cols-[1fr_325px] xl:grid-cols-[1fr_400px]'>
         {chat}
         <MainContent key='desktop' />
       </Container>
-      <div className='block flex-[1_1_0] px-4 lg:hidden '>
+      <div className='block flex-[1_1_0] lg:hidden '>
         {homePageView === 'top-memes' ? chat : <MainContent key='mobile' />}
       </div>
       <MobileNavigation

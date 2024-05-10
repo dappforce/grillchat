@@ -167,6 +167,54 @@ export async function getUserStatistics({
   }
 }
 
+const GET_ACTIVE_STAKING_STATS_BY_USER = gql`
+  query GetActiveStakingStatsByUser($address: String!, $dayTimestamp: Int!) {
+    activeStakingDailyStatsByStaker(
+      args: { address: $address, range: DAY, dayTimestamp: $dayTimestamp }
+    ) {
+      superLikesCount
+      initialPoints
+      totalLazyRewardAmount
+      stakerRewordDistribution
+      currentRewardAmount
+    }
+  }
+`
+
+type DailyStatsByStakerResponse = {
+  superLikesCount: number
+  initialPoints: number
+  totalLazyRewardAmount: string
+  stakerRewordDistribution: number
+  currentRewardAmount: string
+}
+
+export async function getActiveStakingStatsByUser({
+  address,
+}: {
+  address: string
+}): Promise<{ address: string } & DailyStatsByStakerResponse> {
+  const res = await datahubQueryRequest<
+    { address: string } & DailyStatsByStakerResponse
+  >({
+    document: GET_ACTIVE_STAKING_STATS_BY_USER,
+    variables: { address, dayTimestamp: dayjs.utc().unix() },
+  })
+
+  console.log(dayjs.utc().unix())
+
+  return {
+    address,
+    superLikesCount: res.superLikesCount,
+    initialPoints: res.initialPoints,
+    totalLazyRewardAmount: res.totalLazyRewardAmount,
+    stakerRewordDistribution: res.stakerRewordDistribution,
+    currentRewardAmount: res.currentRewardAmount,
+  }
+}
+
+// activeStakingDailyStatsByStaker
+
 const GET_GENERAL_STATS = gql`
   query GetGeneralStats {
     activeStakingTotalActivityMetricsForFixedPeriod(

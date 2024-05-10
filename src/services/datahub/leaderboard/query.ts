@@ -2,6 +2,7 @@ import { QueryConfig, createQuery } from '@/subsocial-query'
 import { QueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import {
   LeaderboardRole,
+  getActiveStakingStatsByUser,
   getGeneralStatistics,
   getLeaderboardData,
   getRewardHistory,
@@ -21,6 +22,14 @@ export const getTopUsersQuery = createQuery({
 export const getUserStatisticsQuery = createQuery({
   key: 'getUserStatistics',
   fetcher: getUserStatistics,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
+})
+
+export const getActiveStakingStatsByUserQuery = createQuery({
+  key: 'getActiveStakingStatsByUser',
+  fetcher: getActiveStakingStatsByUser,
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),
