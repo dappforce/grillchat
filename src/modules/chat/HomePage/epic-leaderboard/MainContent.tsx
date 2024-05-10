@@ -1,5 +1,3 @@
-import EpicTokenIllust from '@/assets/graphics/epic-token-illust.svg'
-
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card, { CardProps } from '@/components/Card'
@@ -12,8 +10,11 @@ import { getActiveStakingStatsByUserQuery } from '@/services/datahub/leaderboard
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import epicConfig from '../../../../constants/config/epic'
 import LeaderboardSection from './LeaderboardSection'
 import ReferralSection from './ReferralSection'
+
+const { gradient, tokenSymbol, EpicTokenIllust } = epicConfig
 
 export default function MainContent() {
   return (
@@ -90,7 +91,7 @@ const ProfileCardNew = () => {
             >
               <FormatBalance
                 value={currentRewardAmount || '0'}
-                symbol='$DEGEN'
+                symbol={`$${tokenSymbol}`}
                 loading={isLoading}
               />
             </span>
@@ -154,8 +155,7 @@ function MainCardTemplate({
         props.className
       )}
       style={{
-        backgroundImage:
-          'linear-gradient(93deg, #8056E4 30.82%, #5B3EA6 100.41%)',
+        backgroundImage: gradient,
         ...props.style,
       }}
     >

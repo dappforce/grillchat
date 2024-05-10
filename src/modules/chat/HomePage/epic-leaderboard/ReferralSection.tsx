@@ -5,6 +5,9 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { copyToClipboard } from '@/utils/strings'
 import { useState } from 'react'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import epicConfig from '../../../../constants/config/epic'
+
+const { tokenSymbol } = epicConfig
 
 const ReferralSection = () => {
   const myAddress = useMyMainAddress()
@@ -39,7 +42,7 @@ const ReferralSection = () => {
         <p>Some text</p>
       </PopOver>
       <p className='text-sm text-text-muted'>
-        Earn $DEGEN when your friends join Epic using your link:
+        Earn ${tokenSymbol} when your friends join Epic using your link:
       </p>
       <div className='flex items-center justify-between gap-2 rounded-xl border border-slate-300 bg-slate-50 p-2'>
         <span className='flex-[1] overflow-hidden text-ellipsis whitespace-nowrap'>
