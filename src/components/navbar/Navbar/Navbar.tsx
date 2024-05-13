@@ -16,13 +16,15 @@ import { useRouter } from 'next/router'
 import { ComponentProps, Fragment, ReactNode, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import { RxHamburgerMenu } from 'react-icons/rx'
-import AuthErrorModal from './AuthErrorModal'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
   loading: () => <div className='w-20' />,
 })
 const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
+  ssr: false,
+})
+const AuthErrorModal = dynamic(() => import('./AuthErrorModal'), {
   ssr: false,
 })
 
