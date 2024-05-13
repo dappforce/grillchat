@@ -42,10 +42,13 @@ export default function OauthLoadingModal() {
 
   useEffect(() => {
     const isAfterOauthLogin = getUrlQuery('login')
-    if (isAfterOauthLogin === 'x' || isAfterOauthLogin === 'google') {
+    if (
+      (isAfterOauthLogin === 'x' || isAfterOauthLogin === 'google') &&
+      session
+    ) {
       setIsOpen(true)
     }
-  }, [])
+  }, [session])
 
   return (
     <Modal
