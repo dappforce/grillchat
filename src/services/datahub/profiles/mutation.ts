@@ -64,7 +64,7 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
         })
       }
     },
-    onMutate: (data) => {
+    onMutate: async (data) => {
       config?.onMutate?.(data)
       preventWindowUnload()
       const mainAddress = getMyMainAddress() ?? ''
@@ -73,7 +73,7 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
       let id: string
       if (action === 'update') id = payload.spaceId
       else
-        id = getDeterministicId({
+        id = await getDeterministicId({
           uuid: payload.uuid,
           timestamp: payload.timestamp.toString(),
           account: mainAddress,

@@ -135,10 +135,10 @@ function checkAction(data: UpsertSpaceParams) {
 
   return { payload: data, action: 'create' } as const
 }
-function getMutatedSpaceId(data: UpsertSpaceParams) {
+async function getMutatedSpaceId(data: UpsertSpaceParams) {
   const { payload, action } = checkAction(data)
   if (action === 'update') return payload.spaceId
-  return getDeterministicId({
+  return await getDeterministicId({
     timestamp: payload.timestamp.toString(),
     uuid: payload.uuid,
     account: getMyMainAddress() ?? '',
@@ -170,11 +170,11 @@ function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
         })
       }
     },
-    onMutate: (data) => {
+    onMutate: async (data) => {
       config?.onMutate?.(data)
       preventWindowUnload()
       const mainAddress = getMyMainAddress() ?? ''
-      const spaceId = getMutatedSpaceId(data)
+      const spaceId = await getMutatedSpaceId(data)
 
       getSpaceQuery.setQueryData(client, spaceId, (oldData) => {
         const oldSpaceContent = oldData?.content || {}
@@ -200,13 +200,13 @@ function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
     },
     onError: async (_, data, __) => {
       config?.onError?.(_, data, __)
-      const spaceId = getMutatedSpaceId(data)
+      const spaceId = await getMutatedSpaceId(data)
       getSpaceQuery.invalidate(client, spaceId)
     },
     onSuccess: async (_, data, __) => {
       config?.onSuccess?.(_, data, __)
       allowWindowUnload()
-      const spaceId = getMutatedSpaceId(data)
+      const spaceId = await getMutatedSpaceId(data)
       getSpaceQuery.invalidate(client, spaceId)
     },
   })
