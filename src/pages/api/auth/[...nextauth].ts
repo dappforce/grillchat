@@ -40,7 +40,6 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'twitter') {
         provider = IdentityProvider.Twitter
       }
-      console.log('start signin')
       const [{ blockedInAppIds }, linkedAddress] = await Promise.all([
         getBlockedResources({
           appIds: [env.NEXT_PUBLIC_APP_ID],
@@ -54,7 +53,6 @@ export const authOptions: NextAuthOptions = {
       )
       const blockedAddress = blockedAddressesSet.has(linkedAddress ?? '')
 
-      console.log('finsih signin')
       if (!blockedAddress) return true
       return `/?auth-blocked=${blockedAddress}`
     },
