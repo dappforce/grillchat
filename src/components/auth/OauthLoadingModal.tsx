@@ -11,7 +11,11 @@ import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
+import {
+  useMyAccount,
+  useMyGrillAddress,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
@@ -24,6 +28,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import Modal from '../modals/Modal'
@@ -39,16 +44,24 @@ export default function OauthLoadingModal() {
   const [isOpen, setIsOpen] = useState(false)
   const { data: session } = useSession()
   const provider = session?.provider
+  const myAddress = useMyMainAddress()
+  const router = useRouter()
 
   useEffect(() => {
     const isAfterOauthLogin = getUrlQuery('login')
     if (
       (isAfterOauthLogin === 'x' || isAfterOauthLogin === 'google') &&
-      session
+      session &&
+      !myAddress
     ) {
       setIsOpen(true)
+    } else if (myAddress) {
+      router.replace(getCurrentUrlWithoutQuery('login'), undefined, {
+        shallow: true,
+      })
     }
-  }, [session])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, myAddress])
 
   return (
     <Modal
@@ -103,6 +116,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     (provider && providerMapper[provider]) || {}
 
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
+  const router = useRouter()
 
   const grillAddress = useMyGrillAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
@@ -135,7 +149,9 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
 
   const client = useQueryClient()
   const onFinishFlow = () => {
-    replaceUrl(getCurrentUrlWithoutQuery('login'))
+    router.replace(getCurrentUrlWithoutQuery('login'), undefined, {
+      shallow: true,
+    })
     sendEvent('login_oauth_successful', { provider })
     finalizeTemporaryAccount()
     onSuccess()
@@ -186,7 +202,6 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     const foundIdentity = linkedIdentity && session
 
     if (foundIdentity && !upsertedProfile.current) {
-      console.log('masuk upsert')
       sendEvent(
         'oauth_login_creating_profile',
         { provider },
