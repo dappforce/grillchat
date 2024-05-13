@@ -39,16 +39,12 @@ type ProviderData = {
 
 const externalProviders: ProviderData[] = [
   {
-    name: 'X',
-    icon: FaXTwitter,
-    provider: IdentityProvider.Twitter,
-    connectButton: () => <OauthConnectButton provider='twitter' />,
-  },
-  {
-    name: 'Google',
-    icon: IoLogoGoogle,
-    provider: IdentityProvider.Google,
-    connectButton: () => <OauthConnectButton provider='google' />,
+    name: 'EVM Address',
+    icon: SiEthereum,
+    shortName: 'EVM',
+    provider: IdentityProvider.Evm,
+    customName: (nameOrId) => truncateAddress(nameOrId),
+    connectButton: () => <EvmConnectButton />,
   },
   {
     name: 'Farcaster',
@@ -57,12 +53,16 @@ const externalProviders: ProviderData[] = [
     connectButton: () => <FarcasterConnectButton />,
   },
   {
-    name: 'EVM Address',
-    icon: SiEthereum,
-    shortName: 'EVM',
-    provider: IdentityProvider.Evm,
-    customName: (nameOrId) => truncateAddress(nameOrId),
-    connectButton: () => <EvmConnectButton />,
+    name: 'Google',
+    icon: IoLogoGoogle,
+    provider: IdentityProvider.Google,
+    connectButton: () => <OauthConnectButton provider='google' />,
+  },
+  {
+    name: 'X',
+    icon: FaXTwitter,
+    provider: IdentityProvider.Twitter,
+    connectButton: () => <OauthConnectButton provider='twitter' />,
   },
 ]
 
