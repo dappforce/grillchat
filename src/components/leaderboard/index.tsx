@@ -100,7 +100,11 @@ const LeaderboardContent = ({ address }: LeaderboardContentProps) => {
                 { shallow: false }
               )
             } else if (tabId === 'grill-stats') {
-              router.push('https://grillapp.net/stats')
+              if (typeof window !== 'undefined') {
+                window.location.href = 'https://grillapp.net/stats'
+              } else {
+                router.push('https://grillapp.net/stats')
+              }
             }
             setSelectedTabIndex(selectedTab)
           },

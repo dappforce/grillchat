@@ -2,8 +2,8 @@ import { useAnalytics } from '@/stores/analytics'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from '../Button'
-import Modal, { ModalFunctionalityProps, ModalProps } from '../modals/Modal'
 import Toast from '../Toast'
+import Modal, { ModalFunctionalityProps, ModalProps } from '../modals/Modal'
 import SubsocialProfileForm from './SubsocialProfileForm'
 
 export type SubsocialProfileModalProps = ModalFunctionalityProps &

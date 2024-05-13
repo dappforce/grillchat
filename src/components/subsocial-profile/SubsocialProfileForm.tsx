@@ -71,10 +71,14 @@ export default function SubsocialProfileForm({
     <UpsertProfileWrapper>
       {({ mutateAsync, isLoading }) => {
         const onSubmit = handleSubmit(async (data) => {
+          const { experimental, ...otherProfileContet } =
+            profile?.profileSpace?.content || {}
+
           await mutateAsync({
             spaceId: profile?.profileSpace?.id,
             content: {
-              ...profile?.profileSpace?.content,
+              ...otherProfileContet,
+              ...experimental,
               name: data.name,
               image: data.image,
               about: data.about,
