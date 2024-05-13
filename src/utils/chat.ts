@@ -42,9 +42,12 @@ export function getCurrentPageChatId() {
 }
 
 export function getCreatorChatIdFromProfile(profile?: SubsocialProfile | null) {
+  const content = profile?.profileSpace?.content as any
+
   const chats =
-    profile?.profileSpace?.content?.experimental?.chats ||
-    (profile?.profileSpace?.content as any)?.chats
+    content?.experimental?.chats ||
+    content?.chats ||
+    content?.experimental?.experimental?.chats
 
   return chats?.[0]?.id as string | undefined
 }
