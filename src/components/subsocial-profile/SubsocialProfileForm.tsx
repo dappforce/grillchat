@@ -1,6 +1,7 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
+import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -68,15 +69,17 @@ export default function SubsocialProfileForm({
 
   const { mutateAsync, isLoading } = useUpsertProfile()
   const onSubmit = handleSubmit(async (data) => {
-    await mutateAsync({
-      spaceId: profile?.profileSpace?.id,
-      content: {
-        ...profile?.profileSpace?.content,
-        name: data.name,
-        image: data.image,
-        about: data.about,
-      },
-    })
+    await mutateAsync(
+      augmentDatahubParams({
+        spaceId: profile?.profileSpace?.id,
+        content: {
+          ...profile?.profileSpace?.content,
+          name: data.name,
+          image: data.image,
+          about: data.about,
+        },
+      })
+    )
     sendEvent('account_settings_changed', { profileSource: 'custom' })
     onSuccess?.()
   })

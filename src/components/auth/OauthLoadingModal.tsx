@@ -8,6 +8,7 @@ import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
+import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
@@ -195,12 +196,14 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
         .fetchQuery(client, linkedIdentity.mainAddress)
         .then((profile) => {
           if (!profile)
-            upsertProfile({
-              content: {
-                image: session?.user?.image ?? '',
-                name: session?.user.name ?? '',
-              },
-            })
+            upsertProfile(
+              augmentDatahubParams({
+                content: {
+                  image: session?.user?.image ?? '',
+                  name: session?.user.name ?? '',
+                },
+              })
+            )
           else onFinishFlow()
         })
     }
