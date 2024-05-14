@@ -127,7 +127,7 @@ export default function Modal({
                     contentClassName
                   )}
                 >
-                  {withCloseButton && !onBackClick && (
+                  {withCloseButton && (
                     <Button
                       className='absolute right-6 m-1 mr-0 p-0 text-2xl text-text-muted'
                       variant='transparent'
