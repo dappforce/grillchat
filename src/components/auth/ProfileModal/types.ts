@@ -16,7 +16,7 @@ export const profileModalStates = [
   'loading-tx',
   'create-chat',
   'create-chat-loading',
-]
+] as const
 
 export type ProfileModalState = (typeof profileModalStates)[number]
 

@@ -32,8 +32,8 @@ function LogoutContent({ setCurrentState }: ProfileModalContentProps) {
 
   return (
     <div className='mt-4 flex flex-col gap-4'>
-      <Button size='lg' onClick={onShowPrivateKeyClick}>
-        No, show me my Grill key
+      <Button size='lg' onClick={() => setCurrentState('account')}>
+        No, keep me logged in
       </Button>
       <Button
         isLoading={isLoading}

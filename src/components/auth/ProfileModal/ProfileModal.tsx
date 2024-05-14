@@ -160,9 +160,7 @@ export default function ProfileModal({
       withBackButton: true,
     },
     logout: {
-      title: hasProxyAddress
-        ? '🤔 Are you sure you want to logout?'
-        : '🤔 Did you back up your Grill key?',
+      title: '🤔 Are you sure you want to logout?',
       withBackButton: true,
     },
     'privacy-security': {
@@ -223,7 +221,9 @@ export default function ProfileModal({
   }
 
   useEffect(() => {
-    const openProfileStep = getUrlQuery('profile')
+    const openProfileStep = getUrlQuery('profile') as
+      | ProfileModalState
+      | undefined
     if (openProfileStep) {
       const isValidState = profileModalStates.includes(openProfileStep)
       if (isValidState) {

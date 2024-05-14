@@ -253,6 +253,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
       }
       mutate({ externalProvider })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider, session, mutate])
 
   return (
