@@ -92,9 +92,6 @@ jobs:
           push: true
           build-args: |
             GH_NEXTAUTH_URL=https://epic.subsocial.network/api/auth
-            GH_NEXT_PUBLIC_BASE_PATH=/
-            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.subsocial.network
-            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.subsocial.network
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://epic-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://epic-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://epic-queue-data-hub.subsocial.network/graphql
@@ -105,7 +102,6 @@ jobs:
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12662
             GH_NEXT_PUBLIC_SPACE_IDS=12659,12660,12455,12662
             GH_NEXT_PUBLIC_AMP_ID=2eeca0e8a0163c89e3f023c971e426a6
-            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
             GH_NEXT_PUBLIC_GA_ID=G-TP1XEFNHQD
             GH_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=grill-web-push.firebaseapp.com
