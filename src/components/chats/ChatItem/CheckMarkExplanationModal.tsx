@@ -44,7 +44,7 @@ const variants: {
   offChain: {
     title: 'Message recorded on IPFS',
     icon: <IoCheckmarkDoneOutline />,
-    desc: ({ blockNumber, cid }) => (
+    desc: ({ cid }) => (
       <span>
         Your message has been stored on{' '}
         <LinkText

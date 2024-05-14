@@ -1,12 +1,14 @@
-import GrillIcon from '@/assets/icons/grill.svg'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { IdentityProvider } from '@/services/datahub/generated-query'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { useMyGrillAddress, useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
 import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
+import { SiEthereum } from 'react-icons/si'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
@@ -45,16 +47,16 @@ const ProfilePreview = ({
 }: ProfilePreviewProps) => {
   const mdUp = useBreakpointThreshold('md')
   const { isLoading } = useName(address)
-
-  const isMyProxyAddress = !!useMyAccount(
-    (state) => state.parentProxyAddress === address
-  )
   const myAddress = useMyMainAddress()
+  const myGrillAddress = useMyGrillAddress()
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    myGrillAddress ?? ''
+  )
+  const myLinkedEvmAddress = linkedIdentity?.externalProviders.find(
+    (identity) => identity.provider === IdentityProvider.Evm
+  )?.externalId
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
-
-  const showGrillAddress = !isMyProxyAddress
-  const showPolkadotAddress = !!isMyProxyAddress
 
   const editButton = mdUp ? (
     <Button
@@ -100,7 +102,7 @@ const ProfilePreview = ({
         forceProfileSource={forceProfileSource}
       />
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
-        <div className='ml-1 flex items-center gap-2'>
+        <div className='ml-0.5 flex items-center gap-2'>
           <Name
             asLink={asLink}
             profileSourceIconClassName='text-base'
@@ -110,21 +112,19 @@ const ProfilePreview = ({
           />
           {onEditClick && !isLoading && editButton}
         </div>
-        {showAddress && (
+        {showAddress && myLinkedEvmAddress && (
           <div className='flex flex-col gap-1'>
-            {showPolkadotAddress && (
-              <div className='flex flex-row items-center gap-2'>
-                <GrillIcon className='text-xl text-text-muted' />
-                <CopyTextInline
-                  text={truncateAddress(address)}
-                  tooltip={`Copy${isMyAddressPart} address`}
-                  textToCopy={address}
-                  textClassName={cx(
-                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
-                  )}
-                />
-              </div>
-            )}
+            <div className='flex flex-row items-center gap-1.5'>
+              <SiEthereum className='text-xl text-text-muted' />
+              <CopyTextInline
+                text={truncateAddress(myLinkedEvmAddress)}
+                tooltip={`Copy${isMyAddressPart} address`}
+                textToCopy={address}
+                textClassName={cx(
+                  'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                )}
+              />
+            </div>
           </div>
         )}
       </div>
