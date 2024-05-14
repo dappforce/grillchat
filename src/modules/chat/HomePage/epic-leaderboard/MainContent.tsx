@@ -159,15 +159,12 @@ function MainCardTemplate({
         ...props.style,
       }}
     >
-      <div
+      <EpicTokenIllust
         className={cx(
-          'pointer-events-none absolute -bottom-1/4 right-0 h-full w-[125%] translate-x-[40%] @lg:-bottom-1/3',
+          'absolute -bottom-[54px] -right-[306px]',
           illustClassName
         )}
-      >
-        <EpicTokenIllust />
-      </div>
-
+      />
       <div className='relative z-10 flex w-full flex-1 flex-col items-start'>
         {props.children}
       </div>

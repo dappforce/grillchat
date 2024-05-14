@@ -19,7 +19,7 @@ export default function HomePage() {
 
   return (
     <DefaultLayout className='relative'>
-      <Container className='hidden flex-1 gap-4 px-4 lg:grid lg:grid-cols-[1fr_325px] xl:grid-cols-[1fr_400px]'>
+      <Container className='hidden flex-1 gap-4 px-4 lg:grid lg:grid-cols-[1fr_472px] '>
         {chat}
         <MainContent key='desktop' />
       </Container>
