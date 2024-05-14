@@ -16,9 +16,13 @@ import ReferralSection from './ReferralSection'
 
 const { gradient, tokenSymbol, EpicTokenIllust } = epicConfig
 
-export default function MainContent() {
+type MainContentProps = {
+  className?: string
+}
+
+const MainContent = ({ className }: MainContentProps) => {
   return (
-    <div className='flex flex-col gap-4 px-4 pt-4 lg:px-0'>
+    <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0', className)}>
       <MainCard />
       <ReferralSection />
       <LeaderboardSection />
@@ -171,3 +175,5 @@ function MainCardTemplate({
     </Card>
   )
 }
+
+export default MainContent

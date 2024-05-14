@@ -1,5 +1,4 @@
 import Button from '@/components/Button'
-import Tabs from '@/components/Tabs'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { cx } from '@/utils/class-names'
 import { createPortal } from 'react-dom'
@@ -8,45 +7,20 @@ import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 type Props = {
   hubId: string
   chatId: string
+  className?: string
 }
 
-export default function ChatContent(props: Props) {
-  const tabs = [
-    {
-      id: 'trending-memes',
-      text: 'Trending Memes',
-      content: () => (
-        <div className='w-full'>
-          <ChatRoom asContainer chatId={props.chatId} hubId={props.hubId} />{' '}
-        </div>
-      ),
-    },
-    {
-      id: 'recent-memes',
-      text: 'Recent Memes',
-      content: () => <div className='w-full'></div>,
-    },
-  ]
-
+export default function ChatContent({ chatId, hubId, className }: Props) {
   return (
-    <div className='flex flex-col border-x border-border-gray bg-background-light'>
-      <Tabs
-        className='p-0 first:[&>span]:rounded-s-none last:[&>span]:rounded-e-none'
-        panelClassName='mt-0 w-full max-w-full '
-        tabClassName={(selected) =>
-          cx(
-            {
-              ['border-none bg-[#EFF4FF] [&>span]:!text-text-primary']:
-                selected,
-            },
-            'border-t-0 border-r-0 border-l-0 [&>span]:text-slate-500 leading-6 font-medium py-[10px]'
-          )
-        }
-        asContainer
-        tabStyle='buttons'
-        defaultTab={0}
-        tabs={tabs}
-      />
+    <div
+      className={cx(
+        'flex flex-col border-x border-border-gray bg-background-light',
+        className
+      )}
+    >
+      <div className='w-full'>
+        <ChatRoom asContainer chatId={chatId} hubId={hubId} />{' '}
+      </div>
     </div>
   )
 }

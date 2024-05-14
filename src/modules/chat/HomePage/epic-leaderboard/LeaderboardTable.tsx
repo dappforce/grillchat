@@ -122,7 +122,7 @@ const LeaderboardTable = ({
           <Loading title='Loading table data' />
         ) : (
           <div
-            className='flex flex-col items-center justify-center pb-3 text-center'
+            className='flex flex-col items-center justify-center p-4 text-center'
             style={{ gridColumn: '1/4' }}
           >
             <Image
