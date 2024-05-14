@@ -62,7 +62,7 @@ export default function PostRewardStat({
                       value: reward.rewardDetail.finalizedReward,
                       toPrecision: 2,
                     })}{' '}
-                    SUB earned +{' '}
+                    points earned +{' '}
                   </>
                 )}
                 {formatBalance({
@@ -81,7 +81,7 @@ export default function PostRewardStat({
           yOffset={4}
           panelSize='sm'
           triggerOnHover
-          trigger={<span>{totalReward} SUB</span>}
+          trigger={<span>{totalReward} points</span>}
         >
           <div>
             <span>{capitalize(entity)} author rewards:</span>
