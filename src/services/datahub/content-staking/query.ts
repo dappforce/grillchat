@@ -165,7 +165,6 @@ const getCanPostsSuperLiked = poolQuery<string, CanPostSuperLiked>({
 
     const resultMap = new Map<string, CanPostSuperLiked>()
     res.activeStakingCanDoSuperLikeByPost.forEach((item) => {
-      if (!item.persistentPostId) return
       resultMap.set(item.persistentPostId, {
         postId: item.persistentPostId,
         validByCreationDate: item.validByCreationDate,
@@ -206,18 +205,18 @@ const GET_POST_REWARDS = gql`
   query GetPostRewards($postIds: [String!]!) {
     activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
       persistentPostId
-      rewardTotal
-      draftRewardTotal
-      rewardsBySource {
+      # draftRewardTotal
+      pointsRewardTotal
+      pointsRewardsBySource {
         fromDirectSuperLikes
         fromCommentSuperLikes
         fromShareSuperLikes
       }
-      draftRewardsBySource {
-        fromDirectSuperLikes
-        fromCommentSuperLikes
-        fromShareSuperLikes
-      }
+      # draftRewardsBySource {
+      #   fromDirectSuperLikes
+      #   fromCommentSuperLikes
+      #   fromShareSuperLikes
+      # }
     }
   }
 `
@@ -253,12 +252,19 @@ const getPostRewards = poolQuery<string, PostRewards>({
     const resultMap = new Map<string, PostRewards>()
     res.activeStakingRewardsByPosts.forEach((item) => {
       const {
-        draftRewardsBySource,
-        rewardsBySource,
-        draftRewardTotal,
-        rewardTotal,
+        pointsRewardTotal,
+        pointsRewardsBySource,
+        // draftRewardsBySource
+        // draftRewardTotal,
       } = item
-      const total = parseToBigInt(rewardTotal) + parseToBigInt(draftRewardTotal)
+      let draftRewardTotal = '0'
+      let draftRewardsBySource = {
+        fromCommentSuperLikes: '0',
+        fromDirectSuperLikes: '0',
+        fromShareSuperLikes: '0',
+      }
+      const total =
+        parseToBigInt(pointsRewardTotal) + parseToBigInt(draftRewardTotal)
       if (!item.persistentPostId) return
 
       resultMap.set(item.persistentPostId, {
@@ -267,19 +273,19 @@ const getPostRewards = poolQuery<string, PostRewards>({
         isNotZero: total > 0,
         rewardDetail: {
           draftReward: draftRewardTotal,
-          finalizedReward: rewardTotal,
+          finalizedReward: pointsRewardTotal,
         },
         rewardsBySource: {
           fromCommentSuperLikes: (
-            parseToBigInt(rewardsBySource?.fromCommentSuperLikes) +
+            parseToBigInt(pointsRewardsBySource?.fromCommentSuperLikes) +
             parseToBigInt(draftRewardsBySource?.fromCommentSuperLikes)
           ).toString(),
           fromDirectSuperLikes: (
-            parseToBigInt(rewardsBySource?.fromDirectSuperLikes) +
+            parseToBigInt(pointsRewardsBySource?.fromDirectSuperLikes) +
             parseToBigInt(draftRewardsBySource?.fromDirectSuperLikes)
           ).toString(),
           fromShareSuperLikes: (
-            parseToBigInt(rewardsBySource?.fromShareSuperLikes) +
+            parseToBigInt(pointsRewardsBySource?.fromShareSuperLikes) +
             parseToBigInt(draftRewardsBySource?.fromShareSuperLikes)
           ).toString(),
         },

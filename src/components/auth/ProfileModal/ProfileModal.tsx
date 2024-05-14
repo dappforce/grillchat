@@ -9,8 +9,8 @@ import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { SessionStorage } from '@/utils/storage'
-import { replaceUrl } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
@@ -126,6 +126,7 @@ export default function ProfileModal({
   )
 
   const sendEvent = useSendEvent()
+  const router = useRouter()
 
   useEffect(() => {
     if (isOpen) {
@@ -159,9 +160,7 @@ export default function ProfileModal({
       withBackButton: true,
     },
     logout: {
-      title: hasProxyAddress
-        ? '🤔 Are you sure you want to logout?'
-        : '🤔 Did you back up your Grill key?',
+      title: '🤔 Are you sure you want to logout?',
       withBackButton: true,
     },
     'privacy-security': {
@@ -222,7 +221,9 @@ export default function ProfileModal({
   }
 
   useEffect(() => {
-    const openProfileStep = getUrlQuery('profile')
+    const openProfileStep = getUrlQuery('profile') as
+      | ProfileModalState
+      | undefined
     if (openProfileStep) {
       const isValidState = profileModalStates.includes(openProfileStep)
       if (isValidState) {
@@ -230,7 +231,9 @@ export default function ProfileModal({
       } else {
         openModal()
       }
-      replaceUrl(getCurrentUrlWithoutQuery('profile'))
+      router.replace(getCurrentUrlWithoutQuery('profile'), undefined, {
+        shallow: true,
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

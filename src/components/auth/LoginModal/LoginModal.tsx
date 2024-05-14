@@ -157,11 +157,7 @@ export default function LoginModal({
         descriptionClassName={cx(withoutDefaultPadding && 'px-6')}
         closeModal={() => {
           if (disableOutsideClickClose) return
-
           setIsOpen(false)
-          // if (loginOption === 'polkadot') {
-          //   setIsOpenStayUpdatedModal(true)
-          // }
         }}
       >
         <ModalContent

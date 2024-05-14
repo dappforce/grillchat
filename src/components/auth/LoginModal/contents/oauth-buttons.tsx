@@ -14,7 +14,7 @@ function getOauthCallbackUrl(oauthProvider: string) {
   const fromQuery = encodeURIComponent(getRedirectCallback())
   const refQuery = encodeURIComponent(getReferralIdInUrl())
   return urlJoin(
-    getCurrentUrlWithoutQuery(),
+    getCurrentUrlWithoutQuery().replace(/\/$/, ''),
     `?login=${oauthProvider}`,
     fromQuery ? `&from=${fromQuery}` : '',
     refQuery ? `&ref=${refQuery}` : ''

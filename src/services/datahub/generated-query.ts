@@ -309,6 +309,8 @@ export type CreateOrganizationInput = {
 export type CreatorActivityMetrics = {
   __typename?: 'CreatorActivityMetrics'
   earnedByPeriod?: Maybe<Scalars['String']['output']>
+  earnedPointsByPeriod?: Maybe<Scalars['String']['output']>
+  earnedPointsTotal?: Maybe<Scalars['String']['output']>
   earnedTotal?: Maybe<Scalars['String']['output']>
   likesCountByPeriod?: Maybe<Scalars['Int']['output']>
   stakersWhoLiked?: Maybe<Scalars['Int']['output']>
@@ -316,13 +318,11 @@ export type CreatorActivityMetrics = {
 
 export type CreatorActivityMetricsForFixedPeriodInput = {
   earnedByPeriod?: InputMaybe<Scalars['Boolean']['input']>
-  earnedByPeriodRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  earnedPointsByPeriod?: InputMaybe<Scalars['Boolean']['input']>
+  earnedPointsTotal?: InputMaybe<Scalars['Boolean']['input']>
   earnedTotal?: InputMaybe<Scalars['Boolean']['input']>
-  earnedTotalRankPosition?: InputMaybe<Scalars['Boolean']['input']>
   likesCountByPeriod?: InputMaybe<Scalars['Boolean']['input']>
   stakersWhoLiked?: InputMaybe<Scalars['Boolean']['input']>
-  stakersWhoLikedRankPosition?: InputMaybe<Scalars['Boolean']['input']>
-  totalLikesCountRankPosition?: InputMaybe<Scalars['Boolean']['input']>
 }
 
 export type DailyStatsByStakerInput = {
@@ -334,6 +334,7 @@ export type DailyStatsByStakerInput = {
 export type DailyStatsByStakerResponse = {
   __typename?: 'DailyStatsByStakerResponse'
   currentRewardAmount: Scalars['String']['output']
+  currentRewardPointsAmount: Scalars['String']['output']
   initialPoints: Scalars['Int']['output']
   stakerRewordDistribution: Scalars['Int']['output']
   superLikesCount: Scalars['Int']['output']
@@ -1222,9 +1223,9 @@ export type RankedPostIdsByActiveStakingActivityResponse = {
 
 export type RewardsByPostDetails = {
   __typename?: 'RewardsByPostDetails'
-  amount: Scalars['String']['output']
   distributionPercent?: Maybe<Scalars['Int']['output']>
   from?: Maybe<RewardsByPostDirectionTarget>
+  pointsAmount?: Maybe<Scalars['String']['output']>
   postId: Scalars['String']['output']
   postKind?: Maybe<PostKind>
   postPersistentId: Scalars['String']['output']
@@ -1233,6 +1234,7 @@ export type RewardsByPostDetails = {
   superLikeId: Scalars['String']['output']
   superLikeMultiplier: Scalars['Int']['output']
   to?: Maybe<RewardsByPostDirectionTarget>
+  tokensAmount: Scalars['String']['output']
 }
 
 export enum RewardsByPostDirectionTarget {
@@ -1260,6 +1262,8 @@ export type RewardsByPostsResponseDto = {
   draftRewardTotal: Scalars['String']['output']
   draftRewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   persistentPostId?: Maybe<Scalars['String']['output']>
+  pointsRewardTotal: Scalars['String']['output']
+  pointsRewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   postId?: Maybe<Scalars['String']['output']>
   /** @deprecated rewardTotal field must be used */
   reward: Scalars['String']['output']
@@ -1279,10 +1283,12 @@ export type RewardsByWeekInput = {
 export type RewardsReportItem = {
   __typename?: 'RewardsReportItem'
   address: Scalars['String']['output']
-  amount: Scalars['String']['output']
   decimals: Scalars['Int']['output']
+  pointsAmount: Scalars['String']['output']
   roles: Array<Scalars['String']['output']>
-  trialCreatorAmount?: Maybe<Scalars['String']['output']>
+  tokensAmount: Scalars['String']['output']
+  trialCreatorPointsAmount?: Maybe<Scalars['String']['output']>
+  trialCreatorTokensAmount?: Maybe<Scalars['String']['output']>
 }
 
 export enum ServiceMessageStatusCode {
@@ -1395,6 +1401,9 @@ export type SocialProfile = {
 
 export type SocialProfileBalances = {
   __typename?: 'SocialProfileBalances'
+  activeStakingPoints: Scalars['String']['output']
+  activeStakingPointsInitial: Scalars['String']['output']
+  activeStakingRewardPoints: Scalars['String']['output']
   activeStakingTempReward: Scalars['String']['output']
   activeStakingTempToken: Scalars['String']['output']
   activeStakingTempTokenInitial: Scalars['String']['output']
@@ -1469,6 +1478,8 @@ export type SpaceFollowers = {
 export type StakerActivityMetrics = {
   __typename?: 'StakerActivityMetrics'
   earnedByPeriod?: Maybe<Scalars['String']['output']>
+  earnedPointsByPeriod?: Maybe<Scalars['String']['output']>
+  earnedPointsTotal?: Maybe<Scalars['String']['output']>
   earnedTotal?: Maybe<Scalars['String']['output']>
   likedCreators?: Maybe<Scalars['Int']['output']>
   likedPosts?: Maybe<Scalars['Int']['output']>
@@ -1477,14 +1488,12 @@ export type StakerActivityMetrics = {
 
 export type StakerActivityMetricsForFixedPeriodInput = {
   earnedByPeriod?: InputMaybe<Scalars['Boolean']['input']>
-  earnedByPeriodRankPosition?: InputMaybe<Scalars['Boolean']['input']>
+  earnedPointsByPeriod?: InputMaybe<Scalars['Boolean']['input']>
+  earnedPointsTotal?: InputMaybe<Scalars['Boolean']['input']>
   earnedTotal?: InputMaybe<Scalars['Boolean']['input']>
-  earnedTotalRankPosition?: InputMaybe<Scalars['Boolean']['input']>
   likedCreators?: InputMaybe<Scalars['Boolean']['input']>
-  likedCreatorsRankPosition?: InputMaybe<Scalars['Boolean']['input']>
   likedPosts?: InputMaybe<Scalars['Boolean']['input']>
   likedPostsByDay?: InputMaybe<Scalars['Boolean']['input']>
-  likedPostsRankPosition?: InputMaybe<Scalars['Boolean']['input']>
 }
 
 export type Subscription = {
@@ -1558,22 +1567,26 @@ export type SuperLikeSubscriptionPayload = {
 
 export type SuperLikesCreatorRewards = {
   __typename?: 'SuperLikesCreatorRewards'
+  pointsRewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   posts: Array<SuperLikesCreatorRewardsByPost>
   rewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
+  /** @deprecated Must be used totalTokens */
   total: Scalars['String']['output']
+  totalPoints: Scalars['String']['output']
+  totalTokens: Scalars['String']['output']
 }
 
 export type SuperLikesCreatorRewardsByPost = {
   __typename?: 'SuperLikesCreatorRewardsByPost'
-  /** @deprecated Should be used totalAmount instead. */
-  amount: Scalars['String']['output']
   directSuperLikesCount: Scalars['Int']['output']
+  pointsRewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   postId: Scalars['String']['output']
   postPersistentId: Scalars['String']['output']
   rewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   sharedSuperLikesCount: Scalars['Int']['output']
   superLikesCount: Scalars['Int']['output']
-  totalAmount: Scalars['String']['output']
+  totalPointsAmount: Scalars['String']['output']
+  totalTokensAmount: Scalars['String']['output']
 }
 
 export type SuperLikesResponseDto = {
@@ -1592,20 +1605,24 @@ export type SuperLikesWhereInput = {
 }
 
 export type TotalActivityMetricsForFixedPeriodInput = {
+  creatorEarnedPointsTotal?: InputMaybe<Scalars['Boolean']['input']>
   creatorEarnedTotal?: InputMaybe<Scalars['Boolean']['input']>
   likedCreatorsCount?: InputMaybe<Scalars['Boolean']['input']>
   likedPostsCount?: InputMaybe<Scalars['Boolean']['input']>
   period?: InputMaybe<ActiveStakingPeriod>
   periodValue?: InputMaybe<Scalars['String']['input']>
+  stakersEarnedPointsTotal?: InputMaybe<Scalars['Boolean']['input']>
   stakersEarnedTotal?: InputMaybe<Scalars['Boolean']['input']>
   superLikesTotalCountTotal?: InputMaybe<Scalars['Boolean']['input']>
 }
 
 export type TotalActivityMetricsForFixedPeriodResponseDto = {
   __typename?: 'TotalActivityMetricsForFixedPeriodResponseDto'
+  creatorEarnedPointsTotal?: Maybe<Scalars['String']['output']>
   creatorEarnedTotal?: Maybe<Scalars['String']['output']>
   likedCreatorsCount?: Maybe<Scalars['Int']['output']>
   likedPostsCount?: Maybe<Scalars['Int']['output']>
+  stakersEarnedPointsTotal?: Maybe<Scalars['String']['output']>
   stakersEarnedTotal?: Maybe<Scalars['String']['output']>
   superLikesTotalCountTotal?: Maybe<Scalars['Int']['output']>
 }
@@ -1613,7 +1630,10 @@ export type TotalActivityMetricsForFixedPeriodResponseDto = {
 export type TotalRewardsByWeekResponse = {
   __typename?: 'TotalRewardsByWeekResponse'
   creator: SuperLikesCreatorRewards
+  /** @deprecated Must be used stakerTokens */
   staker: Scalars['String']['output']
+  stakerPoints: Scalars['String']['output']
+  stakerTokens: Scalars['String']['output']
   week: Scalars['Int']['output']
 }
 
@@ -1696,15 +1716,8 @@ export type GetPostRewardsQuery = {
   activeStakingRewardsByPosts: Array<{
     __typename?: 'RewardsByPostsResponseDto'
     persistentPostId?: string | null
-    rewardTotal: string
-    draftRewardTotal: string
-    rewardsBySource?: {
-      __typename?: 'PostRewardsBySourceResponseDto'
-      fromDirectSuperLikes?: string | null
-      fromCommentSuperLikes?: string | null
-      fromShareSuperLikes?: string | null
-    } | null
-    draftRewardsBySource?: {
+    pointsRewardTotal: string
+    pointsRewardsBySource?: {
       __typename?: 'PostRewardsBySourceResponseDto'
       fromDirectSuperLikes?: string | null
       fromCommentSuperLikes?: string | null
@@ -2758,14 +2771,8 @@ export const GetPostRewards = gql`
   query GetPostRewards($postIds: [String!]!) {
     activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
       persistentPostId
-      rewardTotal
-      draftRewardTotal
-      rewardsBySource {
-        fromDirectSuperLikes
-        fromCommentSuperLikes
-        fromShareSuperLikes
-      }
-      draftRewardsBySource {
+      pointsRewardTotal
+      pointsRewardsBySource {
         fromDirectSuperLikes
         fromCommentSuperLikes
         fromShareSuperLikes

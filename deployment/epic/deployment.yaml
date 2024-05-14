@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grill-epic
+  name: grill-epic
+  namespace: sub-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grill-epic
+  template:
+    metadata:
+      labels:
+        app: grill-epic
+      name: grill-epic
+    spec:
+      containers:
+        - image: <IMAGE>
+          imagePullPolicy: IfNotPresent
+          name: grill-epic
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: grill-epic-env
+            - secretRef:
+                name: grill-epic-secret
+          resources:
+            requests:
+              memory: '500Mi'
+              cpu: '50m'
+            limits:
+              memory: '768Mi'
+      imagePullSecrets:
+        - name: dockerhub
+      restartPolicy: Always

@@ -6,10 +6,16 @@ import useWrapInRef from '@/hooks/useWrapInRef'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
+import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
+import {
+  useMyAccount,
+  useMyGrillAddress,
+  useMyMainAddress,
+} from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useTransactions } from '@/stores/transactions'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
@@ -19,8 +25,10 @@ import {
   IdentityProvider,
   LinkedIdentityExternalProviderDetails,
 } from '@subsocial/data-hub-sdk'
+import { useQueryClient } from '@tanstack/react-query'
 import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import Modal from '../modals/Modal'
@@ -36,13 +44,24 @@ export default function OauthLoadingModal() {
   const [isOpen, setIsOpen] = useState(false)
   const { data: session } = useSession()
   const provider = session?.provider
+  const myAddress = useMyMainAddress()
+  const router = useRouter()
 
   useEffect(() => {
     const isAfterOauthLogin = getUrlQuery('login')
-    if (isAfterOauthLogin === 'x' || isAfterOauthLogin === 'google') {
+    if (
+      (isAfterOauthLogin === 'x' || isAfterOauthLogin === 'google') &&
+      session &&
+      !myAddress
+    ) {
       setIsOpen(true)
+    } else if (myAddress) {
+      router.replace(getCurrentUrlWithoutQuery('login'), undefined, {
+        shallow: true,
+      })
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, myAddress])
 
   return (
     <Modal
@@ -97,6 +116,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     (provider && providerMapper[provider]) || {}
 
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
+  const router = useRouter()
 
   const grillAddress = useMyGrillAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
@@ -127,6 +147,16 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
 
   const { mutate: setReferrerId } = useSetReferrerId()
 
+  const client = useQueryClient()
+  const onFinishFlow = () => {
+    router.replace(getCurrentUrlWithoutQuery('login'), undefined, {
+      shallow: true,
+    })
+    sendEvent('login_oauth_successful', { provider })
+    finalizeTemporaryAccount()
+    onSuccess()
+    signOut({ redirect: false })
+  }
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {
       replaceUrl(getCurrentUrlWithoutQuery('login'))
@@ -180,12 +210,20 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
         }
       )
       upsertedProfile.current = true
-      upsertProfile({
-        content: {
-          image: session?.user?.image ?? '',
-          name: session?.user.name ?? '',
-        },
-      })
+      getProfileQuery
+        .fetchQuery(client, linkedIdentity.mainAddress)
+        .then((profile) => {
+          if (!profile)
+            upsertProfile(
+              augmentDatahubParams({
+                content: {
+                  image: session?.user?.image ?? '',
+                  name: session?.user.name ?? '',
+                },
+              })
+            )
+          else onFinishFlow()
+        })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linkedIdentity, sendEvent, session, upsertProfile, setReferrerId])

@@ -17,6 +17,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCurrentWallet } from '../../subsocial/hooks'
 import { createMutationWrapper } from '../../subsocial/utils/mutation'
+import { getDeterministicId } from '../posts/mutation'
 
 type CommonParams = {
   content: {
@@ -26,16 +27,15 @@ type CommonParams = {
   }
 }
 export type UpsertProfileParams =
-  | CommonParams
+  | (CommonParams & { uuid: string; timestamp: number })
   | (CommonParams & { spaceId: string })
 function checkAction(data: UpsertProfileParams) {
-  if ('spaceId' in data && data.spaceId) {
+  if ('spaceId' in data) {
     return { payload: data, action: 'update' } as const
   }
 
   return { payload: data, action: 'create' } as const
 }
-const OPTIMISTIC_PROFILE_ID = 'optimistic-id'
 function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
   const client = useQueryClient()
 
@@ -43,16 +43,13 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
     ...config,
     mutationFn: async (params: UpsertProfileParams) => {
       const { content } = params
-
       const { payload, action } = checkAction(params)
-      if (action === 'update' && payload.spaceId === OPTIMISTIC_PROFILE_ID)
-        throw new Error(
-          'Please wait until we finalized your previous name change'
-        )
 
       if (action === 'create') {
         await createProfileData({
           ...getCurrentWallet(),
+          uuid: payload.uuid,
+          timestamp: payload.timestamp,
           args: {
             content: content as SpaceContent,
           },
@@ -67,18 +64,28 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
         })
       }
     },
-    onMutate: (data) => {
+    onMutate: async (data) => {
       config?.onMutate?.(data)
       preventWindowUnload()
       const mainAddress = getMyMainAddress() ?? ''
+
+      const { action, payload } = checkAction(data)
+      let id: string
+      if (action === 'update') id = payload.spaceId
+      else
+        id = await getDeterministicId({
+          uuid: payload.uuid,
+          timestamp: payload.timestamp.toString(),
+          account: mainAddress,
+        })
+
       getProfileQuery.setQueryData(client, mainAddress, (oldData) => {
-        const oldProfileSpaceId = oldData?.profileSpace?.id
         const oldProfileContent = oldData?.profileSpace?.content || {}
         return {
           address: mainAddress,
           isUpdated: true,
           profileSpace: {
-            id: oldProfileSpaceId ? oldProfileSpaceId : OPTIMISTIC_PROFILE_ID,
+            id,
             content: {
               ...oldProfileContent,
               ...data.content,

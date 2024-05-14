@@ -10,8 +10,6 @@ import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
-import { stringToU8a, u8aToHex } from '@polkadot/util'
-import { blake2AsHex, decodeAddress } from '@polkadot/util-crypto'
 import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
@@ -42,13 +40,20 @@ export function isValidUUIDv4(maybeUuid: string): boolean {
   )
 }
 
-export function getDeterministicId({
+export async function getDeterministicId({
   uuid,
   timestamp,
   account,
-}: GetDeterministicIdInput): string {
+}: GetDeterministicIdInput): Promise<string> {
   if (!isValidUUIDv4(uuid))
     throw new Error('Not valid uuid has been provided. Must be UUID v4.')
+
+  const [{ blake2AsHex, decodeAddress }, { stringToU8a, u8aToHex }] =
+    await Promise.all([
+      import('@polkadot/util-crypto'),
+      import('@polkadot/util'),
+    ])
+
   const pubKey = u8aToHex(decodeAddress(account), undefined, false)
   const u8aKey = stringToU8a(pubKey + timestamp + uuid.replace(/-/g, ''))
   return blake2AsHex(u8aKey, 128, null, true)
@@ -202,7 +207,7 @@ export function useSendMessage(
         extensions: data.extensions,
       } as PostContent
 
-      const newId = getDeterministicId({
+      const newId = await getDeterministicId({
         account:
           getCurrentWallet().proxyToAddress || getCurrentWallet().address,
         timestamp: data.timestamp.toString(),
@@ -233,10 +238,10 @@ export function useSendMessage(
       }
       config?.onMutate?.(data)
     },
-    onError: (err, data, context) => {
+    onError: async (err, data, context) => {
       config?.onError?.(err, data, context)
       allowWindowUnload()
-      const newId = getDeterministicId({
+      const newId = await getDeterministicId({
         account:
           getCurrentWallet().proxyToAddress || getCurrentWallet().address,
         timestamp: data.timestamp.toString(),

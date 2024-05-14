@@ -2,6 +2,7 @@ import Farcaster from '@/assets/icons/farcaster.svg'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import useToastError from '@/hooks/useToastError'
+import useWrapInRef from '@/hooks/useWrapInRef'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useAddExternalProviderToIdentity } from '@/services/datahub/identity/mutation'
@@ -13,10 +14,10 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
-import { replaceUrl } from '@/utils/window'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { IconType } from 'react-icons'
@@ -38,16 +39,12 @@ type ProviderData = {
 
 const externalProviders: ProviderData[] = [
   {
-    name: 'X',
-    icon: FaXTwitter,
-    provider: IdentityProvider.Twitter,
-    connectButton: () => <OauthConnectButton provider='twitter' />,
-  },
-  {
-    name: 'Google',
-    icon: IoLogoGoogle,
-    provider: IdentityProvider.Google,
-    connectButton: () => <OauthConnectButton provider='google' />,
+    name: 'EVM Address',
+    icon: SiEthereum,
+    shortName: 'EVM',
+    provider: IdentityProvider.Evm,
+    customName: (nameOrId) => truncateAddress(nameOrId),
+    connectButton: () => <EvmConnectButton />,
   },
   {
     name: 'Farcaster',
@@ -56,12 +53,16 @@ const externalProviders: ProviderData[] = [
     connectButton: () => <FarcasterConnectButton />,
   },
   {
-    name: 'EVM Address',
-    icon: SiEthereum,
-    shortName: 'EVM',
-    provider: IdentityProvider.Evm,
-    customName: (nameOrId) => truncateAddress(nameOrId),
-    connectButton: () => <EvmConnectButton />,
+    name: 'Google',
+    icon: IoLogoGoogle,
+    provider: IdentityProvider.Google,
+    connectButton: () => <OauthConnectButton provider='google' />,
+  },
+  {
+    name: 'X',
+    icon: FaXTwitter,
+    provider: IdentityProvider.Twitter,
+    connectButton: () => <OauthConnectButton provider='twitter' />,
   },
 ]
 
@@ -215,17 +216,36 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   const sendEvent = useSendEvent()
   const calledRef = useRef(false)
   const { data: session } = useSession()
+  const grillAddress = useMyGrillAddress()
+  const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
+    grillAddress ?? ''
+  )
+  const router = useRouter()
+  const linkedIdentityRef = useWrapInRef(linkedIdentity)
   const { mutate, isLoading } = useAddExternalProviderToIdentity({
     onSuccess: () => {
       signOut({ redirect: false })
+      const intervalId = setInterval(async () => {
+        if (linkedIdentityRef.current) {
+          clearInterval(intervalId)
+          return
+        }
+
+        const res = await refetch()
+        if (res.data) {
+          clearInterval(intervalId)
+        }
+      }, 2_000)
     },
   })
 
   useEffect(() => {
-    const loginProvider = getUrlQuery('login')
+    const loginProvider = getUrlQuery('provider')
     if (loginProvider === provider && session && !calledRef.current) {
       calledRef.current = true
-      replaceUrl(getCurrentUrlWithoutQuery('login'))
+      router.replace(getCurrentUrlWithoutQuery('provider'), undefined, {
+        shallow: true,
+      })
       const externalProvider = getExternalProviderPayload(session)
       if (!externalProvider) {
         toast.error('Provider not supported')
@@ -233,6 +253,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
       }
       mutate({ externalProvider })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider, session, mutate])
 
   return (
@@ -245,7 +266,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
         signIn(provider, {
           callbackUrl:
             getCurrentUrlWithoutQuery() +
-            `?profile=linked-accounts&login=${provider}`,
+            `?profile=linked-accounts&provider=${provider}`,
         })
       }}
     >

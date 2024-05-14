@@ -1,10 +1,5 @@
-import { constantsConfig } from '@/constants/config'
-import { env } from '@/env.mjs'
 import { handlerWrapper } from '@/server/common'
-import { getChatPageLink } from '@/utils/links'
-import { createSlug } from '@/utils/slug'
 import { z } from 'zod'
-import { getPostsServer } from '../posts'
 
 const bodySchema = z
   .object({
@@ -22,47 +17,48 @@ const handler = handlerWrapper({
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     try {
-      if ('pathname' in data) {
-        await res.revalidate(data.pathname)
-      } else {
-        const [chat] = await getPostsServer([data.chatId])
-        if (!chat) throw new Error('Chat not found')
+      res.revalidate('/')
+      // if ('pathname' in data) {
+      //   await res.revalidate(data.pathname)
+      // } else {
+      //   const [chat] = await getPostsServer([data.chatId])
+      //   if (!chat) throw new Error('Chat not found')
 
-        const originalHubId = chat.struct.spaceId
-        const originalLink = getChatPageLink(
-          { query: {} },
-          createSlug(data.chatId, chat.content),
-          originalHubId
-        )
+      //   const originalHubId = chat.struct.spaceId
+      //   const originalLink = getChatPageLink(
+      //     { query: {} },
+      //     createSlug(data.chatId, chat.content),
+      //     originalHubId
+      //   )
 
-        const isInHomePage =
-          env.NEXT_PUBLIC_MAIN_SPACE_ID === data.hubId ||
-          constantsConfig.linkedChatsForHubId[
-            env.NEXT_PUBLIC_MAIN_SPACE_ID
-          ]?.includes(data.chatId)
+      //   const isInHomePage =
+      //     env.NEXT_PUBLIC_MAIN_SPACE_ID === data.hubId ||
+      //     constantsConfig.linkedChatsForHubId[
+      //       env.NEXT_PUBLIC_MAIN_SPACE_ID
+      //     ]?.includes(data.chatId)
 
-        if (data.hubId && originalHubId !== data.hubId) {
-          const currentLink = getChatPageLink(
-            { query: {} },
-            createSlug(data.chatId, chat.content),
-            data.hubId
-          )
-          const promises = [
-            res.revalidate(currentLink),
-            res.revalidate(originalLink),
-          ]
-          if (isInHomePage) {
-            promises.push(res.revalidate('/'))
-          }
-          await Promise.all(promises)
-        } else {
-          const promises = [res.revalidate(originalLink)]
-          if (isInHomePage) {
-            promises.push(res.revalidate('/'))
-          }
-          await Promise.all(promises)
-        }
-      }
+      //   if (data.hubId && originalHubId !== data.hubId) {
+      //     const currentLink = getChatPageLink(
+      //       { query: {} },
+      //       createSlug(data.chatId, chat.content),
+      //       data.hubId
+      //     )
+      //     const promises = [
+      //       res.revalidate(currentLink),
+      //       res.revalidate(originalLink),
+      //     ]
+      //     if (isInHomePage) {
+      //       promises.push(res.revalidate('/'))
+      //     }
+      //     await Promise.all(promises)
+      //   } else {
+      //     const promises = [res.revalidate(originalLink)]
+      //     if (isInHomePage) {
+      //       promises.push(res.revalidate('/'))
+      //     }
+      //     await Promise.all(promises)
+      //   }
+      // }
 
       res.json({ success: true, message: 'revalidated' })
     } catch (err) {

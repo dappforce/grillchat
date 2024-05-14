@@ -26,7 +26,7 @@ const variants: {
     desc: () => (
       <span>
         Your message is being processed. In the next few seconds, it will be
-        saved to the blockchain, after which you will see this icon:{' '}
+        saved, after which you will see this icon:{' '}
         <IoCheckmarkDoneOutline className='inline text-text' />
       </span>
     ),
@@ -44,7 +44,7 @@ const variants: {
   offChain: {
     title: 'Message recorded on IPFS',
     icon: <IoCheckmarkDoneOutline />,
-    desc: ({ blockNumber, cid }) => (
+    desc: ({ cid }) => (
       <span>
         Your message has been stored on{' '}
         <LinkText

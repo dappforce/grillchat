@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
+import SuperLike from '@/components/content-staking/SuperLike'
 import MessageModal from '@/components/modals/MessageModal'
 import useGetTheme from '@/hooks/useGetTheme'
 import { getPostQuery } from '@/services/api/query'
@@ -165,11 +166,11 @@ export default function DefaultChatItem({
         <div
           className={cx('mt-1 flex items-center', !showSuperLike && 'hidden')}
         >
-          {/* <SuperLike
+          <SuperLike
             isMyMessage={isMyMessage}
             withPostReward
             postId={message.id}
-          /> */}
+          />
           <span className='pointer-events-none ml-4 select-none opacity-0'>
             {relativeTime()}
           </span>

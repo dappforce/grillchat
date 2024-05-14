@@ -26,7 +26,7 @@ export function useFormatBalance({
   }
 }
 
-export function formatSUB({
+export function formatBalance({
   value,
   toFixed = 2,
   toPrecision,
