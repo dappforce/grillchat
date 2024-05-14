@@ -6,22 +6,23 @@ import Loading from '@/components/Loading'
 import Name from '@/components/Name'
 import Table, { Column } from '@/components/Table'
 import { getLeaderboardLink } from '@/components/layouts/Sidebar'
-import { ZERO } from '@/constants/config'
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { spaceGrotesk } from '@/fonts'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
-import { convertToBalanceWithDecimal, isEmptyArray } from '@subsocial/utils'
+import { isEmptyArray } from '@subsocial/utils'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
+import epicConfig from '../../../../constants/config/epic'
 import LeaderboardModal from './LeaderboardModal'
 
 const TABLE_LIMIT = 10
 
+const { tokenSymbol } = epicConfig
+
 export const leaderboardColumns = (
-  role: LeaderboardRole,
   customColumnsClassNames?: (string | undefined)[]
 ): Column[] => [
   {
@@ -35,13 +36,13 @@ export const leaderboardColumns = (
   },
   {
     index: 'user-role',
-    name: role === 'staker' ? 'Staker' : 'Creator',
+    name: 'User',
     align: 'left',
     className: cx('p-0 py-2', customColumnsClassNames?.[1]),
   },
   {
     index: 'rewards',
-    name: 'Rewards',
+    name: '$' + tokenSymbol,
     align: 'right',
     className: cx(
       'p-0 py-2 pr-4 md:w-[20%] w-[38%]',
@@ -140,7 +141,7 @@ const LeaderboardTable = ({
       {!isEmptyArray(data) && (
         <div className='my-4 flex w-full flex-col'>
           <Table
-            columns={leaderboardColumns(role, customColumnsClassNames)}
+            columns={leaderboardColumns(customColumnsClassNames)}
             data={data}
             className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
             headerClassName='!bg-transparent dark:!bg-transparent'
@@ -178,16 +179,12 @@ type UserRewardProps = {
 }
 
 export const UserReward = ({ reward }: UserRewardProps) => {
-  const { tokenSymbol, decimal } = useGetChainDataByNetwork('subsocial') || {}
-
-  const rewardWithDecimal =
-    reward && decimal ? convertToBalanceWithDecimal(reward, decimal) : ZERO
-
   return (
     <FormatBalance
-      value={rewardWithDecimal.toString()}
-      symbol={tokenSymbol}
+      value={reward.toString()}
+      symbol={''}
       defaultMaximumFractionDigits={2}
+      className={cx('font-medium', spaceGrotesk.className)}
     />
   )
 }

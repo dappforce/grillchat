@@ -16,7 +16,7 @@ export default function HomePage() {
 
   return (
     <DefaultLayout className='relative'>
-      <Container className='grid flex-1 gap-4 px-0 lg:grid-cols-[1fr_472px] lg:px-4 '>
+      <Container className='grid flex-1 gap-4 px-0 lg:grid-cols-[1fr_472px] lg:px-4'>
         <ChatContent
           hubId={hubId}
           chatId={chatId}

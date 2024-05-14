@@ -41,7 +41,7 @@ const LeaderboardModal = ({
 
   const flattenData = leaderboardData?.pages.flatMap((item) => item.data) || []
 
-  const columnsByRole = leaderboardColumns(role)
+  const columnsByRole = leaderboardColumns()
 
   const columns = columnsByRole.map((column, i) => ({
     ...column,

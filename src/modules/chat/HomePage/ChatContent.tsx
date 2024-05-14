@@ -19,7 +19,12 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
       )}
     >
       <div className='w-full'>
-        <ChatRoom asContainer chatId={chatId} hubId={hubId} />{' '}
+        <ChatRoom
+          asContainer
+          chatId={chatId}
+          hubId={hubId}
+          className='overflow-auto max-lg:h-[calc(100dvh-8.2rem)] lg:h-[calc(100dvh-4rem)]'
+        />
       </div>
     </div>
   )

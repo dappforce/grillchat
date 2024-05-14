@@ -22,10 +22,17 @@ type MainContentProps = {
 
 const MainContent = ({ className }: MainContentProps) => {
   return (
-    <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0', className)}>
-      <MainCard />
-      <ReferralSection />
-      <LeaderboardSection />
+    <div
+      className={cx(
+        'overflow-auto pb-4 max-lg:h-[calc(100dvh-8.2rem)] lg:h-[calc(100dvh-4rem)]',
+        className
+      )}
+    >
+      <div className={cx('flex flex-col gap-4 px-4 pt-4')}>
+        <MainCard />
+        <ReferralSection />
+        <LeaderboardSection />
+      </div>
     </div>
   )
 }
