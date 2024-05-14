@@ -165,7 +165,6 @@ const getCanPostsSuperLiked = poolQuery<string, CanPostSuperLiked>({
 
     const resultMap = new Map<string, CanPostSuperLiked>()
     res.activeStakingCanDoSuperLikeByPost.forEach((item) => {
-      if (!item.persistentPostId) return
       resultMap.set(item.persistentPostId, {
         postId: item.persistentPostId,
         validByCreationDate: item.validByCreationDate,

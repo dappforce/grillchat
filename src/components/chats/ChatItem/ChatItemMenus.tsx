@@ -174,7 +174,7 @@ export default function ChatItemMenus({
     <>
       <FloatingMenus
         beforeMenus={
-          isOptimisticMessage && (
+          !isOptimisticMessage && (
             <SuperLikeWrapper postId={messageId} withPostReward={false}>
               {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
                 if (hasILiked) return null

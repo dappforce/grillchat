@@ -1,4 +1,3 @@
-import { env } from '@/env.mjs'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery } from '@/services/api/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
@@ -9,7 +8,6 @@ import {
   getConfirmationMsgQuery,
   getPostRewardsQuery,
   getSuperLikeCountQuery,
-  getTotalStakeQuery,
 } from '@/services/datahub/content-staking/query'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useLoginModal } from '@/stores/login-modal'
@@ -53,7 +51,6 @@ export function SuperLikeWrapper({
     superLikeCount: number
     handleClick: () => void
     postRewards: PostRewards | undefined | null
-    isOffchainPost?: boolean
   }) => ReactNode
 }) {
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
@@ -79,8 +76,6 @@ export function SuperLikeWrapper({
   const myAddress = useMyMainAddress()
   const myGrillAddress = useMyAccount.use.address()
 
-  const { data: totalStake, isFetching: loadingTotalStake } =
-    getTotalStakeQuery.useQuery(myAddress ?? '')
   const { data: myLike, isFetching: loadingMyLike } =
     getAddressLikeCountToPostQuery.useQuery({
       address: myAddress ?? '',
@@ -92,30 +87,19 @@ export function SuperLikeWrapper({
 
   const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
   const entity = post?.struct.isComment ? 'message' : 'post'
-  const isOffchainPost = post?.struct.dataType === 'offChain'
 
   const isDisabled =
     (!canBeSuperliked ||
       isMyPost ||
       loadingMyLike ||
-      loadingTotalStake ||
       loadingBlocked ||
       !message) &&
     !hasILiked
 
   let disabledCause = ''
   if (isMyPost) {
-    const isOffchainPostInUsualHub =
-      isOffchainPost &&
-      !env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(post.struct.spaceId ?? '')
-    if (isOffchainPostInUsualHub) {
-      disabledCause = `Your ${entity} is not monetized, because its not sent to blockchain, you can resend it to make it monetized`
-    } else {
-      disabledCause = `You cannot like your own ${entity}`
-    }
-  } else if (isOffchainPost)
-    disabledCause = `You cannot like off-chain ${entity}s`
-  else if (!isExist)
+    disabledCause = `You cannot like your own ${entity}`
+  } else if (!isExist)
     disabledCause = `This ${entity} is still being minted, please wait a few seconds`
   else if (!validByCreatorMinStake)
     disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
@@ -135,10 +119,6 @@ export function SuperLikeWrapper({
 
     if (!myAddress || !myGrillAddress) {
       setIsOpen(true)
-      return
-    }
-    if (!totalStake?.hasStakedEnough) {
-      setOpenMessageModal('should-stake')
       return
     }
 
@@ -171,7 +151,6 @@ export function SuperLikeWrapper({
         hasILiked,
         superLikeCount: superLikeCount?.count ?? 0,
         postRewards,
-        isOffchainPost,
       })}
     </>
   )
@@ -194,9 +173,8 @@ export default function SuperLike({
         hasILiked,
         superLikeCount,
         postRewards,
-        isOffchainPost,
       }) => {
-        if (superLikeCount <= 0 || isOffchainPost) return null
+        if (superLikeCount <= 0) return null
         const button = (
           <button
             onClick={handleClick}

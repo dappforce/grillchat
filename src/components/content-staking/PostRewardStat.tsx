@@ -44,7 +44,7 @@ export default function PostRewardStat({
     <div {...props} className={cx('text-text-muted', props.className)}>
       <div className='flex items-center gap-1.5'>
         <div className='relative flex items-center'>
-          {BigInt(reward.rewardDetail.draftReward) > 0 ? (
+          {convertToBigInt(reward.rewardDetail.draftReward) > 0 ? (
             <PopOver
               triggerOnHover
               panelSize='sm'
@@ -56,7 +56,7 @@ export default function PostRewardStat({
               }
             >
               <span>
-                {BigInt(reward.rewardDetail.finalizedReward) > 0 && (
+                {convertToBigInt(reward.rewardDetail.finalizedReward) > 0 && (
                   <>
                     {formatBalance({
                       value: reward.rewardDetail.finalizedReward,
@@ -90,7 +90,7 @@ export default function PostRewardStat({
                 <span className='h-1 w-1 rounded-full bg-text' />
                 {directReward} from direct likes on this {entity}
               </li>
-              {BigInt(fromCommentSuperLikes ?? '0') > 0 &&
+              {convertToBigInt(fromCommentSuperLikes ?? '0') > 0 &&
                 entity === 'post' && (
                   <li>
                     <span className='h-1 w-1 rounded-full bg-text' />
@@ -109,4 +109,13 @@ export default function PostRewardStat({
       </div>
     </div>
   )
+}
+
+function convertToBigInt(value: string) {
+  try {
+    return BigInt(value)
+  } catch (err) {
+    console.error('Cannot convert to BigInt: ', value, err)
+    return BigInt(0)
+  }
 }
