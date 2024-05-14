@@ -5,6 +5,7 @@ import { QueryConfig, createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import {
   QueryClient,
+  UseInfiniteQueryResult,
   useInfiniteQuery,
   useQueryClient,
 } from '@tanstack/react-query'
@@ -77,7 +78,7 @@ async function getPaginatedPostIdsByRootPostId({
     variables: {
       args: {
         filter: {
-          rootPostPersistentId: postId,
+          rootPostId: postId,
         },
         orderBy: 'createdAtTime',
         orderDirection: QueryOrder.Desc,
@@ -205,7 +206,10 @@ export const getPaginatedPostIdsByPostId = {
       refetchPage: (_, index) => index === 0,
     })
   },
-  useInfiniteQuery: (postId: string, config?: QueryConfig) => {
+  useInfiniteQuery: (
+    postId: string,
+    config?: QueryConfig
+  ): UseInfiniteQueryResult<PaginatedPostsData, unknown> => {
     const client = useQueryClient()
     return useInfiniteQuery({
       ...config,

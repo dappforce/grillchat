@@ -110,7 +110,6 @@ function ChatListContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  const isAllMessagesLoaded = messageIds.length === totalDataCount
   let alreadyRenderLastReadMessage = false
   let isFirstRenderedMessage = true
 
@@ -166,7 +165,7 @@ function ChatListContent({
                   // need to have enough room to open message menu
                   'min-h-[400px]'
                 )}
-                hasMore={!isAllMessagesLoaded}
+                hasMore={hasMore}
                 inverse
                 scrollableTarget={scrollableContainerId}
                 loader={<Loading className='pb-2 pt-4' />}
