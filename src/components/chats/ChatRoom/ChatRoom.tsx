@@ -39,7 +39,7 @@ export default function ChatRoom({
     <div
       {...props}
       className={cx(
-        'flex flex-1 flex-col overflow-auto max-lg:h-[calc(100dvh-11rem)] lg:h-[calc(100dvh-4rem)]',
+        'flex flex-1 flex-col overflow-auto max-lg:h-[calc(100dvh-8.5rem)] lg:h-[calc(100dvh-4rem)]',
         className
       )}
     >

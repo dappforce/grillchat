@@ -4,6 +4,7 @@ import {
   LeaderboardRole,
   getActiveStakingStatsByUser,
   getGeneralStatistics,
+  getGeneralStatisticsByPeriod,
   getLeaderboardData,
   getRewardHistory,
   getTopUsers,
@@ -38,6 +39,14 @@ export const getActiveStakingStatsByUserQuery = createQuery({
 export const getGeneralStatisticsQuery = createQuery({
   key: 'getGeneralStatistics',
   fetcher: getGeneralStatistics,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
+})
+
+export const getGeneralStatisticsByPeriodQuery = createQuery({
+  key: 'getGeneralStatisticsByPeriod',
+  fetcher: getGeneralStatisticsByPeriod,
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),

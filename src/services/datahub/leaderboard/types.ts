@@ -27,6 +27,8 @@ export type GeneralStatistics = {
   creatorsLiked: number
   stakersEarnedTotal: string
   creatorsEarnedTotal: string
+  creatorEarnedPointsTotal: string
+  stakersEarnedPointsTotal: string
 }
 
 export type LeaderboardRole = 'staker' | 'creator'

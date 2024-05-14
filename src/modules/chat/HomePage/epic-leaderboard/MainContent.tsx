@@ -6,13 +6,13 @@ import Name from '@/components/Name'
 import { Skeleton } from '@/components/SkeletonFallback'
 import PopOver from '@/components/floating/PopOver'
 import { spaceMono } from '@/fonts'
-import { getActiveStakingStatsByUserQuery } from '@/services/datahub/leaderboard/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import epicConfig from '../../../../constants/config/epic'
 import LeaderboardSection from './LeaderboardSection'
 import ReferralSection from './ReferralSection'
+import useCalculateTokenRewards from './useCalculateTokenRewards'
 
 const { gradient, tokenSymbol, EpicTokenIllust } = epicConfig
 
@@ -60,12 +60,7 @@ function MainCard() {
 
 const ProfileCardNew = () => {
   const myAddress = useMyMainAddress()
-  const { data: userStats, isLoading } =
-    getActiveStakingStatsByUserQuery.useQuery({
-      address: myAddress || '',
-    })
-
-  const { currentRewardAmount } = userStats || {}
+  const { isLoading, data: reward } = useCalculateTokenRewards()
 
   return (
     <MainCardTemplate>
@@ -94,7 +89,7 @@ const ProfileCardNew = () => {
               )}
             >
               <FormatBalance
-                value={currentRewardAmount || '0'}
+                value={reward}
                 symbol={`$${tokenSymbol}`}
                 loading={isLoading}
               />

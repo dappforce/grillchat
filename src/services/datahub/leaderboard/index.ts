@@ -167,54 +167,6 @@ export async function getUserStatistics({
   }
 }
 
-const GET_ACTIVE_STAKING_STATS_BY_USER = gql`
-  query GetActiveStakingStatsByUser($address: String!, $dayTimestamp: Int!) {
-    activeStakingDailyStatsByStaker(
-      args: { address: $address, range: DAY, dayTimestamp: $dayTimestamp }
-    ) {
-      superLikesCount
-      initialPoints
-      totalLazyRewardAmount
-      stakerRewordDistribution
-      currentRewardAmount
-    }
-  }
-`
-
-type DailyStatsByStakerResponse = {
-  superLikesCount: number
-  initialPoints: number
-  totalLazyRewardAmount: string
-  stakerRewordDistribution: number
-  currentRewardAmount: string
-}
-
-export async function getActiveStakingStatsByUser({
-  address,
-}: {
-  address: string
-}): Promise<{ address: string } & DailyStatsByStakerResponse> {
-  const res = await datahubQueryRequest<
-    { address: string } & DailyStatsByStakerResponse
-  >({
-    document: GET_ACTIVE_STAKING_STATS_BY_USER,
-    variables: { address, dayTimestamp: dayjs.utc().unix() },
-  })
-
-  console.log(dayjs.utc().unix())
-
-  return {
-    address,
-    superLikesCount: res.superLikesCount,
-    initialPoints: res.initialPoints,
-    totalLazyRewardAmount: res.totalLazyRewardAmount,
-    stakerRewordDistribution: res.stakerRewordDistribution,
-    currentRewardAmount: res.currentRewardAmount,
-  }
-}
-
-// activeStakingDailyStatsByStaker
-
 const GET_GENERAL_STATS = gql`
   query GetGeneralStats {
     activeStakingTotalActivityMetricsForFixedPeriod(
@@ -230,6 +182,8 @@ const GET_GENERAL_STATS = gql`
       likedCreatorsCount
       stakersEarnedTotal
       creatorEarnedTotal
+      creatorEarnedPointsTotal
+      stakersEarnedPointsTotal
     }
   }
 `
@@ -241,6 +195,8 @@ export async function getGeneralStatistics(): Promise<GeneralStatistics> {
         likedCreatorsCount: number
         stakersEarnedTotal: string
         creatorEarnedTotal: string
+        creatorEarnedPointsTotal: string
+        stakersEarnedPointsTotal: string
       }
     },
     {}
@@ -255,6 +211,8 @@ export async function getGeneralStatistics(): Promise<GeneralStatistics> {
     creatorsLiked: data.likedCreatorsCount,
     postsLiked: data.likedPostsCount,
     stakersEarnedTotal: data.stakersEarnedTotal,
+    creatorEarnedPointsTotal: data.creatorEarnedPointsTotal,
+    stakersEarnedPointsTotal: data.stakersEarnedPointsTotal,
   }
 }
 
@@ -387,5 +345,139 @@ export async function getRewardHistory(
   return {
     address,
     rewards,
+  }
+}
+
+const GET_ACTIVE_STAKING_STATS_BY_USER = gql`
+  query GetActiveStakingStatsByUser($address: String!, $dayTimestamp: String!) {
+    activeStakingAccountActivityMetricsForFixedPeriod(
+      args: {
+        address: $address
+        period: DAY
+        periodValue: $dayTimestamp
+        staker: {
+          likedPosts: false
+          likedCreators: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
+        }
+        creator: {
+          likesCountByPeriod: false
+          stakersWhoLiked: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
+        }
+      }
+    ) {
+      staker {
+        likedCreators
+        likedPosts
+        earnedByPeriod
+        earnedTotal
+        earnedPointsByPeriod
+      }
+      creator {
+        likesCountByPeriod
+        stakersWhoLiked
+        earnedByPeriod
+        earnedTotal
+        earnedPointsByPeriod
+      }
+    }
+  }
+`
+
+type DailyStatsByStakerResponse = {
+  staker: {
+    earnedPointsByPeriod: string
+  }
+  creator: {
+    earnedPointsByPeriod: string
+  }
+}
+
+export async function getActiveStakingStatsByUser({
+  address,
+  dayTimestamp,
+}: {
+  address: string
+  dayTimestamp: number
+}): Promise<{ address: string } & DailyStatsByStakerResponse> {
+  const res = await datahubQueryRequest<{
+    activeStakingAccountActivityMetricsForFixedPeriod: {
+      address: string
+    } & DailyStatsByStakerResponse
+  }>({
+    document: GET_ACTIVE_STAKING_STATS_BY_USER,
+    variables: { address, dayTimestamp: dayTimestamp.toString() },
+  })
+
+  console.log(res)
+  return {
+    address,
+    staker: {
+      earnedPointsByPeriod:
+        res.activeStakingAccountActivityMetricsForFixedPeriod.staker
+          ?.earnedPointsByPeriod || '0',
+    },
+    creator: {
+      earnedPointsByPeriod:
+        res.activeStakingAccountActivityMetricsForFixedPeriod.creator
+          ?.earnedPointsByPeriod || '0',
+    },
+  }
+}
+
+const GET_GENERAL_STATS_BY_PERIOD = gql`
+  query GetGeneralStats($periodValue: String!) {
+    activeStakingTotalActivityMetricsForFixedPeriod(
+      args: {
+        period: DAY
+        periodValue: $periodValue
+        likedPostsCount: false
+        likedCreatorsCount: false
+        stakersEarnedTotal: true
+        creatorEarnedTotal: true
+        creatorEarnedPointsTotal: true
+        stakersEarnedPointsTotal: true
+      }
+    ) {
+      stakersEarnedTotal
+      creatorEarnedTotal
+      creatorEarnedPointsTotal
+      stakersEarnedPointsTotal
+    }
+  }
+`
+export async function getGeneralStatisticsByPeriod(
+  periodValue: string
+): Promise<GeneralStatistics> {
+  const res = await datahubQueryRequest<
+    {
+      activeStakingTotalActivityMetricsForFixedPeriod: {
+        likedPostsCount: number
+        likedCreatorsCount: number
+        stakersEarnedTotal: string
+        creatorEarnedTotal: string
+        creatorEarnedPointsTotal: string
+        stakersEarnedPointsTotal: string
+      }
+    },
+    { periodValue: string }
+  >({
+    document: GET_GENERAL_STATS_BY_PERIOD,
+    variables: { periodValue },
+  })
+
+  const data = res.activeStakingTotalActivityMetricsForFixedPeriod
+  return {
+    creatorsEarnedTotal: data.creatorEarnedTotal,
+    creatorsLiked: data.likedCreatorsCount,
+    postsLiked: data.likedPostsCount,
+    stakersEarnedTotal: data.stakersEarnedTotal,
+    creatorEarnedPointsTotal: data.creatorEarnedPointsTotal,
+    stakersEarnedPointsTotal: data.stakersEarnedPointsTotal,
   }
 }
