@@ -5,6 +5,7 @@ import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusInd
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import SubTeamLabel from '@/components/chats/ChatItem/SubTeamLabel'
 import { getRepliedMessageId } from '@/components/chats/utils'
+import SuperLike from '@/components/content-staking/SuperLike'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -243,12 +244,12 @@ export default function CommonChatItem({
           myMessageConfig.children === 'bottom' &&
           childrenElement}
 
-        {/* <SuperLike
+        <SuperLike
           isMyMessage={isMyMessage}
           withPostReward
           postId={message.id}
           className='mb-1.5 ml-2.5 mt-1 self-start'
-        /> */}
+        />
       </div>
     </div>
   )

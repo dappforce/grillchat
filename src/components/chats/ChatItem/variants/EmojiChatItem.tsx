@@ -1,4 +1,5 @@
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
+import SuperLike from '@/components/content-staking/SuperLike'
 import { cx } from '@/utils/class-names'
 import { getEmojiAmount, validateTextContainsOnlyEmoji } from '@/utils/strings'
 import { getRepliedMessageId } from '../../utils'
@@ -123,7 +124,7 @@ export default function EmojiChatItem({
           <MessageStatusIndicator message={message} />
         </div>
       )}
-      {/* <SuperLike
+      <SuperLike
         isMyMessage={isMyMessage}
         withPostReward
         className={cx(
@@ -131,7 +132,7 @@ export default function EmojiChatItem({
           isMyMessage && 'flex-row-reverse'
         )}
         postId={messageId}
-      /> */}
+      />
     </div>
   )
 }

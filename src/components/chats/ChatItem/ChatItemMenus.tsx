@@ -1,8 +1,11 @@
 import Button from '@/components/Button'
+import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
+import { SuperLikeWrapper } from '@/components/content-staking/SuperLike'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
+import PopOver from '@/components/floating/PopOver'
 import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
@@ -32,6 +35,7 @@ import { toast } from 'react-hot-toast'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
 import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
+import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
@@ -76,7 +80,7 @@ export default function ChatItemMenus({
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { dataType } = message?.struct || {}
 
-  const isOptimisticMessage = dataType === 'optimistic'
+  const isOptimisticMessage = !dataType
 
   const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
@@ -170,8 +174,47 @@ export default function ChatItemMenus({
     <>
       <FloatingMenus
         beforeMenus={
-          isOptimisticMessage &&
-          message && <MintingMessageNotice message={message} />
+          isOptimisticMessage && (
+            <SuperLikeWrapper postId={messageId} withPostReward={false}>
+              {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
+                if (hasILiked) return null
+                const menuList = (
+                  <div className='relative w-full'>
+                    <MenuList
+                      size='sm'
+                      menus={[
+                        {
+                          icon: IoDiamondOutline,
+                          text: 'Like Message',
+                          disabled: isDisabled,
+                          onClick: () => {
+                            handleClick()
+                            setIsOpenChatMenu(null)
+                          },
+                        },
+                      ]}
+                    />
+                    <div className='absolute bottom-0 flex w-full flex-col'>
+                      <div className='mx-4 border-b border-border-gray' />
+                    </div>
+                  </div>
+                )
+                return disabledCause ? (
+                  <PopOver
+                    triggerClassName='w-full'
+                    trigger={menuList}
+                    panelSize='sm'
+                    triggerOnHover
+                    placement='top'
+                  >
+                    <p>{disabledCause}</p>
+                  </PopOver>
+                ) : (
+                  menuList
+                )
+              }}
+            </SuperLikeWrapper>
+          )
         }
         menus={menus}
         allowedPlacements={[
