@@ -1,8 +1,4 @@
 import Button from '@/components/Button'
-import {
-  isClientGeneratedOptimisticId,
-  isMessageSent,
-} from '@/services/subsocial/commentIds/optimistic'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
@@ -63,12 +59,9 @@ export default function MessageStatusIndicator({
 }
 
 export function getMessageStatusById(message: PostData): MessageStatus {
-  const id = message.id
-  if (!isMessageSent(id, message.struct.dataType)) {
-    if (isClientGeneratedOptimisticId(id)) return 'sending'
-    return 'optimistic'
+  if (!message.struct.dataType) {
+    return 'sending'
   } else {
-    if (message.struct.dataType === 'offChain') return 'offChain'
-    return 'blockchain'
+    return 'offChain'
   }
 }
