@@ -14,10 +14,10 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
-import { replaceUrl } from '@/utils/window'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { IconType } from 'react-icons'
@@ -220,6 +220,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
     grillAddress ?? ''
   )
+  const router = useRouter()
   const linkedIdentityRef = useWrapInRef(linkedIdentity)
   const { mutate, isLoading } = useAddExternalProviderToIdentity({
     onSuccess: () => {
@@ -239,10 +240,12 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   })
 
   useEffect(() => {
-    const loginProvider = getUrlQuery('login')
+    const loginProvider = getUrlQuery('provider')
     if (loginProvider === provider && session && !calledRef.current) {
       calledRef.current = true
-      replaceUrl(getCurrentUrlWithoutQuery('login'))
+      router.replace(getCurrentUrlWithoutQuery('provider'), undefined, {
+        shallow: true,
+      })
       const externalProvider = getExternalProviderPayload(session)
       if (!externalProvider) {
         toast.error('Provider not supported')
@@ -262,7 +265,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
         signIn(provider, {
           callbackUrl:
             getCurrentUrlWithoutQuery() +
-            `?profile=linked-accounts&login=${provider}`,
+            `?profile=linked-accounts&provider=${provider}`,
         })
       }}
     >
