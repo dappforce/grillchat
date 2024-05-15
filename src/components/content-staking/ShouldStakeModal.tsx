@@ -1,8 +1,5 @@
-import SubsocialTokenImage from '@/assets/graphics/subsocial-tokens-large.png'
 import Button from '@/components/Button'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { CONTENT_STAKING_LINK } from '@/constants/links'
-import Image from 'next/image'
 import Modal from '../modals/Modal'
 
 export default function ShouldStakeModal({
@@ -11,25 +8,19 @@ export default function ShouldStakeModal({
   return (
     <Modal
       {...props}
-      title='Wait a sec...'
-      description='In this app, every like is more than just a thumbs-up! When you like a post, both you and the author can earn extra SUB tokens. For this, you need to start locking SUB tokens first.'
+      title='Mint Your EPIC NFT To Start Earning!'
+      description='To be eligible for rewards, you need to mint at least one NFT Ticket.'
       withCloseButton
     >
       <div className='flex flex-col items-center gap-6'>
-        <Image
-          src={SubsocialTokenImage}
-          alt='subsocial'
-          className='w-100'
-          style={{ maxWidth: '250px' }}
-        />
         <Button
           className='w-full'
           size='lg'
-          href={CONTENT_STAKING_LINK}
+          href='https://paragraph.xyz/@olehmell/what-is-meme-to-earn'
           target='_blank'
           rel='noopener noreferrer'
         >
-          Start Locking SUB
+          Mint NFT Ticket
         </Button>
       </div>
     </Modal>
