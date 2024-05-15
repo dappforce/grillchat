@@ -1,7 +1,10 @@
 import { env } from '@/env.mjs'
 import { currentNetwork } from '@/utils/network'
+import BN from 'bignumber.js'
 import subsocialConfig from './subsocial'
 import xsocialConfig from './xsocial'
+
+export const ZERO = new BN(0)
 
 export type ConstantsConfig = {
   aliases: Record<string, string | undefined>

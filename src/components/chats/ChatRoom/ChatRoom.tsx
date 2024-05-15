@@ -36,10 +36,7 @@ export default function ChatRoom({
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div
-      {...props}
-      className={cx('flex flex-1 flex-col overflow-hidden', className)}
-    >
+    <div {...props} className={cx('flex flex-1 flex-col', className)}>
       <ChatList
         hubId={hubId}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}

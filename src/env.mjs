@@ -70,6 +70,7 @@ export const env = createEnv({
     NEXT_PUBLIC_DATAHUB_QUERY_URL: z.string().default(''),
     NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL: z.string().default(''),
     NEXT_PUBLIC_NEYNAR_CLIENT_ID: z.string().default(''),
+    NEXT_PUBLIC_REWARD_TOKEN: z.string().default('degen'),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_ID: process.env.NEXT_PUBLIC_APP_ID,
@@ -109,5 +110,6 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL,
     NEXT_PUBLIC_NEYNAR_CLIENT_ID: process.env.NEXT_PUBLIC_NEYNAR_CLIENT_ID,
     NEXT_PUBLIC_PROPOSALS_HUB: process.env.NEXT_PUBLIC_PROPOSALS_HUB,
+    NEXT_PUBLIC_REWARD_TOKEN: process.env.NEXT_PUBLIC_REWARD_TOKEN,
   },
 })

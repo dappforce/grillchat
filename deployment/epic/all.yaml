@@ -1,0 +1,58 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: grill-epic
+  name: grill-epic
+  namespace: sub-back
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: grill-epic
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grill-epic
+  namespace: sub-back
+  annotations:
+    ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.org/client-max-body-size: '10m'
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    nginx.ingress.kubernetes.io/client-max-body-size: '10m'
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: epic.subsocial.network
+      http:
+        paths:
+          - backend:
+              service:
+                name: grill-epic
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
+
+  tls:
+    - hosts:
+        - epic.subsocial.network
+      secretName: subsocial-ssl
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grill-epic-env
+  namespace: sub-back
+data:
+  REDIS_HOST: 'redis-master.default'
+  REDIS_PORT: '6379'

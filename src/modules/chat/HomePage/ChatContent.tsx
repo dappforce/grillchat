@@ -1,49 +1,31 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { cx } from '@/utils/class-names'
-import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
 type Props = {
   hubId: string
   chatId: string
+  className?: string
 }
 
-export default function ChatContent(props: Props) {
-  const [selectedTab, setSelectedTab] = useState<'trending' | 'recent'>(
-    'trending'
-  )
+export default function ChatContent({ chatId, hubId, className }: Props) {
   return (
-    <div className='flex h-full flex-col border-x border-border-gray bg-background-light'>
-      <div className='flex items-center justify-between gap-4 border-b border-border-gray px-2 py-2'>
-        <span className='font-semibold'>Meme2earn</span>
-        <div className='flex whitespace-nowrap rounded-md bg-[#eceff4] text-sm font-medium text-text-muted dark:bg-[#11172a]'>
-          <Button
-            size='noPadding'
-            variant='transparent'
-            className={cx(
-              'rounded-md rounded-r-none px-3 py-1.5',
-              selectedTab === 'trending' && 'bg-background-primary text-white'
-            )}
-            onClick={() => setSelectedTab('trending')}
-          >
-            Trending
-          </Button>
-          <Button
-            size='noPadding'
-            variant='transparent'
-            className={cx(
-              'rounded-md rounded-l-none px-3 py-1.5',
-              selectedTab === 'recent' && 'bg-background-primary text-white'
-            )}
-            onClick={() => setSelectedTab('recent')}
-          >
-            Recent
-          </Button>
-        </div>
+    <div
+      className={cx(
+        'flex flex-col border-x border-border-gray bg-background-light',
+        className
+      )}
+    >
+      <div className='w-full'>
+        <ChatRoom
+          asContainer
+          chatId={chatId}
+          hubId={hubId}
+          className='overflow-auto max-lg:h-[calc(100dvh-8.2rem)] lg:h-[calc(100dvh-4rem)]'
+        />
       </div>
-      <ChatRoom asContainer chatId={props.chatId} hubId={props.hubId} />
     </div>
   )
 }

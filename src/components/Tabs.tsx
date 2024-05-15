@@ -8,6 +8,7 @@ type Tab = {
   id: string
   text: string | ReactNode
   content: (changeTab: (selectedTab: number) => void) => JSX.Element
+  isHidden?: boolean
 }
 export type TabsProps = ComponentProps<'div'> & {
   tabStyle?: 'buttons' | 'texts'
@@ -15,13 +16,13 @@ export type TabsProps = ComponentProps<'div'> & {
   tabs: Tab[]
   tabsRightElement?: ReactNode
   panelClassName?: string
-  tabClassName?: string
+  tabClassName?: ((selected: boolean) => string) | string
   defaultTab?: number
   withHashIntegration?: boolean
   hideBeforeHashLoaded?: boolean
   manualTabControl?: {
     selectedTab: number
-    setSelectedTab: (selectedTab: number) => void
+    setSelectedTab: (selectedTab: number, tabId?: string) => void
   }
 }
 
@@ -49,17 +50,19 @@ export default function Tabs({
 
     const hash = window.location.hash
     const index = tabs.findIndex(({ id }) => `#${id}` === hash)
-    if (index > -1) setSelectedTab(index)
+    const id = tabs[index]?.id
+    if (index > -1) setSelectedTab(index, id)
 
     setIsHashLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const changeTab = (index: number) => {
-    setSelectedTab(index)
+    const id = tabs[index].id
+
+    setSelectedTab(index, id)
 
     if (withHashIntegration) {
-      const id = tabs[index].id
       replaceUrl(`#${id}`)
     }
   }
@@ -73,7 +76,12 @@ export default function Tabs({
   return (
     <Tab.Group
       selectedIndex={usedSelectedTab === -1 ? tabs.length : usedSelectedTab}
-      onChange={setSelectedTab}
+      manual
+      onChange={(index) => {
+        const id = tabs[index]?.id
+
+        setSelectedTab(index, id)
+      }}
     >
       <Tab.List
         as={component}
@@ -83,12 +91,13 @@ export default function Tabs({
           props.className
         )}
       >
-        {tabs.map(({ text, id }, idx) => (
+        {tabs.map(({ text, id, isHidden }, idx) => (
           <Tab key={id} as={Fragment}>
             {({ selected }) => {
               return (
                 <span
                   className={cx(
+                    isHidden && '!hidden',
                     'group relative block cursor-pointer rounded-t-2xl px-2 outline-none after:absolute after:bottom-0 after:left-0 after:h-[90%] after:w-full after:rounded-t-2xl after:bg-background-light after:opacity-0 after:transition-opacity sm:px-3',
                     'border-collapse focus-visible:after:opacity-100',
                     tabStyle === 'buttons' &&
@@ -102,7 +111,9 @@ export default function Tabs({
                           'border-r border-background-primary bg-background-primary/30'
                       ),
 
-                    tabClassName
+                    typeof tabClassName === 'string'
+                      ? tabClassName
+                      : tabClassName?.(selected)
                   )}
                 >
                   <span

@@ -107,7 +107,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   }, [])
 
   return (
-    <ThemeProvider attribute='class' defaultTheme='light' forcedTheme={theme}>
+    <ThemeProvider attribute='class' defaultTheme='light' forcedTheme={'light'}>
       <QueryProvider dehydratedState={dehydratedState}>
         <NeynarLoginProvider>
           <DatahubSubscriber />
