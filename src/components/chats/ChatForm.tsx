@@ -9,6 +9,7 @@ import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
+import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
 import { useSendMessage } from '@/services/datahub/posts/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
@@ -107,9 +108,18 @@ export default function ChatForm({
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
 
+  const { data: isSufficient, refetch } = getIsBalanceSufficientQuery.useQuery(
+    myAddress ?? ''
+  )
+  const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
+
   const { mutate: loginAndSendMessage } = useSendMessageWithLoginFlow({
-    onSuccess: () => unsentMessageStorage.remove(chatId),
+    onSuccess: () => {
+      refetch()
+      unsentMessageStorage.remove(chatId)
+    },
     onError: (error, variables) => {
+      refetch()
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
         reloadUnsentMessage,
         setIsDisabledInput,
@@ -202,6 +212,10 @@ export default function ChatForm({
     hasSentMessageStorage.set('true')
 
     if (shouldSendMessage) {
+      if (!isSufficient) {
+        setOpenMessageModal('should-stake')
+        return
+      }
       sendMessage(augmentDatahubParams(messageParams))
     } else {
       loginAndSendMessage(messageParams)

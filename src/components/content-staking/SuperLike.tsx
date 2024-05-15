@@ -1,5 +1,6 @@
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery } from '@/services/api/query'
+import { getIsActiveStakerQuery } from '@/services/datahub/balances/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import {
   PostRewards,
@@ -57,6 +58,7 @@ export function SuperLikeWrapper({
   const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
     enabled: withPostReward,
   })
+
   const { isBlocked, isLoading: loadingBlocked } = useIsAddressBlockedInApp()
   const { setIsOpen } = useLoginModal()
   const isMenuOpened = useChatMenu((state) => state.openedChatId === postId)
@@ -75,6 +77,8 @@ export function SuperLikeWrapper({
 
   const myAddress = useMyMainAddress()
   const myGrillAddress = useMyAccount.use.address()
+  const { data: isActiveStaker, isLoading: loadingActiveStaker } =
+    getIsActiveStakerQuery.useQuery(myAddress ?? '')
 
   const { data: myLike, isFetching: loadingMyLike } =
     getAddressLikeCountToPostQuery.useQuery({
@@ -93,11 +97,13 @@ export function SuperLikeWrapper({
       isMyPost ||
       loadingMyLike ||
       loadingBlocked ||
+      loadingActiveStaker ||
       !message) &&
     !hasILiked
 
   let disabledCause = ''
-  if (isMyPost) {
+  if (loadingActiveStaker || loadingBlocked) disabledCause = 'Loading...'
+  else if (isMyPost) {
     disabledCause = `You cannot like your own ${entity}`
   } else if (!isExist)
     disabledCause = `This ${entity} is still being minted, please wait a few seconds`
@@ -119,6 +125,11 @@ export function SuperLikeWrapper({
 
     if (!myAddress || !myGrillAddress) {
       setIsOpen(true)
+      return
+    }
+
+    if (!isActiveStaker) {
+      setOpenMessageModal('should-stake')
       return
     }
 

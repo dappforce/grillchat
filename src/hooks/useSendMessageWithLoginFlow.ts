@@ -1,8 +1,14 @@
+import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
 import { useSendMessage } from '@/services/datahub/posts/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
+import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
-import { UseMutationOptions, useMutation } from '@tanstack/react-query'
+import {
+  UseMutationOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import useLoginOption from './useLoginOption'
 
 type Params = SendMessageParams
@@ -13,6 +19,8 @@ export default function useSendMessageWithLoginFlow(
   const { promptUserForLogin } = useLoginOption()
 
   const { mutateAsync: sendMessage } = useSendMessage()
+  const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
+  const client = useQueryClient()
 
   const handler = async (params: Params) => {
     let usedAddress: string = address ?? ''
@@ -20,6 +28,15 @@ export default function useSendMessageWithLoginFlow(
       const loginAddress = await promptUserForLogin()
       if (!loginAddress) return
       usedAddress = loginAddress
+    }
+
+    const isSufficient = await getIsBalanceSufficientQuery.fetchQuery(
+      client,
+      usedAddress
+    )
+    if (!isSufficient) {
+      setOpenMessageModal('should-stake')
+      return
     }
 
     await sendMessage(augmentDatahubParams(params))
