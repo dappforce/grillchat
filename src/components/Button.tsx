@@ -115,7 +115,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   if (isLoading) {
     children = (
       <>
-        <div className='flex items-center'>
+        <div className='flex items-center justify-center'>
           <span className='mr-2 whitespace-nowrap'>{loadingText}</span>{' '}
           <Spinner className='h-3.5 w-3.5' />
         </div>

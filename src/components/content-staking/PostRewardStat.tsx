@@ -2,10 +2,7 @@ import { getPostQuery } from '@/services/api/query'
 import { getPostRewardsQuery } from '@/services/datahub/content-staking/query'
 import { formatBalance } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
-import capitalize from 'lodash.capitalize'
 import { ComponentProps } from 'react'
-import { TbCoins } from 'react-icons/tb'
-import PopOver from '../floating/PopOver'
 
 export type PostRewardStatProps = ComponentProps<'div'> & { postId: string }
 
@@ -23,27 +20,27 @@ export default function PostRewardStat({
     toPrecision: 2,
   })
 
-  const { fromCommentSuperLikes, fromDirectSuperLikes, fromShareSuperLikes } =
-    reward?.rewardsBySource || {}
-  const directReward = formatBalance({
-    value: fromDirectSuperLikes ?? '',
-    toPrecision: 2,
-  })
-  const commentReward = formatBalance({
-    value: fromCommentSuperLikes ?? '',
-    toPrecision: 2,
-  })
-  const sharesReward = formatBalance({
-    value: fromShareSuperLikes ?? '',
-    toPrecision: 2,
-  })
+  // const { fromCommentSuperLikes, fromDirectSuperLikes, fromShareSuperLikes } =
+  //   reward?.rewardsBySource || {}
+  // const directReward = formatBalance({
+  //   value: fromDirectSuperLikes ?? '',
+  //   toPrecision: 2,
+  // })
+  // const commentReward = formatBalance({
+  //   value: fromCommentSuperLikes ?? '',
+  //   toPrecision: 2,
+  // })
+  // const sharesReward = formatBalance({
+  //   value: fromShareSuperLikes ?? '',
+  //   toPrecision: 2,
+  // })
 
   if (!reward?.isNotZero) return null
 
   return (
     <div {...props} className={cx('text-text-muted', props.className)}>
       <div className='flex items-center gap-1.5'>
-        <div className='relative flex items-center'>
+        {/* <div className='relative flex items-center'>
           {convertToBigInt(reward.rewardDetail.draftReward) > 0 ? (
             <PopOver
               triggerOnHover
@@ -75,8 +72,9 @@ export default function PostRewardStat({
           ) : (
             <TbCoins />
           )}
-        </div>
-        <PopOver
+        </div> */}
+        <span>{totalReward} points</span>
+        {/* <PopOver
           placement='top'
           yOffset={4}
           panelSize='sm'
@@ -105,7 +103,7 @@ export default function PostRewardStat({
               )}
             </ul>
           </div>
-        </PopOver>
+        </PopOver> */}
       </div>
     </div>
   )
