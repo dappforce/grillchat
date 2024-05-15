@@ -5,10 +5,7 @@ import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import {
-  ConfigProvider,
-  useConfigContext,
-} from '@/providers/config/ConfigProvider'
+import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import NeynarLoginProvider from '@/providers/config/NeynarLoginProvider'
 import { getAugmentedGaId } from '@/providers/config/utils'
 import EvmProvider from '@/providers/evm/EvmProvider'
@@ -25,7 +22,7 @@ import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import '@rainbow-me/rainbowkit/styles.css'
 import { SessionProvider } from 'next-auth/react'
-// import { ThemeProvider } from 'next-themes'
+import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 import NextNProgress from 'nextjs-progressbar'
@@ -98,7 +95,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   const { head, dehydratedState, ...props } = pageProps
 
   const isInitialized = useRef(false)
-  const { theme } = useConfigContext()
 
   useEffect(() => {
     if (isInitialized.current) return
@@ -107,32 +103,35 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   }, [])
 
   return (
-    // <ThemeProvider attribute='class' defaultTheme='light' forcedTheme={'light'}>
-    <QueryProvider dehydratedState={dehydratedState}>
-      <NeynarLoginProvider>
-        <DatahubSubscriber />
-        <ToasterConfig />
-        <ReferralUrlChanger />
-        <NextNProgress
-          color='#eb2f95'
-          options={{ showSpinner: false }}
-          showOnShallow={false}
-        />
-        <HeadConfig {...head} />
-        <GoogleAnalytics trackPageViews gaMeasurementId={getAugmentedGaId()} />
-        <GlobalModals />
-        <SessionAccountChecker />
-        <OauthLoadingModal />
-        <div className={cx('font-sans')}>
-          <ErrorBoundary>
-            <EvmProvider>
-              <Component {...props} />
-            </EvmProvider>
-          </ErrorBoundary>
-        </div>
-      </NeynarLoginProvider>
-    </QueryProvider>
-    // </ThemeProvider>
+    <ThemeProvider attribute='class' defaultTheme='light' forcedTheme='light'>
+      <QueryProvider dehydratedState={dehydratedState}>
+        <NeynarLoginProvider>
+          <DatahubSubscriber />
+          <ToasterConfig />
+          <ReferralUrlChanger />
+          <NextNProgress
+            color='#eb2f95'
+            options={{ showSpinner: false }}
+            showOnShallow={false}
+          />
+          <HeadConfig {...head} />
+          <GoogleAnalytics
+            trackPageViews
+            gaMeasurementId={getAugmentedGaId()}
+          />
+          <GlobalModals />
+          <SessionAccountChecker />
+          <OauthLoadingModal />
+          <div className={cx('font-sans')}>
+            <ErrorBoundary>
+              <EvmProvider>
+                <Component {...props} />
+              </EvmProvider>
+            </ErrorBoundary>
+          </div>
+        </NeynarLoginProvider>
+      </QueryProvider>
+    </ThemeProvider>
   )
 }
 
