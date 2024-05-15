@@ -205,18 +205,18 @@ const GET_POST_REWARDS = gql`
   query GetPostRewards($postIds: [String!]!) {
     activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
       persistentPostId
-      # draftRewardTotal
+      draftPointsRewardTotal
       pointsRewardTotal
       pointsRewardsBySource {
         fromDirectSuperLikes
         fromCommentSuperLikes
         fromShareSuperLikes
       }
-      # draftRewardsBySource {
-      #   fromDirectSuperLikes
-      #   fromCommentSuperLikes
-      #   fromShareSuperLikes
-      # }
+      draftPointsRewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
     }
   }
 `
@@ -254,17 +254,11 @@ const getPostRewards = poolQuery<string, PostRewards>({
       const {
         pointsRewardTotal,
         pointsRewardsBySource,
-        // draftRewardsBySource
-        // draftRewardTotal,
+        draftPointsRewardsBySource,
+        draftPointsRewardTotal,
       } = item
-      let draftRewardTotal = '0'
-      let draftRewardsBySource = {
-        fromCommentSuperLikes: '0',
-        fromDirectSuperLikes: '0',
-        fromShareSuperLikes: '0',
-      }
       const total =
-        parseToBigInt(pointsRewardTotal) + parseToBigInt(draftRewardTotal)
+        parseToBigInt(pointsRewardTotal) + parseToBigInt(draftPointsRewardTotal)
       if (!item.persistentPostId) return
 
       resultMap.set(item.persistentPostId, {
@@ -272,21 +266,21 @@ const getPostRewards = poolQuery<string, PostRewards>({
         reward: total.toString(),
         isNotZero: total > 0,
         rewardDetail: {
-          draftReward: draftRewardTotal,
+          draftReward: draftPointsRewardTotal,
           finalizedReward: pointsRewardTotal,
         },
         rewardsBySource: {
           fromCommentSuperLikes: (
             parseToBigInt(pointsRewardsBySource?.fromCommentSuperLikes) +
-            parseToBigInt(draftRewardsBySource?.fromCommentSuperLikes)
+            parseToBigInt(draftPointsRewardsBySource?.fromCommentSuperLikes)
           ).toString(),
           fromDirectSuperLikes: (
             parseToBigInt(pointsRewardsBySource?.fromDirectSuperLikes) +
-            parseToBigInt(draftRewardsBySource?.fromDirectSuperLikes)
+            parseToBigInt(draftPointsRewardsBySource?.fromDirectSuperLikes)
           ).toString(),
           fromShareSuperLikes: (
             parseToBigInt(pointsRewardsBySource?.fromShareSuperLikes) +
-            parseToBigInt(draftRewardsBySource?.fromShareSuperLikes)
+            parseToBigInt(draftPointsRewardsBySource?.fromShareSuperLikes)
           ).toString(),
         },
       })

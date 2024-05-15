@@ -1262,6 +1262,8 @@ export type RewardsByPostsResponseDto = {
   __typename?: 'RewardsByPostsResponseDto'
   /** @deprecated rewardTotal field must be used */
   amount: Scalars['String']['output']
+  draftPointsRewardTotal: Scalars['String']['output']
+  draftPointsRewardsBySource?: Maybe<PostRewardsBySourceResponseDto>
   /** @deprecated draftRewardTotal field must be used */
   draftReward: Scalars['String']['output']
   draftRewardTotal: Scalars['String']['output']
@@ -1762,8 +1764,15 @@ export type GetPostRewardsQuery = {
   activeStakingRewardsByPosts: Array<{
     __typename?: 'RewardsByPostsResponseDto'
     persistentPostId?: string | null
+    draftPointsRewardTotal: string
     pointsRewardTotal: string
     pointsRewardsBySource?: {
+      __typename?: 'PostRewardsBySourceResponseDto'
+      fromDirectSuperLikes?: string | null
+      fromCommentSuperLikes?: string | null
+      fromShareSuperLikes?: string | null
+    } | null
+    draftPointsRewardsBySource?: {
       __typename?: 'PostRewardsBySourceResponseDto'
       fromDirectSuperLikes?: string | null
       fromCommentSuperLikes?: string | null
@@ -2982,8 +2991,14 @@ export const GetPostRewards = gql`
   query GetPostRewards($postIds: [String!]!) {
     activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
       persistentPostId
+      draftPointsRewardTotal
       pointsRewardTotal
       pointsRewardsBySource {
+        fromDirectSuperLikes
+        fromCommentSuperLikes
+        fromShareSuperLikes
+      }
+      draftPointsRewardsBySource {
         fromDirectSuperLikes
         fromCommentSuperLikes
         fromShareSuperLikes
