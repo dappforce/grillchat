@@ -111,15 +111,21 @@ export default function ChatForm({
   const { data: isSufficient, refetch } = getIsBalanceSufficientQuery.useQuery(
     myAddress ?? ''
   )
+  const refetchSufficientBalanceData = () => {
+    setTimeout(() => {
+      refetch()
+    }, 1000)
+  }
+
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
 
   const { mutate: loginAndSendMessage } = useSendMessageWithLoginFlow({
     onSuccess: () => {
-      refetch()
+      refetchSufficientBalanceData()
       unsentMessageStorage.remove(chatId)
     },
     onError: (error, variables) => {
-      refetch()
+      refetchSufficientBalanceData()
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
         reloadUnsentMessage,
         setIsDisabledInput,
@@ -137,9 +143,11 @@ export default function ChatForm({
 
   const { mutate: sendMessage } = useSendMessage({
     onSuccess: () => {
+      refetchSufficientBalanceData()
       unsentMessageStorage.remove(chatId)
     },
     onError: (error, variables) => {
+      refetchSufficientBalanceData()
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
         reloadUnsentMessage,
         setIsDisabledInput,
