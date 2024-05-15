@@ -35,8 +35,7 @@ export function formatBalance({
   toFixed?: number
   toPrecision?: number
 }) {
-  const formattedValue = formatUnits(value, 10)
-  const [prefix, postfix] = formattedValue.split('.')
+  const [prefix, postfix] = value.split('.')
   let afterDecimalPoint = postfix
   if (toPrecision) {
     afterDecimalPoint = parseFloat(`0.${postfix}`)
@@ -47,6 +46,10 @@ export function formatBalance({
       .substring(0, toFixed)
       .padEnd(toFixed, '0')
       .substring(0, toFixed)
+  }
+
+  if (afterDecimalPoint === '0') {
+    return prefix
   }
 
   return `${prefix}.${afterDecimalPoint}`
