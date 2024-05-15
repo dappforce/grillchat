@@ -1836,6 +1836,22 @@ export type SubscribeSuperLikeSubscription = {
   }
 }
 
+export type SubscribeEventsSubscriptionVariables = Exact<{
+  args: AccountServiceMessageInput
+}>
+
+export type SubscribeEventsSubscription = {
+  __typename?: 'Subscription'
+  serviceMessageToTarget: {
+    __typename?: 'AccountServiceMessageToTargetResponse'
+    event: DataHubSubscriptionEventEnum
+    meta: {
+      __typename?: 'AccountServiceMessageToTargetMeta'
+      msg?: string | null
+    }
+  }
+}
+
 export type GetGeneralStatsQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetGeneralStatsQuery = {
@@ -3020,6 +3036,16 @@ export const SubscribeSuperLike = gql`
         post {
           persistentId
         }
+      }
+    }
+  }
+`
+export const SubscribeEvents = gql`
+  subscription SubscribeEvents($args: AccountServiceMessageInput!) {
+    serviceMessageToTarget(args: $args) {
+      event
+      meta {
+        msg
       }
     }
   }
