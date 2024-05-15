@@ -3,7 +3,7 @@ import BrettTokenIllust from '@/assets/graphics/brett-token-illust.svg'
 import DegenTokenIllust from '@/assets/graphics/degen-token-illust.svg'
 import { env } from '@/env.mjs'
 
-const rewardToken = env.NEXT_PUBLIC_APP_ID
+const rewardToken = env.NEXT_PUBLIC_REWARD_TOKEN
 
 type EpicConfig = {
   tokenSymbol: string
