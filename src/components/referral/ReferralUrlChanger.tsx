@@ -1,4 +1,3 @@
-import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import {
   getCurrentSearchParams,
@@ -14,10 +13,7 @@ export function getReferralIdInUrl() {
 
 export function useReferralId() {
   const myAddress = useMyMainAddress()
-  const profile = getProfileQuery.useQuery(myAddress ?? '')
-  const spaceId = profile.data?.profileSpace?.id
-
-  return spaceId || getReferralIdInUrl()
+  return myAddress || getReferralIdInUrl()
 }
 
 export function useReferralSearchParam() {
