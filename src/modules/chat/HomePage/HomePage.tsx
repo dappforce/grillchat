@@ -1,7 +1,9 @@
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import ChatContent from './ChatContent'
 import MobileNavigation, { HomePageView } from './MobileNavigation'
 import MainContent from './epic-leaderboard/MainContent'
@@ -15,6 +17,14 @@ export type HomePageProps = {
 
 export default function HomePage({ address }: HomePageProps) {
   const [homePageView, setHomePageView] = useState<HomePageView>('stats')
+  const myAddress = useMyMainAddress()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (myAddress && !address) {
+      router.replace('/[address]', `/${myAddress}`, { shallow: true })
+    }
+  }, [address, myAddress])
 
   return (
     <DefaultLayout className='relative'>

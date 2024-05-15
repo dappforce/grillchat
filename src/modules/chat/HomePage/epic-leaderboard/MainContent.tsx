@@ -11,6 +11,7 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import epicConfig from '../../../../constants/config/epic'
+import MissingRewards from '../MissingRewards'
 import LeaderboardSection from './LeaderboardSection'
 import ReferralSection from './ReferralSection'
 import useCalculateTokenRewards from './useCalculateTokenRewards'
@@ -34,7 +35,8 @@ const MainContent = ({ className, address }: MainContentProps) => {
     >
       <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0')}>
         <MainCard address={address} />
-        {myAddress && <ReferralSection />}
+        <MissingRewards address={address} />
+        {myAddress && myAddress === address && <ReferralSection />}
         <LeaderboardSection />
       </div>
     </div>
@@ -43,6 +45,9 @@ const MainContent = ({ className, address }: MainContentProps) => {
 
 function MainCard({ address }: MainContentProps) {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
+  const myAddress = useMyMainAddress()
+
+  const userAddress = address || myAddress
 
   if (!isInitializedProxy) {
     return (
@@ -61,7 +66,7 @@ function MainCard({ address }: MainContentProps) {
     )
   }
 
-  if (!address) {
+  if (!userAddress) {
     return <GuestCard />
   }
 
@@ -69,9 +74,11 @@ function MainCard({ address }: MainContentProps) {
 }
 
 const ProfileCard = ({ address }: MainContentProps) => {
-  const { isLoading, data: reward } = useCalculateTokenRewards(address)
+  const myAddress = useMyMainAddress()
 
-  console.log(address)
+  const userAddress = address || myAddress || ''
+
+  const { isLoading, data: reward } = useCalculateTokenRewards(userAddress)
 
   return (
     <MainCardTemplate>
@@ -79,11 +86,11 @@ const ProfileCard = ({ address }: MainContentProps) => {
         <div className='flex w-full items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>
             <AddressAvatar
-              address={address || ''}
+              address={userAddress || ''}
               className='h-[33px] w-[33px] rounded-lg object-cover outline outline-[3px] outline-white/20'
             />
             <Name
-              address={address || ''}
+              address={userAddress || ''}
               className='text-lg font-semibold !text-white'
             />
           </div>
