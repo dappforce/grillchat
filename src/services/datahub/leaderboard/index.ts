@@ -1,5 +1,9 @@
 import dayjs from 'dayjs'
 import gql from 'graphql-tag'
+import {
+  GetGeneralStatsByWeekQuery,
+  GetGeneralStatsByWeekQueryVariables,
+} from '../generated-query'
 import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 import {
   GeneralStatistics,
@@ -167,8 +171,8 @@ export async function getUserStatistics({
   }
 }
 
-const GET_GENERAL_STATS = gql`
-  query GetGeneralStats {
+const GET_GENERAL_STATS_BY_WEEK = gql`
+  query GetGeneralStatsByWeek {
     activeStakingTotalActivityMetricsForFixedPeriod(
       args: {
         period: WEEK
@@ -189,30 +193,21 @@ const GET_GENERAL_STATS = gql`
 `
 export async function getGeneralStatistics(): Promise<GeneralStatistics> {
   const res = await datahubQueryRequest<
-    {
-      activeStakingTotalActivityMetricsForFixedPeriod: {
-        likedPostsCount: number
-        likedCreatorsCount: number
-        stakersEarnedTotal: string
-        creatorEarnedTotal: string
-        creatorEarnedPointsTotal: string
-        stakersEarnedPointsTotal: string
-      }
-    },
-    {}
+    GetGeneralStatsByWeekQuery,
+    GetGeneralStatsByWeekQueryVariables
   >({
-    document: GET_GENERAL_STATS,
+    document: GET_GENERAL_STATS_BY_WEEK,
     variables: {},
   })
 
   const data = res.activeStakingTotalActivityMetricsForFixedPeriod
   return {
-    creatorsEarnedTotal: data.creatorEarnedTotal,
-    creatorsLiked: data.likedCreatorsCount,
-    postsLiked: data.likedPostsCount,
-    stakersEarnedTotal: data.stakersEarnedTotal,
-    creatorEarnedPointsTotal: data.creatorEarnedPointsTotal,
-    stakersEarnedPointsTotal: data.stakersEarnedPointsTotal,
+    creatorsEarnedTotal: data.creatorEarnedTotal ?? '',
+    creatorsLiked: data.likedCreatorsCount ?? 0,
+    postsLiked: data.likedPostsCount ?? 0,
+    stakersEarnedTotal: data.stakersEarnedTotal ?? '',
+    creatorEarnedPointsTotal: data.creatorEarnedPointsTotal ?? '',
+    stakersEarnedPointsTotal: data.stakersEarnedPointsTotal ?? '',
   }
 }
 
@@ -432,7 +427,7 @@ export async function getActiveStakingStatsByUser({
 }
 
 const GET_GENERAL_STATS_BY_PERIOD = gql`
-  query GetGeneralStats($periodValue: String!) {
+  query GetGeneralStatsByPeriod($periodValue: String!) {
     activeStakingTotalActivityMetricsForFixedPeriod(
       args: {
         period: DAY

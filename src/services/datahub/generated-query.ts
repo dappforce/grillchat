@@ -1016,6 +1016,7 @@ export type Query = {
   socialProfiles: SocialProfilesResponse
   spaces: FindSpacesWithFilterResponseDto
   unreadMessages: Array<UnreadPostsCountResponse>
+  userReferrals: UserReferralsResponse
 }
 
 export type QueryActiveStakingAccountActivityMetricsForFixedPeriodArgs = {
@@ -1178,6 +1179,10 @@ export type QuerySpacesArgs = {
 
 export type QueryUnreadMessagesArgs = {
   where: UnreadMessagesInput
+}
+
+export type QueryUserReferralsArgs = {
+  args: UserReferralsInput
 }
 
 export enum QueryOrder {
@@ -1512,7 +1517,8 @@ export type SubscriptionServiceMessageToTargetArgs = {
 }
 
 export type SubscriptionServiceAccountTokenMessage = {
-  address: Scalars['String']['input']
+  proxy: Scalars['String']['input']
+  signer: Scalars['String']['input']
   timestamp: Scalars['String']['input']
 }
 
@@ -1656,6 +1662,25 @@ export type UpdateOrganizationInput = {
   name?: InputMaybe<Scalars['String']['input']>
 }
 
+export type UserReferralsDataItem = {
+  __typename?: 'UserReferralsDataItem'
+  referralsCount?: Maybe<Scalars['Int']['output']>
+  referrerId: Scalars['String']['output']
+}
+
+export type UserReferralsInput = {
+  where: UserReferralsInputWhereArgs
+}
+
+export type UserReferralsInputWhereArgs = {
+  referrerIds: Array<Scalars['String']['input']>
+}
+
+export type UserReferralsResponse = {
+  __typename?: 'UserReferralsResponse'
+  data: Array<UserReferralsDataItem>
+}
+
 export type UserReferrerDetail = {
   __typename?: 'UserReferrerDetail'
   clientId: DataHubClientId
@@ -1663,6 +1688,18 @@ export type UserReferrerDetail = {
   referrerId: Scalars['String']['output']
   socialProfile: SocialProfile
   timestamp: Scalars['String']['output']
+}
+
+export type GetIsBalanceSufficientQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetIsBalanceSufficientQuery = {
+  __typename?: 'Query'
+  isBalanceSufficientForSocialAction: {
+    __typename?: 'IsBalanceSufficientForSocialActionResponse'
+    sufficient: boolean
+  }
 }
 
 export type GetSuperLikeCountsQueryVariables = Exact<{
@@ -1888,6 +1925,138 @@ export type SubscribeIdentitySubscription = {
         linkedIdentity: { __typename?: 'LinkedIdentity'; id: string }
       } | null
     }
+  }
+}
+
+export type GetTopUsersQueryVariables = Exact<{
+  from: Scalars['String']['input']
+}>
+
+export type GetTopUsersQuery = {
+  __typename?: 'Query'
+  creator: {
+    __typename?: 'AddressesRankedByRewardsForPeriodResponseDto'
+    data: Array<{
+      __typename?: 'RankedAddressWithDetails'
+      address: string
+      reward: string
+    }>
+  }
+}
+
+export type GetUserStatsQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  timestamp: Scalars['String']['input']
+}>
+
+export type GetUserStatsQuery = {
+  __typename?: 'Query'
+  staker?: {
+    __typename?: 'AddressRankByRewardsForPeriodResponseDto'
+    rankIndex: number
+  } | null
+  creator?: {
+    __typename?: 'AddressRankByRewardsForPeriodResponseDto'
+    rankIndex: number
+  } | null
+  activeStakingAccountActivityMetricsForFixedPeriod: {
+    __typename?: 'AccountActivityMetricsForFixedPeriodResponseDto'
+    staker?: {
+      __typename?: 'StakerActivityMetrics'
+      likedCreators?: number | null
+      likedPosts?: number | null
+      earnedByPeriod?: string | null
+      earnedTotal?: string | null
+    } | null
+    creator?: {
+      __typename?: 'CreatorActivityMetrics'
+      likesCountByPeriod?: number | null
+      stakersWhoLiked?: number | null
+      earnedByPeriod?: string | null
+      earnedTotal?: string | null
+    } | null
+  }
+}
+
+export type GetGeneralStatsByWeekQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type GetGeneralStatsByWeekQuery = {
+  __typename?: 'Query'
+  activeStakingTotalActivityMetricsForFixedPeriod: {
+    __typename?: 'TotalActivityMetricsForFixedPeriodResponseDto'
+    likedPostsCount?: number | null
+    likedCreatorsCount?: number | null
+    stakersEarnedTotal?: string | null
+    creatorEarnedTotal?: string | null
+    creatorEarnedPointsTotal?: string | null
+    stakersEarnedPointsTotal?: string | null
+  }
+}
+
+export type GetLeaderboardTableDataQueryVariables = Exact<{
+  role: ActiveStakingAccountRole
+  timestamp: Scalars['String']['input']
+  limit: Scalars['Int']['input']
+  offset: Scalars['Int']['input']
+}>
+
+export type GetLeaderboardTableDataQuery = {
+  __typename?: 'Query'
+  activeStakingAddressesRankedByRewardsForPeriod: {
+    __typename?: 'AddressesRankedByRewardsForPeriodResponseDto'
+    total: number
+    limit: number
+    data: Array<{
+      __typename?: 'RankedAddressWithDetails'
+      address: string
+      reward: string
+      rank: number
+    }>
+  }
+}
+
+export type GetActiveStakingStatsByUserQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  dayTimestamp: Scalars['String']['input']
+}>
+
+export type GetActiveStakingStatsByUserQuery = {
+  __typename?: 'Query'
+  activeStakingAccountActivityMetricsForFixedPeriod: {
+    __typename?: 'AccountActivityMetricsForFixedPeriodResponseDto'
+    staker?: {
+      __typename?: 'StakerActivityMetrics'
+      likedCreators?: number | null
+      likedPosts?: number | null
+      earnedByPeriod?: string | null
+      earnedTotal?: string | null
+      earnedPointsByPeriod?: string | null
+    } | null
+    creator?: {
+      __typename?: 'CreatorActivityMetrics'
+      likesCountByPeriod?: number | null
+      stakersWhoLiked?: number | null
+      earnedByPeriod?: string | null
+      earnedTotal?: string | null
+      earnedPointsByPeriod?: string | null
+    } | null
+  }
+}
+
+export type GetGeneralStatsByPeriodQueryVariables = Exact<{
+  periodValue: Scalars['String']['input']
+}>
+
+export type GetGeneralStatsByPeriodQuery = {
+  __typename?: 'Query'
+  activeStakingTotalActivityMetricsForFixedPeriod: {
+    __typename?: 'TotalActivityMetricsForFixedPeriodResponseDto'
+    stakersEarnedTotal?: string | null
+    creatorEarnedTotal?: string | null
+    creatorEarnedPointsTotal?: string | null
+    stakersEarnedPointsTotal?: string | null
   }
 }
 
@@ -2739,6 +2908,15 @@ export const SpaceFragment = gql`
     createdAtBlock
   }
 `
+export const GetIsBalanceSufficient = gql`
+  query GetIsBalanceSufficient($address: String!) {
+    isBalanceSufficientForSocialAction(
+      args: { address: $address, socialAction: CREATE_COMMENT }
+    ) {
+      sufficient
+    }
+  }
+`
 export const GetSuperLikeCounts = gql`
   query GetSuperLikeCounts($postIds: [String!]!) {
     activeStakingSuperLikeCountsByPost(args: { postPersistentIds: $postIds }) {
@@ -2919,6 +3097,184 @@ export const SubscribeIdentity = gql`
           }
         }
       }
+    }
+  }
+`
+export const GetTopUsers = gql`
+  query GetTopUsers($from: String!) {
+    creator: activeStakingAddressesRankedByRewardsForPeriod(
+      args: {
+        filter: { period: WEEK, role: CREATOR, timestamp: $from }
+        limit: 3
+        offset: 0
+        order: DESC
+      }
+    ) {
+      data {
+        address
+        reward
+      }
+    }
+  }
+`
+export const GetUserStats = gql`
+  query GetUserStats($address: String!, $timestamp: String!) {
+    staker: activeStakingAddressRankByRewardsForPeriod(
+      args: {
+        address: $address
+        period: WEEK
+        role: STAKER
+        timestamp: $timestamp
+      }
+    ) {
+      rankIndex
+    }
+    creator: activeStakingAddressRankByRewardsForPeriod(
+      args: {
+        address: $address
+        period: WEEK
+        role: CREATOR
+        timestamp: $timestamp
+      }
+    ) {
+      rankIndex
+    }
+    activeStakingAccountActivityMetricsForFixedPeriod(
+      args: {
+        address: $address
+        period: WEEK
+        staker: {
+          likedPosts: true
+          likedCreators: true
+          earnedByPeriod: true
+          earnedTotal: true
+        }
+        creator: {
+          likesCountByPeriod: true
+          stakersWhoLiked: true
+          earnedByPeriod: true
+          earnedTotal: true
+        }
+      }
+    ) {
+      staker {
+        likedCreators
+        likedPosts
+        earnedByPeriod
+        earnedTotal
+      }
+      creator {
+        likesCountByPeriod
+        stakersWhoLiked
+        earnedByPeriod
+        earnedTotal
+      }
+    }
+  }
+`
+export const GetGeneralStatsByWeek = gql`
+  query GetGeneralStatsByWeek {
+    activeStakingTotalActivityMetricsForFixedPeriod(
+      args: {
+        period: WEEK
+        likedPostsCount: true
+        likedCreatorsCount: true
+        stakersEarnedTotal: true
+        creatorEarnedTotal: true
+      }
+    ) {
+      likedPostsCount
+      likedCreatorsCount
+      stakersEarnedTotal
+      creatorEarnedTotal
+      creatorEarnedPointsTotal
+      stakersEarnedPointsTotal
+    }
+  }
+`
+export const GetLeaderboardTableData = gql`
+  query GetLeaderboardTableData(
+    $role: ActiveStakingAccountRole!
+    $timestamp: String!
+    $limit: Int!
+    $offset: Int!
+  ) {
+    activeStakingAddressesRankedByRewardsForPeriod(
+      args: {
+        filter: { period: WEEK, role: $role, timestamp: $timestamp }
+        limit: $limit
+        offset: $offset
+        order: DESC
+      }
+    ) {
+      data {
+        address
+        reward
+        rank
+      }
+      total
+      limit
+    }
+  }
+`
+export const GetActiveStakingStatsByUser = gql`
+  query GetActiveStakingStatsByUser($address: String!, $dayTimestamp: String!) {
+    activeStakingAccountActivityMetricsForFixedPeriod(
+      args: {
+        address: $address
+        period: DAY
+        periodValue: $dayTimestamp
+        staker: {
+          likedPosts: false
+          likedCreators: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
+        }
+        creator: {
+          likesCountByPeriod: false
+          stakersWhoLiked: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
+        }
+      }
+    ) {
+      staker {
+        likedCreators
+        likedPosts
+        earnedByPeriod
+        earnedTotal
+        earnedPointsByPeriod
+      }
+      creator {
+        likesCountByPeriod
+        stakersWhoLiked
+        earnedByPeriod
+        earnedTotal
+        earnedPointsByPeriod
+      }
+    }
+  }
+`
+export const GetGeneralStatsByPeriod = gql`
+  query GetGeneralStatsByPeriod($periodValue: String!) {
+    activeStakingTotalActivityMetricsForFixedPeriod(
+      args: {
+        period: DAY
+        periodValue: $periodValue
+        likedPostsCount: false
+        likedCreatorsCount: false
+        stakersEarnedTotal: true
+        creatorEarnedTotal: true
+        creatorEarnedPointsTotal: true
+        stakersEarnedPointsTotal: true
+      }
+    ) {
+      stakersEarnedTotal
+      creatorEarnedTotal
+      creatorEarnedPointsTotal
+      stakersEarnedPointsTotal
     }
   }
 `
