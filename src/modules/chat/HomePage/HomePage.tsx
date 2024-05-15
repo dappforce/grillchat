@@ -1,6 +1,6 @@
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -17,14 +17,16 @@ export type HomePageProps = {
 
 export default function HomePage({ address }: HomePageProps) {
   const [homePageView, setHomePageView] = useState<HomePageView>('stats')
+  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
   const router = useRouter()
 
   useEffect(() => {
-    if (myAddress && !address) {
+    if (isInitializedProxy && myAddress && !address) {
       router.replace('/[address]', `/${myAddress}`, { shallow: true })
     }
-  }, [address, myAddress])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, myAddress, isInitializedProxy])
 
   return (
     <DefaultLayout className='relative'>
