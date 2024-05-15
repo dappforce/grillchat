@@ -35,7 +35,7 @@ export default function ChatItem({
   enableChatMenu = true,
   chatId,
   hubId,
-  bg = 'background-light',
+  bg = 'background',
   ...props
 }: ChatItemProps) {
   const setReplyTo = useMessageData((state) => state.setReplyTo)

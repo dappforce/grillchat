@@ -57,7 +57,7 @@ export default function CommonChatItem({
   isMyMessage: _isMyMessage,
   chatId,
   hubId,
-  bg = 'background-light',
+  bg = 'background',
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
   const { struct, content } = message

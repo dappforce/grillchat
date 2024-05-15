@@ -27,7 +27,7 @@ export default function DefaultChatItem({
   message,
   isMyMessage,
   scrollToMessage,
-  bg = 'background-light',
+  bg = 'background',
   ...props
 }: DefaultChatItemProps) {
   const messageId = message.id
