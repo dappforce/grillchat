@@ -1,6 +1,8 @@
 import { createQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
+  GetIsActiveStakerQuery,
+  GetIsActiveStakerQueryVariables,
   GetIsBalanceSufficientQuery,
   GetIsBalanceSufficientQueryVariables,
 } from '../generated-query'
@@ -31,6 +33,30 @@ export async function getIsBalanceSufficient(
 export const getIsBalanceSufficientQuery = createQuery({
   key: 'getIsBalanceSufficient',
   fetcher: getIsBalanceSufficient,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+const GET_IS_ACTIVE_STAKER = gql`
+  query GetIsActiveStaker($address: String!) {
+    activeStakingIsActiveStaker(address: $address)
+  }
+`
+export async function getIsActiveStaker(address: string): Promise<boolean> {
+  const res = await datahubQueryRequest<
+    GetIsActiveStakerQuery,
+    GetIsActiveStakerQueryVariables
+  >({
+    document: GET_IS_ACTIVE_STAKER,
+    variables: { address },
+  })
+
+  return res.activeStakingIsActiveStaker
+}
+export const getIsActiveStakerQuery = createQuery({
+  key: 'getIsActiveStaker',
+  fetcher: getIsActiveStaker,
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
   }),

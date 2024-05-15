@@ -1702,6 +1702,15 @@ export type GetIsBalanceSufficientQuery = {
   }
 }
 
+export type GetIsActiveStakerQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetIsActiveStakerQuery = {
+  __typename?: 'Query'
+  activeStakingIsActiveStaker: boolean
+}
+
 export type GetSuperLikeCountsQueryVariables = Exact<{
   postIds: Array<Scalars['String']['input']> | Scalars['String']['input']
 }>
@@ -2915,6 +2924,11 @@ export const GetIsBalanceSufficient = gql`
     ) {
       sufficient
     }
+  }
+`
+export const GetIsActiveStaker = gql`
+  query GetIsActiveStaker($address: String!) {
+    activeStakingIsActiveStaker(address: $address)
   }
 `
 export const GetSuperLikeCounts = gql`
