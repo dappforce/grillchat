@@ -5,7 +5,6 @@ import LinkText from '@/components/LinkText'
 import Loading from '@/components/Loading'
 import Name from '@/components/Name'
 import Table, { Column } from '@/components/Table'
-import { getLeaderboardLink } from '@/components/layouts/Sidebar'
 import { spaceGrotesk } from '@/fonts'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
@@ -17,6 +16,7 @@ import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 import epicConfig from '../../../../constants/config/epic'
 import LeaderboardModal from './LeaderboardModal'
+import useCalculateTokenRewards from './useCalculateTokenRewards'
 
 const TABLE_LIMIT = 10
 
@@ -76,7 +76,7 @@ const parseTableRows = (
         address: item.address,
         rank: item.rank!,
         'user-role': <UserPreview address={item.address} />,
-        rewards: <UserReward reward={item.reward} />,
+        rewards: <UserReward reward={item.reward} address={item.address} />,
         className:
           item.address === address ? 'dark:bg-slate-700 bg-[#EEF2FF]' : '',
       }))
@@ -109,7 +109,12 @@ const LeaderboardTable = ({
         address: currentUserRank.address,
         rank: currentUserRank.rank!,
         'user-role': <UserPreview address={currentUserRank.address} />,
-        rewards: <UserReward reward={currentUserRank.reward} />,
+        rewards: (
+          <UserReward
+            reward={currentUserRank.reward}
+            address={currentUserRank.address}
+          />
+        ),
         className: 'dark:bg-slate-700 bg-[#EEF2FF]',
       },
       ...parseTableRows(leaderboardData?.pages[0].data || [], TABLE_LIMIT - 1),
@@ -148,10 +153,7 @@ const LeaderboardTable = ({
             rowsClassName='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl'
             withDivider={false}
             onRowClick={(item) =>
-              router.replace(
-                '/leaderboard/[address]',
-                `${getLeaderboardLink(item.address)}?role=${role}`
-              )
+              router.replace('/[address]', `/${item.address}`)
             }
           />
           <LinkText
@@ -176,14 +178,18 @@ const LeaderboardTable = ({
 
 type UserRewardProps = {
   reward: string
+  address: string
 }
 
-export const UserReward = ({ reward }: UserRewardProps) => {
+export const UserReward = ({ reward, address }: UserRewardProps) => {
+  const { data, isLoading } = useCalculateTokenRewards(address)
+
   return (
     <FormatBalance
-      value={reward.toString()}
+      value={data}
       symbol={''}
       defaultMaximumFractionDigits={2}
+      loading={isLoading}
       className={cx('font-medium', spaceGrotesk.className)}
     />
   )

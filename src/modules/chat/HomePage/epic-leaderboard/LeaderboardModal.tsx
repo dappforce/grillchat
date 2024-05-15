@@ -116,7 +116,7 @@ const ModalTableRows = ({
     address: item.address,
     rank: item.rank!,
     'user-role': <UserPreview address={item.address} />,
-    rewards: <UserReward reward={item.reward} />,
+    rewards: <UserReward reward={item.reward} address={item.address} />,
     className:
       currentUserAddress === item.address
         ? 'dark:bg-slate-700 bg-[#EEF2FF]'

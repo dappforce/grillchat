@@ -114,7 +114,10 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
             <div className='relative h-full w-full'>
               <Image
                 sizes='5rem'
-                className='relative rounded-full object-cover'
+                className={cx(
+                  'relative rounded-full object-cover',
+                  props.className
+                )}
                 fill
                 src={profileAvatar}
                 onError={onImageError}

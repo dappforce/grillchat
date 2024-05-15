@@ -6,6 +6,7 @@ import Name from '@/components/Name'
 import { Skeleton } from '@/components/SkeletonFallback'
 import PopOver from '@/components/floating/PopOver'
 import { spaceMono } from '@/fonts'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
@@ -18,9 +19,12 @@ const { gradient, tokenSymbol, EpicTokenIllust } = epicConfig
 
 type MainContentProps = {
   className?: string
+  address?: string
 }
 
-const MainContent = ({ className }: MainContentProps) => {
+const MainContent = ({ className, address }: MainContentProps) => {
+  const myAddress = useMyMainAddress()
+
   return (
     <div
       className={cx(
@@ -28,18 +32,17 @@ const MainContent = ({ className }: MainContentProps) => {
         className
       )}
     >
-      <div className={cx('flex flex-col gap-4 px-4 pt-4')}>
-        <MainCard />
-        <ReferralSection />
+      <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0')}>
+        <MainCard address={address} />
+        {myAddress && <ReferralSection />}
         <LeaderboardSection />
       </div>
     </div>
   )
 }
 
-function MainCard() {
+function MainCard({ address }: MainContentProps) {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
-  const address = useMyMainAddress()
 
   if (!isInitializedProxy) {
     return (
@@ -62,12 +65,13 @@ function MainCard() {
     return <GuestCard />
   }
 
-  return <ProfileCardNew />
+  return <ProfileCard address={address} />
 }
 
-const ProfileCardNew = () => {
-  const myAddress = useMyMainAddress()
-  const { isLoading, data: reward } = useCalculateTokenRewards()
+const ProfileCard = ({ address }: MainContentProps) => {
+  const { isLoading, data: reward } = useCalculateTokenRewards(address)
+
+  console.log(address)
 
   return (
     <MainCardTemplate>
@@ -75,11 +79,11 @@ const ProfileCardNew = () => {
         <div className='flex w-full items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>
             <AddressAvatar
-              address={myAddress || ''}
+              address={address || ''}
               className='h-[33px] w-[33px] rounded-lg object-cover outline outline-[3px] outline-white/20'
             />
             <Name
-              address={myAddress || ''}
+              address={address || ''}
               className='text-lg font-semibold !text-white'
             />
           </div>
@@ -132,6 +136,8 @@ const ProfileCardNew = () => {
 }
 
 function GuestCard() {
+  const setIsLoginModalOpen = useLoginModal.use.setIsOpen()
+
   return (
     <MainCardTemplate className='pt-3' illustClassName='-bottom-1/3'>
       <div className='mb-2 flex w-full items-center justify-between'>
@@ -144,7 +150,9 @@ function GuestCard() {
         Start monetizing your best memes, and earn when you like posts from
         others!
       </p>
-      <Button variant='white'>Start earning</Button>
+      <Button variant='white' onClick={() => setIsLoginModalOpen(true)}>
+        Start earning
+      </Button>
     </MainCardTemplate>
   )
 }

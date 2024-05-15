@@ -9,10 +9,12 @@ import epicConfig from '../../../../constants/config/epic'
 
 const { rewardPool } = epicConfig
 
-const useCalculateTokenRewards = () => {
+const useCalculateTokenRewards = (address?: string) => {
   const myAddress = useMyMainAddress()
 
-  if (!myAddress) {
+  const userAddress = address || myAddress
+
+  if (!userAddress) {
     return {
       isLoading: false,
       data: '0',
@@ -30,7 +32,7 @@ const useCalculateTokenRewards = () => {
 
   const params = Array.from({ length: daysToMonday }).map((_, index) => {
     return {
-      address: myAddress || '',
+      address: userAddress,
       dayTimestamp: startOfWeekTimestamp.add(index, 'day').unix(),
     }
   })
@@ -42,7 +44,7 @@ const useCalculateTokenRewards = () => {
 
   const statsByUsersQueries = getActiveStakingStatsByUserQuery.useQueries(
     params,
-    { enabled: !!myAddress }
+    { enabled: !!userAddress }
   )
 
   const statsByUsersLoading = statsByUsersQueries.some(

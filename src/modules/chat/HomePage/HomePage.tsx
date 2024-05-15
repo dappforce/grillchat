@@ -9,14 +9,16 @@ import MainContent from './epic-leaderboard/MainContent'
 const hubId = '0xc75507f88e6a7d555c15ac95c49cb426'
 const chatId = '0x3b1bf91da3fd7e5d790c19039110a5a7'
 
-export type HomePageProps = {}
+export type HomePageProps = {
+  address?: string
+}
 
-export default function HomePage() {
+export default function HomePage({ address }: HomePageProps) {
   const [homePageView, setHomePageView] = useState<HomePageView>('stats')
 
   return (
     <DefaultLayout className='relative'>
-      <Container className='grid flex-1 gap-4 px-0 lg:grid-cols-[1fr_472px] lg:px-4'>
+      <Container className='grid flex-1 gap-4 px-0 lg:grid-cols-[1fr_472px]'>
         <ChatContent
           hubId={hubId}
           chatId={chatId}
@@ -24,6 +26,7 @@ export default function HomePage() {
         />
         <MainContent
           className={cx({ ['hidden lg:flex']: homePageView === 'top-memes' })}
+          address={address}
         />
       </Container>
       <MobileNavigation

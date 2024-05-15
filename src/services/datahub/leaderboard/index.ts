@@ -251,6 +251,7 @@ export async function getLeaderboardData({
   page: number
 }): Promise<LeaderboardData> {
   const { week } = getDayAndWeekTimestamp()
+
   const offset = Math.max(page - 1, 0) * LEADERBOARD_PAGE_LIMIT
   const res = await datahubQueryRequest<
     {
