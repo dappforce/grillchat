@@ -1,5 +1,8 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import { ApiDatahubPostMutationBody } from '@/pages/api/datahub/post'
+import {
+  ApiDatahubPostMutationBody,
+  ApiDatahubPostResponse,
+} from '@/pages/api/datahub/post'
 import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
 import {
@@ -22,11 +25,8 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import {
-  DatahubParams,
-  createSignedSocialDataEvent,
-  isDatahubAvailable,
-} from '../utils'
+import { AxiosResponse } from 'axios'
+import { DatahubParams, createSignedSocialDataEvent } from '../utils'
 
 type GetDeterministicIdInput = {
   uuid: string
@@ -86,13 +86,15 @@ async function createPostData(
     content
   )
 
-  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
-    '/api/datahub/post',
-    {
-      action: 'create-post',
-      payload: input as any,
-    }
-  )
+  const res = await apiInstance.post<
+    any,
+    AxiosResponse<ApiDatahubPostResponse>,
+    ApiDatahubPostMutationBody
+  >('/api/datahub/post', {
+    action: 'create-post',
+    payload: input as any,
+  })
+  return res.data.callId ?? null
 }
 
 async function updatePostData(
@@ -122,33 +124,31 @@ async function updatePostData(
     content?.content
   )
 
-  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
-    '/api/datahub/post',
-    {
-      action: 'update-post',
-      payload: input as any,
-    }
-  )
+  const res = await apiInstance.post<
+    any,
+    ApiDatahubPostResponse,
+    ApiDatahubPostMutationBody
+  >('/api/datahub/post', {
+    action: 'update-post',
+    payload: input as any,
+  })
+  return res.callId ?? null
 }
 
-function datahubWrapper<T extends (...args: any[]) => Promise<any>>(func: T) {
-  return (...args: Parameters<T>) => {
-    if (!isDatahubAvailable) return
-    return func(...args)
-  }
-}
 const datahubMutation = {
-  createPostData: datahubWrapper(createPostData),
-  updatePostData: datahubWrapper(updatePostData),
+  createPostData,
+  updatePostData,
 }
 export default datahubMutation
+
+export const callIdToPostIdMap = new Map<string, string>()
 
 type Params = SendMessageParams & {
   uuid: string
   timestamp: number
 }
 export function useSendMessage(
-  config?: UseMutationOptions<void, unknown, Params, unknown>
+  config?: UseMutationOptions<string | null, unknown, Params, void>
 ) {
   const client = useQueryClient()
 
@@ -168,7 +168,7 @@ export function useSendMessage(
         )
 
       if (data.messageIdToEdit) {
-        datahubMutation.updatePostData({
+        return await datahubMutation.updatePostData({
           ...getCurrentWallet(),
           uuid: data.uuid,
           timestamp: data.timestamp,
@@ -184,7 +184,7 @@ export function useSendMessage(
           },
         })
       } else {
-        await datahubMutation.createPostData({
+        return await datahubMutation.createPostData({
           ...getCurrentWallet(),
           uuid: data.uuid,
           timestamp: data.timestamp,
@@ -247,17 +247,25 @@ export function useSendMessage(
         timestamp: data.timestamp.toString(),
         uuid: data.uuid,
       })
-      const { chatId } = data
       deleteOptimisticData({
-        chatId,
         client,
         idToDelete: newId,
       })
       config?.onError?.(err, data, context)
     },
-    onSuccess: (...params) => {
+    onSuccess: async (...params) => {
       config?.onSuccess?.(...params)
       allowWindowUnload()
+
+      const [callId, data] = params
+
+      const newId = await getDeterministicId({
+        account:
+          getCurrentWallet().proxyToAddress || getCurrentWallet().address,
+        timestamp: data.timestamp.toString(),
+        uuid: data.uuid,
+      })
+      if (callId) callIdToPostIdMap.set(callId, newId)
     },
   })
 }

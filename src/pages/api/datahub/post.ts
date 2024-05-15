@@ -60,7 +60,7 @@ export type ApiDatahubPostMutationBody =
       payload: UpdatePostOptimisticInput
     }
 
-export type ApiDatahubPostResponse = ApiResponse
+export type ApiDatahubPostResponse = ApiResponse<{ callId?: string }>
 const POST_handler = handlerWrapper({
   inputSchema: z.any(),
   dataGetter: (req) => req.body,
@@ -70,7 +70,8 @@ const POST_handler = handlerWrapper({
   handler: async (data: ApiDatahubPostMutationBody, _, res) => {
     const mapper = datahubMutationWrapper(datahubPostActionMapping)
     try {
-      await mapper(data)
+      const callId = await mapper(data)
+      res.status(200).json({ message: 'OK', success: true, callId })
     } catch (err) {
       if (err instanceof RateLimitError) {
         return res.status(429).send({
@@ -91,7 +92,6 @@ const POST_handler = handlerWrapper({
       }
       throw err
     }
-    res.status(200).json({ message: 'OK', success: true })
   },
 })
 

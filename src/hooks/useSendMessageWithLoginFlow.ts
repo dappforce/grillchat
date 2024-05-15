@@ -13,7 +13,7 @@ import useLoginOption from './useLoginOption'
 
 type Params = SendMessageParams
 export default function useSendMessageWithLoginFlow(
-  options?: UseMutationOptions<void, unknown, Params, unknown>
+  options?: UseMutationOptions<string | null, unknown, Params, void>
 ) {
   const address = useMyMainAddress()
   const { promptUserForLogin } = useLoginOption()
@@ -26,7 +26,7 @@ export default function useSendMessageWithLoginFlow(
     let usedAddress: string = address ?? ''
     if (!address) {
       const loginAddress = await promptUserForLogin()
-      if (!loginAddress) return
+      if (!loginAddress) return null
       usedAddress = loginAddress
     }
 
@@ -36,10 +36,10 @@ export default function useSendMessageWithLoginFlow(
     )
     if (!isSufficient) {
       setOpenMessageModal('should-stake')
-      return
+      return null
     }
 
-    await sendMessage(augmentDatahubParams(params))
+    return await sendMessage(augmentDatahubParams(params))
   }
 
   return useMutation(handler, options)

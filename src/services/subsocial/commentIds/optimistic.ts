@@ -62,14 +62,12 @@ export function addOptimisticData({
 }
 export function deleteOptimisticData({
   client,
-  chatId,
   idToDelete,
 }: {
   client: QueryClient
-  chatId: string
   idToDelete: string
 }) {
-  const tempId = commentIdsOptimisticEncoder.encode(idToDelete)
+  getPostQuery.invalidate(client, idToDelete)
 
   // getPaginatedPostIdsByPostId.setQueryFirstPageData(
   //   client,

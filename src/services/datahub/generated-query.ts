@@ -1847,7 +1847,10 @@ export type SubscribeEventsSubscription = {
     event: DataHubSubscriptionEventEnum
     meta: {
       __typename?: 'AccountServiceMessageToTargetMeta'
+      callName?: SocialCallName | null
       msg?: string | null
+      code: ServiceMessageStatusCode
+      callId?: string | null
     }
   }
 }
@@ -3045,7 +3048,10 @@ export const SubscribeEvents = gql`
     serviceMessageToTarget(args: $args) {
       event
       meta {
+        callName
         msg
+        code
+        callId
       }
     }
   }

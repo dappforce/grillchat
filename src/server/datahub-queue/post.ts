@@ -38,6 +38,7 @@ const CREATE_POST_OFFCHAIN_MUTATION = gql`
   ) {
     createPostOffChain(createPostOffChainInput: $createPostOffChainInput) {
       processed
+      callId
       message
     }
   }
@@ -53,6 +54,7 @@ export async function createPostData(input: CreatePostOffChainInput) {
     },
   })
   throwErrorIfNotProcessed(res.createPostOffChain, 'Failed to create post')
+  return res.createPostOffChain.callId
 }
 
 const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
@@ -63,6 +65,7 @@ const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
       updatePostOptimisticInput: $updatePostOptimisticInput
     ) {
       processed
+      callId
       message
     }
   }
@@ -78,4 +81,5 @@ export async function updatePostData(input: UpdatePostOptimisticInput) {
     },
   })
   throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to update post')
+  return res.updatePostOptimistic.callId
 }

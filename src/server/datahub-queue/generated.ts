@@ -513,14 +513,14 @@ export type CreatePostOffChainMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostOffChainMutation = { __typename?: 'Mutation', createPostOffChain: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+export type CreatePostOffChainMutation = { __typename?: 'Mutation', createPostOffChain: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
 export type UpdatePostOptimisticMutationVariables = Exact<{
   updatePostOptimisticInput: UpdatePostOptimisticInput;
 }>;
 
 
-export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
+export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
 export type SetReferrerIdMutationVariables = Exact<{
   setReferrerIdInput: SocialProfileAddReferrerIdInput;
@@ -624,6 +624,7 @@ export const CreatePostOffChain = gql`
     mutation CreatePostOffChain($createPostOffChainInput: CreatePostOffChainInput!) {
   createPostOffChain(createPostOffChainInput: $createPostOffChainInput) {
     processed
+    callId
     message
   }
 }
@@ -632,6 +633,7 @@ export const UpdatePostOptimistic = gql`
     mutation UpdatePostOptimistic($updatePostOptimisticInput: UpdatePostOptimisticInput!) {
   updatePostOptimistic(updatePostOptimisticInput: $updatePostOptimisticInput) {
     processed
+    callId
     message
   }
 }
