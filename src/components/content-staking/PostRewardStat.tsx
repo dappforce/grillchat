@@ -1,4 +1,3 @@
-import { getPostQuery } from '@/services/api/query'
 import { getPostRewardsQuery } from '@/services/datahub/content-staking/query'
 import { formatBalance } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
@@ -11,9 +10,9 @@ export default function PostRewardStat({
   ...props
 }: PostRewardStatProps) {
   const { data: reward } = getPostRewardsQuery.useQuery(postId)
-  const { data: post } = getPostQuery.useQuery(postId)
-  const isComment = post?.struct.isComment
-  const entity = isComment ? 'comment' : 'post'
+  // const { data: post } = getPostQuery.useQuery(postId)
+  // const isComment = post?.struct.isComment
+  // const entity = isComment ? 'comment' : 'post'
 
   const totalReward = formatBalance({
     value: reward?.reward ?? '',
