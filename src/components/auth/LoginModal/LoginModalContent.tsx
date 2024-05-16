@@ -102,7 +102,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
             isLoading={isLoadingOrSubmitted}
             size='lg'
           >
-            <div className='flex items-center justify-center gap-2'>
+            <div className='flex items-center justify-center gap-2 text-text'>
               <FarcasterIcon className={cx('text-xl text-text-muted')} />
               Connect via Farcaster
             </div>

@@ -36,7 +36,7 @@ export function GoogleButton() {
         })
       }}
     >
-      <div className='flex items-center justify-center gap-2'>
+      <div className='flex items-center justify-center gap-2 text-text'>
         <IoLogoGoogle className={cx('text-xl text-text-muted')} />
         Connect with Google
       </div>
@@ -60,7 +60,7 @@ export function XLoginButton() {
         })
       }}
     >
-      <div className='flex items-center justify-center gap-2'>
+      <div className='flex items-center justify-center gap-2 text-text'>
         <RiTwitterXLine className={cx('text-xl text-text-muted')} />
         Connect with X
       </div>
