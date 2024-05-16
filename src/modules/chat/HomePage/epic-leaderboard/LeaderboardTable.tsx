@@ -68,6 +68,7 @@ const parseTableRows = (
     reward: string
   }[],
   limit: number,
+  role: LeaderboardRole,
   address?: string
 ) => {
   return (
@@ -76,7 +77,9 @@ const parseTableRows = (
         address: item.address,
         rank: item.rank!,
         'user-role': <UserPreview address={item.address} />,
-        rewards: <UserReward reward={item.reward} address={item.address} />,
+        rewards: (
+          <UserReward reward={item.reward} address={item.address} role={role} />
+        ),
         className:
           item.address === address ? 'dark:bg-slate-700 bg-[#EEF2FF]' : '',
       }))
@@ -100,6 +103,7 @@ const LeaderboardTable = ({
       return parseTableRows(
         leaderboardData?.pages[0].data || [],
         TABLE_LIMIT,
+        role,
         currentUserRank?.address
       )
     }
@@ -113,11 +117,16 @@ const LeaderboardTable = ({
           <UserReward
             reward={currentUserRank.reward}
             address={currentUserRank.address}
+            role={role}
           />
         ),
         className: 'dark:bg-slate-700 bg-[#EEF2FF]',
       },
-      ...parseTableRows(leaderboardData?.pages[0].data || [], TABLE_LIMIT - 1),
+      ...parseTableRows(
+        leaderboardData?.pages[0].data || [],
+        TABLE_LIMIT - 1,
+        role
+      ),
     ]
   }, [JSON.stringify(currentUserRank), role, leaderboardData?.pages[0]])
 
@@ -125,7 +134,7 @@ const LeaderboardTable = ({
     <>
       {data.length === 0 &&
         (isLoading ? (
-          <Loading title='Loading table data' />
+          <Loading title='Loading table data' className='p-7' />
         ) : (
           <div
             className='flex flex-col items-center justify-center p-4 text-center'
@@ -179,10 +188,11 @@ const LeaderboardTable = ({
 type UserRewardProps = {
   reward: string
   address: string
+  role: LeaderboardRole
 }
 
-export const UserReward = ({ reward, address }: UserRewardProps) => {
-  const { data, isLoading } = useCalculateTokenRewards(address)
+export const UserReward = ({ reward, address, role }: UserRewardProps) => {
+  const { data, isLoading } = useCalculateTokenRewards(address, role)
 
   return (
     <FormatBalance

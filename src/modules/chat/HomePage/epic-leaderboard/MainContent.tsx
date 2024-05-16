@@ -5,6 +5,8 @@ import FormatBalance from '@/components/FormatBalance'
 import Name from '@/components/Name'
 import { Skeleton } from '@/components/SkeletonFallback'
 import PopOver from '@/components/floating/PopOver'
+import { Pluralize } from '@/components/layouts/CreatorSidebar/RewardInfo'
+import { CREATORS_CONSTANTS } from '@/components/layouts/CreatorSidebar/utils'
 import { spaceMono } from '@/fonts'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -126,7 +128,13 @@ const ProfileCard = ({ address }: MainContentProps) => {
               <div className='flex items-start gap-2 md:items-center '>
                 <span className='text-sm leading-[22px] text-slate-200'>
                   Distribution in{' '}
-                  <span className='font-bold text-white'>7 days</span>
+                  <span className='font-bold text-white'>
+                    <Pluralize
+                      count={CREATORS_CONSTANTS.getDistributionDaysLeft()}
+                      singularText='day'
+                      pluralText='days'
+                    />
+                  </span>
                 </span>
                 <span className='mt-[4px] md:mt-0'>
                   <HiOutlineInformationCircle className={cx('h-4 w-4')} />

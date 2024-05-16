@@ -410,7 +410,6 @@ export async function getActiveStakingStatsByUser({
     variables: { address, dayTimestamp: dayTimestamp.toString() },
   })
 
-  console.log(res)
   return {
     address,
     staker: {
