@@ -75,7 +75,7 @@ export default function ScanQrContent({ closeModal }: LoginModalContentProps) {
             <Toast
               t={t}
               title='QR Code is not valid'
-              description='Please provide valid Grill "Share my session" QR code'
+              description='Please provide valid Epic "Share my session" QR code'
             />
           ))
         } finally {

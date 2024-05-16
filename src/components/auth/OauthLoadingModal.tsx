@@ -68,7 +68,7 @@ export default function OauthLoadingModal() {
       title={`🕔 Connecting to ${providerMapper[provider ?? 'google'].name}`}
       description={`We are connecting your ${
         providerMapper[provider ?? 'google'].name
-      } account to Grill. Please wait for a few seconds.`}
+      } account to Epic. Please wait for a few seconds.`}
       isOpen={isOpen}
       closeModal={() => undefined}
     >

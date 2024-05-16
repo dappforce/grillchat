@@ -47,7 +47,7 @@ export default function HeadConfig({
 
       <meta property='og:title' content={usedTitle} />
       <meta property='og:description' content={usedDesc} />
-      <meta property='og:site_name' content='Grill' />
+      <meta property='og:site_name' content='Epic' />
       <meta property='og:image' content={usedImage} />
 
       {disableZoom ? (

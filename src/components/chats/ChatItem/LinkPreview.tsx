@@ -2,7 +2,6 @@ import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
-import { currentNetwork } from '@/utils/network'
 import { LinkMetadata } from '@subsocial/api/types'
 import truncate from 'lodash.truncate'
 import { ComponentProps, useMemo, useState } from 'react'
@@ -105,61 +104,37 @@ type InternalLink = {
   text: string
   forceHardNavigation?: boolean
 }
-const grillChatInternalLinkTexts: InternalLink[] = [
-  {
-    checker: (link: string) =>
-      // regex for url grill.chat/[any text]/[any text] for message page
-      /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)\/(.+)\/(.+)/.test(link),
-    text: 'View message',
-  },
-  {
-    checker: (link: string) =>
-      // regex for url grill.chat/[any text]/[any text] for chat page
-      /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)\/(.+)/.test(link),
-    text: 'Open chat',
-  },
-  {
-    checker: (link: string) =>
-      // regex for url grill.chat/[any text] for hub page
-      /(?:https?:\/\/)?(?:www\.)?(?:grill\.chat)\/(.+)/.test(link),
-    text: 'Open page',
-  },
-]
-
 const grillAppInternalLinkTexts: InternalLink[] = [
   {
     checker: (link: string) =>
-      // regex for url grillapp.net/c/[any text]/[any text] for message page
-      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/c\/(.+)\/(.+)\/(.+)/.test(
+      // regex for url epicapp.net/c/[any text]/[any text] for message page
+      /(?:https?:\/\/)?(?:www\.)?(?:epicapp\.net)\/c\/(.+)\/(.+)\/(.+)/.test(
         link
       ),
     text: 'View message',
   },
   {
     checker: (link: string) =>
-      // regex for url grillapp.net/c[any text]/[any text] for chat page
-      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/c\/(.+)\/(.+)/.test(link),
+      // regex for url epicapp.net/c[any text]/[any text] for chat page
+      /(?:https?:\/\/)?(?:www\.)?(?:epicapp\.net)\/c\/(.+)\/(.+)/.test(link),
     text: 'Open chat',
   },
   {
     checker: (link: string) =>
-      // regex for url grillapp.net/c[any text] for hub page
-      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/c\/(.+)/.test(link),
+      // regex for url epicapp.net/c[any text] for hub page
+      /(?:https?:\/\/)?(?:www\.)?(?:epicapp\.net)\/c\/(.+)/.test(link),
     text: 'Open page',
   },
   {
     checker: (link: string) =>
-      // regex for url grillapp.net/[any text] for polkaverse pages
-      /(?:https?:\/\/)?(?:www\.)?(?:grillapp\.net)\/(.+)/.test(link),
+      // regex for url epicapp.net/[any text] for polkaverse pages
+      /(?:https?:\/\/)?(?:www\.)?(?:epicapp\.net)\/(.+)/.test(link),
     text: 'Open page',
     forceHardNavigation: true,
   },
 ]
 function getInternalLinkText(link: string) {
-  const usedInternalLinkChecker =
-    currentNetwork === 'xsocial'
-      ? grillChatInternalLinkTexts
-      : grillAppInternalLinkTexts
+  const usedInternalLinkChecker = grillAppInternalLinkTexts
   const found = usedInternalLinkChecker.find((item) => item.checker(link))
   return { text: found?.text, forceHardNavigation: found?.forceHardNavigation }
 }

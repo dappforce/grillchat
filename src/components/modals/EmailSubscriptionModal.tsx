@@ -59,7 +59,7 @@ export default function EmailSubscriptionModal({
     <Modal
       {...props}
       title='✉️ Subscribe to Our Newsletter'
-      description='Receive up to date info regarding GrillApp'
+      description='Receive up to date info regarding Epic'
     >
       <form
         onSubmit={handleSubmit((data) => {

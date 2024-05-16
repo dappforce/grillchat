@@ -17,7 +17,7 @@ export default function ModerationModal({
     <Modal
       {...props}
       title='🛡 Moderate'
-      description='Moderated content will not be deleted from the blockchain, but will not be shown to users on Grill.'
+      description='Moderated content will not be deleted from the blockchain, but will not be shown to users on Epic.'
       withCloseButton
     >
       <div className='mt-2'>

@@ -75,7 +75,7 @@ export const LoginWithGrillKeyContent = (props: LoginModalContentProps) => {
         onPaste={() => sendEvent('login_grill_key_pasted')}
         variant='fill-bg'
         onChange={(e) => setPrivateKey((e.target as HTMLTextAreaElement).value)}
-        placeholder='Enter your Grill key'
+        placeholder='Enter your Epic key'
       />
       <Notice noticeType='info'>
         IMPORTANT: Do not enter the private key of an account that holds any

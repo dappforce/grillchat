@@ -58,7 +58,7 @@ const getWallet = (chains: Chain[]) => {
   const walletOptions = {
     chains,
     projectId: walletConnectProjectId,
-    appName: 'Grill',
+    appName: 'Epic',
   }
   const supportedWallets: Record<string, Wallet> = {
     coinbase: coinbaseWallet(walletOptions),

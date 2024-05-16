@@ -22,7 +22,7 @@ export default function PrivacySecurityContent({
         <GrillKeyDark className='hidden w-16 flex-shrink-0 dark:block' />
         <div className='mb-4 flex flex-1 items-center gap-4'>
           <div className='flex flex-1 flex-col gap-1.5'>
-            <span className='font-semibold'>Grill Key</span>
+            <span className='font-semibold'>Epic Key</span>
             <span className='text-sm text-text-muted'>
               View the private key that grants ownership over your account
             </span>

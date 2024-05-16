@@ -43,7 +43,7 @@ export default function CenterChatNotice({
             <div className='pl-4'>
               <ul className='list-disc whitespace-nowrap pl-2'>
                 <li>Moderate content and users</li>
-                <li>Hide the chat from others on Grill</li>
+                <li>Hide the chat from others on Epic</li>
               </ul>
             </div>
           </div>

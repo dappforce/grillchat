@@ -7,7 +7,6 @@ import useGetTheme from '@/hooks/useGetTheme'
 import { getPostQuery } from '@/services/api/query'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { cx } from '@/utils/class-names'
-import { currentNetwork } from '@/utils/network'
 import Linkify from 'linkify-react'
 import { useState } from 'react'
 import { ScrollToMessage } from '../../ChatList/hooks/useScrollToMessage'
@@ -97,32 +96,29 @@ export default function DefaultChatItem({
           <Linkify
             options={{
               render: ({ content, attributes }) => {
-                const href = attributes.href || ''
-                const baseUrl =
-                  currentNetwork === 'xsocial'
-                    ? 'https://grill.chat'
-                    : 'https://grillapp.net'
-                if (href.startsWith(baseUrl)) {
-                  content = content.replace(/(https?:\/\/)?(www\.)?/, '')
-                }
+                // const href = attributes.href || ''
+                // const baseUrl = 'https://epicapp.net'
+                // if (href.startsWith(baseUrl)) {
+                //   content = content.replace(/(https?:\/\/)?(www\.)?/, '')
+                // }
 
-                const messageLinkRegex =
-                  /^(https?:\/\/)?(www\.)?grill\.chat\/([^\/?#]+)\/([^\/?#]+)\/([^\/?#]+)\/?$/i
-                const match = href.match(messageLinkRegex)
-                const messageId = match?.[5]
-                if (messageId) {
-                  return (
-                    <MessageLink
-                      attributes={attributes as any}
-                      isMyMessage={isMyMessage}
-                      content={content}
-                      chatId={chatId}
-                      messageId={messageId}
-                      hubId={hubId}
-                      scrollToMessage={scrollToMessage}
-                    />
-                  )
-                }
+                // const messageLinkRegex =
+                //   /^(https?:\/\/)?(www\.)?epicapp\.net\/([^\/?#]+)\/([^\/?#]+)\/([^\/?#]+)\/?$/i
+                // const match = href.match(messageLinkRegex)
+                // const messageId = match?.[5]
+                // if (messageId) {
+                //   return (
+                //     <MessageLink
+                //       attributes={attributes as any}
+                //       isMyMessage={isMyMessage}
+                //       content={content}
+                //       chatId={chatId}
+                //       messageId={messageId}
+                //       hubId={hubId}
+                //       scrollToMessage={scrollToMessage}
+                //     />
+                //   )
+                // }
 
                 return (
                   <LinkRedirect

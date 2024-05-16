@@ -97,7 +97,7 @@ export const CommonEVMLoginContent = ({
       await beforeSignEvmAddress?.()
       const grillAddress = useMyAccount.getState().address
       if (!grillAddress) {
-        throw new Error('Grill address is not found')
+        throw new Error('Epic address is not found')
       }
 
       setIsGettingMessage(true)

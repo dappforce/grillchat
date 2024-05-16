@@ -67,10 +67,10 @@ const pushNotificationDesc: Record<
   string
 > = {
   'need-install':
-    'Push notifications are not available in your browser. Please install Grill to activate notifications.',
+    'Push notifications are not available in your browser. Please install Epic to activate notifications.',
   unsupported: 'Push notifications are not available in your browser.',
   usable:
-    'Push notifications allow you to receive direct updates from Grill in your browser.',
+    'Push notifications allow you to receive direct updates from Epic in your browser.',
 }
 
 export const forceBackFlowStorage = new SessionStorage(
@@ -175,7 +175,7 @@ export default function ProfileModal({
       withBackButton: true,
     },
     'private-key': {
-      title: '🔑 My Grill key',
+      title: '🔑 My Epic key',
       withBackButton: 'privacy-security',
     },
     'share-session': {
@@ -190,13 +190,13 @@ export default function ProfileModal({
     },
     notifications: {
       title: '🔔 Notifications',
-      desc: 'Receive Grill notifications in various locations',
+      desc: 'Receive Epic notifications in various locations',
       withBackButton: true,
       withoutDefaultPadding: true,
     },
     'telegram-notifications': {
       title: '🔔 Telegram bot',
-      desc: 'Connect your account to our Telegram bot to receive notifications from Grill.',
+      desc: 'Connect your account to our Telegram bot to receive notifications from Epic.',
       withBackButton: () => {
         getLinkedTelegramAccountsQuery.invalidate(queryClient)
         return 'notifications'

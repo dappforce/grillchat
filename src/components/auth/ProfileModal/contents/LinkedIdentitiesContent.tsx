@@ -149,7 +149,7 @@ function EvmConnectButton() {
     const grillAddress = useMyAccount.getState().address
     if (!grillAddress) {
       hasTriedSigning.current = false
-      throw new Error('Grill address is not found')
+      throw new Error('Epic address is not found')
     }
 
     try {

@@ -52,7 +52,7 @@ function StakedCard() {
           <StakedSlide
             key='establish-your-brand'
             title='Establish Your Brand'
-            subtitle='Secure your username and create your brand identity on Grill to stand out, be recognized, and start growing your community.'
+            subtitle='Secure your username and create your brand identity on Epic to stand out, be recognized, and start growing your community.'
             buttonText='Register Username'
             buttonHref='/dd'
             forceHardNavigation
@@ -62,7 +62,7 @@ function StakedCard() {
           <StakedSlide
             key='seamless-access'
             title='Seamless Access'
-            subtitle='Save your Grill key or QR code for hassle-free login access to Grill across all of your
+            subtitle='Save your Epic key or QR code for hassle-free login access to Epic across all of your
             devices.'
             buttonText='Learn more'
             forceHardNavigation

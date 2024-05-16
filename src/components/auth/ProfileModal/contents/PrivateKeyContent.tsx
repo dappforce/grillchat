@@ -26,7 +26,7 @@ function PrivateKeyContent() {
   return (
     <div className='flex flex-col items-center gap-4'>
       <p className='text-text-muted'>
-        Grill key is like a long password. We recommend keeping it in a safe
+        Epic key is like a long password. We recommend keeping it in a safe
         place, so you can recover your account.
       </p>
       <CopyText

@@ -35,7 +35,7 @@ export default function ChatHiddenChip({
         </div>
       }
     >
-      <p>This chat is not visible to others on Grill,</p>
+      <p>This chat is not visible to others on Epic,</p>
       <p>though it is still viewable on-chain.</p>
     </PopOver>
   )

@@ -78,7 +78,7 @@ export default function TelegramNotificationContent(
             ),
           },
           {
-            title: 'Telegram Bot for Grill',
+            title: 'Telegram Bot for Epic',
             content: (
               <LinkText
                 href={env.NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT}
@@ -93,7 +93,7 @@ export default function TelegramNotificationContent(
                   height={32}
                   className='h-6 w-6 rounded-full'
                 />
-                <span>Grill Notifications</span>
+                <span>Epic Notifications</span>
               </LinkText>
             ),
           },

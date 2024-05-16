@@ -59,20 +59,20 @@ export default function LoginModal({
       withCloseButton: false,
     },
     'enter-secret-key': {
-      title: '🔑 Log in with Grill key',
-      desc: 'Grill key is like a long password and consists of 12 words',
+      title: '🔑 Log in with Epic key',
+      desc: 'Epic key is like a long password and consists of 12 words',
       withBackButton: true,
       withFooter: 'dont-have-account',
     },
     'scan-qr': {
       title: '📷 Scan QR Code',
-      desc: 'Scan the QR code with your Grill mobile app to log in',
+      desc: 'Scan the QR code with your Epic in your mobile to log in',
       withBackButton: true,
       backToStep: prevScanQrStep || 'login',
     },
     'account-created': {
       title: '🎉 Account created',
-      desc: 'We have created an account linked to your X for you. You can now use Grill!',
+      desc: 'We have created an account linked to your X for you. You can now use Epic!',
     },
     'evm-address-link': {
       title: '🔑 Connect EVM',
