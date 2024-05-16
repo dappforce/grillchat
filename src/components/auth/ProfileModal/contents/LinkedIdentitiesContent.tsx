@@ -183,8 +183,11 @@ function EvmConnectButton() {
       withWalletActionImage={false}
       size='sm'
       loadingText={isSigning ? 'Pending' : undefined}
-      onSuccessConnect={async (evmAddress) => {
+      onClick={() => {
         sendEvent('add_provider_evm_clicked')
+      }}
+      onSuccessConnect={async (evmAddress) => {
+        sendEvent('finish_add_provider_evm')
         signAndLinkEvmAddress(evmAddress)
       }}
       isLoading={isLoading}
@@ -225,6 +228,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   const { mutate, isLoading } = useAddExternalProviderToIdentity({
     onSuccess: () => {
       signOut({ redirect: false })
+      sendEvent(`finish_add_provider_${provider}`)
       const intervalId = setInterval(async () => {
         if (linkedIdentityRef.current) {
           clearInterval(intervalId)
@@ -266,7 +270,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
         signIn(provider, {
           callbackUrl:
             getCurrentUrlWithoutQuery() +
-            `?profile=linked-accounts&provider=${provider}`,
+            `?profile=linked-identities&provider=${provider}`,
         })
       }}
     >

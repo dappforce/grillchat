@@ -1,4 +1,4 @@
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import {
   getCurrentSearchParams,
   getCurrentUrlWithoutQuery,
@@ -12,8 +12,9 @@ export function getReferralIdInUrl() {
 }
 
 export function useReferralId() {
+  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
-  return myAddress || getReferralIdInUrl()
+  return isInitializedProxy ? myAddress || getReferralIdInUrl() : undefined
 }
 
 export function useReferralSearchParam() {
@@ -29,8 +30,9 @@ export function ReferralUrlChanger() {
   useEffect(() => {
     if (!referralId) return
     const current = getCurrentSearchParams()
-    current.set('ref', referralId)
+    if (current.get('ref') === referralId) return
 
+    current.set('ref', referralId)
     const newPath = `${getCurrentUrlWithoutQuery()}?${current.toString()}`
     router.replace(newPath, undefined, { shallow: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps

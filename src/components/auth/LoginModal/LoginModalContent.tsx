@@ -138,6 +138,7 @@ export function EvmLoginStep({
 
   return (
     <CommonEVMLoginContent
+      mutationType='link-identity'
       buttonLabel={isErrorStep ? 'Try again' : undefined}
       isLoading={isLoading}
       beforeSignEvmAddress={() => mutate()}

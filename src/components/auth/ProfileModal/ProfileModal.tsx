@@ -14,6 +14,7 @@ import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useState } from 'react'
 import AboutContent from './contents/AboutContent'
 import AccountContent from './contents/AccountContent'
+import AddEvmProviderContent from './contents/AddEvmProviderContent'
 import {
   CreateChatContent,
   CreateChatLoadingContent,
@@ -43,9 +44,10 @@ const modalContents: {
   'profile-settings': SimpleProfileSettingsContent,
   'privacy-security': PrivacySecurityContent,
   'private-key': PrivateKeyContent,
-  'linked-accounts': LinkedIdentitiesContent,
+  'linked-identities': LinkedIdentitiesContent,
   logout: LogoutContent,
   'share-session': ShareSessionContent,
+  'add-evm-provider': AddEvmProviderContent,
   about: AboutContent,
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
@@ -151,8 +153,13 @@ export default function ProfileModal({
       withoutDefaultPadding: true,
       withFooter: true,
     },
-    'linked-accounts': {
+    'linked-identities': {
       title: '🔗 Linked Identities',
+      withBackButton: true,
+    },
+    'add-evm-provider': {
+      title: '🔑 Connect EVM',
+      desc: 'Create an on-chain proof to link your Epic account.',
       withBackButton: true,
     },
     'profile-settings': {

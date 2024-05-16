@@ -76,7 +76,7 @@ export default function LoginModal({
     },
     'evm-address-link': {
       title: '🔑 Connect EVM',
-      desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
+      desc: 'Create an on-chain proof to link your Epic account.',
       withBackButton: true,
     },
     'evm-linking-error': {

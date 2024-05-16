@@ -3,7 +3,8 @@ import React from 'react'
 export const profileModalStates = [
   'account',
   'profile-settings',
-  'linked-accounts',
+  'linked-identities',
+  'add-evm-provider',
   'privacy-security',
   'private-key',
   'logout',

@@ -1,14 +1,18 @@
 import LinkedEvmAddressImage from '@/assets/graphics/linked-evm-address.png'
 import Button from '@/components/Button'
+import { IdentityProvider } from '@/services/datahub/generated-query'
 import { Identity } from '@/services/datahub/identity/fetcher'
-import { useLinkIdentity } from '@/services/datahub/identity/mutation'
+import {
+  useAddExternalProviderToIdentity,
+  useLinkIdentity,
+} from '@/services/datahub/identity/mutation'
 import {
   getEvmLinkedIdentityMessageQuery,
   getLinkedIdentityQuery,
 } from '@/services/datahub/identity/query'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
-import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
@@ -22,6 +26,7 @@ type CommonEVMLoginErrorProps = {
   beforeSignEvmAddress?: () => Promise<void>
   isLoading?: boolean
   buttonLabel?: string
+  mutationType: 'add-provider' | 'link-identity'
 }
 
 export const CommonEVMLoginContent = ({
@@ -31,6 +36,7 @@ export const CommonEVMLoginContent = ({
   onError,
   beforeSignEvmAddress,
   isLoading: _isLoading,
+  mutationType = 'link-identity',
 }: CommonEVMLoginErrorProps) => {
   const client = useQueryClient()
   const [isGettingMessage, setIsGettingMessage] = useState(false)
@@ -46,17 +52,32 @@ export const CommonEVMLoginContent = ({
   )
   const {
     mutateAsync: linkIdentity,
-    isLoading,
-    isSuccess,
+    isLoading: isLinking,
+    isSuccess: isSuccessLinking,
   } = useLinkIdentity({
     onError: () => {
       reset()
       onError?.()
     },
   })
+  const {
+    mutateAsync: addProvider,
+    isLoading: isAdding,
+    isSuccess: isSuccessAdding,
+  } = useAddExternalProviderToIdentity({
+    onError: () => {
+      reset()
+    },
+  })
+  const isLoading = isLinking || isAdding
+  const isSuccess = isSuccessLinking || isSuccessAdding
 
   useEffect(() => {
-    if (linkedIdentity) {
+    if (
+      linkedIdentity?.externalProviders.find(
+        (p) => p.provider === IdentityProvider.Evm
+      )
+    ) {
       const res = onSuccess?.(linkedIdentity)
       if (res) {
         res.then(() => reset())
@@ -89,14 +110,25 @@ export const CommonEVMLoginContent = ({
 
       onFinishSignMessage?.()
 
-      await linkIdentity({
-        externalProvider: {
-          id: evmAddress,
-          provider: IdentityProvider.EVM,
-          evmProofMsg: message,
-          evmProofMsgSig: sig,
-        },
-      })
+      if (mutationType === 'link-identity') {
+        await linkIdentity({
+          externalProvider: {
+            id: evmAddress,
+            provider: SDKIdentityProvider.EVM,
+            evmProofMsg: message,
+            evmProofMsgSig: sig,
+          },
+        })
+      } else {
+        await addProvider({
+          externalProvider: {
+            id: evmAddress,
+            provider: SDKIdentityProvider.EVM,
+            evmProofMsg: message,
+            evmProofMsgSig: sig,
+          },
+        })
+      }
     } finally {
       isCalledRef.current = false
     }

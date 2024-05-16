@@ -88,7 +88,7 @@ const MissingRewards = ({ address }: MissingRewardsProps) => {
         onClick={() => {
           setDefaultModalState('evm-address-link')
           setModalOpen({
-            defaultOpenState: 'linked-accounts',
+            defaultOpenState: 'add-evm-provider',
           })
         }}
       >
