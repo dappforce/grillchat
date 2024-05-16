@@ -63,6 +63,7 @@ export default function AccountContent({
         <div className='flex flex-col gap-6 border-b border-background-lightest px-6 pb-6'>
           <ProfilePreview
             onEditClick={() => setCurrentState('profile-settings')}
+            onSetRewardAddressClick={() => setCurrentState('linked-accounts')}
             address={address}
           />
 

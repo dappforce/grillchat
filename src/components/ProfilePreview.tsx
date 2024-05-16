@@ -31,6 +31,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   showAddress?: boolean
   nameClassName?: string
   onEditClick?: () => void
+  onSetRewardAddressClick?: () => void
   asLink?: boolean
   withPolkadotIdentity?: boolean
 }
@@ -44,6 +45,7 @@ const ProfilePreview = ({
   addressesContainerClassName,
   asLink,
   onEditClick,
+  onSetRewardAddressClick,
   showAddress = true,
   ...props
 }: ProfilePreviewProps) => {
@@ -123,10 +125,16 @@ const ProfilePreview = ({
             </div>
           </div>
         ) : (
-          <Button className='flex items-center gap-1'>
-            <TbCoins />
-            <span>Set Rewards Address</span>
-          </Button>
+          onSetRewardAddressClick && (
+            <Button
+              className='mt-0.5 flex items-center gap-1.5 px-3 py-1 text-sm'
+              size='sm'
+              onClick={onSetRewardAddressClick}
+            >
+              <TbCoins />
+              <span>Set Rewards Address</span>
+            </Button>
+          )
         )}
       </div>
     </div>
