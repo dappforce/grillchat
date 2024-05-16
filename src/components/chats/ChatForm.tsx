@@ -4,7 +4,6 @@ import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import { ERRORS } from '@/constants/error'
 import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
-import useSendMessageWithLoginFlow from '@/hooks/useSendMessageWithLoginFlow'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
@@ -15,6 +14,7 @@ import { augmentDatahubParams } from '@/services/datahub/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import {
   hasSentMessageStorage,
@@ -119,19 +119,20 @@ export default function ChatForm({
 
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
 
-  const { mutate: loginAndSendMessage } = useSendMessageWithLoginFlow({
-    onSuccess: () => {
-      refetchSufficientBalanceData()
-      unsentMessageStorage.remove(chatId)
-    },
-    onError: (error, variables) => {
-      refetchSufficientBalanceData()
-      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
-        reloadUnsentMessage,
-        setIsDisabledInput,
-      })
-    },
-  })
+  const openLoginModal = useLoginModal((state) => state.setIsOpen)
+  // const { mutate: loginAndSendMessage } = useSendMessageWithLoginFlow({
+  //   onSuccess: () => {
+  //     refetchSufficientBalanceData()
+  //     unsentMessageStorage.remove(chatId)
+  //   },
+  //   onError: (error, variables) => {
+  //     refetchSufficientBalanceData()
+  //     showErrorSendingMessageToast(error, 'Failed to send message', variables, {
+  //       reloadUnsentMessage,
+  //       setIsDisabledInput,
+  //     })
+  //   },
+  // })
 
   let messageBody = useMessageData((state) => state.messageBody)
   const showEmptyPrimaryChatInput = useMessageData(
@@ -214,7 +215,6 @@ export default function ChatForm({
       resetForm()
       return
     }
-    resetForm()
 
     unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')
@@ -224,9 +224,11 @@ export default function ChatForm({
         setOpenMessageModal('should-stake')
         return
       }
+      resetForm()
       sendMessage(augmentDatahubParams(messageParams))
     } else {
-      loginAndSendMessage(messageParams)
+      openLoginModal(true)
+      return
     }
 
     const firstExtension = sendMessageParams.extensions?.[0]
