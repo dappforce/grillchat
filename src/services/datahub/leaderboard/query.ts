@@ -8,6 +8,7 @@ import {
   getLeaderboardData,
   getRewardHistory,
   getTopUsers,
+  getUserReferrals,
   getUserStatistics,
 } from '.'
 import { LeaderboardData } from './types'
@@ -47,6 +48,14 @@ export const getGeneralStatisticsQuery = createQuery({
 export const getGeneralStatisticsByPeriodQuery = createQuery({
   key: 'getGeneralStatisticsByPeriod',
   fetcher: getGeneralStatisticsByPeriod,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
+})
+
+export const getUserReferralsQuery = createQuery({
+  key: 'getUserReferrals',
+  fetcher: getUserReferrals,
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),

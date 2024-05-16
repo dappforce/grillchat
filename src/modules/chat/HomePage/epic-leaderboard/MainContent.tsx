@@ -22,10 +22,9 @@ const { gradient, tokenSymbol, EpicTokenIllust } = epicConfig
 
 type MainContentProps = {
   className?: string
-  address?: string
 }
 
-const MainContent = ({ className, address }: MainContentProps) => {
+const MainContent = ({ className }: MainContentProps) => {
   const myAddress = useMyMainAddress()
 
   return (
@@ -36,20 +35,18 @@ const MainContent = ({ className, address }: MainContentProps) => {
       )}
     >
       <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0')}>
-        <MainCard address={address} />
-        <MissingRewards address={address} />
-        {myAddress && myAddress === address && <ReferralSection />}
+        <MainCard />
+        <MissingRewards />
+        {myAddress && <ReferralSection />}
         <LeaderboardSection />
       </div>
     </div>
   )
 }
 
-function MainCard({ address }: MainContentProps) {
+function MainCard() {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
-
-  const userAddress = address || myAddress
 
   if (!isInitializedProxy) {
     return (
@@ -68,17 +65,28 @@ function MainCard({ address }: MainContentProps) {
     )
   }
 
-  if (!userAddress) {
+  if (!myAddress) {
     return <GuestCard />
   }
 
-  return <ProfileCard address={address} />
+  return <ProfileCard />
 }
 
-const ProfileCard = ({ address }: MainContentProps) => {
+const HowDoesItWork = () => (
+  <Button
+    variant='transparent'
+    className='bg-white/10 !shadow-none !ring-0 hover:outline hover:outline-white'
+    href='https://epicapp.net/what-is-meme2earn'
+    target='_blank'
+  >
+    How does it work?
+  </Button>
+)
+
+const ProfileCard = () => {
   const myAddress = useMyMainAddress()
 
-  const userAddress = address || myAddress || ''
+  const userAddress = myAddress || ''
 
   const { isLoading, data: reward } = useCalculateTokenRewards(userAddress)
 
@@ -88,31 +96,34 @@ const ProfileCard = ({ address }: MainContentProps) => {
         <div className='flex w-full items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>
             <AddressAvatar
-              address={userAddress || ''}
+              address={userAddress}
               className='h-[33px] w-[33px] rounded-lg object-cover outline outline-[3px] outline-white/20'
             />
             <Name
-              address={userAddress || ''}
+              address={userAddress}
               className='text-lg font-semibold !text-white'
             />
           </div>
-          <Button variant='transparent' className='bg-white/10'>
-            How does it work?
-          </Button>
+          <HowDoesItWork />
         </div>
         <div className='flex flex-col gap-4'>
           <div className='relative flex flex-col gap-2 rounded-xl'>
-            <span
-              className={cx(
-                'font-mono text-[26px] font-bold leading-none',
-                spaceMono.className
-              )}
-            >
+            <span className='flex items-center gap-2'>
               <FormatBalance
                 value={reward}
-                symbol={`$${tokenSymbol}`}
+                symbol={''}
                 loading={isLoading}
+                className={cx(
+                  'text-[26px] font-bold leading-none',
+                  spaceMono.className
+                )}
               />
+              <span
+                className={cx(
+                  'text-[26px] font-bold leading-none',
+                  spaceMono.className
+                )}
+              >{`$${tokenSymbol}`}</span>
             </span>
             <span className='text-sm leading-none text-slate-200'>
               earned this week
@@ -142,7 +153,10 @@ const ProfileCard = ({ address }: MainContentProps) => {
               </div>
             }
           >
-            <p>Some text</p>
+            <p>
+              The amount of time remaining until your bonus rewards for this
+              week are deposited into your account
+            </p>
           </PopOver>
         </div>
       </div>
@@ -157,9 +171,7 @@ function GuestCard() {
     <MainCardTemplate className='pt-3' illustClassName='-bottom-1/3'>
       <div className='mb-2 flex w-full items-center justify-between'>
         <span className='text-lg font-semibold'>Meme2earn</span>
-        <Button variant='transparent' className='bg-white/10'>
-          How does it work?
-        </Button>
+        <HowDoesItWork />
       </div>
       <p className='mb-4 max-w-96 text-white/80'>
         Start monetizing your best memes, and earn when you like posts from

@@ -1,6 +1,5 @@
 import Loading from '@/components/Loading'
 import { Column, TableHeader, TableRow } from '@/components/Table'
-import { getLeaderboardLink } from '@/components/layouts/Sidebar'
 import Modal from '@/components/modals/Modal'
 import { LeaderboardRole } from '@/services/datahub/leaderboard'
 import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
@@ -138,13 +137,6 @@ const ModalTableRows = ({
             item={item}
             withDivider={false}
             className='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl'
-            onRowClick={() => {
-              router.push(
-                '/leaderboard/[address]',
-                getLeaderboardLink(item.address)
-              )
-              closeModal()
-            }}
           />
         )
       })}

@@ -476,3 +476,36 @@ export async function getGeneralStatisticsByPeriod(
     stakersEarnedPointsTotal: data.stakersEarnedPointsTotal,
   }
 }
+
+type GetUserReferralsQuery = {
+  userReferrals: {
+    data: {
+      referrerId: string
+      referralsCount: number
+    }[]
+  }
+}
+
+const GET_USER_REFERRALS = gql`
+  query GetUserReferrals($address: String!) {
+    userReferrals(args: { where: { referrerIds: [$address] } }) {
+      data {
+        referrerId
+        referralsCount
+      }
+    }
+  }
+`
+export async function getUserReferrals(address: string): Promise<number> {
+  const res = await datahubQueryRequest<
+    GetUserReferralsQuery,
+    { address: string }
+  >({
+    document: GET_USER_REFERRALS,
+    variables: { address },
+  })
+
+  const data = res.userReferrals.data[0]
+
+  return data.referralsCount
+}
