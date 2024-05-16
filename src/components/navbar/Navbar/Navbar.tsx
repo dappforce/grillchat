@@ -155,8 +155,8 @@ export default function Navbar({
                   <CustomLink href=''>
                     <FarcasterLogo />
                   </CustomLink>
+                  <div>{authComponent}</div>
                 </div>
-                <div className='ml-2.5'>{authComponent}</div>
               </div>
             </div>
           )}

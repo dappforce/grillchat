@@ -4,7 +4,6 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     SERVER_MNEMONIC: z.string().default(''),
-    SERVER_DISCUSSION_CREATOR_MNEMONIC: z.string().default(''),
     USER_ID_SALT: z.string().default(''),
 
     CRUST_IPFS_AUTH: z.string().default(''),
@@ -19,8 +18,6 @@ export const env = createEnv({
     REDIS_HOST: z.string().default(''),
     REDIS_PORT: z.string().default(''),
     REDIS_PASSWORD: z.string().default(''),
-
-    SUBSOCIAL_PROMO_SECRET_HEX: z.string().default(''),
 
     DATAHUB_QUEUE_URL: z.string().default(''),
     DATAHUB_QUEUE_TOKEN: z.string().default(''),

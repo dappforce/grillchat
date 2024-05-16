@@ -17,6 +17,7 @@ export const buttonStyles = cva('relative transition', {
       white: 'bg-white text-black !ring-white',
       mutedOutline:
         'bg-transparent border border-text-muted text-text-muted !ring-text-muted',
+      muted: 'bg-slate-100 text-slate-500 !ring-slate-500/50',
       transparent: 'bg-transparent',
       redOutline: 'bg-transparent border border-text-red !ring-text-red',
       landingPrimary:

@@ -8,7 +8,9 @@ import { ProfileSource } from '@/utils/profile'
 import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
+import { RiPencilFill } from 'react-icons/ri'
 import { SiEthereum } from 'react-icons/si'
+import { TbCoins } from 'react-icons/tb'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
@@ -59,14 +61,8 @@ const ProfilePreview = ({
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
   const editButton = mdUp ? (
-    <Button
-      size='noPadding'
-      className='relative flex items-center gap-1 border-border-gray px-2 py-0.5 text-sm text-text-primary'
-      variant='primaryOutline'
-      onClick={onEditClick}
-    >
-      <span>Edit</span>
-      <LuPencil />
+    <Button size='circleSm' variant='muted' onClick={onEditClick}>
+      <RiPencilFill />
     </Button>
   ) : (
     <PopOver
@@ -112,7 +108,7 @@ const ProfilePreview = ({
           />
           {onEditClick && !isLoading && editButton}
         </div>
-        {showAddress && myLinkedEvmAddress && (
+        {showAddress && myLinkedEvmAddress ? (
           <div className='flex flex-col gap-1'>
             <div className='flex flex-row items-center gap-1.5'>
               <SiEthereum className='text-xl text-text-muted' />
@@ -126,6 +122,11 @@ const ProfilePreview = ({
               />
             </div>
           </div>
+        ) : (
+          <Button className='flex items-center gap-1'>
+            <TbCoins />
+            <span>Set Rewards Address</span>
+          </Button>
         )}
       </div>
     </div>
