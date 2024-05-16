@@ -1,3 +1,4 @@
+import { LeaderboardRole } from '@/services/datahub/leaderboard'
 import {
   getActiveStakingStatsByUserQuery,
   getGeneralStatisticsByPeriodQuery,
@@ -9,7 +10,7 @@ import epicConfig from '../../../../constants/config/epic'
 
 const { rewardPool } = epicConfig
 
-const useCalculateTokenRewards = (address?: string) => {
+const useCalculateTokenRewards = (address?: string, role?: LeaderboardRole) => {
   const myAddress = useMyMainAddress()
 
   const userAddress = address || myAddress
@@ -54,17 +55,19 @@ const useCalculateTokenRewards = (address?: string) => {
     (items) => items.isLoading
   )
 
-  const statsByUsers = statsByUsersQueries.map((items) => items.data)
+  const statsByUsersData = statsByUsersQueries.map((items) => items.data)
   const generalStatsByDaysData = generalStatsByDays.map((items) => items.data)
 
   const rewardPoolPerDay = new BN(rewardPool / 7)
 
-  const res = statsByUsers.map((item, index) => {
+  const res = statsByUsersData.map((item, index) => {
     const generalStatsByDay = generalStatsByDaysData[index]
 
-    const totalUsetPoints = new BN(
-      item?.staker.earnedPointsByPeriod || '0'
-    ).plus(item?.creator.earnedPointsByPeriod || '0')
+    const totalUsetPoints = role
+      ? new BN(item?.[role].earnedPointsByPeriod || '0')
+      : new BN(item?.staker.earnedPointsByPeriod || '0').plus(
+          item?.creator.earnedPointsByPeriod || '0'
+        )
 
     const totalEarnedPoints = new BN(
       generalStatsByDay?.creatorEarnedPointsTotal || '0'

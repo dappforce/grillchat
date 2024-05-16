@@ -410,7 +410,7 @@ function NumberSkeleton() {
   return <Skeleton className='w-[3ch]' />
 }
 
-function Pluralize({
+export function Pluralize({
   count,
   singularText,
   pluralText,

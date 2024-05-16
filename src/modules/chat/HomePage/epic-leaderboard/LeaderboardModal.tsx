@@ -84,6 +84,7 @@ const LeaderboardModal = ({
                 columns={columns}
                 closeModal={closeModal}
                 currentUserAddress={currentUserAddress}
+                role={role}
               />
             </tbody>
           </table>
@@ -102,6 +103,7 @@ type ModalTableRowsProps = {
   columns: Column[]
   closeModal: () => void
   currentUserAddress?: string
+  role: LeaderboardRole
 }
 
 const ModalTableRows = ({
@@ -109,6 +111,7 @@ const ModalTableRows = ({
   columns,
   closeModal,
   currentUserAddress,
+  role,
 }: ModalTableRowsProps) => {
   const router = useRouter()
 
@@ -116,7 +119,9 @@ const ModalTableRows = ({
     address: item.address,
     rank: item.rank!,
     'user-role': <UserPreview address={item.address} />,
-    rewards: <UserReward reward={item.reward} address={item.address} />,
+    rewards: (
+      <UserReward reward={item.reward} address={item.address} role={role} />
+    ),
     className:
       currentUserAddress === item.address
         ? 'dark:bg-slate-700 bg-[#EEF2FF]'

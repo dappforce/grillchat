@@ -3,7 +3,7 @@ import Card from '@/components/Card'
 import PopOver from '@/components/floating/PopOver'
 import { useMyMainAddress } from '@/stores/my-account'
 import { copyToClipboard } from '@/utils/strings'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import epicConfig from '../../../../constants/config/epic'
 
@@ -22,7 +22,9 @@ const ReferralSection = () => {
     }, 1000)
   }
 
-  const referralLink = `https://epic.com?ref=${myAddress}`
+  const origin = useMemo(() => window.location.origin, [])
+
+  const referralLink = `${origin}?ref=${myAddress}`
 
   return (
     <Card className='flex flex-col gap-2 bg-background-light'>
