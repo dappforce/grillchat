@@ -26,6 +26,10 @@ const nextConfig = {
       issuer: /\.[jt]sx?$/,
       use: ['@svgr/webpack'],
     })
+    config.module.rules.push({
+      test: /\.md$/,
+      use: ['html-loader', 'markdown-loader'],
+    })
 
     return config
   },
