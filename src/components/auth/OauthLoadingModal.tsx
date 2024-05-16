@@ -55,7 +55,7 @@ export default function OauthLoadingModal() {
       !myAddress
     ) {
       setIsOpen(true)
-    } else if (myAddress) {
+    } else if (myAddress && isAfterOauthLogin) {
       router.replace(getCurrentUrlWithoutQuery('login'), undefined, {
         shallow: true,
       })
