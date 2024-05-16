@@ -50,6 +50,10 @@ export const scrollBarStyles = cva('', {
       true: cx('scrollbar-none'),
       false: cx('flex-1 overflow-auto'),
     },
+    track: {
+      background: cx('scrollbar-track-background'),
+      'background-light': cx('scrollbar-track-background-light'),
+    },
   },
   defaultVariants: {
     none: false,
