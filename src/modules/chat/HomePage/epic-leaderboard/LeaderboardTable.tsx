@@ -29,7 +29,7 @@ export const leaderboardColumns = (
     index: 'rank',
     name: '#',
     className: cx(
-      'p-0 py-2 pl-4 md:w-[7%] w-[14%]',
+      'p-0 py-2 pl-4 w-[45px]',
       mutedTextColorStyles,
       customColumnsClassNames?.[0]
     ),

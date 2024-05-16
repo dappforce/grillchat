@@ -2,7 +2,7 @@ import Tabs from '@/components/Tabs'
 import { cx } from '@/utils/class-names'
 import LeaderboardTable from './LeaderboardTable'
 
-const customColumnsClassNames = ['md:w-[9.8%]', undefined, 'md:w-[30%]']
+const customColumnsClassNames = [undefined, undefined, 'md:w-[30%]']
 
 const tabs = [
   {
@@ -32,7 +32,7 @@ const LeaderboardSection = () => {
     <div className='overflow-hidden rounded-2xl bg-white'>
       <Tabs
         className='p-0 first:[&>span]:rounded-s-none last:[&>span]:rounded-e-none'
-        panelClassName='mt-0 w-full max-w-full'
+        panelClassName='mt-0 w-full max-w-full px-0'
         tabClassName={(selected) =>
           cx(
             {
