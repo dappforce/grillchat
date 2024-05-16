@@ -117,7 +117,7 @@ const ProfilePreview = ({
               <CopyTextInline
                 text={truncateAddress(myLinkedEvmAddress)}
                 tooltip={`Copy${isMyAddressPart} address`}
-                textToCopy={address}
+                textToCopy={myLinkedEvmAddress}
                 textClassName={cx(
                   'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
                 )}
