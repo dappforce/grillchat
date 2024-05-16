@@ -277,7 +277,7 @@ export default function ChatForm({
           const clipboardData = e.clipboardData
           interceptPastedData(clipboardData, e)
         }}
-        placeholder='Message...'
+        placeholder='Post your meme here...'
         rows={1}
         autoComplete='off'
         autoCapitalize='sentences'
