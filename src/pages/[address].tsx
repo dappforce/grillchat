@@ -16,8 +16,8 @@ export const getStaticPaths = async () => {
 export const getStaticProps = getCommonStaticProps<AppCommonProps>(
   () => ({
     head: {
-      title: 'Home',
-      description: 'Home page',
+      title: 'EPIC - A Meme-to-Earn Platform',
+      description: 'Earn meme coins 💰 by posting and liking memes 🤣',
     },
   }),
   async (context) => {
