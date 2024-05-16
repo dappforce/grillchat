@@ -34,7 +34,7 @@ export default function HeadConfig({
     'Revolutionary Web3 social finance platform where bloggers and their followers earn together. Blockchain, NFT, and crypto content.'
   const usedDesc = description || defaultDesc
 
-  const usedImage = image || 'https://grillapp.net/c/grill-default-cover.png'
+  const usedImage = image || 'https://epicapp.net/cover.png'
 
   return (
     <Head>
