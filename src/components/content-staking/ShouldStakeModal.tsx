@@ -16,7 +16,7 @@ export default function ShouldStakeModal({
         <Button
           className='w-full'
           size='lg'
-          href='https://paragraph.xyz/@olehmell/what-is-meme-to-earn'
+          href='https://epicapp.net/what-is-meme2earn'
           target='_blank'
           rel='noopener noreferrer'
         >
