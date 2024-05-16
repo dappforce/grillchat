@@ -11,7 +11,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getHubPageLink } from '@/utils/links'
 import { Dialog, Transition } from '@headlessui/react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -99,7 +98,7 @@ export default function Navbar({
   const logoLink = (
     <div className='flex items-center'>
       {hamburgerMenu}
-      <CustomLink href={getHubPageLink(router)} aria-label='Back'>
+      <CustomLink href='/memes' aria-label='Back'>
         <Logo className='text-xl' />
       </CustomLink>
     </div>

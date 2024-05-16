@@ -1,1 +1,1 @@
-export const CONTENT_POLICY_LINK = 'https://grillapp.net/legal/content-policy'
+export const CONTENT_POLICY_LINK = '/legal/content-policy'

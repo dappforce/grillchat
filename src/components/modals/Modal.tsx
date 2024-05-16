@@ -5,6 +5,7 @@ import { Fragment, ReactNode } from 'react'
 import { HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
 import Button from '../Button'
 import LinkText from '../LinkText'
+import { CONTENT_POLICY_LINK } from '../moderation/utils'
 
 export type ModalFunctionalityProps = {
   ref?: React.RefObject<any>
@@ -204,10 +205,9 @@ export default function Modal({
                         </LinkText>
                         <span>&middot;</span>
                         <LinkText
-                          href='https://grillapp.net/legal/content-policy'
+                          href={CONTENT_POLICY_LINK}
                           className='whitespace-nowrap font-normal'
                           openInNewTab
-                          forceHardNavigation
                         >
                           Content Policy
                         </LinkText>
