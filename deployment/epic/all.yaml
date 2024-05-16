@@ -31,7 +31,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: epic.subsocial.network
+    - host: epicapp.net
       http:
         paths:
           - backend:
@@ -44,8 +44,8 @@ spec:
 
   tls:
     - hosts:
-        - epic.subsocial.network
-      secretName: subsocial-ssl
+        - epicapp.net
+      secretName: epicapp-net-ssl
 
 ---
 apiVersion: v1
