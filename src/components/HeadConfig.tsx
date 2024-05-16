@@ -23,15 +23,14 @@ export default function HeadConfig({
   isTitleBrandFocused,
   cardFormat = 'summary_large_image',
 }: HeadConfigProps) {
-  const defaultTitle = 'Monetize Every Like, Comment, Post | Web3 Social'
+  const defaultTitle = 'EPIC - A Meme-to-Earn Platform'
   const summarizedTitle = summarize(title || defaultTitle)
 
   let usedTitle
-  if (isTitleBrandFocused || !title) usedTitle = 'Grill: ' + summarizedTitle
-  else usedTitle = summarizedTitle + ' | Grill'
+  if (isTitleBrandFocused || !title) usedTitle = 'Epic: ' + summarizedTitle
+  else usedTitle = summarizedTitle + ' | Epic'
 
-  const defaultDesc =
-    'Revolutionary Web3 social finance platform where bloggers and their followers earn together. Blockchain, NFT, and crypto content.'
+  const defaultDesc = 'Earn meme coins 💰 by posting and liking memes 🤣'
   const usedDesc = description || defaultDesc
 
   const usedImage = image || 'https://epicapp.net/cover.png'
