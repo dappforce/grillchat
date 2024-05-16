@@ -39,7 +39,7 @@ type ProviderData = {
 
 const externalProviders: ProviderData[] = [
   {
-    name: 'EVM Address',
+    name: 'EVM Address for Rewards',
     icon: SiEthereum,
     shortName: 'EVM',
     provider: IdentityProvider.Evm,
