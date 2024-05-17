@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import HomePage from '@/modules/chat/HomePage'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPaginatedPostIdsByPostId } from '@/services/datahub/posts/query'
@@ -17,18 +18,18 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     await Promise.all([
       getPaginatedPostIdsByPostId.fetchFirstPageQuery(
         client,
-        '0x3b1bf91da3fd7e5d790c19039110a5a7',
+        env.NEXT_PUBLIC_MAIN_CHAT_ID,
         1
       ),
       prefetchBlockedEntities(
         client,
-        ['0xc75507f88e6a7d555c15ac95c49cb426'],
-        ['0x3b1bf91da3fd7e5d790c19039110a5a7']
+        [env.NEXT_PUBLIC_MAIN_SPACE_ID].filter(Boolean),
+        [env.NEXT_PUBLIC_MAIN_CHAT_ID].filter(Boolean)
       ),
     ])
     getPaginatedPostIdsByPostId.invalidateFirstQuery(
       client,
-      '0x3b1bf91da3fd7e5d790c19039110a5a7'
+      env.NEXT_PUBLIC_MAIN_CHAT_ID
     )
 
     return {
