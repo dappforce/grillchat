@@ -126,14 +126,16 @@ const ProfilePreview = ({
           </div>
         ) : (
           onSetRewardAddressClick && (
-            <Button
-              className='mt-0.5 flex items-center gap-1.5 px-3 py-1 text-sm'
-              size='sm'
-              onClick={onSetRewardAddressClick}
-            >
-              <TbCoins />
-              <span>Set Rewards Address</span>
-            </Button>
+            <div>
+              <Button
+                className='mt-0.5 flex items-center gap-1.5 px-3 py-1 text-sm'
+                size='sm'
+                onClick={onSetRewardAddressClick}
+              >
+                <TbCoins />
+                <span>Set Rewards Address</span>
+              </Button>
+            </div>
           )
         )}
       </div>
