@@ -38,6 +38,7 @@ export const env = createEnv({
       .string()
       .default('')
       .transform((val) => val.split(',').filter(Boolean)),
+    NEXT_PUBLIC_MAIN_CHAT_ID: z.string().default(''),
     NEXT_PUBLIC_BASE_PATH: z.string().default(''),
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS: z
       .string()
@@ -74,6 +75,7 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
     NEXT_PUBLIC_MAIN_SPACE_ID: process.env.NEXT_PUBLIC_SPACE_IDS,
     NEXT_PUBLIC_SPACE_IDS: process.env.NEXT_PUBLIC_SPACE_IDS,
+    NEXT_PUBLIC_MAIN_CHAT_ID: process.env.NEXT_PUBLIC_MAIN_CHAT_ID,
     NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS:
       process.env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS,
     NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT:

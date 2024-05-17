@@ -1,19 +1,21 @@
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { env } from '@/env.mjs'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import ChatContent from './ChatContent'
 import MobileNavigation, { HomePageView } from './MobileNavigation'
 import MainContent from './epic-leaderboard/MainContent'
 
-const hubId = '0xc75507f88e6a7d555c15ac95c49cb426'
-const chatId = '0x3b1bf91da3fd7e5d790c19039110a5a7'
+const hubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
+const chatId = env.NEXT_PUBLIC_MAIN_CHAT_ID
 
 export default function HomePage() {
   const [homePageView, setHomePageView] = useState<HomePageView>('stats')
 
   return (
     <DefaultLayout className='relative'>
+      {/* <PostCreationButton /> */}
       <Container className='grid flex-1 gap-4 px-0 lg:grid-cols-[1fr_472px] lg:pr-3'>
         <ChatContent
           hubId={hubId}
@@ -31,3 +33,31 @@ export default function HomePage() {
     </DefaultLayout>
   )
 }
+
+// function PostCreationButton() {
+//   const { mutate: upsertPost } = useUpsertPost()
+//   const { mutateAsync: upsertSpace } = useUpsertSpace()
+//   return (
+//     <Button
+//       onClick={() => {
+//         // upsertSpace(
+//         //   augmentDatahubParams({
+//         //     content: {
+//         //       name: 'Test space',
+//         //     },
+//         //   })
+//         // )
+//         // upsertPost(
+//         //   augmentDatahubParams({
+//         //     spaceId: '0x7ce43c2015d61d3010563285d26aadcd',
+//         //     '0xdd4078ca9f42a17dc9501c3a84f3748a'
+//         //     title: 'Post testing',
+//         //     image: '',
+//         //   })
+//         // )
+//       }}
+//     >
+//       Create post
+//     </Button>
+//   )
+// }
