@@ -11,7 +11,7 @@ const { rewardPool } = epicConfig
 type CalculateTokenRewardProps = {
   address?: string
   role?: LeaderboardRole
-  points?: number
+  points?: string
 }
 
 const useCalculateTokenRewards = ({
@@ -30,7 +30,7 @@ const useCalculateTokenRewards = ({
       { enabled: !points && !!address }
     )
 
-  if (isMaxDailyRewardPointsLoading || isUserStatsLoading) {
+  if (isMaxDailyRewardPointsLoading || (!points && isUserStatsLoading)) {
     return {
       isLoading: true,
       data: '0',
@@ -41,11 +41,15 @@ const useCalculateTokenRewards = ({
     ? new BN(rewardPool).dividedBy(maxDailyRewardPoints)
     : new BN('0')
 
-  const userPoints = role
-    ? userStats?.[role].earnedPointsByPeriod
-    : new BN(userStats?.staker.earnedPointsByPeriod || '0').plus(
-        userStats?.creator.earnedPointsByPeriod || '0'
-      )
+  let userPoints = new BN(points || '0')
+
+  if (!points) {
+    userPoints = role
+      ? new BN(userStats?.[role].earnedPointsByPeriod || '0')
+      : new BN(userStats?.staker.earnedPointsByPeriod || '0').plus(
+          userStats?.creator.earnedPointsByPeriod || '0'
+        )
+  }
 
   const reward = tokenPricePerPoint.multipliedBy(userPoints || '0')
   return {
