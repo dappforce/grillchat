@@ -63,7 +63,6 @@ const MissingRewards = () => {
     warningPropsByType[type] = {
       ...warningPropsByType[type],
       onClick: () => {
-        setDefaultModalState('evm-address-link')
         setModalOpen({
           defaultOpenState: 'add-evm-provider',
         })

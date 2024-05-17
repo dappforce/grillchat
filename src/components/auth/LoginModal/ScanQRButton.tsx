@@ -23,7 +23,7 @@ export default function ScanQRButton({
       className='absolute right-5 top-[1.625rem] flex items-center gap-2 text-text-primary outline-none md:right-6 md:top-7'
     >
       <AiOutlineScan className='text-2xl md:text-xl' />
-      <span className='hidden md:block'> Scan QR</span>
+      <span className='hidden md:block'> Login with QR</span>
     </Button>
   )
 }

@@ -28,8 +28,6 @@ export default function AccountContent({
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
-  const colorModeOptions = useColorModeOptions()
-
   const onLogoutClick = () => {
     disconnect()
     sendEvent('open_log_out_modal', commonEventProps)
@@ -53,7 +51,6 @@ export default function AccountContent({
         setCurrentState('share-session')
       },
     },
-    ...colorModeOptions,
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
 

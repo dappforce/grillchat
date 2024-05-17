@@ -45,7 +45,7 @@ const useLoginModalBase = create<State & Actions>()((set, get) => ({
     if (!isOpen) {
       // const { isTemporaryAccount, logout } = useMyAccount.getState()
       // if (isTemporaryAccount) logout()
-      set({ isOpen: false })
+      set({ isOpen: false, defaultOpenState: undefined })
       return
     }
     set({ isOpen, initialOpenState })
