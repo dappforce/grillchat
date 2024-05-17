@@ -19,7 +19,7 @@ export default function LandingPage() {
       )}
       style={{ height: '100dvh' }}
     >
-      <div className='relative max-w-screen-lg text-center'>
+      <div className='relative flex w-full max-w-screen-lg flex-1 flex-col text-center sm:flex-initial'>
         <Image
           src={EllipseLeft}
           alt=''
@@ -33,43 +33,47 @@ export default function LandingPage() {
         <Image
           src={Laugh}
           alt=''
-          className='pointer-events-none absolute -top-14 left-0 h-[178px] w-[178px] -translate-x-1/3 -rotate-[24deg] select-none opacity-[0.66]'
+          className='pointer-events-none absolute right-0 top-4 h-[111px] w-[111px] -translate-y-1/4 translate-x-1/3 rotate-[27deg] select-none opacity-[0.66] sm:-top-14 sm:left-0 sm:right-auto sm:h-[178px] sm:w-[178px] sm:-translate-x-1/3 sm:translate-y-0 sm:-rotate-[24deg]'
         />
         <Image
           src={Money}
           alt=''
-          className='pointer-events-none absolute -top-12 right-0 h-[195px] w-[195px] translate-x-1/4 rotate-[17deg] select-none opacity-[0.87]'
+          className='pointer-events-none absolute left-0 top-1/3 h-[69px] w-[69px] -translate-x-1/2 rotate-[26deg] select-none opacity-[0.87] sm:-top-12 sm:left-auto sm:right-0 sm:h-[195px] sm:w-[195px] sm:translate-x-1/4 sm:rotate-[17deg]'
         />
         <Image
           src={Money}
           alt=''
-          className='pointer-events-none absolute -top-12 right-0 h-[61px] w-[61px] translate-x-[300%] rotate-[72deg] select-none opacity-[0.48] blur-[2px]'
+          className='pointer-events-none absolute right-4 top-1/2 h-[73px] w-[73px] -rotate-[26deg] select-none opacity-[0.48] blur-[2px] sm:-top-12 sm:right-0 sm:h-[61px] sm:w-[61px] sm:translate-x-[300%] sm:rotate-[72deg]'
         />
 
-        <div className='relative z-10 flex flex-col items-center gap-16'>
+        <div className='relative z-10 flex w-full flex-1 flex-col items-center py-12 sm:gap-16'>
           <h1 className='hidden'>Epic Meme2Earn</h1>
-          <EpicMemes className='h-[15vh]' />
-          <h2 className='text-4xl font-medium'>
+          <EpicMemes className='mb-12 mt-auto w-44 sm:mb-0 sm:h-[15vh] sm:max-w-72' />
+          <h2 className='mb-8 max-w-52 text-xl font-medium sm:mb-0 sm:max-w-none sm:text-4xl'>
             Earn meme coins 💰 by posting and liking memes 🤣
           </h2>
-          <div className='grid grid-cols-2 gap-8'>
+          <div className='mt-auto grid w-full grid-cols-1 gap-8 sm:mt-0 sm:grid-cols-2'>
             <Link
               href='https://epicapp.net/what-is-meme2earn'
-              className='flex flex-col gap-4 rounded-[30px] bg-white/20 p-8 outline-none ring-8 ring-inset ring-transparent transition hover:ring-[#F9E539] focus-visible:ring-[#F9E539] active:bg-[#F9E539] active:text-background-primary'
+              className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-transparent transition hover:ring-[#F9E539] focus-visible:ring-[#F9E539] active:bg-[#F9E539] active:text-background-primary sm:flex-col sm:p-8'
             >
-              <Image className='h-[30vh] object-contain' src={Meme1} alt='' />
-              <span className='text-3xl font-bold'>LEARN MORE</span>
+              <Image
+                className='h-28 w-24 object-contain sm:h-[20vh] sm:w-auto md:h-[30vh]'
+                src={Meme1}
+                alt=''
+              />
+              <span className='text-xl font-bold sm:text-3xl'>LEARN MORE</span>
             </Link>
             <Link
               href='/memes'
-              className='flex flex-col gap-4 rounded-[30px] bg-white/20 p-8 outline-none ring-8 ring-inset ring-transparent transition hover:ring-[#F9E539] focus-visible:ring-[#F9E539] active:bg-[#F9E539] active:text-background-primary'
+              className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-transparent transition hover:ring-[#F9E539] focus-visible:ring-[#F9E539] active:bg-[#F9E539] active:text-background-primary sm:flex-col sm:p-8'
             >
               <Image
-                className='h-[30vh] object-cover object-right-top'
+                className='h-28 w-24 object-cover object-right py-4 sm:h-[20vh] sm:w-auto sm:object-cover sm:object-right-top sm:py-0 md:h-[30vh]'
                 src={Meme2}
                 alt=''
               />
-              <span className='text-3xl font-bold'>OPEN APP</span>
+              <span className='text-xl font-bold sm:text-3xl'>OPEN APP</span>
             </Link>
           </div>
         </div>
