@@ -6,6 +6,7 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
+import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
@@ -44,6 +45,7 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
 
 export const LoginContent = (props: LoginModalContentProps) => {
   const { setCurrentState, closeModal } = props
+  const openNextStepModal = useLoginModal.use.openNextStepModal()
   const sendEvent = useSendEvent()
   const { loginNeynar, isLoadingOrSubmitted } = useNeynarLogin()
   const grillAddress = useMyGrillAddress()
@@ -54,8 +56,16 @@ export const LoginContent = (props: LoginModalContentProps) => {
   useEffect(() => {
     if (linkedIdentity) {
       closeModal()
+      console.log('masuk koe')
+      if (
+        !linkedIdentity.externalProviders.find(
+          (p) => p.provider === IdentityProvider.Evm
+        )
+      ) {
+        openNextStepModal({ step: 'connect-evm' })
+      }
     }
-  }, [linkedIdentity, closeModal])
+  }, [linkedIdentity, closeModal, openNextStepModal])
 
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {

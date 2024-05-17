@@ -10,6 +10,7 @@ type State = {
     | undefined
     | { step: 'save-grill-key'; provider: SupportedExternalProvider }
     | { step: 'create-profile' }
+    | { step: 'connect-evm' }
 }
 
 type Actions = {

@@ -3,6 +3,7 @@ import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useToastError from '@/hooks/useToastError'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
@@ -11,6 +12,7 @@ import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
+import { useLoginModal } from '@/stores/login-modal'
 import {
   useMyAccount,
   useMyGrillAddress,
@@ -22,8 +24,8 @@ import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { estimatedWaitTime } from '@/utils/network'
 import { replaceUrl } from '@/utils/window'
 import {
-  IdentityProvider,
   LinkedIdentityExternalProviderDetails,
+  IdentityProvider as SDKIdentityProvider,
 } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import { Session } from 'next-auth'
@@ -35,10 +37,10 @@ import Modal from '../modals/Modal'
 
 const providerMapper: Record<
   Session['provider'],
-  { name: string; providerId: IdentityProvider }
+  { name: string; providerId: SDKIdentityProvider }
 > = {
-  google: { name: 'Google', providerId: IdentityProvider.GOOGLE },
-  twitter: { name: 'X', providerId: IdentityProvider.TWITTER },
+  google: { name: 'Google', providerId: SDKIdentityProvider.GOOGLE },
+  twitter: { name: 'X', providerId: SDKIdentityProvider.TWITTER },
 }
 export default function OauthLoadingModal() {
   const [isOpen, setIsOpen] = useState(false)
@@ -94,12 +96,12 @@ export function getExternalProviderPayload(
   if (session.provider === 'google') {
     return {
       id: session.user.email ?? session.user.id,
-      provider: IdentityProvider.GOOGLE,
+      provider: SDKIdentityProvider.GOOGLE,
     }
   } else if (session.provider === 'twitter') {
     return {
       id: session.user?.id,
-      provider: IdentityProvider.TWITTER,
+      provider: SDKIdentityProvider.TWITTER,
       username: session.user?.name ?? undefined,
     }
   }
@@ -156,6 +158,15 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     finalizeTemporaryAccount()
     onSuccess()
     signOut({ redirect: false })
+
+    if (
+      linkedIdentity &&
+      !linkedIdentity.externalProviders.find(
+        (p) => p.provider === IdentityProvider.Evm
+      )
+    ) {
+      useLoginModal.getState().openNextStepModal({ step: 'connect-evm' })
+    }
   }
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {

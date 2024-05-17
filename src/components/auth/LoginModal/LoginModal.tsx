@@ -5,7 +5,8 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import ConnectEvmModal from './ConnectEvmModal'
 import CreateProfileModal from './CreateProfileModal'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
 import { prevScanQrStep } from './ScanQRButton'
@@ -136,6 +137,10 @@ export default function LoginModal({
     )
   }
 
+  const closeModal = useCallback(() => {
+    setIsOpen(false)
+  }, [setIsOpen])
+
   return (
     <>
       <Modal
@@ -164,15 +169,13 @@ export default function LoginModal({
           setCurrentState={setCurrentState}
           currentStep={currentState}
           isOpen={isOpen}
-          closeModal={() => setIsOpen(false)}
+          closeModal={closeModal}
         />
       </Modal>
-      {/* {loginOption === 'polkadot' && (
-        <StayUpdatedModal
-          isOpen={isOpenStayUpdatedModal}
-          closeModal={() => setIsOpenStayUpdatedModal(false)}
-        />
-      )} */}
+      <ConnectEvmModal
+        isOpen={openedNextStepsModal?.step === 'connect-evm'}
+        closeModal={closeNextStepModal}
+      />
       <CreateProfileModal
         withoutOverlay={withoutOverlay}
         withoutShadow={withoutShadow}
