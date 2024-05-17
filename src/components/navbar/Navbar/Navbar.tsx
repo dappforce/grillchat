@@ -99,7 +99,7 @@ export default function Navbar({
     <div className='flex items-center'>
       {hamburgerMenu}
       <CustomLink href='/memes' aria-label='Back'>
-        <Logo className='text-xl' />
+        <Logo className='text-base' />
       </CustomLink>
     </div>
   )

@@ -56,7 +56,6 @@ export const LoginContent = (props: LoginModalContentProps) => {
   useEffect(() => {
     if (linkedIdentity) {
       closeModal()
-      console.log('masuk koe')
       if (
         !linkedIdentity.externalProviders.find(
           (p) => p.provider === IdentityProvider.Evm
@@ -80,7 +79,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
     <div>
       <ScanQRButton {...props} />
       <div className='flex w-full flex-col justify-center'>
-        <Logo className='mb-8 mt-4 text-5xl' />
+        <Logo className='mb-12 mt-6 text-4xl' />
         <div className={cx('flex flex-col gap-4')}>
           {showErrorPanel && (
             <InfoPanel variant='error' className='mb-4'>
