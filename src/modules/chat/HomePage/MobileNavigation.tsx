@@ -34,6 +34,8 @@ const MobileNavigation = ({
     [myAddress]
   )
 
+  console.log('osidf', homePageView)
+
   return (
     <div
       className={cx(
