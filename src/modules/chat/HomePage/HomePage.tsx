@@ -2,6 +2,7 @@ import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { env } from '@/env.mjs'
 import { cx } from '@/utils/class-names'
+import { getUrlQuery } from '@/utils/links'
 import { useState } from 'react'
 import ChatContent from './ChatContent'
 import MobileNavigation, { HomePageView } from './MobileNavigation'
@@ -11,7 +12,13 @@ const hubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
 const chatId = env.NEXT_PUBLIC_MAIN_CHAT_ID
 
 export default function HomePage() {
-  const [homePageView, setHomePageView] = useState<HomePageView>('stats')
+  const [homePageView, setHomePageView] = useState<HomePageView>(() => {
+    const tab = getUrlQuery('tab')
+    if (tab === 'top-memes' || tab === 'stats') {
+      return tab
+    }
+    return 'top-memes'
+  })
 
   return (
     <DefaultLayout className='relative'>

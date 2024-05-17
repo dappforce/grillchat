@@ -1,6 +1,6 @@
 import Stats from '@/assets/graphics/stats.svg'
 import TopMemes from '@/assets/graphics/top-memes.svg'
-import LinkText from '@/components/LinkText'
+import LinkText, { LinkTextProps } from '@/components/LinkText'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useMemo } from 'react'
@@ -38,13 +38,17 @@ const MobileNavigation = ({
     <div
       className={cx(
         'sticky bottom-0 w-full border-t border-slate-200 bg-white',
-        'items-center- flex justify-around lg:hidden'
+        'flex items-center justify-around lg:hidden'
       )}
     >
       {tabs.map(({ id, text, Icon }) => (
         <TabButton
           key={id}
-          onClick={() => setHomePageView(id)}
+          href={`?tab=${id}`}
+          shallow
+          onClick={() => {
+            setHomePageView(id)
+          }}
           className={cx(
             'flex h-full w-full flex-col items-center gap-2 !py-4 !text-slate-400 [&_path]:fill-slate-400',
             {
@@ -52,32 +56,24 @@ const MobileNavigation = ({
                 homePageView === id,
             }
           )}
-          label={
-            <>
-              <Icon className='h-[20px] w-[20px]' />
-              <span className='text-sm leading-none'>{text}</span>
-            </>
-          }
-        />
+        >
+          <Icon className='h-[20px] w-[20px]' />
+          <span className='text-sm leading-none'>{text}</span>
+        </TabButton>
       ))}
     </div>
   )
 }
 
-type TabButtonProps = {
-  onClick: () => void
-  label: React.ReactNode
-  className?: string
-}
-
-const TabButton = ({ onClick, label, className }: TabButtonProps) => {
+const TabButton = ({ onClick, children, className, href }: LinkTextProps) => {
   return (
     <LinkText
       onClick={onClick}
       variant={'primary'}
+      href={href}
       className={cx('hover:no-underline', className)}
     >
-      {label}
+      {children}
     </LinkText>
   )
 }

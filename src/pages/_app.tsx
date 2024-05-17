@@ -25,7 +25,6 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import { GoogleAnalytics } from 'nextjs-google-analytics'
-import NextNProgress from 'nextjs-progressbar'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 import urlJoin from 'url-join'
@@ -109,11 +108,11 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
           <DatahubSubscriber />
           <ToasterConfig />
           <ReferralUrlChanger />
-          <NextNProgress
+          {/* <NextNProgress
             color='#eb2f95'
             options={{ showSpinner: false }}
             showOnShallow={false}
-          />
+          /> */}
           <HeadConfig {...head} />
           <GoogleAnalytics
             trackPageViews
