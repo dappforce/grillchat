@@ -88,7 +88,9 @@ const ProfileCard = () => {
 
   const userAddress = myAddress || ''
 
-  const { isLoading, data: reward } = useCalculateTokenRewards(userAddress)
+  const { isLoading, data: reward } = useCalculateTokenRewards({
+    address: userAddress,
+  })
 
   return (
     <MainCardTemplate>
