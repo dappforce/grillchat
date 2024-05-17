@@ -14,7 +14,7 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
   return (
     <div
       className={cx(
-        'flex flex-col border-x border-border-gray bg-background-light',
+        'sticky top-14 flex flex-col border-x border-border-gray bg-background-light max-lg:h-[calc(100dvh-8.2rem)] lg:h-[calc(100dvh-4rem)]',
         className
       )}
     >
