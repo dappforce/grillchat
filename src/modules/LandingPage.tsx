@@ -49,7 +49,7 @@ export default function LandingPage() {
         <div className='relative z-10 flex w-full flex-1 flex-col items-center py-12 sm:gap-16'>
           <h1 className='hidden'>Epic Meme2Earn</h1>
           <EpicMemes className='mb-12 mt-auto w-44 sm:mb-0 sm:h-[15vh] sm:max-w-72' />
-          <h2 className='mb-8 max-w-52 text-xl font-medium sm:mb-0 sm:max-w-none sm:text-4xl'>
+          <h2 className='mb-8 max-w-64 text-2xl font-medium sm:mb-0 sm:max-w-none sm:text-4xl'>
             Earn meme coins 💰 by posting and liking memes 🤣
           </h2>
           <div className='mt-auto grid w-full grid-cols-1 gap-8 sm:mt-0 sm:grid-cols-2'>

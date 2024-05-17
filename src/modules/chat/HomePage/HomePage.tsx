@@ -12,7 +12,7 @@ import MainContent from './epic-leaderboard/MainContent'
 export default function HomePage() {
   const isMounted = useIsMounted()
   return (
-    <DefaultLayout className='relative'>
+    <DefaultLayout className='relative' style={{ minHeight: '100dvh' }}>
       {isMounted && <HomePageContent />}
     </DefaultLayout>
   )
