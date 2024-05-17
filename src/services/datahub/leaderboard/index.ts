@@ -89,16 +89,18 @@ const GET_USER_STATS = gql`
         address: $address
         period: WEEK
         staker: {
-          likedPosts: true
-          likedCreators: true
-          earnedByPeriod: true
-          earnedTotal: true
+          likedPosts: false
+          likedCreators: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
         }
         creator: {
-          likesCountByPeriod: true
-          stakersWhoLiked: true
-          earnedByPeriod: true
-          earnedTotal: true
+          likesCountByPeriod: false
+          stakersWhoLiked: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
         }
       }
     ) {
@@ -107,12 +109,14 @@ const GET_USER_STATS = gql`
         likedPosts
         earnedByPeriod
         earnedTotal
+        earnedPointsByPeriod
       }
       creator {
         likesCountByPeriod
         stakersWhoLiked
         earnedByPeriod
         earnedTotal
+        earnedPointsByPeriod
       }
     }
   }
@@ -138,12 +142,14 @@ export async function getUserStatistics({
           likedPosts: number
           earnedByPeriod: string
           earnedTotal: string
+          earnedPointsByPeriod: number
         }
         creator: {
           likesCountByPeriod: number
           stakersWhoLiked: number
           earnedByPeriod: string
           earnedTotal: string
+          earnedPointsByPeriod: number
         }
       }
     },
@@ -508,4 +514,24 @@ export async function getUserReferrals(address: string): Promise<number> {
   const data = res.userReferrals.data[0]
 
   return data.referralsCount
+}
+
+const GET_TOKENOMIC_METADATA = gql`
+  query GetActiveStakingTokenomicMetagata {
+    activeStakingTokenomicMetadata {
+      maxTotalDailyRewardPoints
+    }
+  }
+`
+export async function getTokenomicMetadata(): Promise<number> {
+  const res = await datahubQueryRequest<
+    { activeStakingTokenomicMetadata: { maxTotalDailyRewardPoints: number } },
+    {}
+  >({
+    document: GET_TOKENOMIC_METADATA,
+  })
+
+  console.log(res)
+
+  return res.activeStakingTokenomicMetadata.maxTotalDailyRewardPoints
 }

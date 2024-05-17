@@ -189,7 +189,10 @@ type UserRewardProps = {
 }
 
 export const UserReward = ({ reward, address, role }: UserRewardProps) => {
-  const { data, isLoading } = useCalculateTokenRewards(address, role)
+  const { data, isLoading } = useCalculateTokenRewards({
+    address,
+    points: reward,
+  })
 
   return (
     <FormatBalance

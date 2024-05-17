@@ -12,6 +12,7 @@ export type UserStatistics = {
     earnedByPeriod: string
     earnedTotal: string
     rank: number | null
+    earnedPointsByPeriod: number
   }
   creator: {
     likesCountByPeriod: number
@@ -19,6 +20,7 @@ export type UserStatistics = {
     earnedByPeriod: string
     earnedTotal: string
     rank: number | null
+    earnedPointsByPeriod: number
   }
 }
 

@@ -7,6 +7,7 @@ import {
   getGeneralStatisticsByPeriod,
   getLeaderboardData,
   getRewardHistory,
+  getTokenomicMetadata,
   getTopUsers,
   getUserReferrals,
   getUserStatistics,
@@ -56,6 +57,14 @@ export const getGeneralStatisticsByPeriodQuery = createQuery({
 export const getUserReferralsQuery = createQuery({
   key: 'getUserReferrals',
   fetcher: getUserReferrals,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
+})
+
+export const getTokenomicMetadataQuery = createQuery({
+  key: 'getTokenomicMetadata',
+  fetcher: getTokenomicMetadata,
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),
