@@ -55,7 +55,7 @@ export default function LandingPage() {
           <div className='mt-auto grid w-full grid-cols-1 gap-8 sm:mt-0 sm:grid-cols-2'>
             <Link
               href='https://epicapp.net/what-is-meme2earn'
-              className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-transparent transition hover:ring-[#F9E539] focus-visible:ring-[#F9E539] active:bg-[#F9E539] active:text-background-primary sm:flex-col sm:p-8'
+              className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-transparent transition hover:bg-[#F9E539] hover:text-background-primary focus-visible:bg-[#F9E539] focus-visible:text-background-primary sm:flex-col sm:p-8'
             >
               <Image
                 className='h-28 w-24 object-contain sm:h-[20vh] sm:w-auto md:h-[30vh]'
@@ -66,7 +66,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href='/memes'
-              className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-transparent transition hover:ring-[#F9E539] focus-visible:ring-[#F9E539] active:bg-[#F9E539] active:text-background-primary sm:flex-col sm:p-8'
+              className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-[#F9E539] transition hover:bg-[#F9E539] hover:text-background-primary focus-visible:bg-[#F9E539] focus-visible:text-background-primary sm:flex-col sm:p-8'
             >
               <Image
                 className='h-28 w-24 object-cover object-right py-4 sm:h-[20vh] sm:w-auto sm:object-cover sm:object-right-top sm:py-0 md:h-[30vh]'
