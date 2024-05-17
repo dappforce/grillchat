@@ -12,7 +12,6 @@ import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { isEmptyArray } from '@subsocial/utils'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 import epicConfig from '../../../../constants/config/epic'
 import LeaderboardModal from './LeaderboardModal'
@@ -93,7 +92,6 @@ const LeaderboardTable = ({
   customColumnsClassNames,
 }: LeaderboardTableProps) => {
   const [openModal, setOpenModal] = useState(false)
-  const router = useRouter()
 
   const { data: leaderboardData, isLoading } =
     getLeaderboardDataQuery.useInfiniteQuery(role)
@@ -153,7 +151,7 @@ const LeaderboardTable = ({
           </div>
         ))}
       {!isEmptyArray(data) && (
-        <div className='my-4 flex w-full flex-col'>
+        <div className='my-4 flex w-full flex-col px-2'>
           <Table
             columns={leaderboardColumns(customColumnsClassNames)}
             data={data}
@@ -161,17 +159,16 @@ const LeaderboardTable = ({
             headerClassName='!bg-transparent dark:!bg-transparent'
             rowsClassName='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl'
             withDivider={false}
-            onRowClick={(item) =>
-              router.replace('/[address]', `/${item.address}`)
-            }
           />
-          <LinkText
-            className='mt-3 w-full text-center hover:no-underline'
-            onClick={() => setOpenModal(true)}
-            variant={'primary'}
-          >
-            View more
-          </LinkText>
+          {data.length > TABLE_LIMIT && (
+            <LinkText
+              className='mt-3 w-full text-center hover:no-underline'
+              onClick={() => setOpenModal(true)}
+              variant={'primary'}
+            >
+              View more
+            </LinkText>
+          )}
         </div>
       )}
 

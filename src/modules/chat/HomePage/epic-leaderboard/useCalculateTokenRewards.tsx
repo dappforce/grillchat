@@ -24,14 +24,14 @@ const useCalculateTokenRewards = (address?: string, role?: LeaderboardRole) => {
 
   let startOfWeekTimestamp = dayjs.utc().startOf('day')
 
-  let daysToMonday = startOfWeekTimestamp.day() - 1
+  let daysToMonday = startOfWeekTimestamp.day()
 
   if (daysToMonday < 0) {
     daysToMonday += 7
   }
   startOfWeekTimestamp = startOfWeekTimestamp.subtract(daysToMonday, 'day')
 
-  const params = Array.from({ length: daysToMonday }).map((_, index) => {
+  const params = Array.from({ length: daysToMonday + 1 }).map((_, index) => {
     return {
       address: userAddress,
       dayTimestamp: startOfWeekTimestamp.add(index, 'day').unix(),

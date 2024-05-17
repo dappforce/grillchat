@@ -5,6 +5,7 @@ import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyGrillAddress, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
+import { cx } from '@/utils/class-names'
 import { IoWarning } from 'react-icons/io5'
 import { SiEthereum } from 'react-icons/si'
 
@@ -16,6 +17,8 @@ const warningPropsByType: Record<
     title: string
     description: string
     buttonText: React.ReactNode
+    onClick?: () => void
+    href?: string
   }
 > = {
   'missing-rewards': {
@@ -36,11 +39,7 @@ const warningPropsByType: Record<
   },
 }
 
-type MissingRewardsProps = {
-  address?: string
-}
-
-const MissingRewards = ({ address }: MissingRewardsProps) => {
+const MissingRewards = () => {
   const setModalOpen = useProfileModal.use.openModal()
 
   const setDefaultModalState = useLoginModal.use.setDefaultOpenState()
@@ -57,19 +56,35 @@ const MissingRewards = ({ address }: MissingRewardsProps) => {
 
   let type: WarningType | undefined
 
+  if (isLinkedIdentitiyLoading || isSufficientLoading) return null
+
   if (isNotLinkedEvm) {
     type = 'missing-rewards'
+    warningPropsByType[type] = {
+      ...warningPropsByType[type],
+      onClick: () => {
+        setDefaultModalState('evm-address-link')
+        setModalOpen({
+          defaultOpenState: 'add-evm-provider',
+        })
+      },
+    }
   } else if (!isSufficient) {
     type = 'no-points'
+    warningPropsByType[type] = {
+      ...warningPropsByType[type],
+      href: 'https://epicapp.net/what-is-meme2earn',
+    }
   } else {
     type = undefined
   }
 
-  if (!type || isLinkedIdentitiyLoading || isSufficientLoading) return null
+  if (!type) return null
 
-  const { title, description, buttonText } = warningPropsByType[type]
+  const { title, description, buttonText, href, onClick } =
+    warningPropsByType[type]
 
-  return address === myAddress ? (
+  return myAddress ? (
     <div className='flex flex-col gap-4 rounded-2xl border border-[#FDE047] bg-[#FEFCE8] p-4'>
       <div className='flex flex-col gap-1'>
         <div className='flex items-center justify-between gap-2'>
@@ -84,13 +99,13 @@ const MissingRewards = ({ address }: MissingRewardsProps) => {
       </div>
       <Button
         variant='transparent'
-        className='flex w-fit items-center gap-1 border border-[#EBB305] !px-[14px] !py-2 text-[#854D0F]'
-        onClick={() => {
-          setDefaultModalState('evm-address-link')
-          setModalOpen({
-            defaultOpenState: 'add-evm-provider',
-          })
-        }}
+        className={cx(
+          'flex w-fit items-center gap-1  !px-[14px] !py-2 text-[#854D0F]',
+          '!shadow-none outline outline-1 outline-[#EBB305] !ring-0 hover:outline-2'
+        )}
+        onClick={onClick}
+        href={href}
+        target={href ? '_blank' : undefined}
       >
         {buttonText}
       </Button>
