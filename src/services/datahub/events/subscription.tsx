@@ -90,7 +90,6 @@ function subscription(queryClient: QueryClient) {
       {
         complete: () => undefined,
         next: async (data) => {
-          console.log(data)
           const eventData = data.data?.serviceMessageToTarget
           if (!eventData) return
 

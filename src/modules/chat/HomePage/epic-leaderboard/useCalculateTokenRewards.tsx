@@ -25,10 +25,7 @@ const useCalculateTokenRewards = ({
   } = getTokenomicMetadataQuery.useQuery({})
 
   const { data: userStats, isLoading: isUserStatsLoading } =
-    getUserStatisticsQuery.useQuery(
-      { address: address || '' },
-      { enabled: !points && !!address }
-    )
+    getUserStatisticsQuery.useQuery({ address: address || '' })
 
   if (isMaxDailyRewardPointsLoading || (!points && isUserStatsLoading)) {
     return {

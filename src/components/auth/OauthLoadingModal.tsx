@@ -159,14 +159,12 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     onSuccess()
     signOut({ redirect: false })
 
-    console.log('masuk brok', linkedIdentity)
     if (
       linkedIdentity &&
       !linkedIdentity.externalProviders.find(
         (p) => p.provider === IdentityProvider.Evm
       )
     ) {
-      console.log('hello!!')
       useLoginModal.getState().openNextStepModal({ step: 'connect-evm' })
     }
   }

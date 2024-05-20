@@ -16,7 +16,6 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ComponentProps, Fragment, ReactNode, useState } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
-import { RxHamburgerMenu } from 'react-icons/rx'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -84,20 +83,8 @@ export default function Navbar({
   }
   const authComponent = renderAuthComponent()
 
-  const hamburgerMenu = (
-    <Button
-      size='circle'
-      variant='transparent'
-      className='-ml-2 mr-1 md:hidden'
-      onClick={() => setOpenSidebar(true)}
-    >
-      <RxHamburgerMenu className='text-xl text-text-muted' />
-    </Button>
-  )
-
   const logoLink = (
     <div className='flex items-center'>
-      {hamburgerMenu}
       <CustomLink href='/memes' aria-label='Back'>
         <Logo className='text-base' />
       </CustomLink>
@@ -135,30 +122,20 @@ export default function Navbar({
         )}
       >
         <Container className={cx('flex h-14 w-full', containerClassName)}>
-          {customContent ? (
-            customContent({
-              logoLink,
-              authComponent,
-              backButton,
-              newPostButton,
-              hamburgerMenu,
-            })
-          ) : (
-            <div className='flex w-full items-center justify-between'>
-              {logoLink}
-              <div className='flex items-center'>
-                <div className='flex items-center gap-4'>
-                  <CustomLink href=''>
-                    <TwitterLogo />
-                  </CustomLink>
-                  <CustomLink href=''>
-                    <FarcasterLogo />
-                  </CustomLink>
-                  <div>{authComponent}</div>
-                </div>
+          <div className='flex w-full items-center justify-between'>
+            {logoLink}
+            <div className='flex items-center'>
+              <div className='flex items-center gap-4'>
+                <CustomLink href=''>
+                  <TwitterLogo />
+                </CustomLink>
+                <CustomLink href=''>
+                  <FarcasterLogo />
+                </CustomLink>
+                <div>{authComponent}</div>
               </div>
             </div>
-          )}
+          </div>
         </Container>
       </nav>
       <LoginModal />
@@ -216,43 +193,3 @@ function DrawerSidebar({
     </Transition>
   )
 }
-
-// const LAST_READ_NOTIFICATION_KEY = 'lastReadNotification'
-// function NotificationBell() {
-// const myAddress = useMyMainAddress()
-// const isInitialized = useMyAccount.use.isInitialized()
-
-// const { getDataForAddress } = useExternalStorage(LAST_READ_NOTIFICATION_KEY, {
-//   storageKeyType: 'user',
-// })
-
-// const lastReadNotif = getDataForAddress(myAddress ?? '')
-// const { data: unreadCount } = getNotificationCountQuery.useQuery(
-//   {
-//     address: myAddress ?? '',
-//     afterDate: lastReadNotif || undefined,
-//   },
-//   { enabled: !!myAddress && !!lastReadNotif && !!isInitialized }
-// )
-//   const sendEvent = useSendEvent()
-
-//   return (
-//     <Button
-//       size='circle'
-//       variant='transparent'
-//       className='relative top-px text-text-muted dark:text-text'
-//       nextLinkProps={{ forceHardNavigation: true }}
-//       href='/notifications'
-//       onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}
-//     >
-//       <div className='relative'>
-//         <FaRegBell className='text-xl' />
-//         {/* {!!unreadCount && unreadCount > 0 && (
-//           <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text-on-primary'>
-//             {unreadCount}
-//           </div>
-//         )} */}
-//       </div>
-//     </Button>
-//   )
-// }

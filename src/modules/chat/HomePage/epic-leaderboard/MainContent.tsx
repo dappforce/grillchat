@@ -135,7 +135,7 @@ const ProfileCard = () => {
             trigger={
               <div className='flex items-start gap-2 md:items-center '>
                 <span className='text-sm leading-[22px] text-slate-200'>
-                  Distribution in{' '}
+                  Rewards distribution in{' '}
                   <span className='font-bold text-white'>
                     <Pluralize
                       count={CREATORS_CONSTANTS.getDistributionDaysLeft()}
