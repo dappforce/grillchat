@@ -101,7 +101,7 @@ jobs:
             GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/grill_notifications_bot/
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12662
             GH_NEXT_PUBLIC_SPACE_IDS=12659,12660,12455,12662
-            GH_NEXT_PUBLIC_AMP_ID=2eeca0e8a0163c89e3f023c971e426a6
+            GH_NEXT_PUBLIC_AMP_ID=40d4174295c7edf657fc3bedf2748549
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
             GH_NEXT_PUBLIC_GA_ID=G-TP1XEFNHQD
             GH_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=grill-web-push.firebaseapp.com
@@ -127,7 +127,7 @@ jobs:
           file: docker/Dockerfile
           push: true
           build-args: |
-            GH_NEXT_PUBLIC_AMP_ID=71bf5a46800fedba5e9a01243b988164
+            GH_NEXT_PUBLIC_AMP_ID=2ecd0305eaa641e48ef9a0fd6ab8a923
             GH_NEXT_PUBLIC_GA_ID=fake
             GH_IPFS_WRITE_URL=https://gw-seattle.crustcloud.io
             GH_IPFS_PIN_URL=https://test-pin.crustcloud.io/psa
