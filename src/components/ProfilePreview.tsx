@@ -51,7 +51,7 @@ const ProfilePreview = ({
   const mdUp = useBreakpointThreshold('md')
   const { isLoading } = useName(address)
   const myAddress = useMyMainAddress()
-  const { evmAddress: myLinkedEvmAddress } = useLinkedEvmAddress()
+  const { evmAddress: linkedEvmAddress } = useLinkedEvmAddress(address)
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
@@ -103,14 +103,14 @@ const ProfilePreview = ({
           />
           {onEditClick && !isLoading && editButton}
         </div>
-        {showAddress && myLinkedEvmAddress ? (
+        {showAddress && linkedEvmAddress ? (
           <div className='flex flex-col gap-1'>
             <div className='flex flex-row items-center gap-1.5'>
               <SiEthereum className='text-xl text-text-muted' />
               <CopyTextInline
-                text={truncateAddress(myLinkedEvmAddress)}
+                text={truncateAddress(linkedEvmAddress)}
                 tooltip={`Copy${isMyAddressPart} address`}
-                textToCopy={myLinkedEvmAddress}
+                textToCopy={linkedEvmAddress}
                 textClassName={cx(
                   'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
                 )}

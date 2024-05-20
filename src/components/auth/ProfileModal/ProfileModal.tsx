@@ -4,7 +4,7 @@ import Modal, { ModalProps } from '@/components/modals/Modal'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
@@ -90,7 +90,6 @@ export default function ProfileModal({
   const { isOpen, defaultOpenState, closeModal, onBackClick, openModal } =
     useProfileModal()
 
-  const hasProxyAddress = useMyAccount((state) => !!state.parentProxyAddress)
   const address = useMyMainAddress() ?? ''
   const { data: profile } = getProfileQuery.useQuery(address)
 

@@ -14,12 +14,6 @@ import { ChainListItem } from './types'
 
 export const chainItems: ChainListItem[] = [
   {
-    id: 'subsocial',
-    icon: SUB,
-    label: 'Subsocial',
-    chainKind: 'substrate',
-  },
-  {
     id: 'polygon',
     icon: Polygon,
     label: 'Polygon',
