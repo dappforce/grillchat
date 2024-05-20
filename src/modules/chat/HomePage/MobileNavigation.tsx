@@ -37,7 +37,7 @@ const MobileNavigation = ({
   return (
     <div
       className={cx(
-        'sticky bottom-0 w-full border-t border-slate-200 bg-white',
+        'sticky bottom-0 z-10 w-full border-t border-slate-200 bg-white',
         'flex items-center justify-around lg:hidden'
       )}
     >
