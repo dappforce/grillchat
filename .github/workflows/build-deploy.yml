@@ -202,7 +202,7 @@ jobs:
           tokens_input: ${{ secrets.CF_TOKEN }}
 
       - name: prod deploy ${{ matrix.apps }}
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/epic-base'
         uses: './.github/actions/common-cd-setup'
         with:
           token_input: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
