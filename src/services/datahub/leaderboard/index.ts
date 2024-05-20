@@ -531,7 +531,5 @@ export async function getTokenomicMetadata(): Promise<number> {
     document: GET_TOKENOMIC_METADATA,
   })
 
-  console.log(res)
-
   return res.activeStakingTokenomicMetadata.maxTotalDailyRewardPoints
 }
