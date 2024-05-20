@@ -33,7 +33,7 @@ function HomePageContent() {
   return (
     <>
       {/* <PostCreationButton /> */}
-      <Container className='grid flex-1 gap-4 px-0 lg:grid-cols-[1fr_472px] lg:pr-3'>
+      <Container className='grid flex-1 items-start gap-4 px-0 lg:grid-cols-[1fr_472px] lg:pr-3'>
         <ChatContent
           hubId={hubId}
           chatId={chatId}
