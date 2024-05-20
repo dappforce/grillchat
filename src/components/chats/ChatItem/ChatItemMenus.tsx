@@ -20,9 +20,7 @@ import { getPostQuery } from '@/services/api/query'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
-import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
-import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { estimatedWaitTime } from '@/utils/network'
@@ -38,7 +36,7 @@ import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
-import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
+import { RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 
@@ -68,7 +66,7 @@ export default function ChatItemMenus({
 
   const router = useRouter()
 
-  const address = useMyMainAddress()
+  // const address = useMyMainAddress()
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 
@@ -137,18 +135,18 @@ export default function ChatItemMenus({
 
     if (isOptimisticMessage) return menus
 
-    const donateMenuItem: FloatingMenusProps['menus'][number] = {
-      text: 'Donate',
-      icon: RiCopperCoinLine,
-      onClick: () => {
-        if (!address) {
-          useLoginModal.getState().setIsOpen(true)
-          return
-        }
+    // const donateMenuItem: FloatingMenusProps['menus'][number] = {
+    //   text: 'Donate',
+    //   icon: RiCopperCoinLine,
+    //   onClick: () => {
+    //     if (!address) {
+    //       useLoginModal.getState().setIsOpen(true)
+    //       return
+    //     }
 
-        sendEvent('open_donate_action_modal', { hubId, chatId })
-      },
-    }
+    //     sendEvent('open_donate_action_modal', { hubId, chatId })
+    //   },
+    // }
     const replyItem: FloatingMenusProps['menus'][number] = {
       text: 'Reply',
       icon: LuReply,
@@ -159,9 +157,9 @@ export default function ChatItemMenus({
       icon: LuPencil,
       onClick: () => setMessageToEdit(messageId),
     }
-    const showDonateMenuItem = canSendMessage && !isMessageOwner
+    // const showDonateMenuItem = canSendMessage && !isMessageOwner
 
-    if (showDonateMenuItem) menus.unshift(donateMenuItem)
+    // if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
     if (canSendMessage && isMessageOwner) menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
