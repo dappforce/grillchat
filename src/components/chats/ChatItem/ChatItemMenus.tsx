@@ -2,6 +2,7 @@ import Button from '@/components/Button'
 import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
 import { SuperLikeWrapper } from '@/components/content-staking/SuperLike'
+import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -73,6 +74,10 @@ export default function ChatItemMenus({
   const [modalState, setModalState] = useState<ModalState>(null)
 
   const sendEvent = useSendEvent()
+  const openDonateExtension = useOpenDonateExtension(
+    message?.id,
+    message?.struct.ownerId ?? ''
+  )
 
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
@@ -147,6 +152,8 @@ export default function ChatItemMenus({
         }
 
         sendEvent('open_donate_action_modal', { hubId, chatId })
+        console.log('masuk!')
+        openDonateExtension()
       },
     }
     const replyItem: FloatingMenusProps['menus'][number] = {

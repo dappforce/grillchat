@@ -1,9 +1,7 @@
 import Button from '@/components/Button'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
-import { IdentityProvider } from '@/services/datahub/generated-query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { useLoginModal } from '@/stores/login-modal'
-import { useMyGrillAddress, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { IoWarning } from 'react-icons/io5'
@@ -42,21 +40,17 @@ const warningPropsByType: Record<
 const MissingRewards = () => {
   const setModalOpen = useProfileModal.use.openModal()
 
-  const setDefaultModalState = useLoginModal.use.setDefaultOpenState()
-  const myGrillAddress = useMyGrillAddress()
   const myAddress = useMyMainAddress()
-  const { data: linkedIdentity, isLoading: isLinkedIdentitiyLoading } =
-    getLinkedIdentityQuery.useQuery(myGrillAddress ?? '')
-  const isNotLinkedEvm = !linkedIdentity?.externalProviders.find(
-    (identity) => identity.provider === IdentityProvider.Evm
-  )?.externalId
+  const { evmAddress: myEvmAddress, isLoading: isLinkedIdentityLoading } =
+    useLinkedEvmAddress()
+  const isNotLinkedEvm = !myEvmAddress
 
   const { data: isSufficient, isLoading: isSufficientLoading } =
     getIsBalanceSufficientQuery.useQuery(myAddress || '')
 
   let type: WarningType | undefined
 
-  if (isLinkedIdentitiyLoading || isSufficientLoading) return null
+  if (isLinkedIdentityLoading || isSufficientLoading) return null
 
   if (isNotLinkedEvm) {
     type = 'missing-rewards'

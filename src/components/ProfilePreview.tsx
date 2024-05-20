@@ -1,7 +1,6 @@
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
-import { IdentityProvider } from '@/services/datahub/generated-query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { useMyGrillAddress, useMyMainAddress } from '@/stores/my-account'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
+import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
@@ -52,13 +51,7 @@ const ProfilePreview = ({
   const mdUp = useBreakpointThreshold('md')
   const { isLoading } = useName(address)
   const myAddress = useMyMainAddress()
-  const myGrillAddress = useMyGrillAddress()
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    myGrillAddress ?? ''
-  )
-  const myLinkedEvmAddress = linkedIdentity?.externalProviders.find(
-    (identity) => identity.provider === IdentityProvider.Evm
-  )?.externalId
+  const { evmAddress: myLinkedEvmAddress } = useLinkedEvmAddress()
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
