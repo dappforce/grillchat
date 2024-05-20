@@ -34,7 +34,8 @@ export const CustomConnectButton = ({
   const { disconnect } = useDisconnect()
   const { isConnecting } = useAccount({
     onConnect: ({ address, connector, isReconnected }) => {
-      if (address && connector && !isReconnected) onSuccessConnect(address)
+      if (address && connector && !isReconnected && !isTouchDevice())
+        onSuccessConnect(address)
     },
   })
 

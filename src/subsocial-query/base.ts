@@ -98,9 +98,13 @@ export function createQuery<Data, ReturnValue>({
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
 
-  async function fetchQuery(client: QueryClient | null, data: Data) {
+  async function fetchQuery(
+    client: QueryClient | null,
+    data: Data,
+    noCacheCheck = false
+  ) {
     const cachedData = client?.getQueryData(getQueryKey(data))
-    if (cachedData) {
+    if (cachedData && !noCacheCheck) {
       return cachedData as ReturnValue
     }
 

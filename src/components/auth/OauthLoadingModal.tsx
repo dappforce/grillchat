@@ -2,7 +2,6 @@ import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoadin
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useToastError from '@/hooks/useToastError'
-import useWrapInRef from '@/hooks/useWrapInRef'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
@@ -122,25 +121,10 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
 
   const grillAddress = useMyGrillAddress()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
-  const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     grillAddress ?? ''
   )
-  const linkedIdentityRef = useWrapInRef(linkedIdentity)
-  const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity({
-    onSuccess: () => {
-      const intervalId = setInterval(async () => {
-        if (linkedIdentityRef.current) {
-          clearInterval(intervalId)
-          return
-        }
-
-        const res = await refetch()
-        if (res.data) {
-          clearInterval(intervalId)
-        }
-      }, 2_000)
-    },
-  })
+  const { mutate: linkIdentity, error: errorLinking } = useLinkIdentity()
   useToastError(
     errorLinking,
     `Failed to link ${name} profile`,

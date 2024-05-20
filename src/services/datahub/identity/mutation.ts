@@ -1,5 +1,6 @@
 import { ApiDatahubIdentityBody } from '@/pages/api/datahub/identity'
 import { apiInstance } from '@/services/api/utils'
+import { queryClient } from '@/services/provider'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
@@ -11,6 +12,8 @@ import {
   socialCallName,
 } from '@subsocial/data-hub-sdk'
 import { DatahubParams, createSocialDataEventPayload } from '../utils'
+import { Identity } from './fetcher'
+import { getLinkedIdentityQuery } from './query'
 
 export async function linkIdentity(
   params: DatahubParams<SocialCallDataArgs<'synth_init_linked_identity'>>
@@ -34,6 +37,30 @@ export async function linkIdentity(
   )
 }
 
+function reloadEveryIntervalUntilLinkedIdentityFound(
+  foundChecker: (linkedIdentity: Identity | null) => boolean
+) {
+  const intervalId = setInterval(async () => {
+    const address = getCurrentWallet().address
+    if (
+      queryClient &&
+      foundChecker(getLinkedIdentityQuery.getQueryData(queryClient, address))
+    ) {
+      clearInterval(intervalId)
+      return
+    }
+
+    const res = await getLinkedIdentityQuery.fetchQuery(
+      queryClient,
+      address,
+      true
+    )
+    if (res) {
+      clearInterval(intervalId)
+    }
+  }, 2_000)
+}
+
 export const useLinkIdentity = mutationWrapper(
   async (data: SynthInitLinkedIdentityCallParsedArgs) => {
     await linkIdentity({
@@ -49,6 +76,7 @@ export const useLinkIdentity = mutationWrapper(
       allowWindowUnload()
     },
     onSuccess: () => {
+      reloadEveryIntervalUntilLinkedIdentityFound((identity) => !!identity)
       allowWindowUnload()
     },
   }
@@ -82,5 +110,16 @@ export const useAddExternalProviderToIdentity = mutationWrapper(
       ...getCurrentWallet(),
       args: data,
     })
+  },
+  {
+    onSuccess: (_, { externalProvider }) => {
+      reloadEveryIntervalUntilLinkedIdentityFound(
+        (identity) =>
+          !!identity?.externalProviders.find(
+            // @ts-expect-error different provider for IdentityProvider, one from generated type, one from sdk
+            (p) => p.provider === externalProvider.provider
+          )
+      )
+    },
   }
 )

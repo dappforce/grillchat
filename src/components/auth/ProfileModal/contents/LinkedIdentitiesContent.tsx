@@ -2,7 +2,6 @@ import Farcaster from '@/assets/icons/farcaster.svg'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import useToastError from '@/hooks/useToastError'
-import useWrapInRef from '@/hooks/useWrapInRef'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useAddExternalProviderToIdentity } from '@/services/datahub/identity/mutation'
@@ -219,27 +218,11 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   const sendEvent = useSendEvent()
   const calledRef = useRef(false)
   const { data: session } = useSession()
-  const grillAddress = useMyGrillAddress()
-  const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
-    grillAddress ?? ''
-  )
   const router = useRouter()
-  const linkedIdentityRef = useWrapInRef(linkedIdentity)
   const { mutate, isLoading } = useAddExternalProviderToIdentity({
     onSuccess: () => {
       signOut({ redirect: false })
       sendEvent(`finish_add_provider_${provider}`)
-      const intervalId = setInterval(async () => {
-        if (linkedIdentityRef.current) {
-          clearInterval(intervalId)
-          return
-        }
-
-        const res = await refetch()
-        if (res.data) {
-          clearInterval(intervalId)
-        }
-      }, 2_000)
     },
   })
 

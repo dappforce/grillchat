@@ -47,9 +47,11 @@ export const CommonEVMLoginContent = ({
     reset,
   } = useSignMessage()
   const grillAddress = useMyGrillAddress()
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+  const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
     grillAddress ?? ''
   )
+
+  const linkedIdentityRef = useRef(linkedIdentity)
   const {
     mutateAsync: linkIdentity,
     isLoading: isLinking,
