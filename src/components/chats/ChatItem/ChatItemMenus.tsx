@@ -15,6 +15,7 @@ import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
@@ -40,6 +41,7 @@ import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
+import { useInView } from 'react-intersection-observer'
 import urlJoin from 'url-join'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 
@@ -65,6 +67,11 @@ export default function ChatItemMenus({
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
   const isMessageOwner = useIsOwnerOfPost(messageId)
+
+  const { data: post } = getPostQuery.useQuery(messageId)
+  const ownerId = post?.struct.ownerId ?? ''
+  const { ref, inView } = useInView({ triggerOnce: true })
+  const { evmAddress } = useLinkedEvmAddress(ownerId, { enabled: inView })
   const refSearchParam = useReferralSearchParam()
 
   const router = useRouter()
@@ -152,7 +159,6 @@ export default function ChatItemMenus({
         }
 
         sendEvent('open_donate_action_modal', { hubId, chatId })
-        console.log('masuk!')
         openDonateExtension()
       },
     }
@@ -166,7 +172,7 @@ export default function ChatItemMenus({
       icon: LuPencil,
       onClick: () => setMessageToEdit(messageId),
     }
-    const showDonateMenuItem = canSendMessage && !isMessageOwner
+    const showDonateMenuItem = canSendMessage && !isMessageOwner && evmAddress
 
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
@@ -242,6 +248,7 @@ export default function ChatItemMenus({
       >
         {children}
       </FloatingMenus>
+      <div ref={ref} className='absolute' />
       {message && (
         <MetadataModal
           isOpen={modalState === 'metadata'}

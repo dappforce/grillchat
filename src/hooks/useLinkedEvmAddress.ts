@@ -5,11 +5,16 @@ import {
 } from '@/services/datahub/identity/query'
 import { useMyGrillAddress } from '@/stores/my-account'
 
-export default function useLinkedEvmAddress(address?: string) {
+export default function useLinkedEvmAddress(
+  address?: string,
+  config = { enabled: true }
+) {
   const myGrillAddress = useMyGrillAddress()
 
   const { data: myLinkedIdentity, isLoading: isLoadingMy } =
-    getLinkedIdentityQuery.useQuery(myGrillAddress ?? '', { enabled: !address })
+    getLinkedIdentityQuery.useQuery(myGrillAddress ?? '', {
+      enabled: !address && config.enabled,
+    })
   const { data: linkedIdentity, isLoading: isLoadingMainAddress } =
     getLinkedIdentityFromMainAddressQuery.useQuery(address ?? '', {
       enabled: !!address,

@@ -57,7 +57,6 @@ export const CommonEVMLoginContent = ({
     isSuccess: isSuccessLinking,
   } = useLinkIdentity({
     onError: (err) => {
-      console.log('masuk onerror', err)
       reset()
       onError?.()
     },
