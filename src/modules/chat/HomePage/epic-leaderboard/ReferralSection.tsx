@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { copyToClipboard } from '@/utils/strings'
@@ -11,6 +12,7 @@ import epicConfig from '../../../../constants/config/epic'
 const { tokenSymbol } = epicConfig
 
 const ReferralSection = () => {
+  const sendEvent = useSendEvent()
   const myAddress = useMyMainAddress()
   const [isCopied, setIsCopied] = useState(false)
 
@@ -52,7 +54,10 @@ const ReferralSection = () => {
         </span>
         <Button
           variant='primaryOutline'
-          onClick={() => onCopyClick(referralLink)}
+          onClick={() => {
+            sendEvent('ref_copied')
+            onCopyClick(referralLink)
+          }}
           size={'xs'}
           className='!p-0 !px-3 !py-1 leading-none'
         >

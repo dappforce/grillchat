@@ -8,6 +8,7 @@ import PopOver from '@/components/floating/PopOver'
 import { Pluralize } from '@/components/layouts/CreatorSidebar/RewardInfo'
 import { CREATORS_CONSTANTS } from '@/components/layouts/CreatorSidebar/utils'
 import { spaceMono } from '@/fonts'
+import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -162,6 +163,7 @@ const ProfileCard = () => {
 }
 
 function GuestCard() {
+  const sendEvent = useSendEvent()
   const setIsLoginModalOpen = useLoginModal.use.setIsOpen()
 
   return (
@@ -174,7 +176,13 @@ function GuestCard() {
         Start monetizing your best memes, and earn when you like posts from
         others!
       </p>
-      <Button variant='white' onClick={() => setIsLoginModalOpen(true)}>
+      <Button
+        variant='white'
+        onClick={() => {
+          sendEvent('login', { eventSource: 'start_earning' })
+          setIsLoginModalOpen(true)
+        }}
+      >
         Start earning
       </Button>
     </MainCardTemplate>
