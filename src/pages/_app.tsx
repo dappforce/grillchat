@@ -7,7 +7,6 @@ import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import NeynarLoginProvider from '@/providers/config/NeynarLoginProvider'
-import { getAugmentedGaId } from '@/providers/config/utils'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
@@ -24,7 +23,7 @@ import '@rainbow-me/rainbowkit/styles.css'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
-import { GoogleAnalytics } from 'nextjs-google-analytics'
+// import { GoogleAnalytics } from 'nextjs-google-analytics'
 import { useEffect, useRef } from 'react'
 import { Toaster } from 'react-hot-toast'
 import urlJoin from 'url-join'
@@ -114,10 +113,10 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
             showOnShallow={false}
           /> */}
           <HeadConfig {...head} />
-          <GoogleAnalytics
+          {/* <GoogleAnalytics
             trackPageViews
             gaMeasurementId={getAugmentedGaId()}
-          />
+          /> */}
           <GlobalModals />
           <SessionAccountChecker />
           <OauthLoadingModal />
