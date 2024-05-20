@@ -14,6 +14,7 @@ import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import Name, { useName } from './Name'
+import { Skeleton } from './SkeletonFallback'
 import PopOver from './floating/PopOver'
 
 export type ForceProfileSource = {
@@ -51,7 +52,8 @@ const ProfilePreview = ({
   const mdUp = useBreakpointThreshold('md')
   const { isLoading } = useName(address)
   const myAddress = useMyMainAddress()
-  const { evmAddress: linkedEvmAddress } = useLinkedEvmAddress(address)
+  const { evmAddress: linkedEvmAddress, isLoading: isLoadingEvmAddress } =
+    useLinkedEvmAddress(address)
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
@@ -103,7 +105,9 @@ const ProfilePreview = ({
           />
           {onEditClick && !isLoading && editButton}
         </div>
-        {showAddress && linkedEvmAddress ? (
+        {isLoadingEvmAddress ? (
+          <Skeleton className='w-32' />
+        ) : showAddress && linkedEvmAddress ? (
           <div className='flex flex-col gap-1'>
             <div className='flex flex-row items-center gap-1.5'>
               <SiEthereum className='text-xl text-text-muted' />
