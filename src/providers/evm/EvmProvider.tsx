@@ -42,6 +42,7 @@ const desktopWallets = [
 
 const mobileWallets = [
   walletConnectWallet(walletOptions),
+  metaMaskWallet(walletOptions),
   injectedWallet(walletOptions),
 ]
 
