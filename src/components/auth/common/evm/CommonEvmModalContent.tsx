@@ -47,17 +47,17 @@ export const CommonEVMLoginContent = ({
     reset,
   } = useSignMessage()
   const grillAddress = useMyGrillAddress()
-  const { data: linkedIdentity, refetch } = getLinkedIdentityQuery.useQuery(
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
     grillAddress ?? ''
   )
 
-  const linkedIdentityRef = useRef(linkedIdentity)
   const {
     mutateAsync: linkIdentity,
     isLoading: isLinking,
     isSuccess: isSuccessLinking,
   } = useLinkIdentity({
-    onError: () => {
+    onError: (err) => {
+      console.log('masuk onerror', err)
       reset()
       onError?.()
     },
