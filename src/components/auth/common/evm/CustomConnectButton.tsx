@@ -7,7 +7,7 @@ import {
 } from '@/components/extensions/donate/api/utils'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useEffect, useState } from 'react'
@@ -21,8 +21,7 @@ type CustomConnectButtonProps = ButtonProps & {
   beforeSignEvmAddress?: () => Promise<void>
   signAndLinkEvmAddress: (
     emvAddress?: string,
-    substrateAddress?: string | null,
-    signerAddress?: string
+    substrateAddress?: string | null
   ) => Promise<void>
   isLoading: boolean
 }
@@ -41,8 +40,6 @@ export const CustomConnectButton = ({
 
   const mySubstrateAddress = useMyMainAddress()
   const mySubstrateAddressRef = useWrapInRef(mySubstrateAddress)
-  const signerAddress = useMyAccount((state) => state.address ?? undefined)
-  const signerAddressRef = useWrapInRef(signerAddress)
 
   const { disconnect } = useDisconnect()
   const { data: accountData, isLoading: isAccountDataLoading } =
@@ -52,11 +49,7 @@ export const CustomConnectButton = ({
 
   const linkEvmAddress = async (address: string) => {
     await beforeSignEvmAddress?.()
-    signAndLinkEvmAddress(
-      address,
-      mySubstrateAddressRef.current,
-      signerAddressRef.current
-    )
+    signAndLinkEvmAddress(address, mySubstrateAddressRef.current)
   }
 
   const { isConnecting } = useAccount()

@@ -1,3 +1,4 @@
+import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
@@ -100,6 +101,13 @@ export default function AccountContent({
   }
 
   const menus: MenuListProps['menus'] = [
+    {
+      icon: EthIcon,
+      text: 'My EVM Address',
+      onClick: () => {
+        setCurrentState('link-evm-address')
+      },
+    },
     ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
       ? [
           {
