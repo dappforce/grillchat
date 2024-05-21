@@ -231,7 +231,7 @@ export default function ProfileModal({
     'link-evm-address': {
       title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Connect EVM',
       desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
-      withBackButton: 'linked-addresses',
+      withBackButton: 'account',
     },
     'evm-linking-error': {
       title: '😕 Something went wrong',
