@@ -1,7 +1,9 @@
 import Astar from '@/assets/graphics/chains/astar.png'
+import Base from '@/assets/graphics/chains/base.png'
 import Moonbeam from '@/assets/graphics/chains/moonbeam.png'
 import Polygon from '@/assets/graphics/chains/polygon.png'
 import ASTR from '@/assets/graphics/tokens/astr.webp'
+import DEGEN from '@/assets/graphics/tokens/degen.png'
 import DOT from '@/assets/graphics/tokens/dot.webp'
 import ETH from '@/assets/graphics/tokens/eth.png'
 import GLMR from '@/assets/graphics/tokens/glmr.webp'
@@ -13,6 +15,12 @@ import { StaticImageData } from 'next/image'
 import { ChainListItem } from './types'
 
 export const chainItems: ChainListItem[] = [
+  {
+    id: 'base',
+    icon: Base,
+    label: 'Base',
+    chainKind: 'evm',
+  },
   {
     id: 'polygon',
     icon: Polygon,
@@ -65,6 +73,13 @@ export const tokensItems: TokenItemsByChainName = {
       id: 'eth',
       icon: ETH,
       label: 'ETH',
+    },
+  ],
+  base: [
+    {
+      id: 'degen',
+      label: 'DEGEN',
+      icon: DEGEN,
     },
   ],
   moonbeam: [

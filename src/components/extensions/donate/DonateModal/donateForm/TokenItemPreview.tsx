@@ -116,7 +116,9 @@ const TokenItemPreviewTemplate = ({
           ) : (
             <Image
               src={item.icon as string}
-              className={cx('w-[38px] rounded-full')}
+              className={cx(
+                'h-[38px] w-[38px] rounded-full object-cover object-center'
+              )}
               alt=''
               role='presentation'
             />

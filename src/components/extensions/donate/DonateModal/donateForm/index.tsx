@@ -135,7 +135,7 @@ const DonateForm = ({
             setSelected={setSelectedChain}
             fieldLabel='Chain'
             items={chainsItemsArray}
-            imgClassName='w-[38px]'
+            imgClassName='w-[38px] h-[38px]'
           />
           <EvmDonateFormPart {...commonProps} />
         </div>

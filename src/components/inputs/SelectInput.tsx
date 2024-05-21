@@ -62,7 +62,10 @@ export default function SelectInput<AdditionalData = {}>({
                     ) : (
                       <Image
                         src={selected.icon as string}
-                        className={cx('rounded-full', imgClassName)}
+                        className={cx(
+                          'rounded-full object-cover object-center',
+                          imgClassName
+                        )}
                         alt=''
                         role='presentation'
                       />
@@ -154,7 +157,10 @@ function SelectListItem<AdditionalData>({
                   ) : (
                     <Image
                       src={item.icon as string}
-                      className={cx('rounded-full', imgClassName)}
+                      className={cx(
+                        'rounded-full object-cover object-center',
+                        imgClassName
+                      )}
                       alt=''
                       role='presentation'
                     />

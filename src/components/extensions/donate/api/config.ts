@@ -3,6 +3,7 @@ import ethAbi from './abi/polygon/ethAbi'
 import usdcAbi from './abi/polygon/usdcAbi'
 import usdtAbi from './abi/polygon/usdtAbi'
 
+import degenAbi from './abi/base/degenAbi'
 import astrAbi from './abi/moonbeam/astrAbi'
 import dotAbi from './abi/moonbeam/dotAbi'
 import subAbi from './abi/moonbeam/subAbi'
@@ -17,6 +18,12 @@ type ContractConfig = {
 type ContractConfigByToken = Record<string, Record<string, ContractConfig>>
 
 export const contractsByChainName: ContractConfigByToken = {
+  base: {
+    degen: {
+      address: '0x4ed4e862860bed51a9570b96d89af5e1b0efefed',
+      abi: degenAbi,
+    },
+  },
   polygon: {
     usdc: {
       address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
@@ -59,6 +66,7 @@ export const chainIdByChainName: Record<string, number> = {
   polygon: 137,
   moonbeam: 1284,
   'ethereum-mainnet': 1,
+  base: 8453,
 }
 
 export const getExplorerByChainName = (hash: string, chainName: string) => {
@@ -66,6 +74,7 @@ export const getExplorerByChainName = (hash: string, chainName: string) => {
     polygon: `https://polygonscan.com/tx/${hash}`,
     moonbeam: `https://moonscan.io/tx/${hash}`,
     subsocial: `https://calamar.app/search?query=${hash}&network=subsocial`,
+    base: `https://basescan.org/tx/${hash}`,
   }
 
   return exlorerLinkByChainName[chainName]

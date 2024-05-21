@@ -10,6 +10,7 @@ export const coingeckoTokenIds: Record<string, string> = {
   dot: 'polkadot',
   astr: 'astar',
   sub: 'subsocial',
+  degen: 'degen-base',
 }
 
 export type Price = {

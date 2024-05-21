@@ -36,7 +36,7 @@ export const CommonFields = ({
         setSelected={setSelectedToken}
         fieldLabel='Token'
         items={tokensItems[selectedChain.id]}
-        imgClassName='w-[38px]'
+        imgClassName='w-[38px] h-[38px]'
         disabled={disabledSelectInput}
         renderItem={(item, open) => (
           <TokenItemPreview
