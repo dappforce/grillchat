@@ -104,7 +104,8 @@ export const CommonEVMLoginContent = ({
       setIsGettingMessage(true)
       const message = await getEvmLinkedIdentityMessageQuery.fetchQuery(
         client,
-        evmAddress
+        evmAddress,
+        true
       )
       setIsGettingMessage(false)
       const sig = await signMessageAsync({ message })
