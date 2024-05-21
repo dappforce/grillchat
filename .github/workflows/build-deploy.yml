@@ -91,7 +91,7 @@ jobs:
           file: docker/Dockerfile
           push: true
           build-args: |
-            GH_NEXTAUTH_URL=https://epic.subsocial.network/api/auth
+            GH_NEXTAUTH_URL=https://epicapp.net/api/auth
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://epic-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://epic-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://epic-queue-data-hub.subsocial.network/graphql
@@ -111,6 +111,7 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:8b27ce87e8cb476f95d1bb
             GH_NEXT_PUBLIC_PROPOSALS_HUB=27942
+            GH_SERVER_MNEMONIC="wall trophy travel slush injury misery loan chat uncle film universe ancient"
           target: runner
           tags: |
             ${{ env.image }}
