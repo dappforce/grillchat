@@ -98,6 +98,7 @@ export default function NftModal({
   return (
     <>
       <CommonExtensionModal
+        extensionType='subsocial-evm-nft'
         hubId={hubId}
         onSubmit={onSubmit}
         closeModal={closeModal}

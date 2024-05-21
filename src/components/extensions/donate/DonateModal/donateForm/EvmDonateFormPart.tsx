@@ -28,7 +28,7 @@ const EvmDonateFormPart = ({
 
   useEffect(() => {
     setShowChatForm?.(!showSwitchButton)
-  }, [showSwitchButton])
+  }, [showSwitchButton, setShowChatForm])
 
   return showSwitchButton ? (
     <Button size={'lg'} onClick={onSwitchButtonClick}>

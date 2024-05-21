@@ -1,8 +1,12 @@
 import ChatForm, { ChatFormProps } from '@/components/chats/ChatForm'
 import Modal, { ModalProps } from '@/components/modals/Modal'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
+import { useSendEvent } from '@/stores/analytics'
 import { useMessageData } from '@/stores/message'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { PostContentExtension } from '@subsocial/api/types'
 import { useEffect } from 'react'
 
 export type BeforeMessageResult = {
@@ -21,6 +25,7 @@ export type CommonExtensionModalProps = ModalProps &
     | 'onSubmit'
     | 'mustHaveMessageBody'
   > & {
+    extensionType: PostContentExtension['id']
     disableSendButton?: boolean
     showChatForm?: boolean
     withDivider?: boolean
@@ -36,6 +41,7 @@ export default function CommonExtensionModal({
   disableSendButton,
   mustHaveMessageBody = false,
   autofocus,
+  extensionType,
   showChatForm = true,
   withDivider = true,
   buildAdditionalTxParams,
@@ -43,6 +49,8 @@ export default function CommonExtensionModal({
   onSubmit,
   ...props
 }: CommonExtensionModalProps) {
+  const sendEvent = useSendEvent()
+  const myAddress = useMyMainAddress() ?? ''
   const setShowEmptyPrimaryChatInput = useMessageData(
     (state) => state.setShowEmptyPrimaryChatInput
   )
@@ -89,6 +97,16 @@ export default function CommonExtensionModal({
           }}
           buildAdditionalTxParams={buildAdditionalTxParams}
           onSubmit={() => {
+            sendEventWithRef(myAddress, (refId) => {
+              sendEvent(
+                'send_comment',
+                {
+                  eventSource: 'extension-modal',
+                  extensionType: extensionType,
+                },
+                { ref: refId }
+              )
+            })
             onSubmit?.()
             props.closeModal()
           }}

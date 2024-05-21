@@ -11,6 +11,7 @@ import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
+import { sendEventWithRef } from '@/components/referral/analytics'
 import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
@@ -63,6 +64,7 @@ export default function ChatItemMenus({
   enableChatMenu = true,
 }: ChatItemMenusProps) {
   const canSendMessage = useCanSendMessage(hubId, chatId)
+  const myAddress = useMyMainAddress()
 
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
@@ -153,6 +155,9 @@ export default function ChatItemMenus({
       text: 'Donate',
       icon: RiCopperCoinLine,
       onClick: () => {
+        sendEventWithRef(myAddress ?? '', (refId) => {
+          sendEvent('click_donate', { postId: messageId }, { ref: refId })
+        })
         if (!address) {
           useLoginModal.getState().setIsOpen(true)
           return
@@ -165,7 +170,19 @@ export default function ChatItemMenus({
     const replyItem: FloatingMenusProps['menus'][number] = {
       text: 'Reply',
       icon: LuReply,
-      onClick: () => setReplyTo(messageId),
+      onClick: () => {
+        sendEventWithRef(myAddress ?? '', (refId) => {
+          sendEvent(
+            'click_reply',
+            {
+              eventSource: 'message_menu',
+              postId: messageId,
+            },
+            { ref: refId }
+          )
+        })
+        setReplyTo(messageId)
+      },
     }
     const editItem: FloatingMenusProps['menus'][number] = {
       text: 'Edit',
@@ -201,6 +218,16 @@ export default function ChatItemMenus({
                           text: 'Like Message',
                           disabled: isDisabled,
                           onClick: () => {
+                            sendEventWithRef(myAddress ?? '', (refId) => {
+                              sendEvent(
+                                'click_superlike',
+                                {
+                                  eventSource: 'message_menu',
+                                  postId: messageId,
+                                },
+                                { ref: refId }
+                              )
+                            })
                             handleClick()
                             setIsOpenChatMenu(null)
                           },

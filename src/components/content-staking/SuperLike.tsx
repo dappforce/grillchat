@@ -10,6 +10,7 @@ import {
   getPostRewardsQuery,
   getSuperLikeCountQuery,
 } from '@/services/datahub/content-staking/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
@@ -29,6 +30,7 @@ import {
 import toast from 'react-hot-toast'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import PopOver from '../floating/PopOver'
+import { sendEventWithRef } from '../referral/analytics'
 import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
@@ -173,6 +175,8 @@ export default function SuperLike({
   withPostReward,
   ...props
 }: SuperLikeProps) {
+  const myAddress = useMyMainAddress()
+  const sendEvent = useSendEvent()
   if (currentNetwork !== 'subsocial') return null
 
   return (
@@ -188,7 +192,16 @@ export default function SuperLike({
         if (superLikeCount <= 0) return null
         const button = (
           <button
-            onClick={handleClick}
+            onClick={() => {
+              sendEventWithRef(myAddress ?? '', (refId) => {
+                sendEvent(
+                  'click_superlike',
+                  { eventSource: 'message', postId },
+                  { ref: refId }
+                )
+              })
+              handleClick()
+            }}
             disabled={isDisabled}
             className={cx(
               'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-[#7779F3] transition dark:bg-background-lighter',

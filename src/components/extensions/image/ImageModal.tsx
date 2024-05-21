@@ -76,6 +76,7 @@ export default function ImageModal({
     <CommonExtensionModal
       hubId={hubId}
       onSubmit={onSubmit}
+      extensionType='subsocial-image'
       isOpen={isOpen}
       closeModal={closeModal}
       size='md'

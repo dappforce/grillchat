@@ -103,6 +103,7 @@ const DonateForm = ({
       closeModal={closeModal}
       chatId={chatId}
       showChatForm={showChatForm}
+      extensionType='subsocial-donations'
       withDivider={showChatForm}
       disableSendButton={disableButton || !!inputError}
       sendButtonText={`Send${amountPreview}`}
