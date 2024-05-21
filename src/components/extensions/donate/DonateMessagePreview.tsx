@@ -1,4 +1,3 @@
-import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import { getRepliedMessageId } from '@/components/chats/utils'
@@ -83,19 +82,6 @@ const DonatePreview = ({
         <SkeletonFallback isLoading={isLoading} className='w-20'>
           <div className='text-sm'>≈ ${amountInDollars}</div>
         </SkeletonFallback>
-        {isMyAddress && (
-          <Button
-            variant='whiteOutline'
-            size='sm'
-            className='bg-white text-[#DA612B] hover:bg-transparent hover:text-white focus-visible:bg-transparent focus-visible:text-white'
-            onClick={() => {
-              refetch()
-              openModal({ defaultOpenState: 'withdraw-tokens' })
-            }}
-          >
-            Withdraw
-          </Button>
-        )}
       </div>
     </div>
   )
