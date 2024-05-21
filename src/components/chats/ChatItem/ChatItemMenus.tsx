@@ -27,7 +27,7 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
+import { getCurrentUrlOrigin } from '@/utils/links'
 import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
@@ -113,12 +113,14 @@ export default function ChatItemMenus({
         text: 'Copy Message Link',
         icon: FiLink,
         onClick: () => {
-          const chatPageLink = urlJoin(
+          const messageLink = urlJoin(
             getCurrentUrlOrigin(),
             env.NEXT_PUBLIC_BASE_PATH,
-            getChatPageLink(router)
+            '/message',
+            `/${messageId}`,
+            refSearchParam
           )
-          copyToClipboard(urlJoin(chatPageLink, messageId, refSearchParam))
+          copyToClipboard(messageLink)
           toast.custom((t) => (
             <Toast t={t} title='Message link copied to clipboard!' />
           ))

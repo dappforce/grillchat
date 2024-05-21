@@ -7,7 +7,7 @@ import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
-import { getChatPageLink, getUrlQuery } from '@/utils/links'
+import { getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
 import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
@@ -133,9 +133,9 @@ export default function ChatListSupportingContent({
 
   useEffect(() => {
     if (messageModalMsgId) {
-      replaceUrl(urlJoin(getChatPageLink(router), `/${messageModalMsgId}`))
+      replaceUrl(urlJoin('/memes', `/${messageModalMsgId}`))
     } else if (prevMessageModalMsgId && !messageModalMsgId) {
-      replaceUrl(getChatPageLink(router))
+      replaceUrl('/memes')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevMessageModalMsgId, messageModalMsgId])
