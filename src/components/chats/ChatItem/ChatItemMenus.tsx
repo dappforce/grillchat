@@ -1,4 +1,3 @@
-import Farcaster from '@/assets/logo/farcaster.svg'
 import Button from '@/components/Button'
 import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
@@ -37,7 +36,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillPinAngleFill } from 'react-icons/bs'
-import { FaXTwitter } from 'react-icons/fa6'
 import { FiLink } from 'react-icons/fi'
 import { GrShareOption } from 'react-icons/gr'
 import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
@@ -48,6 +46,7 @@ import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
 import { useInView } from 'react-intersection-observer'
 import urlJoin from 'url-join'
 import usePinnedMessage from '../hooks/usePinnedMessage'
+import { getShareMessageMenus } from './utils'
 
 export type ChatItemMenusProps = {
   messageId: string
@@ -203,10 +202,7 @@ export default function ChatItemMenus({
       menus.unshift({
         text: 'Share',
         icon: GrShareOption,
-        submenus: [
-          { text: 'Farcaster', icon: Farcaster },
-          { text: 'Twitter', icon: FaXTwitter },
-        ],
+        submenus: getShareMessageMenus(message),
       })
     if (canSendMessage) menus.unshift(replyItem)
 

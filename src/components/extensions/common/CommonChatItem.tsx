@@ -1,4 +1,3 @@
-import Farcaster from '@/assets/logo/farcaster.svg'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
@@ -6,6 +5,7 @@ import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import SubTeamLabel from '@/components/chats/ChatItem/SubTeamLabel'
+import { getShareMessageMenus } from '@/components/chats/ChatItem/utils'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
 import FloatingMenus from '@/components/floating/FloatingMenus'
@@ -15,7 +15,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
-import { FaXTwitter } from 'react-icons/fa6'
 import { GrShareOption } from 'react-icons/gr'
 import { ExtensionChatItemProps } from '../types'
 
@@ -271,10 +270,7 @@ export default function CommonChatItem({
               className='self-start'
             />
             <FloatingMenus
-              menus={[
-                { text: 'Farcaster', icon: Farcaster },
-                { text: 'Twitter', icon: FaXTwitter },
-              ]}
+              menus={getShareMessageMenus(message)}
               placement='top-end'
               panelSize='sm'
               mainAxisOffset={6}
