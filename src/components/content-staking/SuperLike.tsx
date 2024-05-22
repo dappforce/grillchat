@@ -214,7 +214,7 @@ export default function SuperLike({
             )}
           >
             {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
-            <span>{superLikeCount}</span>
+            <span className='relative -top-px'>{superLikeCount}</span>
           </button>
         )
         return (

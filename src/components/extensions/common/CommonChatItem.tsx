@@ -1,3 +1,5 @@
+import Farcaster from '@/assets/logo/farcaster.svg'
+import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
@@ -6,12 +8,15 @@ import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePre
 import SubTeamLabel from '@/components/chats/ChatItem/SubTeamLabel'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
+import FloatingMenus from '@/components/floating/FloatingMenus'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
+import { FaXTwitter } from 'react-icons/fa6'
+import { GrShareOption } from 'react-icons/gr'
 import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
@@ -22,7 +27,7 @@ type DerivativesData = {
 
 type MyMessageConfig = {
   children?: 'top' | 'bottom' | 'middle'
-  checkMark?: 'adaptive-inside'
+  checkMark?: 'adaptive-inside' | 'share'
 }
 type OthersMessageConfig = {
   children?: 'bottom' | 'middle'
@@ -135,7 +140,6 @@ export default function CommonChatItem({
           )}
         </div>
       )}
-
       {!isMyMessage && othersMessage.checkMark === 'bottom' && (
         <div
           className={cx(
@@ -198,9 +202,23 @@ export default function CommonChatItem({
           />
         )}
 
-        {isMyMessage &&
-          myMessageConfig.children === 'middle' &&
-          childrenElement}
+        {isMyMessage && myMessageConfig.children === 'middle' && (
+          <div className='relative'>
+            {childrenElement}
+            {isMyMessage && myMessageConfig.checkMark === 'share' && (
+              <div
+                className={cx(
+                  'absolute bottom-2 right-1.5 z-10 flex items-center gap-1 self-end rounded-full bg-black/45 px-1.5 py-0.5'
+                )}
+              >
+                {myMessageCheckMarkElement({
+                  className: 'text-white',
+                  timeClassName: 'text-white',
+                })}
+              </div>
+            )}
+          </div>
+        )}
         {!isMyMessage && othersMessage.children === 'middle' && childrenElement}
 
         {body && (
@@ -244,12 +262,53 @@ export default function CommonChatItem({
           myMessageConfig.children === 'bottom' &&
           childrenElement}
 
-        <SuperLike
-          isMyMessage={isMyMessage}
-          withPostReward
-          postId={message.id}
-          className='mb-1.5 ml-2.5 mt-1 self-start'
-        />
+        {myMessageConfig.checkMark === 'share' && isMyMessage ? (
+          <div className='mb-1.5 mt-1 flex items-center gap-4 px-2.5'>
+            <SuperLike
+              isMyMessage={isMyMessage}
+              withPostReward
+              postId={message.id}
+              className='self-start'
+            />
+            <FloatingMenus
+              menus={[
+                { text: 'Farcaster', icon: Farcaster },
+                { text: 'Twitter', icon: FaXTwitter },
+              ]}
+              placement='top-end'
+              panelSize='sm'
+              mainAxisOffset={6}
+              showOnHover
+            >
+              {(config) => {
+                return (
+                  <Button
+                    {...config?.referenceProps}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      config?.onClick?.(e)
+                    }}
+                    variant='primary'
+                    size='sm'
+                    className='ml-auto flex items-center gap-2 bg-white px-2 py-0.5 text-sm'
+                  >
+                    <GrShareOption className='text-[#0053FF]' />
+                    <span className='relative -top-px bg-gradient-to-br from-[#0053FF] to-[#6C9AFB] bg-clip-text font-medium text-transparent'>
+                      Share to earn
+                    </span>
+                  </Button>
+                )
+              }}
+            </FloatingMenus>
+          </div>
+        ) : (
+          <SuperLike
+            isMyMessage={isMyMessage}
+            withPostReward
+            postId={message.id}
+            className='mb-1.5 ml-2.5 mt-1 self-start'
+          />
+        )}
       </div>
     </div>
   )
