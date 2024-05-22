@@ -2,6 +2,7 @@ import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import React, { ComponentProps, isValidElement, SyntheticEvent } from 'react'
 import Button from './Button'
+import FloatingMenus from './floating/FloatingMenus'
 
 type MenuListVariants = {
   size: {
@@ -49,6 +50,7 @@ type Menu = {
   href?: string
   disabled?: boolean
   className?: string
+  submenus?: Menu[]
 }
 export type MenuListProps = ComponentProps<'div'> &
   VariantProps<typeof menuListStyles> & {
@@ -58,44 +60,73 @@ export type MenuListProps = ComponentProps<'div'> &
 export default function MenuList({ menus, size, ...props }: MenuListProps) {
   return (
     <div {...props} className={cx(menuListStyles({ size }), props.className)}>
-      {menus.map(
-        (
-          {
-            icon: Icon,
-            onClick,
-            text,
-            href,
-            iconClassName,
-            className,
-            disabled,
-          },
-          idx
-        ) => (
-          <Button
-            key={idx}
-            href={href}
-            target='_blank'
-            rel='noopener noreferrer'
-            variant='transparent'
-            size='noPadding'
-            disabled={disabled}
-            interactive='none'
-            className={cx(menuListItemStyles({ size }), 'text-left', className)}
-            disabledStyle='subtle'
-            onClick={onClick}
-          >
-            {Icon && (
-              <Icon
-                className={cx(
-                  'flex-shrink-0 text-[1.25em] text-text-muted',
-                  iconClassName
-                )}
-              />
-            )}
-            {isValidElement(text) ? text : <span>{text}</span>}
-          </Button>
-        )
-      )}
+      {menus.map((menu, idx) => (
+        <MenuButton key={idx} menu={menu} size={size} />
+      ))}
     </div>
   )
+}
+
+function MenuButton({
+  menu,
+  size,
+}: { menu: Menu } & VariantProps<typeof menuListItemStyles>) {
+  const {
+    text,
+    className,
+    disabled,
+    href,
+    icon: Icon,
+    iconClassName,
+    onClick,
+    submenus,
+  } = menu
+
+  const button = (
+    <Button
+      href={href}
+      target='_blank'
+      rel='noopener noreferrer'
+      variant='transparent'
+      size='noPadding'
+      disabled={disabled}
+      interactive='none'
+      className={cx(
+        menuListItemStyles({ size }),
+        'w-full text-left',
+        className
+      )}
+      disabledStyle='subtle'
+      onClick={onClick}
+    >
+      {Icon && (
+        <Icon
+          className={cx(
+            'flex-shrink-0 text-[1.25em] text-text-muted',
+            iconClassName
+          )}
+        />
+      )}
+      {isValidElement(text) ? text : <span>{text}</span>}
+    </Button>
+  )
+
+  if (submenus) {
+    return (
+      <FloatingMenus menus={submenus} showOnHover placement='right-start'>
+        {(config) => (
+          <div
+            {...config?.referenceProps}
+            onClick={() => {
+              config?.toggleDisplay()
+            }}
+          >
+            {button}
+          </div>
+        )}
+      </FloatingMenus>
+    )
+  }
+
+  return button
 }

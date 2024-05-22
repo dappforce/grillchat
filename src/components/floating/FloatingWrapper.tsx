@@ -3,8 +3,10 @@ import { isTouchDevice } from '@/utils/device'
 import {
   Alignment,
   FloatingPortal,
+  FloatingTree,
   Placement,
   autoPlacement,
+  flip,
   offset,
   safePolygon,
   useClientPoint,
@@ -32,6 +34,7 @@ export type FloatingWrapperProps = {
   panel: (closeMenu: () => void) => React.ReactNode
   showOnHover?: boolean
   alignment?: Alignment
+  placement?: Placement
   allowedPlacements?: Placement[]
   useClickPointAsAnchor?: boolean
   mainAxisOffset?: number
@@ -40,6 +43,7 @@ export type FloatingWrapperProps = {
 export default function FloatingWrapper({
   children,
   panel,
+  placement,
   manualMenuController,
   alignment,
   showOnHover,
@@ -54,13 +58,18 @@ export default function FloatingWrapper({
   const { x, y, strategy, refs, context } = useFloating({
     open,
     onOpenChange,
+    placement,
     middleware: [
       offset({ mainAxis: mainAxisOffset }),
-      autoPlacement({
-        crossAxis: true,
-        alignment,
-        allowedPlacements,
-      }),
+      ...(!placement
+        ? [
+            autoPlacement({
+              crossAxis: true,
+              alignment,
+              allowedPlacements,
+            }),
+          ]
+        : [flip()]),
     ],
   })
 
@@ -115,29 +124,31 @@ export default function FloatingWrapper({
         }),
       })}
       {isMounted && (
-        <FloatingPortal>
-          <Transition
-            ref={refs.setFloating}
-            style={{
-              position: strategy,
-              top: y ?? 0,
-              left: x ?? 0,
-              backfaceVisibility: 'hidden',
-            }}
-            {...getFloatingProps()}
-            appear
-            show={open}
-            className='z-30 transition-opacity'
-            enter='ease-out duration-150'
-            enterFrom='opacity-0'
-            enterTo='opacity-100'
-            leave='ease-in duration-100'
-            leaveFrom='opacity-100'
-            leaveTo='opacity-0'
-          >
-            {panel(closeMenu)}
-          </Transition>
-        </FloatingPortal>
+        <FloatingTree>
+          <FloatingPortal>
+            <Transition
+              ref={refs.setFloating}
+              style={{
+                position: strategy,
+                top: y ?? 0,
+                left: x ?? 0,
+                backfaceVisibility: 'hidden',
+              }}
+              {...getFloatingProps()}
+              appear
+              show={open}
+              className='z-30 transition-opacity'
+              enter='ease-out duration-150'
+              enterFrom='opacity-0'
+              enterTo='opacity-100'
+              leave='ease-in duration-100'
+              leaveFrom='opacity-100'
+              leaveTo='opacity-0'
+            >
+              {panel(closeMenu)}
+            </Transition>
+          </FloatingPortal>
+        </FloatingTree>
       )}
     </>
   )

@@ -54,8 +54,10 @@ function FloatingMenuPanel({
   const augmentedMenus = menus.map((menu) => ({
     ...menu,
     onClick: (e: SyntheticEvent) => {
+      if (!menu.submenus?.length) {
+        closeMenu()
+      }
       menu.onClick?.(e)
-      closeMenu()
     },
   }))
 
