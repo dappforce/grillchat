@@ -2,6 +2,7 @@ import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import React, { ComponentProps, isValidElement, SyntheticEvent } from 'react'
+import { Drawer } from 'vaul'
 import Button from './Button'
 import FloatingMenus from './floating/FloatingMenus'
 
@@ -84,7 +85,7 @@ function MenuButton({
     submenus,
   } = menu
 
-  const button = (additionalProps?: { onClick?: () => void }) => (
+  const button = (
     <Button
       href={href}
       target='_blank'
@@ -99,10 +100,7 @@ function MenuButton({
         className
       )}
       disabledStyle='subtle'
-      onClick={(e) => {
-        additionalProps?.onClick?.()
-        onClick?.(e)
-      }}
+      onClick={onClick}
     >
       {Icon && (
         <Icon
@@ -127,20 +125,29 @@ function MenuButton({
                 config?.toggleDisplay()
               }}
             >
-              {button()}
+              {button}
             </div>
           )}
         </FloatingMenus>
       )
     } else {
-      return button({
-        onClick: () => {
-          // TODO: Implement mobile menu
-          console.log('open')
-        },
-      })
+      return (
+        <Drawer.Root shouldScaleBackground>
+          <Drawer.Trigger asChild>{button}</Drawer.Trigger>
+          <Drawer.Portal>
+            <Drawer.Overlay className='fixed inset-0 z-40 bg-black/40' />
+            <Drawer.Content className='fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] bg-background-light'>
+              <div className='mx-auto mt-4 h-2 w-[100px] rounded-full bg-background-lightest' />
+              <div className='mt-2 flex flex-col gap-1'>
+                <span className='px-6 font-semibold'>Share to:</span>
+                <MenuList menus={submenus} className='p-2' />
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+      )
     }
   }
 
-  return button()
+  return button
 }
