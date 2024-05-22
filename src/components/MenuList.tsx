@@ -1,3 +1,4 @@
+import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import React, { ComponentProps, isValidElement, SyntheticEvent } from 'react'
@@ -71,6 +72,7 @@ function MenuButton({
   menu,
   size,
 }: { menu: Menu } & VariantProps<typeof menuListItemStyles>) {
+  const mdUp = useBreakpointThreshold('md')
   const {
     text,
     className,
@@ -82,7 +84,7 @@ function MenuButton({
     submenus,
   } = menu
 
-  const button = (
+  const button = (additionalProps?: { onClick?: () => void }) => (
     <Button
       href={href}
       target='_blank'
@@ -97,7 +99,10 @@ function MenuButton({
         className
       )}
       disabledStyle='subtle'
-      onClick={onClick}
+      onClick={(e) => {
+        additionalProps?.onClick?.()
+        onClick?.(e)
+      }}
     >
       {Icon && (
         <Icon
@@ -112,21 +117,30 @@ function MenuButton({
   )
 
   if (submenus) {
-    return (
-      <FloatingMenus menus={submenus} showOnHover placement='right-start'>
-        {(config) => (
-          <div
-            {...config?.referenceProps}
-            onClick={() => {
-              config?.toggleDisplay()
-            }}
-          >
-            {button}
-          </div>
-        )}
-      </FloatingMenus>
-    )
+    if (mdUp) {
+      return (
+        <FloatingMenus menus={submenus} showOnHover placement='right-start'>
+          {(config) => (
+            <div
+              {...config?.referenceProps}
+              onClick={() => {
+                config?.toggleDisplay()
+              }}
+            >
+              {button()}
+            </div>
+          )}
+        </FloatingMenus>
+      )
+    } else {
+      return button({
+        onClick: () => {
+          // TODO: Implement mobile menu
+          console.log('open')
+        },
+      })
+    }
   }
 
-  return button
+  return button()
 }
