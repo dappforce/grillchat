@@ -138,15 +138,15 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gl-notifications-dev.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=581626459774
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://epic-one-epic-data-hub-core.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://epic-one-epic-data-hub-core.subsocial.network/graphql-ws
-            GH_DATAHUB_QUEUE_URL=https://epic-one-epic-data-hub-queue.subsocial.network/graphql
-            GH_NOTIFICATIONS_URL=https://epic-one-epic-notif-data-hub-core.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://epic-prerelease-epic-data-hub-core.subsocial.network/graphql
+            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://epic-prerelease-epic-data-hub-core.subsocial.network/graphql-ws
+            GH_DATAHUB_QUEUE_URL=https://epic-prerelease-epic-data-hub-queue.subsocial.network/graphql
+            GH_NOTIFICATIONS_URL=https://epic-prerelease-epic-notif-data-hub-core.subsocial.network/graphql
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_PROPOSALS_HUB=12364
             GH_NEXT_PUBLIC_APP_ID=12364
-            GH_NEXT_PUBLIC_SPACE_IDS=0x7ce43c2015d61d3010563285d26aadcd
-            GH_NEXT_PUBLIC_MAIN_CHAT_ID=0xdd4078ca9f42a17dc9501c3a84f3748a
+            GH_NEXT_PUBLIC_SPACE_IDS=0x2adb83ff5f9218510434a114c11a5b7e
+            GH_NEXT_PUBLIC_MAIN_CHAT_ID=0x595d0c1368b1130c44d2cc98ba6d4885
             GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/g_notif_staging_bot/
             # without base path
             # GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network

@@ -64,14 +64,13 @@ function HomePageContent() {
 //         //     },
 //         //   })
 //         // )
-//         // upsertPost(
-//         //   augmentDatahubParams({
-//         //     spaceId: '0x7ce43c2015d61d3010563285d26aadcd',
-//         //     '0xdd4078ca9f42a17dc9501c3a84f3748a'
-//         //     title: 'Post testing',
-//         //     image: '',
-//         //   })
-//         // )
+//         upsertPost(
+//           augmentDatahubParams({
+//             spaceId: '0x2adb83ff5f9218510434a114c11a5b7e',
+//             title: 'Post testing',
+//             image: '',
+//           })
+//         )
 //       }}
 //     >
 //       Create post
