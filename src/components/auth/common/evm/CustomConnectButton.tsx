@@ -3,6 +3,7 @@ import LinkingLight from '@/assets/graphics/linking-light.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { getAddress } from 'ethers'
 import { useEffect, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { getConnector, openMobileWallet } from './utils'
@@ -28,7 +29,7 @@ export const CustomConnectButton = ({
   const [hasInteractedOnce, setHasInteractedOnce] = useState(false)
 
   const onSuccess = async (address: string) => {
-    onSuccessConnect(address)
+    onSuccessConnect(getAddress(address))
   }
 
   const { disconnect } = useDisconnect()

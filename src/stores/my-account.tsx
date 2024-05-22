@@ -17,6 +17,7 @@ import {
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import dayjs from 'dayjs'
+import { getAddress } from 'ethers'
 import toast from 'react-hot-toast'
 import { UserProperties, useAnalytics } from './analytics'
 import { create, createSelectors } from './utils'
@@ -133,8 +134,9 @@ const sendLaunchEvent = async (
 const useMyAccountBase = create<State & Actions>()((set, get) => ({
   ...initialState,
   saveProxyAddress: (address) => {
-    parentProxyAddressStorage.set(address)
-    set({ parentProxyAddress: address })
+    const normalized = getAddress(address)
+    parentProxyAddressStorage.set(normalized)
+    set({ parentProxyAddress: normalized })
   },
   disconnectProxy: () => {
     set({ parentProxyAddress: undefined })
@@ -172,7 +174,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
-      address = signer.address
+      address = getAddress(signer.address)
 
       set({
         address,
