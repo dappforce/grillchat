@@ -15,7 +15,7 @@ const GET_IS_BALANCE_SUFFICIENT = gql`
     $socialAction: SocialAction!
   ) {
     isBalanceSufficientForSocialAction(
-      args: { address: $address, socialAction: CREATE_COMMENT }
+      args: { address: $address, socialAction: $socialAction }
     ) {
       sufficient
     }
