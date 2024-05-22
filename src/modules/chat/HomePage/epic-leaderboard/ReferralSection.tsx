@@ -1,11 +1,14 @@
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import useIsMounted from '@/hooks/useIsMounted'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
+import { getCurrentUrlWithoutQuery } from '@/utils/links'
 import { copyToClipboard } from '@/utils/strings'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import urlJoin from 'url-join'
 import SkeletonFallback from '../../../../components/SkeletonFallback'
 import epicConfig from '../../../../constants/config/epic'
 
@@ -29,9 +32,10 @@ const ReferralSection = () => {
     }, 1000)
   }
 
-  const origin = useMemo(() => window.location.origin, [])
-
-  const referralLink = `${origin}?ref=${myAddress}`
+  const isMounted = useIsMounted()
+  const referralLink = isMounted
+    ? urlJoin(getCurrentUrlWithoutQuery(), `?ref=${myAddress}`)
+    : ''
 
   return (
     <Card className='flex flex-col gap-2 bg-background-light'>
