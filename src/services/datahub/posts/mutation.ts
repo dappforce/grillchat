@@ -12,6 +12,7 @@ import {
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { TAGS_REGEX } from '@/utils/strings'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
 import {
@@ -147,6 +148,19 @@ type Params = SendMessageParams & {
   uuid: string
   timestamp: number
 }
+
+function extractTags(message: string) {
+  return Array.from(message.match(TAGS_REGEX) ?? [])
+}
+
+function getContent(data: Params) {
+  return {
+    body: data.message,
+    inReplyTo: ReplyWrapper(data.replyTo),
+    extensions: data.extensions,
+    tags: extractTags(data.message ?? ''),
+  } as PostContent
+}
 export function useSendMessage(
   config?: UseMutationOptions<string | null, unknown, Params, void>
 ) {
@@ -155,11 +169,7 @@ export function useSendMessage(
   return useMutation({
     ...config,
     mutationFn: async (data) => {
-      const content = {
-        body: data.message,
-        inReplyTo: ReplyWrapper(data.replyTo),
-        extensions: data.extensions,
-      } as PostContent
+      const content = getContent(data)
 
       const maxLength = getMaxMessageLength(data.chatId)
       if (data.message && data.message.length > maxLength)
@@ -201,11 +211,7 @@ export function useSendMessage(
     onMutate: async (data) => {
       config?.onMutate?.(data)
       preventWindowUnload()
-      const content = {
-        body: data.message,
-        inReplyTo: ReplyWrapper(data.replyTo),
-        extensions: data.extensions,
-      } as PostContent
+      const content = getContent(data)
 
       const newId = await getDeterministicId({
         account:

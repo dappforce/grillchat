@@ -42,3 +42,5 @@ export function getUrlFromText(str: string) {
     /((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-]))/
   return urlRegex.exec(str)?.[0]
 }
+
+export const TAGS_REGEX = /#[a-zA-Z0-9_]+/g
