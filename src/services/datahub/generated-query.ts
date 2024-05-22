@@ -338,7 +338,7 @@ export type DailyStatsByStakerResponse = {
   initialPoints: Scalars['Int']['output']
   stakerRewordDistribution: Scalars['Int']['output']
   superLikesCount: Scalars['Int']['output']
-  totalLazyRewardAmount: Scalars['String']['output']
+  tokensRewardDistributionPool: Scalars['String']['output']
 }
 
 export enum DataHubClientId {
@@ -605,6 +605,7 @@ export type LinkedIdentityExternalProvider = {
   farcasterVerifiedEthAddresses: Array<Scalars['String']['output']>
   farcasterVerifiedSolAddresses: Array<Scalars['String']['output']>
   id: Scalars['String']['output']
+  isAutoInitialized: Scalars['Boolean']['output']
   linkedIdentity: LinkedIdentity
   provider: IdentityProvider
   updatedAtTime?: Maybe<Scalars['DateTime']['output']>
@@ -995,6 +996,7 @@ export type Query = {
   activeStakingSuperLikeCountsByStaker: Array<SuperLikeCountsByStakerResponse>
   activeStakingSuperLikes: SuperLikesResponseDto
   activeStakingSuperLikesNumberGoal: Scalars['Int']['output']
+  activeStakingTokenomicMetadata: TokenomicMetadataResponse
   activeStakingTotalActivityMetricsForFixedPeriod: TotalActivityMetricsForFixedPeriodResponseDto
   domains: DomainsResponse
   findPosts: FindPostsResponseDto
@@ -1612,6 +1614,11 @@ export type SuperLikesWhereInput = {
   postPersistentIds?: InputMaybe<Array<Scalars['String']['input']>>
 }
 
+export type TokenomicMetadataResponse = {
+  __typename?: 'TokenomicMetadataResponse'
+  maxTotalDailyRewardPoints: Scalars['String']['output']
+}
+
 export type TotalActivityMetricsForFixedPeriodInput = {
   creatorEarnedPointsTotal?: InputMaybe<Scalars['Boolean']['input']>
   creatorEarnedTotal?: InputMaybe<Scalars['Boolean']['input']>
@@ -1694,6 +1701,7 @@ export type UserReferrerDetail = {
 
 export type GetIsBalanceSufficientQueryVariables = Exact<{
   address: Scalars['String']['input']
+  socialAction: SocialAction
 }>
 
 export type GetIsBalanceSufficientQuery = {
@@ -2004,6 +2012,7 @@ export type GetUserStatsQuery = {
       likedPosts?: number | null
       earnedByPeriod?: string | null
       earnedTotal?: string | null
+      earnedPointsByPeriod?: string | null
     } | null
     creator?: {
       __typename?: 'CreatorActivityMetrics'
@@ -2011,6 +2020,7 @@ export type GetUserStatsQuery = {
       stakersWhoLiked?: number | null
       earnedByPeriod?: string | null
       earnedTotal?: string | null
+      earnedPointsByPeriod?: string | null
     } | null
   }
 }
@@ -2094,6 +2104,34 @@ export type GetGeneralStatsByPeriodQuery = {
     creatorEarnedTotal?: string | null
     creatorEarnedPointsTotal?: string | null
     stakersEarnedPointsTotal?: string | null
+  }
+}
+
+export type GetUserReferralsQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetUserReferralsQuery = {
+  __typename?: 'Query'
+  userReferrals: {
+    __typename?: 'UserReferralsResponse'
+    data: Array<{
+      __typename?: 'UserReferralsDataItem'
+      referrerId: string
+      referralsCount?: number | null
+    }>
+  }
+}
+
+export type GetActiveStakingTokenomicMetagataQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type GetActiveStakingTokenomicMetagataQuery = {
+  __typename?: 'Query'
+  activeStakingTokenomicMetadata: {
+    __typename?: 'TokenomicMetadataResponse'
+    maxTotalDailyRewardPoints: string
   }
 }
 
@@ -2946,7 +2984,10 @@ export const SpaceFragment = gql`
   }
 `
 export const GetIsBalanceSufficient = gql`
-  query GetIsBalanceSufficient($address: String!) {
+  query GetIsBalanceSufficient(
+    $address: String!
+    $socialAction: SocialAction!
+  ) {
     isBalanceSufficientForSocialAction(
       args: { address: $address, socialAction: CREATE_COMMENT }
     ) {
@@ -3205,16 +3246,18 @@ export const GetUserStats = gql`
         address: $address
         period: WEEK
         staker: {
-          likedPosts: true
-          likedCreators: true
-          earnedByPeriod: true
-          earnedTotal: true
+          likedPosts: false
+          likedCreators: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
         }
         creator: {
-          likesCountByPeriod: true
-          stakersWhoLiked: true
-          earnedByPeriod: true
-          earnedTotal: true
+          likesCountByPeriod: false
+          stakersWhoLiked: false
+          earnedByPeriod: false
+          earnedTotal: false
+          earnedPointsByPeriod: true
         }
       }
     ) {
@@ -3223,12 +3266,14 @@ export const GetUserStats = gql`
         likedPosts
         earnedByPeriod
         earnedTotal
+        earnedPointsByPeriod
       }
       creator {
         likesCountByPeriod
         stakersWhoLiked
         earnedByPeriod
         earnedTotal
+        earnedPointsByPeriod
       }
     }
   }
@@ -3336,6 +3381,23 @@ export const GetGeneralStatsByPeriod = gql`
       creatorEarnedTotal
       creatorEarnedPointsTotal
       stakersEarnedPointsTotal
+    }
+  }
+`
+export const GetUserReferrals = gql`
+  query GetUserReferrals($address: String!) {
+    userReferrals(args: { where: { referrerIds: [$address] } }) {
+      data {
+        referrerId
+        referralsCount
+      }
+    }
+  }
+`
+export const GetActiveStakingTokenomicMetagata = gql`
+  query GetActiveStakingTokenomicMetagata {
+    activeStakingTokenomicMetadata {
+      maxTotalDailyRewardPoints
     }
   }
 `

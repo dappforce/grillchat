@@ -5,11 +5,15 @@ import {
   GetIsActiveStakerQueryVariables,
   GetIsBalanceSufficientQuery,
   GetIsBalanceSufficientQueryVariables,
+  SocialAction,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
 
 const GET_IS_BALANCE_SUFFICIENT = gql`
-  query GetIsBalanceSufficient($address: String!) {
+  query GetIsBalanceSufficient(
+    $address: String!
+    $socialAction: SocialAction!
+  ) {
     isBalanceSufficientForSocialAction(
       args: { address: $address, socialAction: CREATE_COMMENT }
     ) {
@@ -17,15 +21,16 @@ const GET_IS_BALANCE_SUFFICIENT = gql`
     }
   }
 `
-export async function getIsBalanceSufficient(
+export async function getIsBalanceSufficient(args: {
   address: string
-): Promise<boolean> {
+  socialAction: SocialAction
+}): Promise<boolean> {
   const res = await datahubQueryRequest<
     GetIsBalanceSufficientQuery,
     GetIsBalanceSufficientQueryVariables
   >({
     document: GET_IS_BALANCE_SUFFICIENT,
-    variables: { address },
+    variables: args,
   })
 
   return res.isBalanceSufficientForSocialAction.sufficient

@@ -9,6 +9,7 @@ import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
 import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
+import { SocialAction } from '@/services/datahub/generated-query'
 import { useSendMessage } from '@/services/datahub/posts/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
@@ -108,9 +109,10 @@ export default function ChatForm({
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
 
-  const { data: isSufficient, refetch } = getIsBalanceSufficientQuery.useQuery(
-    myAddress ?? ''
-  )
+  const { data: isSufficient, refetch } = getIsBalanceSufficientQuery.useQuery({
+    address: myAddress ?? '',
+    socialAction: SocialAction.CreateComment,
+  })
   const refetchSufficientBalanceData = () => {
     setTimeout(() => {
       refetch()

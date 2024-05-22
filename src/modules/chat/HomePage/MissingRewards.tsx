@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
+import { SocialAction } from '@/services/datahub/generated-query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
@@ -46,7 +47,10 @@ const MissingRewards = () => {
   const isNotLinkedEvm = !myEvmAddress
 
   const { data: isSufficient, isLoading: isSufficientLoading } =
-    getIsBalanceSufficientQuery.useQuery(myAddress || '')
+    getIsBalanceSufficientQuery.useQuery({
+      address: myAddress || '',
+      socialAction: SocialAction.CreateComment,
+    })
 
   let type: WarningType | undefined
 

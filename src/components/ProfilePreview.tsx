@@ -34,6 +34,7 @@ export type ProfilePreviewProps = ComponentProps<'div'> & {
   onSetRewardAddressClick?: () => void
   asLink?: boolean
   withPolkadotIdentity?: boolean
+  disableEditButton?: boolean
 }
 
 const ProfilePreview = ({
@@ -41,6 +42,7 @@ const ProfilePreview = ({
   forceProfileSource,
   className,
   avatarClassName,
+  disableEditButton,
   nameClassName,
   addressesContainerClassName,
   asLink,
@@ -58,7 +60,12 @@ const ProfilePreview = ({
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
   const editButton = mdUp ? (
-    <Button size='circleSm' variant='muted' onClick={onEditClick}>
+    <Button
+      size='circleSm'
+      disabled={disableEditButton}
+      variant='muted'
+      onClick={onEditClick}
+    >
       <RiPencilFill />
     </Button>
   ) : (
@@ -73,6 +80,7 @@ const ProfilePreview = ({
           className='relative top-px p-1 text-text-primary'
           variant='transparent'
           onClick={onEditClick}
+          disabled={disableEditButton}
         >
           <LuPencil />
         </Button>

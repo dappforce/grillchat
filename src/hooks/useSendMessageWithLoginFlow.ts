@@ -1,4 +1,5 @@
 import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
+import { SocialAction } from '@/services/datahub/generated-query'
 import { useSendMessage } from '@/services/datahub/posts/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
@@ -30,10 +31,10 @@ export default function useSendMessageWithLoginFlow(
       usedAddress = loginAddress
     }
 
-    const isSufficient = await getIsBalanceSufficientQuery.fetchQuery(
-      client,
-      usedAddress
-    )
+    const isSufficient = await getIsBalanceSufficientQuery.fetchQuery(client, {
+      address: usedAddress,
+      socialAction: SocialAction.CreateComment,
+    })
     if (!isSufficient) {
       setOpenMessageModal('should-stake')
       return null
