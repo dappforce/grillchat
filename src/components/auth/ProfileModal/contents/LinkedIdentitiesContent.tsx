@@ -28,62 +28,71 @@ import { getExternalProviderPayload } from '../../OauthLoadingModal'
 import { CustomConnectButton } from '../../common/evm/CustomConnectButton'
 
 type ProviderData = {
-  name: string
+  title: string
+  points: number
   icon: IconType
-  shortName?: string
+  name?: string
   provider: IdentityProvider
   customName?: (usernameOrId: string) => string
   connectButton: () => JSX.Element
 }
 
-const externalProviders: ProviderData[] = [
-  {
-    name: 'EVM Address for Rewards',
-    icon: SiEthereum,
-    shortName: 'EVM',
-    provider: IdentityProvider.Evm,
-    customName: (nameOrId) => truncateAddress(nameOrId),
-    connectButton: () => <EvmConnectButton />,
-  },
-  {
-    name: 'Farcaster',
-    icon: Farcaster,
-    provider: IdentityProvider.Farcaster,
-    connectButton: () => <FarcasterConnectButton />,
-  },
-  {
-    name: 'Google',
-    icon: IoLogoGoogle,
-    provider: IdentityProvider.Google,
-    connectButton: () => <OauthConnectButton provider='google' />,
-  },
-  {
-    name: 'X',
-    icon: FaXTwitter,
-    provider: IdentityProvider.Twitter,
-    connectButton: () => <OauthConnectButton provider='twitter' />,
-  },
-]
-
 export default function LinkedIdentitiesContent() {
   const grillAddress = useMyGrillAddress() ?? ''
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(grillAddress)
+
+  const externalProviders: ProviderData[] = [
+    {
+      name: 'EVM',
+      title: 'EVM Address for Rewards',
+      points: 0,
+      icon: SiEthereum,
+      provider: IdentityProvider.Evm,
+      customName: (nameOrId) => truncateAddress(nameOrId),
+      connectButton: () => <EvmConnectButton />,
+    },
+    {
+      name: 'Farcaster',
+      title: 'Farcaster',
+      points: 500,
+      icon: Farcaster,
+      provider: IdentityProvider.Farcaster,
+      connectButton: () => <FarcasterConnectButton />,
+    },
+    {
+      name: 'Google',
+      title: 'Google',
+      points: 250,
+      icon: IoLogoGoogle,
+      provider: IdentityProvider.Google,
+      connectButton: () => <OauthConnectButton provider='google' />,
+    },
+    {
+      name: 'X',
+      title: 'X',
+      points: 250,
+      icon: FaXTwitter,
+      provider: IdentityProvider.Twitter,
+      connectButton: () => <OauthConnectButton provider='twitter' />,
+    },
+  ]
 
   return (
     <div className='flex flex-col gap-6'>
       {externalProviders.map(
         ({
           icon: Icon,
+          title,
           name,
-          shortName,
           provider,
+          points,
           connectButton: ConnectButton,
           customName,
         }) => {
           const isLinked = linkedIdentity?.externalProviders.find(
             (p) => p.provider === provider
           )
-          let text = `Connect your ${shortName ?? name}`
+          let text = `Connect your ${name}`
           if (isLinked) {
             const usernameOrId = isLinked.username || isLinked.externalId
             if (customName) {
@@ -95,7 +104,14 @@ export default function LinkedIdentitiesContent() {
 
           return (
             <div className='flex flex-col gap-2' key={name}>
-              <span>{name}</span>
+              {isLinked ? (
+                <span>{title}</span>
+              ) : (
+                <span>
+                  {title}{' '}
+                  <span className='text-text-muted'>+{points} points</span>
+                </span>
+              )}
               <Card className='flex items-center gap-4 bg-background p-4'>
                 <Icon className='flex-shrink-0 text-xl text-text-muted' />
                 <span className='flex-1 break-words'>{text}</span>
