@@ -102,7 +102,7 @@ export default function AccountContent({
             }
           >
             <div className='flex items-center gap-2'>
-              <div className='text-text-muted'>Balance:</div>
+              <div className='text-text-muted'>Points:</div>
               <div>
                 <SkeletonFallback
                   className='my-0 w-20 bg-background-lightest'
