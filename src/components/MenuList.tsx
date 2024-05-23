@@ -2,6 +2,7 @@ import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { cx } from '@/utils/class-names'
 import { cva, VariantProps } from 'class-variance-authority'
 import React, { ComponentProps, isValidElement, SyntheticEvent } from 'react'
+import { FiChevronRight } from 'react-icons/fi'
 import { Drawer } from 'vaul'
 import Button from './Button'
 import FloatingMenus from './floating/FloatingMenus'
@@ -85,7 +86,7 @@ function MenuButton({
     submenus,
   } = menu
 
-  const button = (
+  const button = (withArrow?: boolean) => (
     <Button
       href={href}
       target='_blank'
@@ -111,6 +112,9 @@ function MenuButton({
         />
       )}
       {isValidElement(text) ? text : <span>{text}</span>}
+      {withArrow && (
+        <FiChevronRight className='ml-auto text-[1.25em] text-text-muted' />
+      )}
     </Button>
   )
 
@@ -125,7 +129,7 @@ function MenuButton({
                 config?.toggleDisplay()
               }}
             >
-              {button}
+              {button(true)}
             </div>
           )}
         </FloatingMenus>
@@ -133,7 +137,7 @@ function MenuButton({
     } else {
       return (
         <Drawer.Root shouldScaleBackground>
-          <Drawer.Trigger asChild>{button}</Drawer.Trigger>
+          <Drawer.Trigger asChild>{button(true)}</Drawer.Trigger>
           <Drawer.Portal>
             <Drawer.Overlay className='fixed inset-0 z-40 bg-black/40' />
             <Drawer.Content className='fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] bg-background-light'>
@@ -149,5 +153,5 @@ function MenuButton({
     }
   }
 
-  return button
+  return button()
 }
