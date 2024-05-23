@@ -1,6 +1,7 @@
 import Farcaster from '@/assets/logo/farcaster.svg'
 import { MenuListProps } from '@/components/MenuList'
 import { env } from '@/env.mjs'
+import { useAnalytics } from '@/stores/analytics'
 import { getCurrentUrlOrigin } from '@/utils/links'
 import {
   farcasterShareUrl,
@@ -27,6 +28,10 @@ export function getShareMessageMenus(
       icon: Farcaster,
       onClick: () => {
         openNewWindow(farcasterShareUrl(urlToShare, title))
+        useAnalytics.getState().sendEvent('external_share', {
+          value: 'farcaster',
+          postId: message.id,
+        })
       },
     },
     {
@@ -36,6 +41,9 @@ export function getShareMessageMenus(
         openNewWindow(
           twitterShareUrl(urlToShare, title, { tags: ['Epic', 'Meme2Earn'] })
         )
+        useAnalytics
+          .getState()
+          .sendEvent('external_share', { value: 'twitter', postId: message.id })
       },
     },
   ]
