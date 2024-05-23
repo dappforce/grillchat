@@ -1,6 +1,5 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
-import { env } from '@/env.mjs'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
@@ -87,10 +86,6 @@ export default function ChatItem({
         >
           {(config) => {
             const { toggleDisplay, referenceProps } = config || {}
-            const showChip =
-              messageStatus === 'offChain' &&
-              !isMyMessage &&
-              env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(hubId)
 
             return (
               <div
@@ -103,16 +98,6 @@ export default function ChatItem({
                 {...referenceProps}
                 id={messageBubbleId}
               >
-                {showChip && (
-                  <div
-                    className={cx(
-                      'absolute right-0 top-0 z-10 -translate-y-1/3 translate-x-1/2 rounded-full bg-background-primary px-2 py-0.5 text-[8px] text-text-on-primary',
-                      isMyMessage && 'left-0 right-auto -translate-x-1/2'
-                    )}
-                  >
-                    Web2
-                  </div>
-                )}
                 {extensions && extensions.length > 0 ? (
                   <ChatItemWithExtension
                     scrollToMessage={scrollToMessage}

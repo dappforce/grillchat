@@ -38,6 +38,7 @@ export type SuperLikeProps = ComponentProps<'div'> & {
   postId: string
   postRewardClassName?: string
   isMyMessage?: boolean
+  showWhenZero?: boolean
 }
 
 export function SuperLikeWrapper({
@@ -177,6 +178,7 @@ export default function SuperLike({
   postId,
   isMyMessage,
   withPostReward,
+  showWhenZero,
   ...props
 }: SuperLikeProps) {
   const myAddress = useMyMainAddress()
@@ -193,7 +195,7 @@ export default function SuperLike({
         superLikeCount,
         postRewards,
       }) => {
-        if (superLikeCount <= 0) return null
+        if (superLikeCount <= 0 && !showWhenZero) return null
         const button = (
           <button
             onClick={() => {

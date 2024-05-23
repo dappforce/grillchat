@@ -40,6 +40,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   className?: string
   textColor?: string
   bg?: 'background' | 'background-light'
+  showSuperLikeWhenZero?: boolean
 }
 
 const defaultMyMessageConfig: MyMessageConfig = {
@@ -59,6 +60,7 @@ export default function CommonChatItem({
   textColor,
   className,
   isMyMessage: _isMyMessage,
+  showSuperLikeWhenZero,
   chatId,
   hubId,
   bg = 'background',
@@ -113,12 +115,14 @@ export default function CommonChatItem({
 
   const isOthersMessageChildrenOnBottom =
     !isMyMessage &&
+    !showSuperLikeWhenZero &&
     (superLikeCount?.count ?? 0) <= 0 &&
     (othersMessage.children === 'bottom' ||
       (othersMessage.children === 'middle' && !body))
 
   const isMyMessageChildrenOnBottom =
     isMyMessage &&
+    !showSuperLikeWhenZero &&
     (superLikeCount?.count ?? 0) <= 0 &&
     (myMessageConfig.children === 'bottom' ||
       (myMessageConfig.children === 'middle' && !body))
@@ -264,6 +268,7 @@ export default function CommonChatItem({
         {myMessageConfig.checkMark === 'share' && isMyMessage ? (
           <div className='mb-1.5 mt-1 flex items-center gap-4 px-2.5'>
             <SuperLike
+              showWhenZero={showSuperLikeWhenZero}
               isMyMessage={isMyMessage}
               withPostReward
               postId={message.id}
@@ -299,6 +304,7 @@ export default function CommonChatItem({
           </div>
         ) : (
           <SuperLike
+            showWhenZero={showSuperLikeWhenZero}
             isMyMessage={isMyMessage}
             withPostReward
             postId={message.id}

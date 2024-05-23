@@ -19,6 +19,7 @@ export default function ImageChatItem(props: ExtensionChatItemProps) {
   return (
     <CommonChatItem
       {...props}
+      showSuperLikeWhenZero
       othersMessage={{ children: 'middle', checkMark: 'bottom' }}
       myMessageConfig={{ children: 'middle', checkMark: 'share' }}
       className='max-w-xs'
