@@ -198,7 +198,7 @@ export default function ChatItemMenus({
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
     if (canSendMessage && isMessageOwner) menus.unshift(editItem)
-    if (isMessageOwner)
+    if (isMessageOwner && message)
       menus.unshift({
         text: 'Share',
         icon: GrShareOption,

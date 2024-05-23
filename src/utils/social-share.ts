@@ -21,3 +21,9 @@ export const twitterShareUrl = (
     '\n' + url + '\n\n'
   )}&hashtags=${[...(tags || [])]}&original_referer=${url}`
 }
+
+export const farcasterShareUrl = (url: string, text: string) => {
+  return `https://warpcast.com/~/compose?text=${encodeURIComponent(
+    text
+  )}&embeds[]=${url}`
+}

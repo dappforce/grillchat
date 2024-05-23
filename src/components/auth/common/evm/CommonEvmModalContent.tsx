@@ -11,6 +11,7 @@ import {
   getLinkedIdentityQuery,
 } from '@/services/datahub/identity/query'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
+import { getCurrentUrlOrigin } from '@/utils/links'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
@@ -151,12 +152,6 @@ export const CommonEVMLoginContent = ({
 }
 
 export const CommonEvmAddressLinked = () => {
-  const twitterUrl = twitterShareUrl(
-    'https://grill.chat',
-    `I just linked my #EVM wallet to GrillApp.net! Now, I can have a consistent identity and take advantage of new features such as interacting with #ERC20, #NFT, and other smart contracts 🥳`,
-    { tags: ['Ethereum', 'Grillchat', 'Subsocial'] }
-  )
-
   return (
     <div className='flex flex-col items-center gap-6'>
       <Image
@@ -167,7 +162,14 @@ export const CommonEvmAddressLinked = () => {
       <Button
         size={'lg'}
         variant='primary'
-        onClick={() => openNewWindow(twitterUrl)}
+        onClick={() => {
+          const twitterUrl = twitterShareUrl(
+            getCurrentUrlOrigin(),
+            `I just linked my #EVM wallet to Epic 🥳!`,
+            { tags: ['Ethereum', 'Epic', 'Base', 'Meme2Earn'] }
+          )
+          openNewWindow(twitterUrl)
+        }}
         className='w-full'
       >
         Post about it on X!
