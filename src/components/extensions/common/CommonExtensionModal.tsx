@@ -85,6 +85,7 @@ export default function CommonExtensionModal({
           mustHaveMessageBody={mustHaveMessageBody}
           beforeMesageSend={beforeMesageSend}
           sendButtonText={sendButtonText}
+          placeholder='Describe your meme'
           inputProps={{
             className: cx(
               'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',

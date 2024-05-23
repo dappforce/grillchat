@@ -56,6 +56,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
     messageParams: SendMessageParams
   ) => Promise<BeforeMessageResult>
   autofocus?: boolean
+  placeholder?: string
 }
 
 function processMessage(message: string) {
@@ -76,6 +77,7 @@ export default function ChatForm({
   sendButtonProps,
   isPrimary,
   beforeMesageSend,
+  placeholder,
   ...props
 }: ChatFormProps) {
   const myAddress = useMyMainAddress()
@@ -286,7 +288,7 @@ export default function ChatForm({
           const clipboardData = e.clipboardData
           interceptPastedData(clipboardData, e)
         }}
-        placeholder='Post your meme here...'
+        placeholder={placeholder ?? 'Post your meme here...'}
         rows={1}
         autoComplete='off'
         autoCapitalize='sentences'
