@@ -135,9 +135,11 @@ export function SuperLikeWrapper({
     }
 
     if (!isActiveStaker) {
-      refetch()
-      setOpenMessageModal('should-stake')
-      return
+      const res = await refetch()
+      if (!res.data) {
+        setOpenMessageModal('should-stake')
+        return
+      }
     }
 
     let sig = currentWeekSigStorage.get()
