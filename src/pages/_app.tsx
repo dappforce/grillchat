@@ -7,6 +7,7 @@ import { PAGES_WITH_LARGER_CONTAINER } from '@/constants/layout'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
+import { ConnectWalletProvider } from '@/providers/ConnectWalletProvider'
 import {
   ConfigProvider,
   useConfigContext,
@@ -165,9 +166,11 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <GlobalModals />
         <div className={cx('font-sans')}>
           <ErrorBoundary>
-            <EvmProvider>
-              <Component {...props} />
-            </EvmProvider>
+            <ConnectWalletProvider>
+              <EvmProvider>
+                <Component {...props} />
+              </EvmProvider>
+            </ConnectWalletProvider>
           </ErrorBoundary>
         </div>
       </QueryProvider>

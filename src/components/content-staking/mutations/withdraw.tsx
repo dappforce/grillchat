@@ -1,6 +1,4 @@
-import useConnectWallet from '@/hooks/useConnectWallet'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
-import { getCurrentWallet } from '@/services/subsocial/hooks'
 import {
   Status,
   createMutationWrapper,
@@ -14,14 +12,11 @@ import { useQueryClient } from '@tanstack/react-query'
 
 export function useWithdrawTx(config?: SubsocialMutationConfig<{}>) {
   const client = useQueryClient()
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const sendEvent = useSendEvent()
-  useConnectWallet()
 
   return useSubsocialMutation(
     {
-      getWallet: () =>
-        getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
+      useInjectedIfHasProxy: true,
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi } }) => {
         const stakeTx = substrateApi.tx.creatorStaking.withdrawUnstaked()

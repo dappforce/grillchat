@@ -59,7 +59,6 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
     Awaited<ReturnType<typeof generateMessageContent>>
   >(
     {
-      getWallet: getCurrentWallet,
       generateContext: (data) => generateMessageContent(data, client),
       transactionGenerator: async ({
         apis: { substrateApi },
@@ -222,7 +221,6 @@ export function useResendFailedMessage(
 
   return useSubsocialMutation<ResendFailedMessageParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi }, data }) => {
         const replyToPersistentId =

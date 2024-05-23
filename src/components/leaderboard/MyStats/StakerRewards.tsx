@@ -16,7 +16,7 @@ type StakerRewardsProps = {
   leaderboardRole: LeaderboardRole
 }
 
-const REWRADS_LIMIT = 13
+const REWARDS_LIMIT = 13
 
 const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
   const { data, isLoading } = getRewardHistoryQuery.useQuery(address)
@@ -37,11 +37,10 @@ const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
   const sectionTitle = leaderboardRole === 'staker' ? 'Staker' : 'Creator'
 
   const rewardsData = useMemo(
-    () => (isViewMore ? rewards : rewards.slice(0, REWRADS_LIMIT)),
+    () => (isViewMore ? rewards : rewards.slice(0, REWARDS_LIMIT)),
     [rewards.length, isViewMore]
   )
 
-  console.log(rewards.length)
   return (
     <div className='flex h-fit flex-col gap-4 rounded-2xl bg-white p-4 dark:bg-slate-800 md:gap-4'>
       <div className='flex flex-col gap-2'>
@@ -90,7 +89,7 @@ const StakerRewards = ({ address, leaderboardRole }: StakerRewardsProps) => {
               />
             )
           })}
-          {!isViewMore && rewards.length > REWRADS_LIMIT && (
+          {!isViewMore && rewards.length > REWARDS_LIMIT && (
             <LinkText
               className='w-full text-center hover:no-underline'
               onClick={() => setIsViewMore(true)}

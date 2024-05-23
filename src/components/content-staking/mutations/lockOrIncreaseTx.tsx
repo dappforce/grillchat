@@ -1,11 +1,9 @@
-import useConnectWallet from '@/hooks/useConnectWallet'
 import { getBackerInfoQuery } from '@/services/contentStaking/backerInfo/query'
 import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
 import {
   generalEraInfoId,
   getGeneralEraInfoQuery,
 } from '@/services/contentStaking/generalErainfo/query'
-import { getCurrentWallet } from '@/services/subsocial/hooks'
 import {
   Status,
   createMutationWrapper,
@@ -29,14 +27,11 @@ export function useLockOrIncreaseTx(
   config?: SubsocialMutationConfig<MutationProps>
 ) {
   const client = useQueryClient()
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const sendEvent = useSendEvent()
-  useConnectWallet()
 
   return useSubsocialMutation(
     {
-      getWallet: () =>
-        getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
+      useInjectedIfHasProxy: true,
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,

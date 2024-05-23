@@ -4,6 +4,7 @@ import { decodeAddress } from '@polkadot/keyring'
 import { u8aToHex } from '@polkadot/util'
 import { useEffect, useState } from 'react'
 import { useDisconnect, useSignMessage } from 'wagmi'
+import useToastError from './useToastError'
 
 const buildMsgParams = async (substrateAddress: string) => {
   const decodedAddress = u8aToHex(decodeAddress(substrateAddress))
@@ -75,11 +76,13 @@ export default function useSignMessageAndLinkEvmAddress({
     mutate: linkEvmAddress,
     isLoading: isLinkingEvmAddress,
     onCallbackLoading,
+    error,
   } = useLinkEvmAddress({
     onSuccess,
     onError,
     linkedEvmAddress,
   })
+  useToastError(error, error?.message || 'Failed to connect EVM')
 
   useEffect(() => {
     if (isSignMessageError) {

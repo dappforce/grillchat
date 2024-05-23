@@ -34,7 +34,6 @@ export function useJoinChat(config?: SubsocialMutationConfig<JoinChatParams>) {
 
   return useSubsocialMutation<JoinChatParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: { chatId },
@@ -86,7 +85,6 @@ export function useLeaveChat(
 
   return useSubsocialMutation<JoinChatParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: { chatId },
@@ -190,7 +188,6 @@ export function useUpsertPost(
 
   return useSubsocialMutation<UpsertPostParams, GeneratedMessageContent>(
     {
-      getWallet: getCurrentWallet,
       generateContext: (params) => generateMessageContent(params, client),
       transactionGenerator: async ({
         data: params,
@@ -330,7 +327,6 @@ export function useHideUnhidePost(
 
   return useSubsocialMutation<HideUnhidePostParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: { action, postId },
@@ -400,7 +396,6 @@ export function useHideMessage(
 
   return useSubsocialMutation<HideMessageParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,
@@ -474,7 +469,6 @@ export function usePinMessage(
 
   return useSubsocialMutation<PinMessageParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,

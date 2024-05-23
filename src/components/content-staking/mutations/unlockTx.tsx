@@ -1,4 +1,3 @@
-import useConnectWallet from '@/hooks/useConnectWallet'
 import {
   getBackerInfoBySpaceIds,
   getBackerInfoQuery,
@@ -10,7 +9,6 @@ import {
   getGeneralEraInfoQuery,
 } from '@/services/contentStaking/generalErainfo/query'
 import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
-import { getCurrentWallet } from '@/services/subsocial/hooks'
 import {
   Status,
   createMutationWrapper,
@@ -56,12 +54,10 @@ export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
   const { data: stakingConsts } = getStakingConstsData()
   const client = useQueryClient()
   const sendEvent = useSendEvent()
-  useConnectWallet()
 
   return useSubsocialMutation(
     {
-      getWallet: () =>
-        getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
+      useInjectedIfHasProxy: true,
       generateContext: undefined,
       transactionGenerator: async ({ data: params }) => {
         if (!currentGrillAddress) throw new Error('No address connected')
