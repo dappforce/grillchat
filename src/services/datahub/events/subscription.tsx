@@ -1,14 +1,16 @@
 import Toast from '@/components/Toast'
 import { deleteOptimisticData } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { useMyMainAddress } from '@/stores/my-account'
+import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import sortKeysRecursive from 'sort-keys-recursive'
+import { getIsBalanceSufficientQuery } from '../balances/query'
 import {
   ServiceMessageStatusCode,
+  SocialAction,
   SocialCallName,
   SubscribeEventsSubscription,
   SubscribeEventsSubscriptionVariables,
@@ -115,6 +117,16 @@ async function processSubscriptionEvent(
   client: QueryClient,
   eventData: SubscribeEventsSubscription['serviceMessageToTarget']
 ) {
+  const mainAddress = getMyMainAddress()
+  getIsBalanceSufficientQuery.invalidate(client, {
+    address: mainAddress ?? '',
+    socialAction: SocialAction.CreateComment,
+  })
+  getIsBalanceSufficientQuery.invalidate(client, {
+    address: mainAddress ?? '',
+    socialAction: SocialAction.UpdateSpace,
+  })
+
   let action = 'previous action'
   switch (eventData.meta.callName) {
     case SocialCallName.CreatePost:

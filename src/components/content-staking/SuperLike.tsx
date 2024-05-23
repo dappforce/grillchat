@@ -79,8 +79,11 @@ export function SuperLikeWrapper({
 
   const myAddress = useMyMainAddress()
   const myGrillAddress = useMyAccount.use.address()
-  const { data: isActiveStaker, isLoading: loadingActiveStaker } =
-    getIsActiveStakerQuery.useQuery(myAddress ?? '')
+  const {
+    data: isActiveStaker,
+    isLoading: loadingActiveStaker,
+    refetch,
+  } = getIsActiveStakerQuery.useQuery(myAddress ?? '')
 
   const { data: myLike, isFetching: loadingMyLike } =
     getAddressLikeCountToPostQuery.useQuery({
@@ -131,6 +134,7 @@ export function SuperLikeWrapper({
     }
 
     if (!isActiveStaker) {
+      refetch()
       setOpenMessageModal('should-stake')
       return
     }

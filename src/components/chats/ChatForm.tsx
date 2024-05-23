@@ -223,6 +223,7 @@ export default function ChatForm({
 
     if (shouldSendMessage) {
       if (!isSufficient) {
+        refetch()
         setOpenMessageModal('should-stake')
         return
       }

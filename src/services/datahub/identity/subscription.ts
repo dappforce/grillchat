@@ -1,10 +1,12 @@
-import { useMyAccount } from '@/stores/my-account'
+import { getMyMainAddress, useMyAccount } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
+import { getIsBalanceSufficientQuery } from '../balances/query'
 import {
   DataHubSubscriptionEventEnum,
+  SocialAction,
   SubscribeIdentitySubscription,
 } from '../generated-query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
@@ -162,12 +164,18 @@ async function processExternalProviderUpdate(
   const myGrillAddress = useMyAccount.getState().address
   if (!myGrillAddress || !externalProvider) return
 
-  const currentLinkedIdentity = await getLinkedIdentityQuery.fetchQuery(
-    queryClient,
-    myGrillAddress
-  )
-  if (externalProvider.linkedIdentity.id !== currentLinkedIdentity?.mainAddress)
+  const myMainAddress = getMyMainAddress()
+  if (!myMainAddress || externalProvider.linkedIdentity.id !== myMainAddress)
     return
+
+  getIsBalanceSufficientQuery.invalidate(queryClient, {
+    address: myMainAddress,
+    socialAction: SocialAction.CreateComment,
+  })
+  getIsBalanceSufficientQuery.invalidate(queryClient, {
+    address: myMainAddress,
+    socialAction: SocialAction.UpdateSpace,
+  })
 
   getLinkedIdentityQuery.setQueryData(queryClient, myGrillAddress, (data) => {
     if (!data) return data

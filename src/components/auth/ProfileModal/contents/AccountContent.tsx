@@ -28,11 +28,14 @@ export default function AccountContent({
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
   const { disconnect } = useDisconnect()
-  const { data: isSufficient, isLoading } =
-    getIsBalanceSufficientQuery.useQuery({
-      address,
-      socialAction: SocialAction.UpdateSpace,
-    })
+  const {
+    data: isSufficient,
+    isLoading,
+    refetch,
+  } = getIsBalanceSufficientQuery.useQuery({
+    address,
+    socialAction: SocialAction.UpdateSpace,
+  })
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
@@ -70,6 +73,7 @@ export default function AccountContent({
             disableEditButton={isLoading}
             onEditClick={() => {
               if (!isSufficient) {
+                refetch()
                 useMessageData.getState().setOpenMessageModal('should-stake')
                 return
               }
