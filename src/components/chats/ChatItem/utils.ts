@@ -22,12 +22,19 @@ export function getShareMessageMenus(
     `/message/${message.id}`
   )
 
+  const twitterTitle = `Check out my most recent meme on @EpicAppNet on @base 😂
+You can also earn memecoins like $DEGEN for posting funny content here too! Join me now on Epic App:`
+  const farcasterTitle = `Check out my most recent meme on Epic /meme2earn on @base 😂
+You can also earn memecoins like $DEGEN for posting funny content here too! Join me now on Epic App:
+
+#meme2earn #memetoken`
+
   return [
     {
       text: 'Farcaster',
       icon: Farcaster,
       onClick: () => {
-        openNewWindow(farcasterShareUrl(urlToShare, title))
+        openNewWindow(farcasterShareUrl(urlToShare, farcasterTitle))
         useAnalytics.getState().sendEvent('external_share', {
           value: 'farcaster',
           postId: message.id,
@@ -39,7 +46,9 @@ export function getShareMessageMenus(
       icon: FaXTwitter,
       onClick: () => {
         openNewWindow(
-          twitterShareUrl(urlToShare, title, { tags: ['Epic', 'Meme2Earn'] })
+          twitterShareUrl(urlToShare, twitterTitle, {
+            tags: ['meme2earn', 'memetoken'],
+          })
         )
         useAnalytics
           .getState()
