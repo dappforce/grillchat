@@ -56,7 +56,10 @@ export default function ChatListSupportingContent({
   const lastReadTime = useLastFocusedMessageTime(chatId, lastMessageId)
 
   const [recipient, setRecipient] = useState('')
+
+  const [isOpenMessageModal, setIsOpenMessageModal] = useState(false)
   const [messageModalMsgId, setMessageModalMsgId] = useState('')
+
   const prevMessageModalMsgId = usePrevious(messageModalMsgId)
 
   const Component = asContainer ? Container<'div'> : 'div'
@@ -76,6 +79,7 @@ export default function ChatListSupportingContent({
     if (messageId && validateNumber(messageId)) {
       isInitialized.current = true
       setMessageModalMsgId(messageId)
+      setIsOpenMessageModal(true)
       setRecipient(recipient)
     }
 
@@ -146,8 +150,8 @@ export default function ChatListSupportingContent({
     <>
       <MessageModal
         hubId={hubId}
-        isOpen={!!messageModalMsgId}
-        closeModal={() => setMessageModalMsgId('')}
+        isOpen={isOpenMessageModal}
+        closeModal={() => setIsOpenMessageModal(false)}
         messageId={messageModalMsgId}
         scrollToMessage={scrollToMessage}
         recipient={recipient}
