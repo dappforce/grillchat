@@ -59,7 +59,7 @@ const SUBSCRIBE_ORGANIZATION = gql`
       entity {
         organizationModerators {
           moderator {
-            substrateAccount {
+            account {
               id
             }
           }
@@ -205,7 +205,7 @@ async function processOrganization(
   const moderators = entity.organizationModerators
 
   moderators?.forEach((moderator) => {
-    const address = moderator.moderator.substrateAccount.id
+    const address = moderator.moderator.account.id
     getModeratorQuery.setQueryData(queryClient, address, (oldData) => {
       if (!oldData) return null
       const postIdsSet = new Set(oldData.postIds)

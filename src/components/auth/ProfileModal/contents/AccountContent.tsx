@@ -1,13 +1,18 @@
 import ExitIcon from '@/assets/icons/exit.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
 import SunIcon from '@/assets/icons/sun.svg'
+import Button from '@/components/Button'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import ProfilePreview from '@/components/ProfilePreview'
+import SkeletonFallback from '@/components/SkeletonFallback'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
+import {
+  getBalanceQuery,
+  getIsBalanceSufficientQuery,
+} from '@/services/datahub/balances/query'
 import { SocialAction } from '@/services/datahub/generated-query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -15,6 +20,7 @@ import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useTheme } from 'next-themes'
+import { LuRefreshCcw } from 'react-icons/lu'
 import { RiUserSettingsLine } from 'react-icons/ri'
 import { TbDeviceMobilePlus } from 'react-icons/tb'
 import { useDisconnect } from 'wagmi'
@@ -30,12 +36,19 @@ export default function AccountContent({
   const { disconnect } = useDisconnect()
   const {
     data: isSufficient,
-    isLoading,
-    refetch,
+    isLoading: isLoadingSufficient,
+    refetch: refetchSufficient,
   } = getIsBalanceSufficientQuery.useQuery({
     address,
     socialAction: SocialAction.UpdateSpace,
   })
+
+  const {
+    data: balance,
+    isRefetching,
+    isLoading,
+    refetch,
+  } = getBalanceQuery.useQuery(address)
 
   const { data: profile } = getProfileQuery.useQuery(address)
 
@@ -70,10 +83,10 @@ export default function AccountContent({
       <div className='mt-2 flex flex-col'>
         <div className='flex flex-col gap-6 border-b border-background-lightest px-6 pb-6'>
           <ProfilePreview
-            disableEditButton={isLoading}
+            disableEditButton={isLoadingSufficient}
             onEditClick={() => {
               if (!isSufficient) {
-                refetch()
+                refetchSufficient()
                 useMessageData.getState().setOpenMessageModal('should-stake')
                 return
               }
@@ -83,7 +96,7 @@ export default function AccountContent({
             address={address}
           />
 
-          {/* <div
+          <div
             className={
               'flex items-center justify-between gap-4 rounded-2xl bg-background-lighter p-4'
             }
@@ -95,7 +108,7 @@ export default function AccountContent({
                   className='my-0 w-20 bg-background-lightest'
                   isLoading={isLoading || isRefetching}
                 >
-                  {balanceValueBN.toFixed(4)} {tokenSymbol}
+                  {balance} Points
                 </SkeletonFallback>
               </div>
               <Button
@@ -107,29 +120,7 @@ export default function AccountContent({
                 <LuRefreshCcw />
               </Button>
             </div>
-            <div>
-              <SkeletonFallback
-                isLoading={isLoading}
-                className='my-0 w-20 bg-background-lightest'
-              >
-                {balanceValueBN.isZero() ? (
-                  <LinkText
-                    variant={'primary'}
-                    href={
-                      'https://docs.subsocial.network/docs/tutorials/GetSUB/get-sub'
-                    }
-                    target='_blank'
-                  >
-                    Get SUB
-                  </LinkText>
-                ) : (
-                  <LinkText variant={'primary'} onClick={() => undefined}>
-                    Withdraw
-                  </LinkText>
-                )}
-              </SkeletonFallback>
-            </div>
-          </div> */}
+          </div>
         </div>
         <MenuList menus={menus} />
         <NewCommunityModal hubId={profile?.profileSpace?.id} />

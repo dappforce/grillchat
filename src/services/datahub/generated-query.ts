@@ -736,10 +736,10 @@ export type ModerationUpdateOrganizationModeratorInput = {
 
 export type Moderator = {
   __typename?: 'Moderator'
+  account: Account
   id: Scalars['String']['output']
   moderatorOrganizations?: Maybe<Array<ModerationOrganizationModerator>>
   processedResources?: Maybe<Array<ModerationBlockedResource>>
-  substrateAccount: Account
 }
 
 export enum ModeratorRole {
@@ -1712,6 +1712,18 @@ export type GetIsBalanceSufficientQuery = {
   }
 }
 
+export type GetBalanceQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetBalanceQuery = {
+  __typename?: 'Query'
+  socialProfileBalances?: {
+    __typename?: 'SocialProfileBalances'
+    activeStakingPoints: string
+  } | null
+}
+
 export type GetIsActiveStakerQueryVariables = Exact<{
   address: Scalars['String']['input']
 }>
@@ -2249,7 +2261,7 @@ export type SubscribeOrganizationSubscription = {
         __typename?: 'ModerationOrganizationModerator'
         moderator: {
           __typename?: 'Moderator'
-          substrateAccount: { __typename?: 'Account'; id: string }
+          account: { __typename?: 'Account'; id: string }
         }
       }> | null
     }
@@ -2989,9 +3001,16 @@ export const GetIsBalanceSufficient = gql`
     $socialAction: SocialAction!
   ) {
     isBalanceSufficientForSocialAction(
-      args: { address: $address, socialAction: CREATE_COMMENT }
+      args: { address: $address, socialAction: $socialAction }
     ) {
       sufficient
+    }
+  }
+`
+export const GetBalance = gql`
+  query GetBalance($address: String!) {
+    socialProfileBalances(args: { where: { address: $address } }) {
+      activeStakingPoints
     }
   }
 `
@@ -3481,7 +3500,7 @@ export const SubscribeOrganization = gql`
       entity {
         organizationModerators {
           moderator {
-            substrateAccount {
+            account {
               id
             }
           }
