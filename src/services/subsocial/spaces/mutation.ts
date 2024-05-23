@@ -2,7 +2,6 @@ import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
-import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils/mutation'
 import { getSpaceQuery } from './query'
 
@@ -18,7 +17,6 @@ export function useUpdateSpace(
 
   return useSubsocialMutation<UpdateSpaceParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: { spaceId, updatedSpaceContent },

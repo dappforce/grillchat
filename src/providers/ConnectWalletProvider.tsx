@@ -118,7 +118,7 @@ function ConnectWalletModal({ ...props }: ModalFunctionalityProps) {
       <div className='flex flex-col gap-4 px-6 pb-6'>
         {!isFound && (
           <InfoPanel variant='error'>
-            We couldn't find your currently connected address in your{' '}
+            We couldn&apos;t find your currently connected address in your{' '}
             {preferredWallet?.title ?? 'wallet'}. Please choose another wallet
             or connect your account to your wallet.
           </InfoPanel>
