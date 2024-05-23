@@ -58,13 +58,24 @@ type Menu = {
 export type MenuListProps = ComponentProps<'div'> &
   VariantProps<typeof menuListStyles> & {
     menus: Menu[]
+    closeFloatingMenu?: () => void
   }
 
-export default function MenuList({ menus, size, ...props }: MenuListProps) {
+export default function MenuList({
+  menus,
+  size,
+  closeFloatingMenu,
+  ...props
+}: MenuListProps) {
   return (
     <div {...props} className={cx(menuListStyles({ size }), props.className)}>
       {menus.map((menu, idx) => (
-        <MenuButton key={idx} menu={menu} size={size} />
+        <MenuButton
+          key={idx}
+          menu={menu}
+          size={size}
+          closeFloatingMenu={closeFloatingMenu}
+        />
       ))}
     </div>
   )
@@ -73,7 +84,10 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
 function MenuButton({
   menu,
   size,
-}: { menu: Menu } & VariantProps<typeof menuListItemStyles>) {
+  closeFloatingMenu,
+}: { menu: Menu; closeFloatingMenu?: () => void } & VariantProps<
+  typeof menuListItemStyles
+>) {
   const mdUp = useBreakpointThreshold('md')
   const {
     text,
@@ -136,7 +150,12 @@ function MenuButton({
       )
     } else {
       return (
-        <Drawer.Root shouldScaleBackground>
+        <Drawer.Root
+          shouldScaleBackground
+          onClose={() => {
+            closeFloatingMenu?.()
+          }}
+        >
           <Drawer.Trigger asChild>{button(true)}</Drawer.Trigger>
           <Drawer.Portal>
             <Drawer.Overlay className='fixed inset-0 z-40 bg-black/40' />

@@ -70,7 +70,11 @@ function FloatingMenuPanel({
       )}
     >
       {beforeMenus}
-      <MenuList size={panelSize} menus={augmentedMenus} />
+      <MenuList
+        size={panelSize}
+        menus={augmentedMenus}
+        closeFloatingMenu={closeMenu}
+      />
       {afterMenus}
     </div>
   )
