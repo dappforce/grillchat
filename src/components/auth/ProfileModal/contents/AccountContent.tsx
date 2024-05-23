@@ -9,14 +9,9 @@ import NewCommunityModal from '@/components/community/NewCommunityModal'
 import useGetTheme from '@/hooks/useGetTheme'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
-import {
-  getBalanceQuery,
-  getIsBalanceSufficientQuery,
-} from '@/services/datahub/balances/query'
-import { SocialAction } from '@/services/datahub/generated-query'
+import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useTheme } from 'next-themes'
@@ -34,14 +29,6 @@ export default function AccountContent({
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
   const { disconnect } = useDisconnect()
-  const {
-    data: isSufficient,
-    isLoading: isLoadingSufficient,
-    refetch: refetchSufficient,
-  } = getIsBalanceSufficientQuery.useQuery({
-    address,
-    socialAction: SocialAction.UpdateSpace,
-  })
 
   const {
     data: balance,
@@ -83,13 +70,7 @@ export default function AccountContent({
       <div className='mt-2 flex flex-col'>
         <div className='flex flex-col gap-6 border-b border-background-lightest px-6 pb-6'>
           <ProfilePreview
-            disableEditButton={isLoadingSufficient}
             onEditClick={() => {
-              if (!isSufficient) {
-                refetchSufficient()
-                useMessageData.getState().setOpenMessageModal('should-stake')
-                return
-              }
               setCurrentState('profile-settings')
             }}
             onSetRewardAddressClick={() => setCurrentState('add-evm-provider')}

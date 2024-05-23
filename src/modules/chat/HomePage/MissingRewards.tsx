@@ -1,7 +1,6 @@
 import Button from '@/components/Button'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
-import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
-import { SocialAction } from '@/services/datahub/generated-query'
+import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
@@ -46,15 +45,12 @@ const MissingRewards = () => {
     useLinkedEvmAddress()
   const isNotLinkedEvm = !myEvmAddress
 
-  const { data: isSufficient, isLoading: isSufficientLoading } =
-    getIsBalanceSufficientQuery.useQuery({
-      address: myAddress || '',
-      socialAction: SocialAction.CreateComment,
-    })
+  const { data: balance, isLoading: isLoadingBalance } =
+    getBalanceQuery.useQuery(myAddress || '')
 
   let type: WarningType | undefined
 
-  if (isLinkedIdentityLoading || isSufficientLoading) return null
+  if (isLinkedIdentityLoading || isLoadingBalance) return null
 
   if (isNotLinkedEvm) {
     type = 'missing-rewards'
@@ -66,7 +62,7 @@ const MissingRewards = () => {
         })
       },
     }
-  } else if (!isSufficient) {
+  } else if (!balance) {
     type = 'no-points'
     warningPropsByType[type] = {
       ...warningPropsByType[type],

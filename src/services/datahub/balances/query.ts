@@ -40,8 +40,8 @@ export async function getIsBalanceSufficient(args: {
 export const getIsBalanceSufficientQuery = createQuery({
   key: 'getIsBalanceSufficient',
   fetcher: getIsBalanceSufficient,
-  defaultConfigGenerator: (address) => ({
-    enabled: !!address,
+  defaultConfigGenerator: (params) => ({
+    enabled: !!params && !!params.address,
   }),
 })
 

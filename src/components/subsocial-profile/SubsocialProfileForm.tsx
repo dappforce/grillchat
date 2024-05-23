@@ -1,8 +1,11 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
+import { SocialAction } from '@/services/datahub/generated-query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSendEvent } from '@/stores/analytics'
+import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -67,8 +70,24 @@ export default function SubsocialProfileForm({
     onProfileChangeRef.current?.({ name, image })
   }, [onProfileChangeRef, name, image])
 
-  const { mutateAsync, isLoading } = useUpsertProfile()
+  const { mutateAsync, isLoading: isUpserting } = useUpsertProfile()
+  const { refetch, isLoading: isLoadingBalance } =
+    getIsBalanceSufficientQuery.useQuery(
+      {
+        address: myAddress ?? '',
+        socialAction: SocialAction.UpdateSpace,
+      },
+      { enabled: false }
+    )
+  const isLoading = isUpserting || isLoadingBalance
+
   const onSubmit = handleSubmit(async (data) => {
+    const isSufficient = await refetch()
+    if (!isSufficient.data) {
+      useMessageData.getState().setOpenMessageModal('should-stake')
+      return
+    }
+
     await mutateAsync(
       augmentDatahubParams({
         spaceId: profile?.profileSpace?.id,

@@ -7,10 +7,9 @@ import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import sortKeysRecursive from 'sort-keys-recursive'
-import { getIsBalanceSufficientQuery } from '../balances/query'
+import { getBalanceQuery } from '../balances/query'
 import {
   ServiceMessageStatusCode,
-  SocialAction,
   SocialCallName,
   SubscribeEventsSubscription,
   SubscribeEventsSubscriptionVariables,
@@ -117,15 +116,8 @@ async function processSubscriptionEvent(
   client: QueryClient,
   eventData: SubscribeEventsSubscription['serviceMessageToTarget']
 ) {
-  const mainAddress = getMyMainAddress()
-  getIsBalanceSufficientQuery.invalidate(client, {
-    address: mainAddress ?? '',
-    socialAction: SocialAction.CreateComment,
-  })
-  getIsBalanceSufficientQuery.invalidate(client, {
-    address: mainAddress ?? '',
-    socialAction: SocialAction.UpdateSpace,
-  })
+  const mainAddress = getMyMainAddress() ?? ''
+  getBalanceQuery.invalidate(client, mainAddress)
 
   let action = 'previous action'
   switch (eventData.meta.callName) {

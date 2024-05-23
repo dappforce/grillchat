@@ -111,15 +111,13 @@ export default function ChatForm({
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
 
-  const { data: isSufficient, refetch } = getIsBalanceSufficientQuery.useQuery({
-    address: myAddress ?? '',
-    socialAction: SocialAction.CreateComment,
-  })
-  const refetchSufficientBalanceData = () => {
-    setTimeout(() => {
-      refetch()
-    }, 1000)
-  }
+  const { refetch } = getIsBalanceSufficientQuery.useQuery(
+    {
+      address: myAddress ?? '',
+      socialAction: SocialAction.CreateComment,
+    },
+    { enabled: false }
+  )
 
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
 
@@ -148,11 +146,9 @@ export default function ChatForm({
 
   const { mutate: sendMessage } = useSendMessage({
     onSuccess: () => {
-      refetchSufficientBalanceData()
       unsentMessageStorage.remove(chatId)
     },
     onError: (error, variables) => {
-      refetchSufficientBalanceData()
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
         reloadUnsentMessage,
         setIsDisabledInput,
@@ -224,7 +220,8 @@ export default function ChatForm({
     hasSentMessageStorage.set('true')
 
     if (shouldSendMessage) {
-      if (!isSufficient) {
+      const isSufficient = await refetch()
+      if (!isSufficient.data) {
         refetch()
         setOpenMessageModal('should-stake')
         return
