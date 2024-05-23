@@ -11,6 +11,7 @@ export default function ConnectEvmModal(props: ModalFunctionalityProps) {
   return (
     <Modal
       {...props}
+      withCloseButton
       title='Connect Your EVM to Get Rewards'
       description='Only users with a connected EVM will be able to receive and manage their rewards on the platform. It also allows you to use features such as donations and NFTs, display your identity, and much more.'
     >
