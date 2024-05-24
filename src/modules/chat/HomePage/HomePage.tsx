@@ -61,7 +61,7 @@ function PostCreationButton() {
   const [spaceId, setSpaceId] = useState('')
   const [postTitle, setPostTitle] = useState('')
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='mt-12 flex flex-col gap-4'>
       <Button
         onClick={() => {
           upsertSpace(

@@ -46,6 +46,7 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
 export const LoginContent = (props: LoginModalContentProps) => {
   const { setCurrentState, closeModal } = props
   const openNextStepModal = useLoginModal.use.openNextStepModal()
+  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   const sendEvent = useSendEvent()
   const { loginNeynar, isLoadingOrSubmitted } = useNeynarLogin()
   const grillAddress = useMyGrillAddress()
@@ -54,8 +55,10 @@ export const LoginContent = (props: LoginModalContentProps) => {
     grillAddress ?? ''
   )
   useEffect(() => {
+    // mostly this logic is for after login with neynar
     if (linkedIdentity) {
       closeModal()
+      finalizeTemporaryAccount()
       if (
         !linkedIdentity.externalProviders.find(
           (p) => p.provider === IdentityProvider.Evm
@@ -64,7 +67,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
         openNextStepModal({ step: 'connect-evm' })
       }
     }
-  }, [linkedIdentity, closeModal, openNextStepModal])
+  }, [linkedIdentity, closeModal, openNextStepModal, finalizeTemporaryAccount])
 
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {

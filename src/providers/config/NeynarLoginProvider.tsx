@@ -39,7 +39,6 @@ export default function NeynarLoginProvider({
   children: ReactNode
 }) {
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
-  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
 
   const {
     mutate: addExternalProvider,
@@ -52,11 +51,7 @@ export default function NeynarLoginProvider({
     isSuccess: isSuccessLinking,
     isLoading: isLinking,
     reset: resetLinking,
-  } = useLinkIdentity({
-    onSuccess: () => {
-      finalizeTemporaryAccount()
-    },
-  })
+  } = useLinkIdentity()
   const isLoading = isLinking || isAddingProvider
   const isSuccess = isSuccessLinking || isSuccessAdding
 
