@@ -104,7 +104,7 @@ export default function LinkedIdentitiesContent() {
 
           return (
             <div className='flex flex-col gap-2' key={name}>
-              {isLinked ? (
+              {isLinked || points <= 0 ? (
                 <span>{title}</span>
               ) : (
                 <span>
