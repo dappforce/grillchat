@@ -29,6 +29,7 @@ export default function PolkadotConnectWalletContent({
 }: PolkadotConnectContentProps) {
   const isInIframe = useIsInIframe()
   const sendEvent = useSendEvent()
+  const preferredWallet = useMyAccount((state) => state.preferredWallet)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const supportedWallets: Wallet[] = getWallets()
 
@@ -96,7 +97,8 @@ export default function PolkadotConnectWalletContent({
       className: cx(
         'gap-4',
         getShouldWalletDisabled(wallet, isInIframe).disabled &&
-          'focus-visible:bg-transparent hover:bg-transparent cursor-default'
+          'focus-visible:bg-transparent hover:bg-transparent cursor-default',
+        preferredWallet?.title === wallet.title && 'bg-background'
       ),
       icon: () => (
         <Image

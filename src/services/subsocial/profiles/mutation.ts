@@ -7,7 +7,6 @@ import { IpfsWrapper } from '@/utils/ipfs'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
 import { useQueryClient } from '@tanstack/react-query'
-import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils/mutation'
 
 type CommonParams = {
@@ -37,7 +36,6 @@ export function useUpsertProfile(
 
   return useSubsocialMutation<UpsertProfileParams>(
     {
-      getWallet: getCurrentWallet,
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,

@@ -1,3 +1,6 @@
+import { useConnectWallet } from '@/providers/ConnectWalletProvider'
+import { getCurrentWallet } from '@/services/subsocial/hooks'
+import { useMyAccount } from '@/stores/my-account'
 import { useTransactions } from '@/stores/transactions'
 import { generatePromiseQueue } from '@/utils/promise'
 import type { ApiPromise } from '@polkadot/api'
@@ -29,11 +32,11 @@ type TransactionGenerator<Data, Context> = (params: {
 }) => Promise<{ tx: Transaction; summary: string }>
 export function useSubsocialMutation<Data, Context = undefined>(
   {
-    getWallet,
     generateContext,
     transactionGenerator,
+    walletType = 'grill',
   }: {
-    getWallet: () => Promise<WalletAccount> | WalletAccount
+    walletType?: 'grill' | 'injected' | 'dynamic'
     generateContext: Context extends undefined
       ? undefined
       : (data: Data, wallet: WalletAccount) => Promise<Context> | Context
@@ -42,8 +45,26 @@ export function useSubsocialMutation<Data, Context = undefined>(
   config?: SubsocialMutationConfig<Data, Context>,
   defaultConfig?: SubsocialMutationConfig<Data, Context>
 ): UseMutationResult<string, Error, Data, unknown> {
+  const { requestWalletAccount } = useConnectWallet()
+
   const workerFunc = async (data: Data) => {
-    const wallet = await getWallet()
+    const parentProxyAddress = useMyAccount.getState().parentProxyAddress
+    let wallet = getCurrentWallet(
+      (walletType === 'dynamic' && parentProxyAddress) ||
+        walletType === 'injected'
+        ? 'injected'
+        : 'grill'
+    )
+
+    if (walletType === 'dynamic' && parentProxyAddress && !wallet.signer) {
+      const connected = await requestWalletAccount()
+      if (!connected) {
+        throw new Error(
+          'Cannot connect to your polkadot wallet, please make sure you have your connected account inside your selected wallet'
+        )
+      }
+      wallet = connected
+    }
 
     if (!wallet.address || !wallet.signer)
       throw new Error('You need to connect your wallet first!')

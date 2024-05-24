@@ -1,10 +1,8 @@
 import Toast from '@/components/Toast'
-import useConnectWallet from '@/hooks/useConnectWallet'
 import { getChainsInfoQuery } from '@/services/chainsInfo/query'
-import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { createMutationWrapper } from '@/services/subsocial/utils/mutation'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { useLazySubstrateMutation } from '@/subsocial-query/subsocial/lazyMutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
@@ -42,13 +40,10 @@ export function useSubstrateDonation(
   const { data: chainInfo } = getChainsInfoQuery.useQuery(chainName || '')
   const address = useMyMainAddress()
   const { wsNode, node } = chainInfo || {}
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-  useConnectWallet()
 
   return useLazySubstrateMutation<SubstrateDonationProps>(
     {
-      getWallet: () =>
-        getCurrentWallet(parentProxyAddress ? 'injected' : 'grill'),
+      walletType: 'dynamic',
       chainEndpoint: wsNode || node || '',
       generateContext: undefined,
       transactionGenerator: async ({
