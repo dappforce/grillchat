@@ -137,9 +137,8 @@ function EvmConnectButton() {
   const [isGettingMessage, setIsGettingMessage] = useState(false)
   const { signMessageAsync, isLoading: isSigning, reset } = useSignMessage()
   const grillAddress = useMyGrillAddress()
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    grillAddress ?? ''
-  )
+  const { data: linkedIdentity, isLoading: isLoadingIdentity } =
+    getLinkedIdentityQuery.useQuery(grillAddress ?? '')
 
   const hasEvmProvider = linkedIdentity?.externalProviders.some(
     (p) => p.provider === IdentityProvider.Evm
@@ -191,7 +190,8 @@ function EvmConnectButton() {
   }
 
   const isLoading =
-    !hasEvmProvider && (isGettingMessage || isSigning || isAddingProvider)
+    !hasEvmProvider &&
+    (isGettingMessage || isSigning || isAddingProvider || isLoadingIdentity)
 
   return (
     <CustomConnectButton
@@ -236,6 +236,9 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   const calledRef = useRef(false)
   const { data: session } = useSession()
   const router = useRouter()
+  const myGrillAddress = useMyGrillAddress() ?? ''
+  const { isLoading: loadingIdentity } =
+    getLinkedIdentityQuery.useQuery(myGrillAddress)
   const {
     mutate,
     isLoading: isAddingProvider,
@@ -267,7 +270,9 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   return (
     <Button
       size='sm'
-      isLoading={isRedirecting || isAddingProvider || isSuccess}
+      isLoading={
+        isRedirecting || isAddingProvider || isSuccess || loadingIdentity
+      }
       onClick={() => {
         setIsRedirecting(true)
         sendEvent(`add_provider_${provider}_clicked`)
