@@ -91,7 +91,7 @@ jobs:
           file: docker/Dockerfile
           push: true
           build-args: |
-            GH_NEXTAUTH_URL=https://epic.subsocial.network/api/auth
+            GH_NEXTAUTH_URL=https://epicapp.net
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://epic-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://epic-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://epic-queue-data-hub.subsocial.network/graphql
