@@ -86,7 +86,7 @@ export default function LinkedIdentitiesContent() {
           name,
           provider,
           points,
-          connectButton: ConnectButton,
+          connectButton,
           customName,
         }) => {
           const isLinked = linkedIdentity?.externalProviders.find(
@@ -120,7 +120,7 @@ export default function LinkedIdentitiesContent() {
                     Connected
                   </Button>
                 ) : (
-                  <ConnectButton />
+                  connectButton()
                 )}
               </Card>
             </div>
@@ -236,7 +236,11 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   const calledRef = useRef(false)
   const { data: session } = useSession()
   const router = useRouter()
-  const { mutate, isLoading } = useAddExternalProviderToIdentity({
+  const {
+    mutate,
+    isLoading: isAddingProvider,
+    isSuccess,
+  } = useAddExternalProviderToIdentity({
     onSuccess: () => {
       signOut({ redirect: false })
       sendEvent(`finish_add_provider_${provider}`)
@@ -263,7 +267,7 @@ function OauthConnectButton({ provider }: { provider: 'google' | 'twitter' }) {
   return (
     <Button
       size='sm'
-      isLoading={isRedirecting || isLoading}
+      isLoading={isRedirecting || isAddingProvider || isSuccess}
       onClick={() => {
         setIsRedirecting(true)
         sendEvent(`add_provider_${provider}_clicked`)
