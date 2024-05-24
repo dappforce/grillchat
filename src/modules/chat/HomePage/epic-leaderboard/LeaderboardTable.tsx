@@ -15,7 +15,6 @@ import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import epicConfig from '../../../../constants/config/epic'
 import LeaderboardModal from './LeaderboardModal'
-import useCalculateTokenRewards from './useCalculateTokenRewards'
 
 const TABLE_LIMIT = 10
 
@@ -41,7 +40,7 @@ export const leaderboardColumns = (
   },
   {
     index: 'rewards',
-    name: '$' + tokenSymbol,
+    name: 'Points',
     align: 'right',
     className: cx(
       'p-0 py-2 pr-4 md:w-[20%] w-[38%]',
@@ -76,9 +75,7 @@ const parseTableRows = (
         address: item.address,
         rank: item.rank!,
         'user-role': <UserPreview address={item.address} />,
-        rewards: (
-          <UserReward reward={item.reward} address={item.address} role={role} />
-        ),
+        rewards: <UserReward reward={item.reward} />,
         className:
           item.address === address ? 'dark:bg-slate-700 bg-[#EEF2FF]' : '',
       }))
@@ -111,13 +108,7 @@ const LeaderboardTable = ({
         address: currentUserRank.address,
         rank: currentUserRank.rank!,
         'user-role': <UserPreview address={currentUserRank.address} />,
-        rewards: (
-          <UserReward
-            reward={currentUserRank.reward}
-            address={currentUserRank.address}
-            role={role}
-          />
-        ),
+        rewards: <UserReward reward={currentUserRank.reward} />,
         className: 'dark:bg-slate-700 bg-[#EEF2FF]',
       },
       ...parseTableRows(
@@ -184,22 +175,15 @@ const LeaderboardTable = ({
 
 type UserRewardProps = {
   reward: string
-  address: string
-  role: LeaderboardRole
 }
 
-export const UserReward = ({ reward, address, role }: UserRewardProps) => {
-  const { data, isLoading } = useCalculateTokenRewards({
-    address,
-    points: reward,
-  })
-
+export const UserReward = ({ reward }: UserRewardProps) => {
   return (
     <FormatBalance
-      value={data}
+      value={reward}
       symbol={''}
       defaultMaximumFractionDigits={2}
-      loading={isLoading}
+      loading={false}
       className={cx('font-medium', spaceGrotesk.className)}
     />
   )
