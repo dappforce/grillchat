@@ -2,7 +2,6 @@ name: build and deploy grillchat in production
 on:
   push:
     branches:
-      - main
       - deploy/**
       - epic-base
 
@@ -14,19 +13,15 @@ jobs:
   front_build:
     strategy:
       matrix:
-        apps: [main, deploy, epic]
-        isMaster:
-          - ${{ contains(github.ref, 'main') }}
+        apps: [deploy, epic]
         isEpic:
           - ${{ contains(github.ref, 'epic-base') }}
         isDeploy:
           - ${{ startsWith(github.ref, 'refs/heads/deploy/') }}
         exclude:
-          - isMaster: false
-            apps: main
           - isEpic: false
             apps: epic
-          - isMaster: true
+          - isEpic: true
             apps: deploy
 
     name: Build ${{ matrix.apps }} Docker image
@@ -41,46 +36,6 @@ jobs:
           username_input: ${{ secrets.DOCKER_USERNAME }}
           password_input: ${{ secrets.DOCKER_PASSWORD }}
           app_input: ${{ matrix.apps }}
-
-      - name: Build mainnet production image
-        if: matrix.apps == 'main'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          builder: ${{ steps.buildx.outputs.name }}
-          file: docker/Dockerfile
-          push: true
-          build-args: |
-            GH_NEXTAUTH_URL=https://grillapp.net/c/api/auth
-            GH_NEXT_PUBLIC_BASE_PATH=/c
-            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.subsocial.network
-            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.subsocial.network
-            GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://sub-data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://sub-data-hub.subsocial.network/graphql-ws
-            GH_DATAHUB_QUEUE_URL=https://sub-queue-data-hub.subsocial.network/graphql
-            GH_NOTIFICATIONS_URL=https://sub-notif-data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_APP_ID=1
-            GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BECyoVsDLEgsOj9MvhoetL3YGYZVCE5RzhADmBugpp0hu7QBV_xG8veiT_qAFxF9S8qXKhPvaPiD5oMrdWrFNB0
-            GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/grill_notifications_bot/
-            GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12662
-            GH_NEXT_PUBLIC_SPACE_IDS=12659,12660,12455,12662
-            GH_NEXT_PUBLIC_AMP_ID=2eeca0e8a0163c89e3f023c971e426a6
-            GH_NEXT_PUBLIC_SQUID_URL=https://squid.subsquid.io/subsocial/graphql
-            GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
-            GH_NEXT_PUBLIC_GA_ID=G-TP1XEFNHQD
-            GH_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=grill-web-push.firebaseapp.com
-            GH_NEXT_PUBLIC_FIREBASE_PROJECT_ID=grill-web-push
-            GH_NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyCdu_lvl18590HFoAXTysuKStaJJkaA4h4
-            GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=grill-web-push.appspot.com
-            GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
-            GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:8b27ce87e8cb476f95d1bb
-            GH_NEXT_PUBLIC_PROPOSALS_HUB=27942
-          target: runner
-          tags: |
-            ${{ env.image }}
-            dappforce/subsocial-web-app:mainnet-grillchat-master-latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Build epic production image
         if: matrix.apps == 'epic'
@@ -171,19 +126,15 @@ jobs:
   front_deploy:
     strategy:
       matrix:
-        apps: [main, deploy, epic]
-        isMaster:
-          - ${{ contains(github.ref, 'main') }}
+        apps: [deploy, epic]
         isEpic:
           - ${{ contains(github.ref, 'epic-base') }}
         isDeploy:
           - ${{ startsWith(github.ref, 'refs/heads/deploy/') }}
         exclude:
-          - isMaster: false
-            apps: main
           - isEpic: false
             apps: epic
-          - isMaster: true
+          - isEpic: true
             apps: deploy
     name: deploy ${{ matrix.apps }}
     runs-on: ubuntu-latest
@@ -191,17 +142,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: prod deploy ${{ matrix.apps }}
-        if: github.ref == 'refs/heads/main'
-        uses: './.github/actions/common-cd-setup'
-        with:
-          token_input: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
-          k8s_input: ${{ secrets.K8S_PROD }}
-          app_input: ${{ matrix.apps }}
-          zone_input: ${{ secrets.CF_ZONE }}
-          mail_input: ${{ secrets.CF_MAIL }}
-          tokens_input: ${{ secrets.CF_TOKEN }}
 
       - name: prod deploy ${{ matrix.apps }}
         if: github.ref == 'refs/heads/epic-base'
