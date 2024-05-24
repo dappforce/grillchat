@@ -85,7 +85,7 @@ const ProfileCard = () => {
   const userAddress = myAddress || ''
 
   const { isLoading, data: reward } = useCalculateTokenRewards({
-    address: userAddress,
+    address: '0x9011b212E70505047339A3ff8fED7C14B41C8F74',
   })
 
   return (
