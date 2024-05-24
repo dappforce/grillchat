@@ -31,7 +31,7 @@ export function useLockOrIncreaseTx(
 
   return useSubsocialMutation(
     {
-      useInjectedIfHasProxy: true,
+      walletType: 'dynamic',
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,

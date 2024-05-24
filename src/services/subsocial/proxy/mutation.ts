@@ -12,7 +12,7 @@ export function useAddProxy(config?: SubsocialMutationConfig<null>) {
 
   return useSubsocialMutation(
     {
-      useInjectedIfHasProxy: true,
+      walletType: 'injected',
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi } }) => {
         console.log('waiting energy...')

@@ -34,9 +34,9 @@ export function useSubsocialMutation<Data, Context = undefined>(
   {
     generateContext,
     transactionGenerator,
-    useInjectedIfHasProxy,
+    walletType = 'grill',
   }: {
-    useInjectedIfHasProxy?: boolean
+    walletType?: 'grill' | 'injected' | 'dynamic'
     generateContext: Context extends undefined
       ? undefined
       : (data: Data, wallet: WalletAccount) => Promise<Context> | Context
@@ -50,10 +50,13 @@ export function useSubsocialMutation<Data, Context = undefined>(
   const workerFunc = async (data: Data) => {
     const parentProxyAddress = useMyAccount.getState().parentProxyAddress
     let wallet = getCurrentWallet(
-      useInjectedIfHasProxy && parentProxyAddress ? 'injected' : 'grill'
+      (walletType === 'dynamic' && parentProxyAddress) ||
+        walletType === 'injected'
+        ? 'injected'
+        : 'grill'
     )
 
-    if (useInjectedIfHasProxy && parentProxyAddress && !wallet.signer) {
+    if (walletType === 'dynamic' && parentProxyAddress && !wallet.signer) {
       const connected = await requestWalletAccount()
       if (!connected) {
         throw new Error(

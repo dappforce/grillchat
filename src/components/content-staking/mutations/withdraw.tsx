@@ -16,7 +16,7 @@ export function useWithdrawTx(config?: SubsocialMutationConfig<{}>) {
 
   return useSubsocialMutation(
     {
-      useInjectedIfHasProxy: true,
+      walletType: 'dynamic',
       generateContext: undefined,
       transactionGenerator: async ({ apis: { substrateApi } }) => {
         const stakeTx = substrateApi.tx.creatorStaking.withdrawUnstaked()

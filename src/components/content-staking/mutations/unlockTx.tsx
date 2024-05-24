@@ -57,7 +57,7 @@ export function useUnlockTx(config?: SubsocialMutationConfig<MutationProps>) {
 
   return useSubsocialMutation(
     {
-      useInjectedIfHasProxy: true,
+      walletType: 'dynamic',
       generateContext: undefined,
       transactionGenerator: async ({ data: params }) => {
         if (!currentGrillAddress) throw new Error('No address connected')

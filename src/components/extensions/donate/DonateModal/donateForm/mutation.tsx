@@ -43,7 +43,7 @@ export function useSubstrateDonation(
 
   return useLazySubstrateMutation<SubstrateDonationProps>(
     {
-      useInjectedIfHasProxy: true,
+      walletType: 'dynamic',
       chainEndpoint: wsNode || node || '',
       generateContext: undefined,
       transactionGenerator: async ({

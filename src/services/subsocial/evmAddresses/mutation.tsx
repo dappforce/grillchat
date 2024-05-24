@@ -37,7 +37,7 @@ export function useLinkEvmAddress({
 
   const mutation = useSubsocialMutation<LinkEvmAddressMutationProps>(
     {
-      useInjectedIfHasProxy: true,
+      walletType: 'dynamic',
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,
@@ -105,7 +105,7 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
 
   const mutation = useSubsocialMutation<UnlinkEvmAddress>(
     {
-      useInjectedIfHasProxy: true,
+      walletType: 'dynamic',
       generateContext: undefined,
       transactionGenerator: async ({
         data: params,

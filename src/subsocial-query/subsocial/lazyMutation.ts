@@ -21,12 +21,12 @@ type TransactionGenerator<Data, Context> = (params: {
 }) => Promise<{ tx: Transaction; summary: string }>
 export function useLazySubstrateMutation<Data, Context = undefined>(
   {
-    useInjectedIfHasProxy,
+    walletType = 'grill',
     chainEndpoint,
     generateContext,
     transactionGenerator,
   }: {
-    useInjectedIfHasProxy?: boolean
+    walletType?: 'grill' | 'injected' | 'dynamic'
     chainEndpoint: string
     generateContext: Context extends undefined
       ? undefined
@@ -41,10 +41,13 @@ export function useLazySubstrateMutation<Data, Context = undefined>(
   const workerFunc = async (data: Data) => {
     const parentProxyAddress = useMyAccount.getState().parentProxyAddress
     let wallet = getCurrentWallet(
-      useInjectedIfHasProxy && parentProxyAddress ? 'injected' : 'grill'
+      (walletType === 'dynamic' && parentProxyAddress) ||
+        walletType === 'injected'
+        ? 'injected'
+        : 'grill'
     )
 
-    if (useInjectedIfHasProxy && parentProxyAddress && !wallet.signer) {
+    if (walletType === 'dynamic' && parentProxyAddress && !wallet.signer) {
       const connected = await requestWalletAccount()
       if (!connected) {
         throw new Error(
