@@ -1,7 +1,11 @@
+import Button from '@/components/Button'
 import Container from '@/components/Container'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { env } from '@/env.mjs'
 import useIsMounted from '@/hooks/useIsMounted'
+import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
+import { augmentDatahubParams } from '@/services/datahub/utils'
+import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { useState } from 'react'
@@ -32,7 +36,7 @@ function HomePageContent() {
 
   return (
     <>
-      {/* <PostCreationButton /> */}
+      <PostCreationButton />
       <Container className='grid flex-1 items-start gap-4 px-0 lg:grid-cols-[1fr_472px] lg:pr-3'>
         <ChatContent
           hubId={hubId}
@@ -51,29 +55,41 @@ function HomePageContent() {
   )
 }
 
-// function PostCreationButton() {
-//   const { mutate: upsertPost } = useUpsertPost()
-//   const { mutateAsync: upsertSpace } = useUpsertSpace()
-//   return (
-//     <Button
-//       onClick={() => {
-//         // upsertSpace(
-//         //   augmentDatahubParams({
-//         //     content: {
-//         //       name: 'Test space',
-//         //     },
-//         //   })
-//         // )
-//         upsertPost(
-//           augmentDatahubParams({
-//             spaceId: '0x2adb83ff5f9218510434a114c11a5b7e',
-//             title: 'Post testing',
-//             image: '',
-//           })
-//         )
-//       }}
-//     >
-//       Create post
-//     </Button>
-//   )
-// }
+function PostCreationButton() {
+  const { mutate: upsertPost } = useUpsertPost()
+  const { mutateAsync: upsertSpace } = useUpsertSpace()
+  const [spaceId, setSpaceId] = useState('')
+  const [postTitle, setPostTitle] = useState('')
+  return (
+    <div className='flex flex-col gap-4'>
+      <Button
+        onClick={() => {
+          upsertSpace(
+            augmentDatahubParams({
+              content: {
+                name: 'Test space',
+              },
+            })
+          )
+        }}
+      >
+        Create space
+      </Button>
+      <input value={spaceId} onChange={(e) => setSpaceId(e.target.value)} />
+      <input value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
+      <Button
+        onClick={() => {
+          upsertPost(
+            augmentDatahubParams({
+              title: postTitle,
+              image: '',
+              spaceId,
+            })
+          )
+        }}
+      >
+        create post
+      </Button>
+    </div>
+  )
+}
