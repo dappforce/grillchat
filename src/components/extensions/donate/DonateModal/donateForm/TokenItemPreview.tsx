@@ -1,10 +1,7 @@
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
 import {
   coingeckoTokenIds,
   getPriceQuery,
 } from '@/services/subsocial/prices/query'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
-import { useMyMainAddress } from '@/stores/my-account'
 import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import BigNumber from 'bignumber.js'
@@ -37,45 +34,11 @@ const TokenItemPreview = ({ chainKind, ...props }: TokenItemsPreviewProps) => {
 
   const price = data?.current_price
 
-  return chainKind === 'substrate' ? (
-    <SubstrateTokenItemPreview {...props} price={price} />
-  ) : (
-    <EvmTokenItemPreview {...props} price={price} />
-  )
+  return <EvmTokenItemPreview {...props} price={price} />
 }
 
 type TokenItemPreviewByKindProps = CommonProps & {
   price?: string | null
-}
-
-const SubstrateTokenItemPreview = ({
-  item,
-  chainName,
-  price,
-}: TokenItemPreviewByKindProps) => {
-  const address = useMyMainAddress()
-  const chainInfo = useGetChainDataByNetwork(chainName)
-  const { data: balances } = getBalancesQuery.useQuery({
-    address: address || '',
-    chainName,
-  })
-
-  const { decimal, tokenSymbol } = chainInfo || {}
-
-  const { freeBalance } = balances?.balances[tokenSymbol || ''] || {}
-
-  const balanceValue =
-    decimal && freeBalance ? formatUnits(freeBalance, decimal) : '0'
-
-  const amountInDollars = getBalanceInDollars(balanceValue, price)
-
-  return (
-    <TokenItemPreviewTemplate
-      item={item}
-      balanceValue={balanceValue}
-      amountInDollars={amountInDollars}
-    />
-  )
 }
 
 const EvmTokenItemPreview = ({
