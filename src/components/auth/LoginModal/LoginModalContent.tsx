@@ -6,6 +6,7 @@ import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
+import { useTelegramLogin } from '@/providers/config/TelegramLoginProvider'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
@@ -20,6 +21,7 @@ import {
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { FaTelegramPlane } from 'react-icons/fa'
 import { SiEthereum } from 'react-icons/si'
 import { CommonEVMLoginContent } from '../common/evm/CommonEvmModalContent'
 import ScanQRButton from './ScanQRButton'
@@ -48,7 +50,9 @@ export const LoginContent = (props: LoginModalContentProps) => {
   const openNextStepModal = useLoginModal.use.openNextStepModal()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   const sendEvent = useSendEvent()
-  const { loginNeynar, isLoadingOrSubmitted } = useNeynarLogin()
+  const { loginNeynar, isLoadingOrSubmitted: loadingNeynar } = useNeynarLogin()
+  const { loginTelegram, isLoadingOrSubmitted: loadingTelegram } =
+    useTelegramLogin()
   const grillAddress = useMyGrillAddress()
 
   const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
@@ -108,10 +112,24 @@ export const LoginContent = (props: LoginModalContentProps) => {
           <Button
             variant='primaryOutline'
             onClick={() => {
+              sendEvent('login_telegram')
+              loginTelegram(() => props.closeModal())
+            }}
+            isLoading={loadingTelegram}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2 text-text'>
+              <FaTelegramPlane className={cx('text-xl text-text-muted')} />
+              Connect via Telegram
+            </div>
+          </Button>
+          <Button
+            variant='primaryOutline'
+            onClick={() => {
               sendEvent('login_neynar')
               loginNeynar()
             }}
-            isLoading={isLoadingOrSubmitted}
+            isLoading={loadingNeynar}
             size='lg'
           >
             <div className='flex items-center justify-center gap-2 text-text'>

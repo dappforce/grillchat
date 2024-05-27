@@ -46,8 +46,8 @@ const POST_handler = handlerWrapper({
     const { id, payload, provider } = data as ApiDatahubIdentityBody
 
     if (
-      provider !== IdentityProvider.FARCASTER &&
-      provider !== IdentityProvider.EVM
+      provider === IdentityProvider.TWITTER ||
+      provider === IdentityProvider.GOOGLE
     ) {
       const authObj = await auth(req, res)
       const user = authObj?.user

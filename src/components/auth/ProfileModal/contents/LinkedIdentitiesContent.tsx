@@ -3,6 +3,7 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import useToastError from '@/hooks/useToastError'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
+import { useTelegramLogin } from '@/providers/config/TelegramLoginProvider'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useAddExternalProviderToIdentity } from '@/services/datahub/identity/mutation'
 import {
@@ -20,6 +21,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { IconType } from 'react-icons'
+import { FaTelegramPlane } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import { IoLogoGoogle } from 'react-icons/io5'
 import { SiEthereum } from 'react-icons/si'
@@ -50,6 +52,14 @@ export default function LinkedIdentitiesContent() {
       provider: IdentityProvider.Evm,
       customName: (nameOrId) => truncateAddress(nameOrId),
       connectButton: () => <EvmConnectButton />,
+    },
+    {
+      name: 'Telegram',
+      title: 'Telegram',
+      points: 500,
+      icon: FaTelegramPlane,
+      provider: IdentityProvider.Telegram,
+      connectButton: () => <TelegramConnectButton />,
     },
     {
       name: 'Farcaster',
@@ -210,6 +220,23 @@ function EvmConnectButton() {
     >
       Connect
     </CustomConnectButton>
+  )
+}
+
+function TelegramConnectButton() {
+  const sendEvent = useSendEvent()
+  const { loginTelegram, isLoadingOrSubmitted } = useTelegramLogin()
+  return (
+    <Button
+      size='sm'
+      onClick={() => {
+        sendEvent('add_provider_telegram_clicked')
+        loginTelegram()
+      }}
+      isLoading={isLoadingOrSubmitted}
+    >
+      Connect
+    </Button>
   )
 }
 

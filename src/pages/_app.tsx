@@ -7,6 +7,7 @@ import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import NeynarLoginProvider from '@/providers/config/NeynarLoginProvider'
+import TelegramLoginProvider from '@/providers/config/TelegramLoginProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
@@ -103,31 +104,33 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   return (
     <ThemeProvider attribute='class' defaultTheme='light' forcedTheme='light'>
       <QueryProvider dehydratedState={dehydratedState}>
-        <NeynarLoginProvider>
-          <DatahubSubscriber />
-          <ToasterConfig />
-          <ReferralUrlChanger />
-          {/* <NextNProgress
+        <TelegramLoginProvider>
+          <NeynarLoginProvider>
+            <DatahubSubscriber />
+            <ToasterConfig />
+            <ReferralUrlChanger />
+            {/* <NextNProgress
             color='#eb2f95'
             options={{ showSpinner: false }}
             showOnShallow={false}
           /> */}
-          <HeadConfig {...head} />
-          {/* <GoogleAnalytics
+            <HeadConfig {...head} />
+            {/* <GoogleAnalytics
             trackPageViews
             gaMeasurementId={getAugmentedGaId()}
           /> */}
-          <GlobalModals />
-          <SessionAccountChecker />
-          <OauthLoadingModal />
-          <div className={cx('font-sans')}>
-            <ErrorBoundary>
-              <EvmProvider>
-                <Component {...props} />
-              </EvmProvider>
-            </ErrorBoundary>
-          </div>
-        </NeynarLoginProvider>
+            <GlobalModals />
+            <SessionAccountChecker />
+            <OauthLoadingModal />
+            <div className={cx('font-sans')}>
+              <ErrorBoundary>
+                <EvmProvider>
+                  <Component {...props} />
+                </EvmProvider>
+              </ErrorBoundary>
+            </div>
+          </NeynarLoginProvider>
+        </TelegramLoginProvider>
       </QueryProvider>
     </ThemeProvider>
   )
