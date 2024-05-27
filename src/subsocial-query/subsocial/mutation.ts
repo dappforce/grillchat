@@ -56,9 +56,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
         : 'grill'
     )
 
-    console.log(walletType, parentProxyAddress, wallet.signer)
     if (walletType === 'dynamic' && parentProxyAddress && !wallet.signer) {
-      console.log('request!!')
       const connected = await requestWalletAccount()
       if (!connected) {
         throw new Error(
