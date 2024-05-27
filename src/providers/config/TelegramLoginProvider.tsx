@@ -15,6 +15,7 @@ import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
+import Script from 'next/script'
 import {
   ReactNode,
   createContext,
@@ -209,14 +210,7 @@ export default function TelegramLoginProvider({
         isLoadingOrSubmitted: isSuccess || isLoading,
       }}
     >
-      <script
-        async
-        src='https://telegram.org/js/telegram-widget.js?22'
-        data-telegram-login='EpicAppBot'
-        data-size='large'
-        data-onauth='onTelegramAuth(user)'
-        data-request-access='write'
-      />
+      <Script async src='https://telegram.org/js/telegram-widget.js?22' />
       {children}
     </TelegramLoginContext.Provider>
   )
