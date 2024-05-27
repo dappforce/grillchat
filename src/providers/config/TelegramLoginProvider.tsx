@@ -1,4 +1,5 @@
 import Toast from '@/components/Toast'
+import { env } from '@/env.mjs'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { Identity } from '@/services/datahub/identity/fetcher'
@@ -151,8 +152,13 @@ export default function TelegramLoginProvider({
 
   const loginTelegram = useCallback(
     (onSuccessLogin?: OnSuccess) => {
+      if (!env.NEXT_PUBLIC_TELEGRAM_BOT_ID) {
+        toast.custom((t) => <Toast t={t} title='Telegram bot id is not set' />)
+        return
+      }
+
       window.Telegram.Login.auth(
-        { bot_id: '6342977780', request_access: true },
+        { bot_id: env.NEXT_PUBLIC_TELEGRAM_BOT_ID, request_access: true },
         async (data) => {
           if (!data) {
             toast.custom((t) => (

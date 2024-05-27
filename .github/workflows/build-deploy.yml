@@ -69,6 +69,8 @@ jobs:
             GH_NEXT_PUBLIC_PROPOSALS_HUB=27942
             GH_SERVER_MNEMONIC="wall trophy travel slush injury misery loan chat uncle film universe ancient"
             GH_NEXT_PUBLIC_NEYNAR_CLIENT_ID=e8dc01b0-046c-4698-98ac-05432050961d
+            # TODO: change this id
+            GH_NEXT_PUBLIC_TELEGRAM_BOT_ID=6342977780
             GH_NEXT_PUBLIC_REWARD_TOKEN=degen
           target: runner
           tags: |
@@ -112,7 +114,7 @@ jobs:
             # with base path
             GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network/c/api/auth
             GH_NEXT_PUBLIC_BASE_PATH=/c
-            GH_NEXT_PUBLIC_NEYNAR_CLIENT_ID=e8dc01b0-046c-4698-98ac-05432050961d
+            GH_NEXT_PUBLIC_TELEGRAM_BOT_ID=6342977780
             GH_NEXT_PUBLIC_REWARD_TOKEN=degen
           target: runner
           tags: |
