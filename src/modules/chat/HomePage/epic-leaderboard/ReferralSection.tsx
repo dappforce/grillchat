@@ -50,7 +50,7 @@ const ReferralSection = () => {
         )}
       </div>
       <p className='text-sm text-text-muted'>
-        Earn ${tokenSymbol} when your friends join Epic using your link:
+        Earn {tokenSymbol} when your friends join Epic using your link:
       </p>
       <div className='flex items-center justify-between gap-2 rounded-xl border border-slate-300 bg-slate-50 p-2'>
         <span className='flex-[1] overflow-hidden text-ellipsis whitespace-nowrap'>
