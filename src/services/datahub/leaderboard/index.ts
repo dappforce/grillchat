@@ -92,14 +92,14 @@ const GET_USER_STATS = gql`
           likedPosts: false
           likedCreators: false
           earnedByPeriod: false
-          earnedTotal: false
+          earnedTotal: true
           earnedPointsByPeriod: true
         }
         creator: {
           likesCountByPeriod: false
           stakersWhoLiked: false
           earnedByPeriod: false
-          earnedTotal: false
+          earnedTotal: true
           earnedPointsByPeriod: true
         }
       }

@@ -2,6 +2,7 @@ import { LeaderboardRole } from '@/services/datahub/leaderboard'
 import {
   getActiveStakingStatsByUserQuery,
   getGeneralStatisticsByPeriodQuery,
+  getUserStatisticsQuery,
 } from '@/services/datahub/leaderboard/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import BN from 'bignumber.js'
@@ -27,6 +28,24 @@ const useCalculateTokenRewards = ({
     return {
       isLoading: false,
       data: '0',
+    }
+  }
+
+  if (!rewardPool) {
+    const { data: userStats, isLoading } = getUserStatisticsQuery.useQuery({
+      address: userAddress,
+    })
+
+    const { creator, staker } = userStats || {}
+
+    const creatorPoints = creator?.earnedPointsByPeriod || '0'
+    const stakerPoints = staker?.earnedPointsByPeriod || '0'
+
+    const totalPoints = new BN(creatorPoints).plus(stakerPoints)
+
+    return {
+      isLoading,
+      data: totalPoints.toString(),
     }
   }
 

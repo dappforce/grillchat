@@ -8,10 +8,12 @@ import PopOver from '@/components/floating/PopOver'
 import { Pluralize } from '@/components/layouts/CreatorSidebar/RewardInfo'
 import { CREATORS_CONSTANTS } from '@/components/layouts/CreatorSidebar/utils'
 import { spaceMono } from '@/fonts'
+import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { cx } from '@/utils/class-names'
+import { cx, mutedTextColorStyles } from '@/utils/class-names'
+import BN from 'bignumber.js'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import epicConfig from '../../../../constants/config/epic'
 import MissingRewards from '../MissingRewards'
@@ -88,8 +90,67 @@ const ProfileCard = () => {
     address: userAddress,
   })
 
+  const { data: userStats, isLoading: isUserStatsLoading } =
+    getUserStatisticsQuery.useQuery({
+      address: userAddress,
+    })
+
+  const { creator, staker } = userStats || {}
+
+  const creatorTotalPoints = creator?.earnedTotal || '0'
+  const stakerTotalPoints = staker?.earnedTotal || '0'
+
+  const totalPoints = new BN(creatorTotalPoints).plus(stakerTotalPoints)
+
   return (
-    <MainCardTemplate>
+    <MainCardTemplate
+      bottomSection={
+        <div className='flex items-center gap-1'>
+          <span className={cx(mutedTextColorStyles, 'text-sm leading-[22px]')}>
+            Total Points:
+          </span>
+          <span>
+            <FormatBalance
+              value={totalPoints.toString()}
+              symbol={''}
+              loading={isUserStatsLoading}
+              className={cx('font-bold leading-[22px]')}
+            />
+          </span>
+        </div>
+        // <PopOver
+        //   yOffset={6}
+        //   panelSize='sm'
+        //   placement='top'
+        //   triggerClassName='w-fit'
+        //   triggerOnHover
+        //   trigger={
+        //     <div className='flex items-center gap-2 '>
+        //       <div className='flex items-center gap-1'>
+        //         <span
+        //           className={cx(mutedTextColorStyles, 'text-sm leading-[22px]')}
+        //         >
+        //           Total Points:
+        //         </span>
+        //         <span>
+        //           <FormatBalance
+        //             value={totalPoints.toString()}
+        //             symbol={''}
+        //             loading={isUserStatsLoading}
+        //             className={cx('font-bold leading-[22px]')}
+        //           />
+        //         </span>
+        //       </div>
+        //       <HiOutlineInformationCircle
+        //         className={cx('h-4 w-4 text-slate-400')}
+        //       />
+        //     </div>
+        //   }
+        // >
+        //   <p>bla bla bla</p>
+        // </PopOver>
+      }
+    >
       <div className='flex w-full flex-col gap-4'>
         <div className='flex w-full items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>
@@ -121,7 +182,7 @@ const ProfileCard = () => {
                   'text-[26px] font-bold leading-none',
                   spaceMono.className
                 )}
-              >{`$${tokenSymbol}`}</span>
+              >{`${tokenSymbol}`}</span>
             </span>
             <span className='text-sm leading-none text-slate-200'>
               earned this week
@@ -191,30 +252,38 @@ function GuestCard() {
 
 function MainCardTemplate({
   illustClassName,
+  bottomSection,
   ...props
-}: CardProps & { illustClassName?: string }) {
+}: CardProps & { illustClassName?: string; bottomSection?: React.ReactNode }) {
   return (
-    <Card
-      {...props}
-      className={cx(
-        'relative flex flex-col items-start overflow-clip bg-background-primary text-white @container',
-        props.className
-      )}
-      style={{
-        backgroundImage: gradient,
-        ...props.style,
-      }}
-    >
-      <EpicTokenIllust
+    <div className='rounded-2xl bg-white'>
+      <Card
+        {...props}
         className={cx(
-          'absolute -bottom-[54px] -right-[306px]',
-          illustClassName
+          'relative flex flex-col items-start overflow-clip bg-background-primary text-white @container',
+          props.className
         )}
-      />
-      <div className='relative z-10 flex w-full flex-1 flex-col items-start'>
-        {props.children}
-      </div>
-    </Card>
+        style={{
+          backgroundImage: gradient,
+          ...props.style,
+        }}
+      >
+        <EpicTokenIllust
+          className={cx(
+            'absolute -bottom-[54px] -right-[306px]',
+            illustClassName
+          )}
+        />
+        <div className='relative z-10 flex w-full flex-1 flex-col items-start'>
+          {props.children}
+        </div>
+      </Card>
+      {bottomSection && (
+        <div className='rounded-2xl p-4 shadow-[0px_4px_9.8px_0px_rgba(203,213,225,0.20)]'>
+          {bottomSection}
+        </div>
+      )}
+    </div>
   )
 }
 
