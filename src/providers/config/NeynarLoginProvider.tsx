@@ -1,12 +1,15 @@
 import { env } from '@/env.mjs'
 import useWrapInRef from '@/hooks/useWrapInRef'
+import { IdentityProvider } from '@/services/datahub/generated-query'
+import { Identity } from '@/services/datahub/identity/fetcher'
 import {
   useAddExternalProviderToIdentity,
   useLinkIdentity,
 } from '@/services/datahub/identity/mutation'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
-import { IdentityProvider } from '@subsocial/data-hub-sdk'
+import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import Script from 'next/script'
 import {
   ReactNode,
@@ -14,6 +17,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
 } from 'react'
 
 declare global {
@@ -23,7 +27,7 @@ declare global {
 }
 
 type State = {
-  loginNeynar: () => void
+  loginNeynar: (onSuccess?: (linkedIdentity: Identity) => void) => void
   isLoadingOrSubmitted: boolean
 }
 const NeynarLoginContext = createContext<State>({
@@ -57,13 +61,21 @@ export default function NeynarLoginProvider({
 
   const isLoadingRef = useWrapInRef(isLoading)
 
-  const mainAddress = useMyMainAddress()
+  const onSuccessCalls = useRef<((linkedIdentity: Identity) => void)[]>([])
+  const myGrillAddress = useMyGrillAddress() ?? ''
+  const { data: linkedIdentity } =
+    getLinkedIdentityQuery.useQuery(myGrillAddress)
   useEffect(() => {
-    if (!mainAddress) {
-      resetAdding()
+    const foundIdentity = linkedIdentity?.externalProviders.find(
+      (p) => p.provider === IdentityProvider.Farcaster
+    )
+    if (linkedIdentity && foundIdentity) {
       resetLinking()
+      resetAdding()
+      onSuccessCalls.current.forEach((call) => call(linkedIdentity))
+      onSuccessCalls.current = []
     }
-  }, [mainAddress, resetLinking, resetAdding])
+  }, [linkedIdentity, resetLinking, resetAdding])
 
   useEffect(() => {
     window.onSignInSuccess = async (data) => {
@@ -76,7 +88,7 @@ export default function NeynarLoginProvider({
       if (currentAddress) {
         addExternalProvider({
           externalProvider: {
-            provider: IdentityProvider.FARCASTER,
+            provider: SDKIdentityProvider.FARCASTER,
             id: data.fid,
             farcasterSignerUuid: data.signer_uuid,
           },
@@ -90,7 +102,7 @@ export default function NeynarLoginProvider({
 
         linkIdentity({
           externalProvider: {
-            provider: IdentityProvider.FARCASTER,
+            provider: SDKIdentityProvider.FARCASTER,
             id: data.fid,
             farcasterSignerUuid: data.signer_uuid,
           },
@@ -103,11 +115,15 @@ export default function NeynarLoginProvider({
     }
   }, [loginAsTemporaryAccount, linkIdentity, isLoadingRef, addExternalProvider])
 
-  const loginNeynar = useCallback(() => {
-    const loginBtnContainer = document.getElementById('neynar_signin')
-    const loginBtn = loginBtnContainer?.querySelector('button')
-    loginBtn?.click()
-  }, [])
+  const loginNeynar = useCallback(
+    (onSuccessLogin?: (linkedIdentity: Identity) => void) => {
+      const loginBtnContainer = document.getElementById('neynar_signin')
+      const loginBtn = loginBtnContainer?.querySelector('button')
+      loginBtn?.click()
+      if (onSuccessLogin) onSuccessCalls.current.push(onSuccessLogin)
+    },
+    []
+  )
 
   return (
     <NeynarLoginContext.Provider

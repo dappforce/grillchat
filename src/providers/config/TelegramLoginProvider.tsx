@@ -1,6 +1,7 @@
 import Toast from '@/components/Toast'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { IdentityProvider } from '@/services/datahub/generated-query'
+import { Identity } from '@/services/datahub/identity/fetcher'
 import {
   useAddExternalProviderToIdentity,
   useLinkIdentity,
@@ -52,8 +53,9 @@ declare global {
   }
 }
 
+type OnSuccess = (linkedIdentity: Identity) => void
 type State = {
-  loginTelegram: (onSuccessLogin?: () => void) => void
+  loginTelegram: (onSuccessLogin?: OnSuccess) => void
   isLoadingOrSubmitted: boolean
 }
 const TelegramLoginContext = createContext<State>({
@@ -81,7 +83,11 @@ export default function TelegramLoginProvider({
     reset: resetAdding,
   } = useAddExternalProviderToIdentity()
 
-  const { mutateAsync: upsertProfile } = useUpsertProfile()
+  const {
+    mutateAsync: upsertProfile,
+    isLoading: isUpsertingProfile,
+    isSuccess: isSuccessUpsertingProfile,
+  } = useUpsertProfile()
   const {
     mutate: linkIdentity,
     isSuccess: isSuccessLinking,
@@ -91,16 +97,16 @@ export default function TelegramLoginProvider({
 
   const { data: linkedIdentity } =
     getLinkedIdentityQuery.useQuery(myGrillAddress)
-  const onSuccessCalls = useRef<(() => void)[]>([])
+  const onSuccessCalls = useRef<OnSuccess[]>([])
 
   useEffect(() => {
     const foundMatchingProvider = linkedIdentity?.externalProviders.find(
       (p) => p.provider === IdentityProvider.Telegram
     )
-    if (!foundMatchingProvider) return
+    if (!linkedIdentity || !foundMatchingProvider) return
 
     function callOnSuccesses() {
-      onSuccessCalls.current.forEach((call) => call())
+      onSuccessCalls.current.forEach((call) => call(linkedIdentity!))
       onSuccessCalls.current = []
     }
 
@@ -137,13 +143,14 @@ export default function TelegramLoginProvider({
     queryClient,
   ])
 
-  const isLoading = isLinking || isAddingProvider
-  const isSuccess = isSuccessLinking || isSuccessAdding
+  const isLoading = isLinking || isAddingProvider || isUpsertingProfile
+  const isSuccess =
+    isSuccessLinking || isSuccessAdding || isSuccessUpsertingProfile
 
   const isLoadingRef = useWrapInRef(isLoading)
 
   const loginTelegram = useCallback(
-    (onSuccessLogin?: () => void) => {
+    (onSuccessLogin?: OnSuccess) => {
       window.Telegram.Login.auth(
         { bot_id: '6342977780', request_access: true },
         async (data) => {

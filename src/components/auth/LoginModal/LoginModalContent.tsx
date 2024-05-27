@@ -8,7 +8,7 @@ import { sendEventWithRef } from '@/components/referral/analytics'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
 import { useTelegramLogin } from '@/providers/config/TelegramLoginProvider'
 import { IdentityProvider } from '@/services/datahub/generated-query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { Identity } from '@/services/datahub/identity/fetcher'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
@@ -55,23 +55,17 @@ export const LoginContent = (props: LoginModalContentProps) => {
     useTelegramLogin()
   const grillAddress = useMyGrillAddress()
 
-  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
-    grillAddress ?? ''
-  )
-  useEffect(() => {
-    // mostly this logic is for after login with neynar
-    if (linkedIdentity) {
-      closeModal()
-      finalizeTemporaryAccount()
-      if (
-        !linkedIdentity.externalProviders.find(
-          (p) => p.provider === IdentityProvider.Evm
-        )
-      ) {
-        openNextStepModal({ step: 'connect-evm' })
-      }
+  const onSuccess = (linkedIdentity: Identity) => {
+    closeModal()
+    finalizeTemporaryAccount()
+    if (
+      !linkedIdentity.externalProviders.find(
+        (p) => p.provider === IdentityProvider.Evm
+      )
+    ) {
+      openNextStepModal({ step: 'connect-evm' })
     }
-  }, [linkedIdentity, closeModal, openNextStepModal, finalizeTemporaryAccount])
+  }
 
   const [showErrorPanel, setShowErrorPanel] = useState(false)
   useEffect(() => {
@@ -113,7 +107,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
             variant='primaryOutline'
             onClick={() => {
               sendEvent('login_telegram')
-              loginTelegram(() => props.closeModal())
+              loginTelegram(onSuccess)
             }}
             isLoading={loadingTelegram}
             size='lg'
@@ -127,7 +121,7 @@ export const LoginContent = (props: LoginModalContentProps) => {
             variant='primaryOutline'
             onClick={() => {
               sendEvent('login_neynar')
-              loginNeynar()
+              loginNeynar(onSuccess)
             }}
             isLoading={loadingNeynar}
             size='lg'
