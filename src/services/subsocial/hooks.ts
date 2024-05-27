@@ -35,19 +35,13 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
     otherProps?: OtherProps
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
   config?: SubsocialMutationConfig<Data>,
-  isUsingConnectedWallet?: boolean,
   otherProps?: OtherProps
 ) {
-  const connectedWallet = useMyAccount((state) => state.connectedWallet)
   const myAddress = useMyMainAddress()
-  const address = isUsingConnectedWallet ? connectedWallet?.address : myAddress
 
-  const hasEnoughEnergyGrillAddress = useMyAccount((state) =>
+  const hasEnoughEnergy = useMyAccount((state) =>
     getHasEnoughEnergy(state.energy)
   )
-  const hasEnoughEnergy = isUsingConnectedWallet
-    ? getHasEnoughEnergy(connectedWallet?.energy)
-    : hasEnoughEnergyGrillAddress
 
   const { mutateAsync } = useMutationHook(config, otherProps)
   const { mutateAsync: requestToken } = useRequestToken()
@@ -55,8 +49,8 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
   const { promptUserForLogin } = useLoginOption()
 
   const workerFunc = async (params: Data) => {
-    let usedAddress: string = address ?? ''
-    if (!address) {
+    let usedAddress: string = myAddress ?? ''
+    if (!usedAddress) {
       const address = await promptUserForLogin()
       if (!address) return
       usedAddress = address
