@@ -96,17 +96,16 @@ type LockOrIncreaseTxWrapperProps = {
   }) => JSX.Element
 }
 
+const Wrapper = createMutationWrapper(
+  useLockOrIncreaseTx,
+  'Failed to stake or increase the stake tokens. Please try again.'
+)
+
 export const LockOrIncreaseTxWrapper = ({
   closeModal,
   children,
 }: LockOrIncreaseTxWrapperProps) => {
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-
-  const Wrapper = createMutationWrapper(
-    useLockOrIncreaseTx,
-    'Failed to stake or increase the stake tokens. Please try again.',
-    !!parentProxyAddress
-  )
 
   return (
     <Wrapper

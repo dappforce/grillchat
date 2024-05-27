@@ -16,8 +16,7 @@ export function createMutationWrapper<Data, ReturnValue, OtherProps>(
     config?: SubsocialMutationConfig<Data, any>,
     otherProps?: OtherProps
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
-  errorMessage: string,
-  isUsingConnectedWallet?: boolean
+  errorMessage: string
 ) {
   return function MutationWrapper({
     children,
@@ -66,7 +65,6 @@ export function createMutationWrapper<Data, ReturnValue, OtherProps>(
           },
         },
       },
-      isUsingConnectedWallet,
       otherProps
     )
     useToastError(error, errorMessage)
