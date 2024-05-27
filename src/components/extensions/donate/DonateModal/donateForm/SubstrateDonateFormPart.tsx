@@ -60,7 +60,7 @@ const SubstrateDonateFormPart = ({
         <div>To Donate in SUB, you need to get SUB first.</div>
       </div>
       <Button
-        href='https://docs.subsocial.network/docs/tutorials/GetSUB/get-sub'
+        href='https://subsocial.network/get-sub'
         variant={'primaryOutline'}
         target='_blank'
         size={'lg'}

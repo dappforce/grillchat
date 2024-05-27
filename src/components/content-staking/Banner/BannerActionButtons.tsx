@@ -73,7 +73,7 @@ const BannerActionButtons = () => {
       buttons: (
         <Button
           size={isTouchDevice() ? 'md' : 'lg'}
-          href='https://docs.subsocial.network/docs/tutorials/GetSUB/get-sub'
+          href='https://subsocial.network/get-sub'
           target='_blank'
           className='hover:text-white'
           variant={'primary'}
