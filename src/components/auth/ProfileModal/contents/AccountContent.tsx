@@ -242,9 +242,7 @@ export default function AccountContent({
                 {balanceValueBN.isZero() ? (
                   <LinkText
                     variant={'primary'}
-                    href={
-                      'https://docs.subsocial.network/docs/tutorials/GetSUB/get-sub'
-                    }
+                    href={'https://subsocial.network/get-sub'}
                     target='_blank'
                   >
                     Get SUB
