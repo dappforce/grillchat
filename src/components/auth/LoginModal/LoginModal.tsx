@@ -6,7 +6,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import ConnectEvmModal from './ConnectEvmModal'
 import CreateProfileModal from './CreateProfileModal'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
 import { prevScanQrStep } from './ScanQRButton'
@@ -172,10 +171,10 @@ export default function LoginModal({
           closeModal={closeModal}
         />
       </Modal>
-      <ConnectEvmModal
+      {/* <ConnectEvmModal
         isOpen={openedNextStepsModal?.step === 'connect-evm'}
         closeModal={closeNextStepModal}
-      />
+      /> */}
       <CreateProfileModal
         withoutOverlay={withoutOverlay}
         withoutShadow={withoutShadow}

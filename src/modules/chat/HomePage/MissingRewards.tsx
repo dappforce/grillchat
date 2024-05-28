@@ -2,7 +2,6 @@ import Button from '@/components/Button'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { useMyMainAddress } from '@/stores/my-account'
-import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import { IoWarning } from 'react-icons/io5'
 import { SiEthereum } from 'react-icons/si'
@@ -38,7 +37,7 @@ const warningPropsByType: Record<
 }
 
 const MissingRewards = () => {
-  const setModalOpen = useProfileModal.use.openModal()
+  // const setModalOpen = useProfileModal.use.openModal()
 
   const myAddress = useMyMainAddress()
   const { evmAddress: myEvmAddress, isLoading: isLinkedIdentityLoading } =
@@ -52,17 +51,18 @@ const MissingRewards = () => {
 
   if (isLinkedIdentityLoading || isLoadingBalance) return null
 
-  if (isNotLinkedEvm) {
-    type = 'missing-rewards'
-    warningPropsByType[type] = {
-      ...warningPropsByType[type],
-      onClick: () => {
-        setModalOpen({
-          defaultOpenState: 'add-evm-provider',
-        })
-      },
-    }
-  } else if (!balance) {
+  // if (isNotLinkedEvm) {
+  //   type = 'missing-rewards'
+  //   warningPropsByType[type] = {
+  //     ...warningPropsByType[type],
+  //     onClick: () => {
+  //       setModalOpen({
+  //         defaultOpenState: 'add-evm-provider',
+  //       })
+  //     },
+  //   }
+  // } else
+  if (!balance) {
     type = 'no-points'
     warningPropsByType[type] = {
       ...warningPropsByType[type],

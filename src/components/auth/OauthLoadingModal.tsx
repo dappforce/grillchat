@@ -2,7 +2,6 @@ import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoadin
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useToastError from '@/hooks/useToastError'
-import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
@@ -11,7 +10,6 @@ import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
-import { useLoginModal } from '@/stores/login-modal'
 import {
   useMyAccount,
   useMyGrillAddress,
@@ -143,14 +141,14 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     onSuccess()
     signOut({ redirect: false })
 
-    if (
-      linkedIdentity &&
-      !linkedIdentity.externalProviders.find(
-        (p) => p.provider === IdentityProvider.Evm
-      )
-    ) {
-      useLoginModal.getState().openNextStepModal({ step: 'connect-evm' })
-    }
+    // if (
+    //   linkedIdentity &&
+    //   !linkedIdentity.externalProviders.find(
+    //     (p) => p.provider === IdentityProvider.Evm
+    //   )
+    // ) {
+    //   useLoginModal.getState().openNextStepModal({ step: 'connect-evm' })
+    // }
   }
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
     onSuccess: () => {

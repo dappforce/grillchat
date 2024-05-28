@@ -7,7 +7,6 @@ import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { useNeynarLogin } from '@/providers/config/NeynarLoginProvider'
 import { useTelegramLogin } from '@/providers/config/TelegramLoginProvider'
-import { IdentityProvider } from '@/services/datahub/generated-query'
 import { Identity } from '@/services/datahub/identity/fetcher'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
@@ -53,13 +52,13 @@ export const LoginContent = (props: LoginModalContentProps) => {
   const onSuccess = (linkedIdentity: Identity) => {
     closeModal()
     finalizeTemporaryAccount()
-    if (
-      !linkedIdentity.externalProviders.find(
-        (p) => p.provider === IdentityProvider.Evm
-      )
-    ) {
-      openNextStepModal({ step: 'connect-evm' })
-    }
+    // if (
+    //   !linkedIdentity.externalProviders.find(
+    //     (p) => p.provider === IdentityProvider.Evm
+    //   )
+    // ) {
+    //   openNextStepModal({ step: 'connect-evm' })
+    // }
   }
 
   const [showErrorPanel, setShowErrorPanel] = useState(false)
