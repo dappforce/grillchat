@@ -57,7 +57,7 @@ export default function LinkedIdentitiesContent() {
     {
       name: 'Telegram',
       title: 'Telegram',
-      points: 500,
+      points: 750,
       icon: FaTelegramPlane,
       withAtSymbolForUsername: true,
       provider: IdentityProvider.Telegram,
