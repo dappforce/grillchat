@@ -1,6 +1,6 @@
 import Toast from '@/components/Toast'
 import { env } from '@/env.mjs'
-import useWrapInRef from '@/hooks/useWrapInRef'
+import useToastError from '@/hooks/useToastError'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { Identity } from '@/services/datahub/identity/fetcher'
 import {
@@ -21,8 +21,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useRef,
+  useState,
 } from 'react'
 import toast from 'react-hot-toast'
 
@@ -74,44 +74,29 @@ export default function TelegramLoginProvider({
   const queryClient = useQueryClient()
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const userData = useRef<Data | null>(null)
+  const [isClicked, setIsClicked] = useState(false)
 
   const myGrillAddress = useMyGrillAddress() ?? ''
 
-  const {
-    mutate: addExternalProvider,
-    isSuccess: isSuccessAdding,
-    isLoading: isAddingProvider,
-    reset: resetAdding,
-  } = useAddExternalProviderToIdentity()
-
-  const {
-    mutateAsync: upsertProfile,
-    isLoading: isUpsertingProfile,
-    isSuccess: isSuccessUpsertingProfile,
-  } = useUpsertProfile()
-  const {
-    mutate: linkIdentity,
-    isSuccess: isSuccessLinking,
-    isLoading: isLinking,
-    reset: resetLinking,
-  } = useLinkIdentity()
-
-  const { data: linkedIdentity } =
-    getLinkedIdentityQuery.useQuery(myGrillAddress)
-  const onSuccessCalls = useRef<OnSuccess[]>([])
-
-  useEffect(() => {
+  const onSuccess = (action: 'add' | 'link') => {
+    const linkedIdentity = getLinkedIdentityQuery.getQueryData(
+      queryClient,
+      myGrillAddress
+    )
     const foundMatchingProvider = linkedIdentity?.externalProviders.find(
       (p) => p.provider === IdentityProvider.Telegram
     )
-    if (!linkedIdentity || !foundMatchingProvider) return
+    if (!linkedIdentity || !foundMatchingProvider) return false
 
-    function callOnSuccesses() {
+    function onEndProcess() {
+      resetUpsertProfile()
+      resetAdding()
+      resetLinking()
       onSuccessCalls.current.forEach((call) => call(linkedIdentity!))
       onSuccessCalls.current = []
     }
 
-    if (isSuccessLinking) {
+    if (action === 'link') {
       getProfileQuery
         .fetchQuery(queryClient, linkedIdentity?.mainAddress ?? '')
         .then((profile) => {
@@ -123,32 +108,64 @@ export default function TelegramLoginProvider({
                   image: userData.current.photo_url,
                 },
               })
-            )?.then(() => callOnSuccesses())
+            )?.then(() => onEndProcess())
           } else {
-            callOnSuccesses()
+            onEndProcess()
           }
         })
-    } else if (isSuccessAdding) {
-      callOnSuccesses()
+    } else if (action === 'add') {
+      onEndProcess()
     }
 
-    resetAdding()
-    resetLinking()
-  }, [
-    linkedIdentity,
-    isSuccessLinking,
-    isSuccessAdding,
-    resetAdding,
-    resetLinking,
-    upsertProfile,
-    queryClient,
-  ])
+    return true
+  }
 
-  const isLoading = isLinking || isAddingProvider || isUpsertingProfile
+  const {
+    mutate: addExternalProvider,
+    isSuccess: isSuccessAdding,
+    isLoading: isAddingProvider,
+    reset: resetAdding,
+    error: errorAdding,
+  } = useAddExternalProviderToIdentity({
+    onSuccess: () => {
+      const intervalId = setInterval(() => {
+        const isDone = onSuccess('add')
+        if (isDone) clearInterval(intervalId)
+      })
+    },
+  })
+  useToastError(errorAdding, 'Failed to add telegram connection')
+
+  const {
+    mutateAsync: upsertProfile,
+    isLoading: isUpsertingProfile,
+    isSuccess: isSuccessUpsertingProfile,
+    reset: resetUpsertProfile,
+    error: errorUpserting,
+  } = useUpsertProfile()
+  useToastError(errorUpserting, 'Failed to create profile')
+  const {
+    mutate: linkIdentity,
+    isSuccess: isSuccessLinking,
+    isLoading: isLinking,
+    reset: resetLinking,
+    error: errorLinking,
+  } = useLinkIdentity({
+    onSuccess: () => {
+      const intervalId = setInterval(() => {
+        const isDone = onSuccess('link')
+        if (isDone) clearInterval(intervalId)
+      })
+    },
+  })
+  useToastError(errorLinking, 'Failed to link telegram account')
+
+  const onSuccessCalls = useRef<OnSuccess[]>([])
+
+  const isLoading =
+    isLinking || isAddingProvider || isUpsertingProfile || isClicked
   const isSuccess =
     isSuccessLinking || isSuccessAdding || isSuccessUpsertingProfile
-
-  const isLoadingRef = useWrapInRef(isLoading)
 
   const loginTelegram = useCallback(
     (onSuccessLogin?: OnSuccess) => {
@@ -170,37 +187,41 @@ export default function TelegramLoginProvider({
           useSubscriptionState
             .getState()
             .setSubscriptionState('identity', 'always-sub')
-          if (isLoadingRef.current) return
 
           userData.current = data
           let currentAddress = useMyAccount.getState().address
+          setIsClicked(true)
+
           if (currentAddress) {
             addExternalProvider({
               externalProvider: {
+                username: data.username,
                 provider: SDKIdentityProvider.TELEGRAM,
-                id: data.username,
+                id: data.id.toString(),
               },
             })
           } else {
             const address = await loginAsTemporaryAccount()
             if (!address) {
-              console.error('Failed to login account')
+              setIsClicked(false)
               return
             }
 
             linkIdentity({
               externalProvider: {
+                username: data.username,
                 provider: SDKIdentityProvider.TELEGRAM,
-                id: data.username,
+                id: data.id.toString(),
               },
             })
           }
+          setIsClicked(false)
 
           if (onSuccessLogin) onSuccessCalls.current.push(onSuccessLogin)
         }
       )
     },
-    [addExternalProvider, isLoadingRef, linkIdentity, loginAsTemporaryAccount]
+    [addExternalProvider, linkIdentity, loginAsTemporaryAccount]
   )
 
   return (

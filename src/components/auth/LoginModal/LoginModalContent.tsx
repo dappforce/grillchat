@@ -13,11 +13,7 @@ import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
-import {
-  useMyAccount,
-  useMyGrillAddress,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
@@ -53,7 +49,6 @@ export const LoginContent = (props: LoginModalContentProps) => {
   const { loginNeynar, isLoadingOrSubmitted: loadingNeynar } = useNeynarLogin()
   const { loginTelegram, isLoadingOrSubmitted: loadingTelegram } =
     useTelegramLogin()
-  const grillAddress = useMyGrillAddress()
 
   const onSuccess = (linkedIdentity: Identity) => {
     closeModal()

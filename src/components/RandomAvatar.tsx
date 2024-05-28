@@ -22,9 +22,9 @@ export default function RandomAvatar({
     <div className={cx('relative h-full w-full p-[7.5%]', className)}>
       <div className='relative h-full w-full'>
         <Image
-          sizes='5rem'
-          className='relative rounded-full'
-          fill
+          height={500}
+          width={500}
+          className='relative h-full w-full rounded-full'
           src={avatar}
           alt='avatar'
         />
