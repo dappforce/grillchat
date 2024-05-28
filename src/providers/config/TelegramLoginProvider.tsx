@@ -101,10 +101,14 @@ export default function TelegramLoginProvider({
         .fetchQuery(queryClient, linkedIdentity?.mainAddress ?? '')
         .then((profile) => {
           if (!profile && userData.current) {
+            let fullName = userData.current.first_name
+            if (userData.current.last_name) {
+              fullName += ` ${userData.current.last_name}`
+            }
             upsertProfile(
               augmentDatahubParams({
                 content: {
-                  name: `${userData.current.first_name} ${userData.current.last_name}`,
+                  name: fullName,
                   image: userData.current.photo_url,
                 },
               })
