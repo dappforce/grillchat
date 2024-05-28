@@ -8,12 +8,11 @@ import PopOver from '@/components/floating/PopOver'
 import { Pluralize } from '@/components/layouts/CreatorSidebar/RewardInfo'
 import { CREATORS_CONSTANTS } from '@/components/layouts/CreatorSidebar/utils'
 import { spaceMono } from '@/fonts'
-import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
+import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
-import BN from 'bignumber.js'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import epicConfig from '../../../../constants/config/epic'
 import MissingRewards from '../MissingRewards'
@@ -90,17 +89,8 @@ const ProfileCard = () => {
     address: userAddress,
   })
 
-  const { data: userStats, isLoading: isUserStatsLoading } =
-    getUserStatisticsQuery.useQuery({
-      address: userAddress,
-    })
-
-  const { creator, staker } = userStats || {}
-
-  const creatorTotalPoints = creator?.earnedTotal || '0'
-  const stakerTotalPoints = staker?.earnedTotal || '0'
-
-  const totalPoints = new BN(creatorTotalPoints).plus(stakerTotalPoints)
+  const { data: balance, isLoading: isBalanceLoading } =
+    getBalanceQuery.useQuery(userAddress)
 
   return (
     <MainCardTemplate
@@ -111,9 +101,9 @@ const ProfileCard = () => {
           </span>
           <span>
             <FormatBalance
-              value={totalPoints.toString()}
+              value={balance?.toString() || '0'}
               symbol={''}
-              loading={isUserStatsLoading}
+              loading={isBalanceLoading}
               className={cx('font-bold leading-[22px]')}
             />
           </span>
