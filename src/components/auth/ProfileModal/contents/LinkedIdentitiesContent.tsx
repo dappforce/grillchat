@@ -35,6 +35,7 @@ type ProviderData = {
   icon: IconType
   name?: string
   provider: IdentityProvider
+  withAtSymbolForUsername?: boolean
   customName?: (usernameOrId: string) => string
   connectButton: () => JSX.Element
 }
@@ -58,6 +59,7 @@ export default function LinkedIdentitiesContent() {
       title: 'Telegram',
       points: 500,
       icon: FaTelegramPlane,
+      withAtSymbolForUsername: true,
       provider: IdentityProvider.Telegram,
       connectButton: () => <TelegramConnectButton />,
     },
@@ -66,6 +68,7 @@ export default function LinkedIdentitiesContent() {
       title: 'Farcaster',
       points: 500,
       icon: Farcaster,
+      withAtSymbolForUsername: true,
       provider: IdentityProvider.Farcaster,
       connectButton: () => <FarcasterConnectButton />,
     },
@@ -82,6 +85,7 @@ export default function LinkedIdentitiesContent() {
       title: 'X',
       points: 250,
       icon: FaXTwitter,
+      withAtSymbolForUsername: true,
       provider: IdentityProvider.Twitter,
       connectButton: () => <OauthConnectButton provider='twitter' />,
     },
@@ -98,13 +102,16 @@ export default function LinkedIdentitiesContent() {
           points,
           connectButton,
           customName,
+          withAtSymbolForUsername,
         }) => {
           const isLinked = linkedIdentity?.externalProviders.find(
             (p) => p.provider === provider
           )
           let text = `Connect your ${name}`
           if (isLinked) {
-            const usernameOrId = isLinked.username || isLinked.externalId
+            let username = isLinked.username
+            if (withAtSymbolForUsername && username) username = '@' + username
+            const usernameOrId = username || isLinked.externalId
             if (customName) {
               text = customName(usernameOrId)
             } else {
