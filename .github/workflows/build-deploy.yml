@@ -105,8 +105,8 @@ jobs:
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_PROPOSALS_HUB=12364
             GH_NEXT_PUBLIC_APP_ID=12364
-            GH_NEXT_PUBLIC_SPACE_IDS=0xbd591e157ed854329bfc90485eedd517
-            GH_NEXT_PUBLIC_MAIN_CHAT_ID=0xbccb5788b53258a93209189558a96d8b
+            GH_NEXT_PUBLIC_SPACE_IDS=0x9bea41626f8b98525145bd48908b4c36
+            GH_NEXT_PUBLIC_MAIN_CHAT_ID=0x63537e65f19a5ac51bfc544602f82a17
             GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/g_notif_staging_bot/
             # without base path
             # GH_NEXTAUTH_URL=https://${{ env.name }}.subsocial.network
