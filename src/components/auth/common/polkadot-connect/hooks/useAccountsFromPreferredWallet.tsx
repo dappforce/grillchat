@@ -4,7 +4,8 @@ import { WalletAccount } from '@talismn/connect-wallets'
 import { useEffect, useState } from 'react'
 
 export default function useAccountsFromPreferredWallet(
-  onError?: (err: unknown, preferredWallet: string | undefined) => void
+  onError?: (err: unknown, preferredWallet: string | undefined) => void,
+  enabled = true
 ) {
   const preferredWallet = useMyAccount((state) => state.preferredWallet)
   const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
@@ -13,7 +14,7 @@ export default function useAccountsFromPreferredWallet(
   const isInitialized = useMyAccount.use.isInitialized()
 
   useEffect(() => {
-    if (!isInitialized) return
+    if (!isInitialized || !enabled) return
 
     const unsub = enableWallet({
       listener: (accounts) => setAccounts(accounts ?? []),
@@ -25,7 +26,7 @@ export default function useAccountsFromPreferredWallet(
     return () => {
       unsub.then((unsub) => unsub?.())
     }
-  }, [preferredWallet, onErrorRef, setPreferredWallet, isInitialized])
+  }, [enabled, preferredWallet, onErrorRef, setPreferredWallet, isInitialized])
 
   return { accounts, isLoading: accounts === null }
 }
