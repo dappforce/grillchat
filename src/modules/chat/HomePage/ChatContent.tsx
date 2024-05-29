@@ -14,7 +14,7 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
   return (
     <div
       className={cx(
-        'sticky top-14 flex flex-col border-x border-border-gray bg-background-light max-lg:h-[calc(100dvh-8.2rem)] lg:h-[calc(100dvh-4rem)]',
+        'sticky top-14 flex flex-col border-x border-border-gray bg-background-light max-lg:h-[calc(100dvh-4.7rem)] lg:h-[calc(100dvh-3.5rem)]',
         className
       )}
     >
@@ -23,7 +23,7 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
           asContainer
           chatId={chatId}
           hubId={hubId}
-          className='overflow-auto max-lg:h-[calc(100dvh-8.2rem)] lg:h-[calc(100dvh-4rem)]'
+          className='overflow-auto max-lg:h-[calc(100dvh-4.7rem)] lg:h-[calc(100dvh-3.5rem)]'
         />
       </div>
     </div>

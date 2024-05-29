@@ -1,21 +1,18 @@
 import FarcasterLogo from '@/assets/graphics/farcaster.svg'
 import TwitterLogo from '@/assets/graphics/twitter.svg'
-import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import Sidebar from '@/components/layouts/Sidebar'
 import CustomLink from '@/components/referral/CustomLink'
-import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { Dialog, Transition } from '@headlessui/react'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/router'
 import { ComponentProps, Fragment, ReactNode, useState } from 'react'
-import { HiOutlineChevronLeft } from 'react-icons/hi2'
+import useLoginInTelegramMiniApps from './telegramLogin/useLoginInTelegramMiniApps'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
@@ -55,11 +52,11 @@ export default function Navbar({
   const [openSidebar, setOpenSidebar] = useState(false)
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const isTemporaryAccount = useMyAccount((state) => state.isTemporaryAccount)
-  const router = useRouter()
+  useLoginInTelegramMiniApps()
+
   const sendEvent = useSendEvent()
 
   const address = useMyMainAddress()
-  const { data: profile } = getProfileQuery.useQuery(address ?? '')
   const isLoggedIn = !!address
 
   const renderAuthComponent = () => {
@@ -89,27 +86,6 @@ export default function Navbar({
         <Logo className='text-base' />
       </CustomLink>
     </div>
-  )
-
-  const backButton = (
-    <div className='mr-2 flex w-9 items-center justify-center'>
-      <BackButton {...backButtonProps} size='circle' variant='transparent'>
-        <HiOutlineChevronLeft />
-      </BackButton>
-    </div>
-  )
-
-  const newPostButton = profile?.profileSpace && (
-    <Button
-      roundings='lg'
-      variant='mutedOutline'
-      className='mr-2 border-[#D9D9D9] text-sm font-medium text-text'
-      size='xs'
-      nextLinkProps={{ forceHardNavigation: true }}
-      href={`/${profile.profileSpace.id}/posts/new`}
-    >
-      New post
-    </Button>
   )
 
   return (

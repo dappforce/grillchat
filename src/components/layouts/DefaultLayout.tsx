@@ -50,6 +50,7 @@ export default function DefaultLayout({
       <Navbar
         {...navbarProps}
         withLargerContainer={withSidebar || navbarProps?.withLargerContainer}
+        className={cx(navbarProps?.className, 'hidden lg:block')}
       />
       {withBackButton && <LayoutNavbarExtension {...withBackButton} />}
       {withSidebar ? (
@@ -61,7 +62,7 @@ export default function DefaultLayout({
         </Container>
       ) : (
         children
-      )} 
+      )}
     </div>
   )
 }

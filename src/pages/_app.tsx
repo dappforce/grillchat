@@ -37,6 +37,10 @@ export type AppCommonProps = {
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
+  useEffect(() => {
+    import('eruda').then((lib) => lib.default.init())
+  }, [])
+
   return (
     <SessionProvider
       basePath={
@@ -102,7 +106,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   }, [])
 
   return (
-    <ThemeProvider attribute='class' defaultTheme='light' forcedTheme='light'>
+    <ThemeProvider attribute='class' defaultTheme='dark' forcedTheme='dark'>
       <QueryProvider dehydratedState={dehydratedState}>
         <TelegramLoginProvider>
           <NeynarLoginProvider>

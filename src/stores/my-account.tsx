@@ -293,7 +293,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       parentProxyAddress: parentProxyAddress ?? undefined,
     })
 
-    if (parentProxyAddress) {
+    if (parentProxyAddress && !get().isTemporaryAccount) {
       await validateParentProxyAddress({
         grillAddress: get().address!,
         parentProxyAddress,

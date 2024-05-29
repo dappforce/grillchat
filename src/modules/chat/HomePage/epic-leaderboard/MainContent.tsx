@@ -30,8 +30,8 @@ const MainContent = ({ className }: MainContentProps) => {
   const myAddress = useMyMainAddress()
 
   return (
-    <div className={cx('pb-4', className)}>
-      <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0')}>
+    <div className={cx('w-full pb-4', className)}>
+      <div className={cx('flex flex-1 flex-col gap-4 px-4 pt-4 lg:px-0')}>
         <MainCard />
         <MissingRewards />
         {myAddress && <ReferralSection />}
@@ -153,7 +153,9 @@ const ProfileCard = () => {
               className='text-lg font-semibold !text-white'
             />
           </div>
-          <HowDoesItWork />
+          <div className='hidden lg:block'>
+            <HowDoesItWork />
+          </div>
         </div>
         <div className='flex flex-col gap-4'>
           <div className='relative flex flex-col gap-2 rounded-xl'>
@@ -246,7 +248,7 @@ function MainCardTemplate({
   ...props
 }: CardProps & { illustClassName?: string; bottomSection?: React.ReactNode }) {
   return (
-    <div className='rounded-2xl bg-white'>
+    <div className='rounded-2xl bg-background-light'>
       <Card
         {...props}
         className={cx(
@@ -260,7 +262,7 @@ function MainCardTemplate({
       >
         <EpicTokenIllust
           className={cx(
-            'absolute -bottom-[54px] -right-[306px]',
+            'absolute -bottom-[54px] -right-[306px] hidden lg:block',
             illustClassName
           )}
         />
@@ -269,9 +271,7 @@ function MainCardTemplate({
         </div>
       </Card>
       {bottomSection && (
-        <div className='rounded-2xl p-4 shadow-[0px_4px_9.8px_0px_rgba(203,213,225,0.20)]'>
-          {bottomSection}
-        </div>
+        <div className='rounded-b-2xl p-4 '>{bottomSection}</div>
       )}
     </div>
   )

@@ -4,17 +4,21 @@ import { env } from '@/env.mjs'
 import useIsMounted from '@/hooks/useIsMounted'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
+import { SDKProvider } from '@tma.js/sdk-react'
 import { useState } from 'react'
 import ChatContent from './ChatContent'
 import MobileNavigation, { HomePageView } from './MobileNavigation'
+import LeaderboardAccountContent from './epic-leaderboard/AccountContent'
 import MainContent from './epic-leaderboard/MainContent'
 
 export default function HomePage() {
   const isMounted = useIsMounted()
   return (
-    <DefaultLayout className='relative' style={{ minHeight: '100dvh' }}>
-      {isMounted && <HomePageContent />}
-    </DefaultLayout>
+    <SDKProvider>
+      <DefaultLayout className='relative' style={{ minHeight: '100dvh' }}>
+        {isMounted && <HomePageContent />}
+      </DefaultLayout>
+    </SDKProvider>
   )
 }
 
@@ -24,7 +28,7 @@ const chatId = env.NEXT_PUBLIC_MAIN_CHAT_ID
 function HomePageContent() {
   const [homePageView, setHomePageView] = useState<HomePageView>(() => {
     const tab = getUrlQuery('tab')
-    if (tab === 'top-memes' || tab === 'stats') {
+    if (tab === 'top-memes' || tab === 'stats' || tab === 'account') {
       return tab
     }
     return 'stats'
@@ -32,16 +36,24 @@ function HomePageContent() {
 
   return (
     <>
-      {/* <PostCreationButton /> */}
       <Container className='grid flex-1 items-start gap-4 px-0 lg:grid-cols-[1fr_472px] lg:pr-3'>
         <ChatContent
           hubId={hubId}
           chatId={chatId}
-          className={cx({ ['hidden lg:flex']: homePageView === 'stats' })}
+          className={cx(
+            cx('lg:flex', { ['hidden']: homePageView !== 'top-memes' })
+          )}
         />
         <MainContent
-          className={cx({ ['hidden lg:flex']: homePageView === 'top-memes' })}
+          className={cx('lg:flex', { ['hidden']: homePageView !== 'stats' })}
         />
+        <div
+          className={cx('lg:hidden', {
+            ['hidden']: homePageView !== 'account',
+          })}
+        >
+          <LeaderboardAccountContent />
+        </div>
       </Container>
       <MobileNavigation
         setHomePageView={setHomePageView}
@@ -50,42 +62,3 @@ function HomePageContent() {
     </>
   )
 }
-
-// function PostCreationButton() {
-//   const { mutate: upsertPost } = useUpsertPost()
-//   const { mutateAsync: upsertSpace } = useUpsertSpace()
-//   const [spaceId, setSpaceId] = useState('')
-//   const [postTitle, setPostTitle] = useState('')
-//   return (
-//     <div className='mt-12 flex flex-col gap-4'>
-//       <Button
-//         onClick={() => {
-//           upsertSpace(
-//             augmentDatahubParams({
-//               content: {
-//                 name: 'Test space',
-//               },
-//             })
-//           )
-//         }}
-//       >
-//         Create space
-//       </Button>
-//       <input value={spaceId} onChange={(e) => setSpaceId(e.target.value)} />
-//       <input value={postTitle} onChange={(e) => setPostTitle(e.target.value)} />
-//       <Button
-//         onClick={() => {
-//           upsertPost(
-//             augmentDatahubParams({
-//               title: postTitle,
-//               image: '',
-//               spaceId,
-//             })
-//           )
-//         }}
-//       >
-//         create post
-//       </Button>
-//     </div>
-//   )
-// }

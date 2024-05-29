@@ -6011,6 +6011,18 @@
     "@tanstack/query-core" "4.36.1"
     use-sync-external-store "^1.2.0"
 
+"@tma.js/sdk-react@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@tma.js/sdk-react/-/sdk-react-2.2.0.tgz#69c489f60dc6e3c42aa0df4df29315ed24c0c728"
+  integrity sha512-AaJ+syds4FMxPrOpzghpJEEkxviAghCUUh2WATFVSQcQKrP6MGXnBBVt5moSFhFGBtGrpnH5WiyiDaVdAKcvMA==
+  dependencies:
+    "@tma.js/sdk" "2.2.0"
+
+"@tma.js/sdk@2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@tma.js/sdk/-/sdk-2.2.0.tgz#c3e57e3e0181ab0dcd65cc1f2252942a86ad7bef"
+  integrity sha512-Dn2Rg248NCCidI8qia77PJheDx2KDvHn6Fg3AHmOdv7DEMMfNf8D4o5DFHtZzGoMvvNTrrYrqK/KQxbs0wpYTg==
+
 "@total-typescript/ts-reset@^0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@total-typescript/ts-reset/-/ts-reset-0.5.1.tgz#93b0535d00faa588518bcfb0db30182e63e4f7af"
@@ -9307,6 +9319,11 @@ error-ex@^1.3.1:
   integrity sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==
   dependencies:
     is-arrayish "^0.2.1"
+
+eruda@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/eruda/-/eruda-3.0.1.tgz#6c07ae2b3ced54151c6e9b21f9b8da11e6ec988a"
+  integrity sha512-6q1Xdwga4JTr1mKSW4mzuWSSbmXgqpm/8Wa1QGFGfCWRjC0bCQjbS4u06M1te1moucIS3hBLlbSTPWYH2W0qbQ==
 
 es-abstract@^1.19.0, es-abstract@^1.20.4:
   version "1.21.2"

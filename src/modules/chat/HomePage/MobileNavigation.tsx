@@ -1,16 +1,20 @@
+import Account from '@/assets/graphics/account.svg'
 import Stats from '@/assets/graphics/stats.svg'
 import TopMemes from '@/assets/graphics/top-memes.svg'
 import LinkText, { LinkTextProps } from '@/components/LinkText'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { isDef } from '@subsocial/utils'
 import { useMemo } from 'react'
 
-export type HomePageView = 'stats' | 'top-memes'
+export type HomePageView = 'stats' | 'top-memes' | 'account'
 
 type MobileNavigationProps = {
   homePageView: HomePageView
   setHomePageView: (view: HomePageView) => void
 }
+
+type Tab = { id: HomePageView; text: string; Icon: any }
 
 const MobileNavigation = ({
   homePageView,
@@ -18,19 +22,27 @@ const MobileNavigation = ({
 }: MobileNavigationProps) => {
   const myAddress = useMyMainAddress()
 
-  const tabs: { id: HomePageView; text: string; Icon: any }[] = useMemo(
-    () => [
-      {
-        id: 'top-memes',
-        text: 'Top Memes',
-        Icon: TopMemes,
-      },
-      {
-        id: 'stats',
-        text: `${myAddress ? 'My ' : ''}Stats`,
-        Icon: Stats,
-      },
-    ],
+  const tabs: Tab[] = useMemo(
+    () =>
+      [
+        {
+          id: 'top-memes',
+          text: 'Top Memes',
+          Icon: TopMemes,
+        },
+        {
+          id: 'stats',
+          text: `${myAddress ? 'My ' : ''}Stats`,
+          Icon: Stats,
+        },
+        myAddress
+          ? {
+              id: 'account',
+              text: 'Account',
+              Icon: Account,
+            }
+          : null,
+      ].filter(isDef) as Tab[],
     [myAddress]
   )
 
