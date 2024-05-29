@@ -85,10 +85,33 @@ export default function NeynarLoginProvider({
       resetLinking()
       resetAdding()
       setReferrerId({ refId: refInUrl })
-      getProfileQuery.invalidate(queryClient, getMyMainAddress())
       useMyAccount.getState().finalizeTemporaryAccount()
       onSuccessCalls.current.forEach((call) => call(linkedIdentity))
       onSuccessCalls.current = []
+
+      let retryCount = 5
+      const intervalId = setInterval(async () => {
+        const myAddress = getMyMainAddress() ?? ''
+        if (
+          !myAddress ||
+          !!getProfileQuery.getQueryData(queryClient, myAddress)
+        ) {
+          clearInterval(intervalId)
+          return
+        }
+        if (retryCount-- <= 0) {
+          clearInterval(intervalId)
+          return
+        }
+        const res = await getProfileQuery.fetchQuery(
+          queryClient,
+          myAddress,
+          true
+        )
+        if (res) {
+          clearInterval(intervalId)
+        }
+      }, 500)
     }
   }, [
     linkedIdentity,
