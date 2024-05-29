@@ -11,6 +11,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     head: {
       title: 'EPIC - A Meme-to-Earn Platform',
       description: 'Earn meme coins 💰 by posting and liking memes 🤣',
+      disableZoom: true,
     },
   }),
   async () => {

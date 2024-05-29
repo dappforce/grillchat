@@ -6,7 +6,10 @@ const StatsPage = () => {
   const isMounted = useIsMounted()
 
   return (
-    <LayoutWithBottomNavigation withFixedHeight className='relative'>
+    <LayoutWithBottomNavigation
+      className='relative'
+      style={{ minHeight: '100dvh' }}
+    >
       {isMounted && <StatsPageContent />}
     </LayoutWithBottomNavigation>
   )

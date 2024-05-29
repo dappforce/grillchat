@@ -175,3 +175,27 @@ body {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+.floating-word {
+  position: absolute;
+  font-size: 34px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.5);
+
+  animation: moveUp 3s forwards;
+  z-index: 10;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@keyframes moveUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-150px);
+  }
+}

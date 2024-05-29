@@ -1,6 +1,8 @@
-import Account from '@/assets/graphics/account.svg'
-import Stats from '@/assets/graphics/stats.svg'
-import TopMemes from '@/assets/graphics/top-memes.svg'
+import Airdrop from '@/assets/icons/bottomNavbar/airdrop.svg'
+import Friends from '@/assets/icons/bottomNavbar/friends.svg'
+import Stats from '@/assets/icons/bottomNavbar/stats.svg'
+import Tap from '@/assets/icons/bottomNavbar/tap.svg'
+import TopMemes from '@/assets/icons/bottomNavbar/top-memes.svg'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
@@ -10,7 +12,13 @@ export type HomePageView = 'memes' | 'stats' | 'airdrop' | 'friends' | 'tap'
 
 type MobileNavigationProps = {}
 
-type Tab = { id: HomePageView; text: string; Icon: any; href: string }
+type Tab = {
+  id: HomePageView
+  text: string
+  Icon: any
+  href: string
+  customClassName?: string
+}
 
 const tabs: Tab[] = [
   {
@@ -22,13 +30,13 @@ const tabs: Tab[] = [
   {
     id: 'friends',
     text: `Friends`,
-    Icon: Stats,
+    Icon: Friends,
     href: '/memes/tg/friends',
   },
   {
     id: 'tap',
     text: 'Tap',
-    Icon: Account,
+    Icon: Tap,
     href: '/memes/tg',
   },
   {
@@ -40,8 +48,10 @@ const tabs: Tab[] = [
   {
     id: 'airdrop',
     text: `Airdrop`,
-    Icon: Stats,
+    Icon: Airdrop,
     href: '/memes/tg/airdrop',
+    customClassName:
+      '[&_path]:fill-[linear-gradient(90deg, #FFE26E 100%, #D8A44D 100%)] !text-[#FBDB6A]',
   },
 ]
 
@@ -49,8 +59,14 @@ const MobileNavigation = ({}: MobileNavigationProps) => {
   return (
     <div className={cx('sticky bottom-0 z-10 mt-auto w-full p-3')}>
       <div className='flex items-center justify-around rounded-[20px] bg-background-light p-2'>
-        {tabs.map(({ id, text, Icon, href }) => (
-          <NavigationItem key={id} href={href} icon={Icon} title={text} />
+        {tabs.map(({ id, text, Icon, href, customClassName }) => (
+          <NavigationItem
+            key={id}
+            href={href}
+            icon={Icon}
+            title={text}
+            className={customClassName}
+          />
         ))}
       </div>
     </div>
@@ -63,12 +79,14 @@ function NavigationItem({
   href,
   forceHardNavigation,
   iconClassName,
+  className,
 }: {
   icon: IconType
   title: string
   href: string
   forceHardNavigation?: boolean
   iconClassName?: string
+  className?: string
 }) {
   const { pathname } = useRouter()
 
@@ -77,7 +95,8 @@ function NavigationItem({
       className={cx(
         'flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl px-1 py-2',
         '!text-slate-400 [&_path]:fill-slate-400',
-        pathname === href && 'bg-slate-900 !text-text [&_path]:fill-text'
+        pathname === href && 'bg-slate-900 !text-text [&_path]:fill-text',
+        className
       )}
       forceHardNavigation={forceHardNavigation}
       href={href}

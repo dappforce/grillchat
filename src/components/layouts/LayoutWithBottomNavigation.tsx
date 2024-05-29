@@ -1,5 +1,6 @@
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
+import useLoginInTelegramMiniApps from '../navbar/Navbar/telegramLogin/useLoginInTelegramMiniApps'
 import MobileNavigation from './MobileNavigation'
 
 export type DefaultLayoutProps = ComponentProps<'div'> & {
@@ -14,6 +15,8 @@ export default function LayoutWithBottomNavigation({
   withFixedWidth,
   ...props
 }: DefaultLayoutProps) {
+  useLoginInTelegramMiniApps()
+
   return (
     <div
       {...props}

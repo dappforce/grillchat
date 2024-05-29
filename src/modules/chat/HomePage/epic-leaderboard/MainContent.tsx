@@ -15,7 +15,6 @@ import { cx } from '@/utils/class-names'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import epicConfig from '../../../../constants/config/epic'
 import LeaderboardSection from './LeaderboardSection'
-import ReferralSection from './ReferralSection'
 import useCalculateTokenRewards from './useCalculateTokenRewards'
 
 const { gradient, tokenSymbol, EpicTokenIllust } = epicConfig
@@ -29,7 +28,6 @@ const MainContent = ({ className }: MainContentProps) => {
     <div className={cx('w-full flex-1', className)}>
       <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0')}>
         <MainCard />
-        <ReferralSection />
         <LeaderboardSection />
       </div>
     </div>
