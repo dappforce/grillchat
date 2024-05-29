@@ -15,7 +15,6 @@ import { WalletAccount } from '@/subsocial-query/subsocial/types'
 import { Signer, convertAddressToSubsocialAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
-import { toSubsocialAddress } from '@subsocial/utils'
 import {
   ReactNode,
   createContext,
@@ -103,7 +102,7 @@ function ConnectWalletModal({ ...props }: ModalFunctionalityProps) {
   )
 
   const isFound = accounts?.find(
-    (account) => toSubsocialAddress(account.address) === myAddress
+    (account) => convertAddressToSubsocialAddress(account.address) === myAddress
   )
 
   return (
