@@ -8,10 +8,16 @@ import {
   useLinkIdentity,
 } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
-import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
+import {
+  getMyMainAddress,
+  useMyAccount,
+  useMyGrillAddress,
+} from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
+import { useQueryClient } from '@tanstack/react-query'
 import Script from 'next/script'
 import {
   ReactNode,
@@ -48,6 +54,7 @@ export default function NeynarLoginProvider({
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const { mutate: setReferrerId } = useSetReferrerId()
   const [refInUrl] = useState(() => getReferralIdInUrl())
+  const queryClient = useQueryClient()
 
   const {
     mutate: addExternalProvider,
@@ -78,6 +85,7 @@ export default function NeynarLoginProvider({
       resetLinking()
       resetAdding()
       setReferrerId({ refId: refInUrl })
+      getProfileQuery.invalidate(queryClient, getMyMainAddress())
       useMyAccount.getState().finalizeTemporaryAccount()
       onSuccessCalls.current.forEach((call) => call(linkedIdentity))
       onSuccessCalls.current = []
