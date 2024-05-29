@@ -19,9 +19,8 @@ const ReferralSection = () => {
   const myAddress = useMyMainAddress()
   const [isCopied, setIsCopied] = useState(false)
 
-  const { data: refsCount, isLoading } = getUserReferralsQuery.useQuery(
-    myAddress || ''
-  )
+  const { data, isLoading } = getUserReferralsQuery.useQuery(myAddress || '')
+  const refsCount = data?.refCount
 
   const onCopyClick = (text: string) => {
     copyToClipboard(text)

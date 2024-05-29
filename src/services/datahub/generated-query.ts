@@ -1233,13 +1233,14 @@ export type RewardsByPostDetails = {
   distributionPercent?: Maybe<Scalars['Int']['output']>
   from?: Maybe<RewardsByPostDirectionTarget>
   pointsAmount?: Maybe<Scalars['String']['output']>
-  postId: Scalars['String']['output']
+  postId?: Maybe<Scalars['String']['output']>
   postKind?: Maybe<PostKind>
-  postPersistentId: Scalars['String']['output']
+  postPersistentId?: Maybe<Scalars['String']['output']>
+  referralId?: Maybe<Scalars['String']['output']>
   sharedReward?: Maybe<Scalars['Boolean']['output']>
   spaceId?: Maybe<Scalars['String']['output']>
-  superLikeId: Scalars['String']['output']
-  superLikeMultiplier: Scalars['Int']['output']
+  superLikeId?: Maybe<Scalars['String']['output']>
+  superLikeMultiplier?: Maybe<Scalars['Int']['output']>
   to?: Maybe<RewardsByPostDirectionTarget>
   tokensAmount: Scalars['String']['output']
 }
@@ -1247,6 +1248,8 @@ export type RewardsByPostDetails = {
 export enum RewardsByPostDirectionTarget {
   App = 'APP',
   Comment = 'COMMENT',
+  Referral = 'REFERRAL',
+  Referrer = 'REFERRER',
   RegularPost = 'REGULAR_POST',
   RootPost = 'ROOT_POST',
   RootSpace = 'ROOT_SPACE',
@@ -1405,6 +1408,9 @@ export type SocialProfile = {
   id: Scalars['String']['output']
   notificationsAccountLinks?: Maybe<Array<NotificationsAccountsLink>>
   notificationsSettings?: Maybe<NotificationsSettings>
+  referrals: Array<SocialProfile>
+  referralsDistributedPointsReward: Scalars['String']['output']
+  referrerSocialProfile?: Maybe<SocialProfile>
   referrersList?: Maybe<Array<UserReferrerDetail>>
 }
 
@@ -1673,12 +1679,23 @@ export type UpdateOrganizationInput = {
 
 export type UserReferralsDataItem = {
   __typename?: 'UserReferralsDataItem'
+  distributedRewards?: Maybe<UserReferralsDistributedRewards>
   referralsCount?: Maybe<Scalars['Int']['output']>
   referrerId: Scalars['String']['output']
 }
 
+export type UserReferralsDistributedRewards = {
+  __typename?: 'UserReferralsDistributedRewards'
+  totalPoints?: Maybe<Scalars['String']['output']>
+}
+
 export type UserReferralsInput = {
+  responseParams?: InputMaybe<UserReferralsInputResponseParams>
   where: UserReferralsInputWhereArgs
+}
+
+export type UserReferralsInputResponseParams = {
+  withDistributedRewards?: InputMaybe<Scalars['Boolean']['input']>
 }
 
 export type UserReferralsInputWhereArgs = {
@@ -2131,6 +2148,10 @@ export type GetUserReferralsQuery = {
       __typename?: 'UserReferralsDataItem'
       referrerId: string
       referralsCount?: number | null
+      distributedRewards?: {
+        __typename?: 'UserReferralsDistributedRewards'
+        totalPoints?: string | null
+      } | null
     }>
   }
 }
@@ -3268,14 +3289,14 @@ export const GetUserStats = gql`
           likedPosts: false
           likedCreators: false
           earnedByPeriod: false
-          earnedTotal: false
+          earnedTotal: true
           earnedPointsByPeriod: true
         }
         creator: {
           likesCountByPeriod: false
           stakersWhoLiked: false
           earnedByPeriod: false
-          earnedTotal: false
+          earnedTotal: true
           earnedPointsByPeriod: true
         }
       }
@@ -3405,10 +3426,18 @@ export const GetGeneralStatsByPeriod = gql`
 `
 export const GetUserReferrals = gql`
   query GetUserReferrals($address: String!) {
-    userReferrals(args: { where: { referrerIds: [$address] } }) {
+    userReferrals(
+      args: {
+        where: { referrerIds: [$address] }
+        responseParams: { withDistributedRewards: true }
+      }
+    ) {
       data {
         referrerId
         referralsCount
+        distributedRewards {
+          totalPoints
+        }
       }
     }
   }

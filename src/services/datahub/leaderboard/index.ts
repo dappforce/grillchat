@@ -3,6 +3,8 @@ import gql from 'graphql-tag'
 import {
   GetGeneralStatsByWeekQuery,
   GetGeneralStatsByWeekQueryVariables,
+  GetUserReferralsQuery,
+  GetUserReferralsQueryVariables,
 } from '../generated-query'
 import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 import {
@@ -483,29 +485,30 @@ export async function getGeneralStatisticsByPeriod(
   }
 }
 
-type GetUserReferralsQuery = {
-  userReferrals: {
-    data: {
-      referrerId: string
-      referralsCount: number
-    }[]
-  }
-}
-
 const GET_USER_REFERRALS = gql`
   query GetUserReferrals($address: String!) {
-    userReferrals(args: { where: { referrerIds: [$address] } }) {
+    userReferrals(
+      args: {
+        where: { referrerIds: [$address] }
+        responseParams: { withDistributedRewards: true }
+      }
+    ) {
       data {
         referrerId
         referralsCount
+        distributedRewards {
+          totalPoints
+        }
       }
     }
   }
 `
-export async function getUserReferrals(address: string): Promise<number> {
+export async function getUserReferrals(
+  address: string
+): Promise<{ refCount: number; pointsEarned: number }> {
   const res = await datahubQueryRequest<
     GetUserReferralsQuery,
-    { address: string }
+    GetUserReferralsQueryVariables
   >({
     document: GET_USER_REFERRALS,
     variables: { address },
@@ -513,7 +516,12 @@ export async function getUserReferrals(address: string): Promise<number> {
 
   const data = res.userReferrals.data[0]
 
-  return data.referralsCount
+  return {
+    refCount: data.referralsCount ?? 0,
+    pointsEarned: parseInt(
+      data.distributedRewards?.totalPoints?.toString() ?? '0'
+    ),
+  }
 }
 
 const GET_TOKENOMIC_METADATA = gql`
