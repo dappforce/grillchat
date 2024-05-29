@@ -172,6 +172,7 @@ export default function ChatForm({
 
   const shouldSendMessage = isLoggedIn
 
+  const [isSending, setIsSending] = useState(false)
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
     sendButtonProps?.disabled ||
@@ -194,6 +195,15 @@ export default function ChatForm({
     const processedMessage = processMessage(messageBody)
     if (isDisabled) return
 
+    setIsSending(true)
+    try {
+      await sendMessageFlow(processedMessage)
+    } finally {
+      setIsSending(false)
+    }
+  }
+
+  const sendMessageFlow = async (processedMessage: string) => {
     const additionalTxParams = await buildAdditionalTxParams?.()
 
     const sendMessageParams = {
@@ -267,6 +277,8 @@ export default function ChatForm({
       tabIndex={-1}
       onClick={submitForm}
       size='circle'
+      isLoading={isSending}
+      loadingText=''
       variant={isDisabled ? 'mutedOutline' : 'primary'}
       {...sendButtonProps}
       className={cx(classNames, sendButtonProps?.className)}
