@@ -12,11 +12,7 @@ import {
   useMyMainAddress,
 } from '@/stores/my-account'
 import { WalletAccount } from '@/subsocial-query/subsocial/types'
-import {
-  Signer,
-  convertAddressToGenericAddress,
-  convertAddressToSubsocialAddress,
-} from '@/utils/account'
+import { Signer, convertAddressToSubsocialAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import {
@@ -50,8 +46,8 @@ export function ConnectWalletProvider({ children }: { children: ReactNode }) {
     const firstCheckAccounts = await enableWalletOnce()
     const found = firstCheckAccounts.find(
       (account) =>
-        convertAddressToGenericAddress(account.address) ===
-        convertAddressToGenericAddress(getMyMainAddress() ?? '')
+        convertAddressToSubsocialAddress(account.address) ===
+          getMyMainAddress() ?? ''
     )
 
     if (found) return { address: found.address, signer: found.signer as Signer }
