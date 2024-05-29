@@ -292,7 +292,6 @@ export default function ChatForm({
         autoCorrect='off'
         spellCheck='false'
         variant='fill'
-        className='bg-background'
         pill
         {...inputProps}
         onChange={(e) => setMessageBody((e.target as any).value)}

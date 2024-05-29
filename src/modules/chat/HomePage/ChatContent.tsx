@@ -1,7 +1,9 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
+import { useExtensionData } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { createPortal } from 'react-dom'
+import { LuPlusCircle } from 'react-icons/lu'
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
 type Props = {
@@ -11,12 +13,23 @@ type Props = {
 }
 
 export default function ChatContent({ chatId, hubId, className }: Props) {
+  const openExtensionModal = useExtensionData.use.openExtensionModal()
   return (
     <ChatRoom
       asContainer
       chatId={chatId}
       hubId={hubId}
       className='overflow-hidden'
+      customAction={
+        <Button
+          className='flex items-center justify-center gap-2'
+          size='lg'
+          onClick={() => openExtensionModal('subsocial-image', null)}
+        >
+          <LuPlusCircle className='relative top-px text-lg' />
+          <span>Post meme</span>
+        </Button>
+      }
     />
   )
 }

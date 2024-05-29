@@ -49,7 +49,7 @@ export default function CenterChatNotice({
           </div>
         </>
       ) : (
-        <span>
+        <span className='text-center'>
           {customTexts?.noTextInChannel ?? customText ?? 'No messages here yet'}
         </span>
       )}

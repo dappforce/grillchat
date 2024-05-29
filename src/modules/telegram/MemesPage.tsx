@@ -11,12 +11,12 @@ const MemesPage = () => {
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
-      {isMounted && <StatsPageContent />}
+      {isMounted && <ChatsContent />}
     </LayoutWithBottomNavigation>
   )
 }
 
-const StatsPageContent = () => {
+const ChatsContent = () => {
   return <ChatContent hubId={hubId} chatId={chatId} />
 }
 
