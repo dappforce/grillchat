@@ -166,6 +166,7 @@ const useLoginInTelegramMiniApps = () => {
     if (data && !myAddress && isInitialized) {
       loginTelegram(() => finalizeTemporaryAccount())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, myAddress, isInitialized])
 
   return { isLoading: isLoading, isSuccess: isSuccess }

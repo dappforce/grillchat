@@ -21,6 +21,7 @@ import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import '@rainbow-me/rainbowkit/styles.css'
+import { SDKProvider } from '@tma.js/sdk-react'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
@@ -106,37 +107,39 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   }, [])
 
   return (
-    <ThemeProvider attribute='class' defaultTheme='dark' forcedTheme='dark'>
-      <QueryProvider dehydratedState={dehydratedState}>
-        <TelegramLoginProvider>
-          <NeynarLoginProvider>
-            <DatahubSubscriber />
-            <ToasterConfig />
-            <ReferralUrlChanger />
-            {/* <NextNProgress
+    <SDKProvider>
+      <ThemeProvider attribute='class' defaultTheme='dark' forcedTheme='dark'>
+        <QueryProvider dehydratedState={dehydratedState}>
+          <TelegramLoginProvider>
+            <NeynarLoginProvider>
+              <DatahubSubscriber />
+              <ToasterConfig />
+              <ReferralUrlChanger />
+              {/* <NextNProgress
             color='#eb2f95'
             options={{ showSpinner: false }}
             showOnShallow={false}
           /> */}
-            <HeadConfig {...head} />
-            {/* <GoogleAnalytics
+              <HeadConfig {...head} />
+              {/* <GoogleAnalytics
             trackPageViews
             gaMeasurementId={getAugmentedGaId()}
           /> */}
-            <GlobalModals />
-            <SessionAccountChecker />
-            <OauthLoadingModal />
-            <div className={cx('font-sans')}>
-              <ErrorBoundary>
-                <EvmProvider>
-                  <Component {...props} />
-                </EvmProvider>
-              </ErrorBoundary>
-            </div>
-          </NeynarLoginProvider>
-        </TelegramLoginProvider>
-      </QueryProvider>
-    </ThemeProvider>
+              <GlobalModals />
+              <SessionAccountChecker />
+              <OauthLoadingModal />
+              <div className={cx('font-sans')}>
+                <ErrorBoundary>
+                  <EvmProvider>
+                    <Component {...props} />
+                  </EvmProvider>
+                </ErrorBoundary>
+              </div>
+            </NeynarLoginProvider>
+          </TelegramLoginProvider>
+        </QueryProvider>
+      </ThemeProvider>
+    </SDKProvider>
   )
 }
 

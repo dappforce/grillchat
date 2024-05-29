@@ -3,7 +3,6 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { env } from '@/env.mjs'
 import useIsMounted from '@/hooks/useIsMounted'
 import { cx } from '@/utils/class-names'
-import { SDKProvider } from '@tma.js/sdk-react'
 import MobileNavigation from '../../../components/layouts/MobileNavigation'
 import ChatContent from './ChatContent'
 import LeaderboardAccountContent from './epic-leaderboard/AccountContent'
@@ -12,11 +11,9 @@ import MainContent from './epic-leaderboard/MainContent'
 export default function HomePage() {
   const isMounted = useIsMounted()
   return (
-    <SDKProvider>
-      <DefaultLayout className='relative' style={{ minHeight: '100dvh' }}>
-        {isMounted && <HomePageContent />}
-      </DefaultLayout>
-    </SDKProvider>
+    <DefaultLayout className='relative' style={{ minHeight: '100dvh' }}>
+      {isMounted && <HomePageContent />}
+    </DefaultLayout>
   )
 }
 
