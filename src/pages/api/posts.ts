@@ -4,9 +4,9 @@ import { ApiResponse, handlerWrapper } from '@/server/common'
 import { generateGetDataFromSquidWithBlockchainFallback } from '@/server/squid'
 import { isDatahubAvailable } from '@/services/datahub/utils'
 import { getPostsFromSubsocial } from '@/services/subsocial/posts/fetcher'
+import { convertAddressToSubsocialAddress } from '@/utils/account'
 import { getUrlFromText } from '@/utils/strings'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
-import { toSubsocialAddress } from '@subsocial/utils'
 import { parser } from 'html-metadata-parser'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -100,7 +100,7 @@ export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
 
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {
-    post.struct.ownerId = toSubsocialAddress(post.struct.ownerId)!
+    post.struct.ownerId = convertAddressToSubsocialAddress(post.struct.ownerId)!
     const link = post.content?.link
     const shouldLinkBeFetched =
       link && link.startsWith('https') && !canRenderEmbed(link)

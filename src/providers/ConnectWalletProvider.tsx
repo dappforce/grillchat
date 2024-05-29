@@ -12,10 +12,9 @@ import {
   useMyMainAddress,
 } from '@/stores/my-account'
 import { WalletAccount } from '@/subsocial-query/subsocial/types'
-import { Signer } from '@/utils/account'
+import { Signer, convertAddressToSubsocialAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
-import { toSubsocialAddress } from '@subsocial/utils'
 import {
   ReactNode,
   createContext,
@@ -46,7 +45,9 @@ export function ConnectWalletProvider({ children }: { children: ReactNode }) {
   const requestWalletAccount = useCallback(async () => {
     const firstCheckAccounts = await enableWalletOnce()
     const found = firstCheckAccounts.find(
-      (account) => toSubsocialAddress(account.address) === getMyMainAddress()
+      (account) =>
+        convertAddressToSubsocialAddress(account.address) ===
+          getMyMainAddress() ?? ''
     )
 
     if (found) return { address: found.address, signer: found.signer as Signer }
@@ -58,7 +59,8 @@ export function ConnectWalletProvider({ children }: { children: ReactNode }) {
     await getPromise()
     const accounts = await enableWalletOnce()
     const foundAcc = accounts.find(
-      (account) => toSubsocialAddress(account.address) === getMyMainAddress()
+      (account) =>
+        convertAddressToSubsocialAddress(account.address) === getMyMainAddress()
     )
     return foundAcc
       ? { address: foundAcc.address, signer: foundAcc.signer as Signer }
@@ -99,7 +101,7 @@ function ConnectWalletModal({ ...props }: ModalFunctionalityProps) {
   )
 
   const isFound = accounts?.find(
-    (account) => toSubsocialAddress(account.address) === myAddress
+    (account) => convertAddressToSubsocialAddress(account.address) === myAddress
   )
 
   return (

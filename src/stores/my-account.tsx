@@ -14,6 +14,7 @@ import { useParentData } from '@/stores/parent'
 import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   Signer,
+  convertAddressToSubsocialAddress,
   decodeSecretKey,
   encodeSecretKey,
   generateAccount,
@@ -26,7 +27,6 @@ import { currentNetwork } from '@/utils/network'
 import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
-import { toSubsocialAddress } from '@subsocial/utils'
 import { Wallet, WalletAccount, getWallets } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
@@ -194,8 +194,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     })
   },
   connectWallet: async (address, signer) => {
-    const { toSubsocialAddress } = await import('@subsocial/utils')
-    const parsedAddress = toSubsocialAddress(address)!
+    const parsedAddress = convertAddressToSubsocialAddress(address)!
 
     set({ connectedWallet: { address: parsedAddress, signer } })
     get()._subscribeConnectedWalletEnergy()
@@ -217,7 +216,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       isInitialization,
       withErrorToast = true,
     } = config || {}
-    const { toSubsocialAddress } = await import('@subsocial/utils')
     const analytics = useAnalytics.getState()
     let address: string = ''
     try {
@@ -244,7 +242,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
-      address = toSubsocialAddress(signer.address)!
+      address = convertAddressToSubsocialAddress(signer.address)!
 
       set({
         address,
@@ -447,8 +445,8 @@ async function linkPolkadotIfNotLinked(
 ) {
   const linkedAddress = await getParentProxyAddress(address)
   if (
-    toSubsocialAddress(linkedAddress ?? '')! ===
-    toSubsocialAddress(parentProxyAddress)!
+    convertAddressToSubsocialAddress(linkedAddress ?? '')! ===
+    convertAddressToSubsocialAddress(parentProxyAddress)!
   )
     return
 
@@ -678,7 +676,8 @@ export function useGetCurrentSigner(): () => Promise<WalletSigner | undefined> {
         return {
           signRaw: ({ address, data }) => {
             if (
-              toSubsocialAddress(signer.address) !== toSubsocialAddress(address)
+              convertAddressToSubsocialAddress(signer.address) !==
+              convertAddressToSubsocialAddress(address)
             )
               throw new Error('Invalid address')
 

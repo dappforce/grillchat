@@ -2,6 +2,7 @@ import { useMyAccount } from '@/stores/my-account'
 import type { Keyring } from '@polkadot/keyring'
 import { GenericAccountId } from '@polkadot/types'
 import registry from '@subsocial/api/utils/registry'
+import { toSubsocialAddress } from '@subsocial/utils'
 
 export type Signer = ReturnType<Keyring['addFromSeed']>
 
@@ -94,4 +95,13 @@ export function convertAddressToGenericAddress(address?: string) {
     genericAccountAddress = new GenericAccountId(registry, address).toString()
   } catch {}
   return genericAccountAddress
+}
+
+export function convertAddressToSubsocialAddress(address?: string) {
+  if (!address) return ''
+  let subsocialAddress = ''
+  try {
+    subsocialAddress = toSubsocialAddress(address ?? '')!
+  } catch {}
+  return subsocialAddress
 }

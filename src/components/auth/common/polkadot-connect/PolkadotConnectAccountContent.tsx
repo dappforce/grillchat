@@ -4,8 +4,11 @@ import { Skeleton } from '@/components/SkeletonFallback'
 import Toast from '@/components/Toast'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import { Signer, truncateAddress } from '@/utils/account'
-import { toSubsocialAddress } from '@subsocial/utils'
+import {
+  Signer,
+  convertAddressToSubsocialAddress,
+  truncateAddress,
+} from '@/utils/account'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
@@ -40,7 +43,7 @@ export default function PolkadotConnectAccountContent({
         const avatar = (account as any).avatar
         let address = ''
         try {
-          address = toSubsocialAddress(account.address)!
+          address = convertAddressToSubsocialAddress(account.address)!
         } catch {}
         if (!address) return null
 
@@ -49,7 +52,9 @@ export default function PolkadotConnectAccountContent({
             <span className='flex flex-1 items-center justify-between gap-4'>
               <span>{account.name || account.address}</span>
               <span className='whitespace-nowrap font-mono text-text-muted'>
-                {truncateAddress(toSubsocialAddress(account.address)!)}
+                {truncateAddress(
+                  convertAddressToSubsocialAddress(account.address)!
+                )}
               </span>
             </span>
           ),
