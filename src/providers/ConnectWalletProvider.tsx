@@ -97,7 +97,8 @@ function ConnectWalletModal({ ...props }: ModalFunctionalityProps) {
           description={(err as any)?.message}
         />
       ))
-    }
+    },
+    props.isOpen
   )
 
   const isFound = accounts?.find(
