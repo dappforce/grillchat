@@ -47,7 +47,7 @@ const tabs: Tab[] = [
 
 const MobileNavigation = ({}: MobileNavigationProps) => {
   return (
-    <div className={cx('sticky bottom-0 z-10 w-full p-3')}>
+    <div className={cx('sticky bottom-0 z-10 mt-auto w-full p-3')}>
       <div className='flex items-center justify-around rounded-[20px] bg-background-light p-2'>
         {tabs.map(({ id, text, Icon, href }) => (
           <NavigationItem key={id} href={href} icon={Icon} title={text} />
