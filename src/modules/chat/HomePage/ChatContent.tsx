@@ -1,5 +1,7 @@
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
+import { augmentDatahubParams } from '@/services/datahub/utils'
+import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useExtensionData } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { createPortal } from 'react-dom'
@@ -13,6 +15,7 @@ type Props = {
 }
 
 export default function ChatContent({ chatId, hubId, className }: Props) {
+  const { mutate } = useUpsertPost()
   const openExtensionModal = useExtensionData.use.openExtensionModal()
   return (
     <ChatRoom
@@ -24,7 +27,16 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
         <Button
           className='flex items-center justify-center gap-2'
           size='lg'
-          onClick={() => openExtensionModal('subsocial-image', null)}
+          onClick={() => {
+            mutate(
+              augmentDatahubParams({
+                image: '',
+                spaceId: '0x89f814f1045fcc797b2b3d311abee22c',
+                title: 'Test Post',
+              })
+            )
+            openExtensionModal('subsocial-image', null)
+          }}
         >
           <LuPlusCircle className='relative top-px text-lg' />
           <span>Post meme</span>
