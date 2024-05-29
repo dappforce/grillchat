@@ -1,7 +1,6 @@
 import Farcaster from '@/assets/logo/farcaster.svg'
 import Galxe from '@/assets/logo/galxe.svg'
 import useIsMounted from '@/hooks/useIsMounted'
-import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
@@ -11,7 +10,6 @@ import { RiQuestionLine } from 'react-icons/ri'
 import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
-  const myAddress = useMyMainAddress()
   const isMounted = useIsMounted()
 
   if (!isMounted) return null

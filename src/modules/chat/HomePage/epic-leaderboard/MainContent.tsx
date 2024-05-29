@@ -12,12 +12,10 @@ import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { cx, mutedTextColorStyles } from '@/utils/class-names'
+import { cx } from '@/utils/class-names'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import epicConfig from '../../../../constants/config/epic'
-import MissingRewards from '../MissingRewards'
 import LeaderboardSection from './LeaderboardSection'
-import ReferralSection from './ReferralSection'
 import useCalculateTokenRewards from './useCalculateTokenRewards'
 
 const { gradient, tokenSymbol, EpicTokenIllust } = epicConfig
@@ -27,14 +25,10 @@ type MainContentProps = {
 }
 
 const MainContent = ({ className }: MainContentProps) => {
-  const myAddress = useMyMainAddress()
-
   return (
-    <div className={cx('w-full pb-4', className)}>
-      <div className={cx('flex flex-1 flex-col gap-4 px-4 pt-4 lg:px-0')}>
+    <div className={cx('w-full flex-1', className)}>
+      <div className={cx('flex flex-col gap-4 px-4 pt-4 lg:px-0')}>
         <MainCard />
-        <MissingRewards />
-        {myAddress && <ReferralSection />}
         <LeaderboardSection />
       </div>
     </div>
@@ -93,54 +87,7 @@ const ProfileCard = () => {
     getBalanceQuery.useQuery(userAddress)
 
   return (
-    <MainCardTemplate
-      bottomSection={
-        <div className='flex items-center gap-1'>
-          <span className={cx(mutedTextColorStyles, 'text-sm leading-[22px]')}>
-            Total Points:
-          </span>
-          <span>
-            <FormatBalance
-              value={balance?.toString() || '0'}
-              symbol={''}
-              loading={isBalanceLoading}
-              className={cx('font-bold leading-[22px]')}
-            />
-          </span>
-        </div>
-        // <PopOver
-        //   yOffset={6}
-        //   panelSize='sm'
-        //   placement='top'
-        //   triggerClassName='w-fit'
-        //   triggerOnHover
-        //   trigger={
-        //     <div className='flex items-center gap-2 '>
-        //       <div className='flex items-center gap-1'>
-        //         <span
-        //           className={cx(mutedTextColorStyles, 'text-sm leading-[22px]')}
-        //         >
-        //           Total Points:
-        //         </span>
-        //         <span>
-        //           <FormatBalance
-        //             value={totalPoints.toString()}
-        //             symbol={''}
-        //             loading={isUserStatsLoading}
-        //             className={cx('font-bold leading-[22px]')}
-        //           />
-        //         </span>
-        //       </div>
-        //       <HiOutlineInformationCircle
-        //         className={cx('h-4 w-4 text-slate-400')}
-        //       />
-        //     </div>
-        //   }
-        // >
-        //   <p>bla bla bla</p>
-        // </PopOver>
-      }
-    >
+    <MainCardTemplate>
       <div className='flex w-full flex-col gap-4'>
         <div className='flex w-full items-center justify-between gap-2'>
           <div className='flex items-center gap-2'>

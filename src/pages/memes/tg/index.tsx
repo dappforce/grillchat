@@ -1,10 +1,10 @@
 import { env } from '@/env.mjs'
-import HomePage from '@/modules/chat/HomePage'
+import StatsPage from '@/modules/telegram/StatsPage'
+import { AppCommonProps } from '@/pages/_app'
 import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPaginatedPostIdsByPostId } from '@/services/datahub/posts/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
-import { AppCommonProps } from './_app'
 
 export const getStaticProps = getCommonStaticProps<AppCommonProps>(
   () => ({
@@ -41,4 +41,4 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
   }
 )
 
-export default HomePage
+export default StatsPage

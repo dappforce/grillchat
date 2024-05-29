@@ -29,25 +29,23 @@ const tabs = [
 
 const LeaderboardSection = () => {
   return (
-    <div className='overflow-hidden rounded-2xl bg-background-light'>
-      <Tabs
-        className='p-0 first:[&>span]:rounded-s-none last:[&>span]:rounded-e-none'
-        panelClassName='mt-0 w-full max-w-full px-0'
-        tabClassName={(selected) =>
-          cx(
-            {
-              ['border-none bg-background-primary-light [&>span]:!text-text-primary']:
-                selected,
-            },
-            'border-t-0 border-r-0 border-l-0 [&>span]:text-slate-500 leading-6 font-medium py-[10px]'
-          )
-        }
-        asContainer
-        tabStyle='buttons'
-        defaultTab={0}
-        tabs={tabs}
-      />
-    </div>
+    <Tabs
+      className='p-0'
+      panelClassName='mt-0 w-full max-w-full px-0'
+      tabClassName={(selected) =>
+        cx(
+          {
+            ['bg-background-primary/50 rounded-full [&>span]:!text-text']:
+              selected,
+          },
+          '[&>span]:text-slate-300 leading-6 font-medium p-[10px] [&>span]:text-sm border-none'
+        )
+      }
+      asContainer
+      tabStyle='buttons'
+      defaultTab={0}
+      tabs={tabs}
+    />
   )
 }
 

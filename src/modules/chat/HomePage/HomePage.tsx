@@ -6,8 +6,10 @@ import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { SDKProvider } from '@tma.js/sdk-react'
 import { useState } from 'react'
+import MobileNavigation, {
+  HomePageView,
+} from '../../../components/layouts/MobileNavigation'
 import ChatContent from './ChatContent'
-import MobileNavigation, { HomePageView } from './MobileNavigation'
 import LeaderboardAccountContent from './epic-leaderboard/AccountContent'
 import MainContent from './epic-leaderboard/MainContent'
 
@@ -55,10 +57,7 @@ function HomePageContent() {
           <LeaderboardAccountContent />
         </div>
       </Container>
-      <MobileNavigation
-        setHomePageView={setHomePageView}
-        homePageView={homePageView}
-      />
+      <MobileNavigation />
     </>
   )
 }
