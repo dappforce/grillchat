@@ -42,7 +42,6 @@ export type LoginModalContentProps = ModalFunctionalityProps & {
 
 export const LoginContent = (props: LoginModalContentProps) => {
   const { setCurrentState, closeModal } = props
-  const openNextStepModal = useLoginModal.use.openNextStepModal()
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
   const sendEvent = useSendEvent()
   const { loginNeynar, isLoadingOrSubmitted: loadingNeynar } = useNeynarLogin()
@@ -51,7 +50,6 @@ export const LoginContent = (props: LoginModalContentProps) => {
 
   const onSuccess = (linkedIdentity: Identity) => {
     closeModal()
-    finalizeTemporaryAccount()
     // if (
     //   !linkedIdentity.externalProviders.find(
     //     (p) => p.provider === IdentityProvider.Evm
@@ -152,6 +150,7 @@ export function EvmLoginStep({
 }: LoginModalContentProps & { isErrorStep?: boolean }) {
   const { mutate, isLoading } = useLoginBeforeSignEvm()
   const { mutate: setReferrerId } = useSetReferrerId()
+  const [refInUrl] = useState(() => getReferralIdInUrl())
   const sendEvent = useSendEvent()
 
   return (
@@ -160,14 +159,12 @@ export function EvmLoginStep({
       buttonLabel={isErrorStep ? 'Try again' : undefined}
       isLoading={isLoading}
       beforeSignEvmAddress={() => mutate()}
-      onFinishSignMessage={() => {
-        setReferrerId({ refId: getReferralIdInUrl() })
-      }}
       onError={() => {
         setCurrentState('evm-linking-error')
       }}
       onSuccess={async (linkedIdentity) => {
         useMyAccount.getState().finalizeTemporaryAccount()
+        setReferrerId({ refId: refInUrl })
 
         const address = useMyAccount.getState().address
         sendEventWithRef(address ?? '', (refId) => {

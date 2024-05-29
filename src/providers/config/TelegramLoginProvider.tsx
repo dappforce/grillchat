@@ -1,4 +1,5 @@
 import Toast from '@/components/Toast'
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
 import { IdentityProvider } from '@/services/datahub/generated-query'
@@ -10,6 +11,7 @@ import {
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
@@ -75,6 +77,8 @@ export default function TelegramLoginProvider({
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
   const userData = useRef<Data | null>(null)
   const [isClicked, setIsClicked] = useState(false)
+  const { mutate: setReferrerId } = useSetReferrerId()
+  const [refInUrl] = useState(() => getReferralIdInUrl())
 
   const myGrillAddress = useMyGrillAddress() ?? ''
 
@@ -92,6 +96,8 @@ export default function TelegramLoginProvider({
       resetUpsertProfile()
       resetAdding()
       resetLinking()
+      setReferrerId({ refId: refInUrl })
+      useMyAccount.getState().finalizeTemporaryAccount()
       onSuccessCalls.current.forEach((call) => call(linkedIdentity!))
       onSuccessCalls.current = []
     }

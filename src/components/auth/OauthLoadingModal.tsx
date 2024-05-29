@@ -1,5 +1,4 @@
 import DynamicLoadedHamsterLoading from '@/components/DynamicLoadedHamsterLoading'
-import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useToastError from '@/hooks/useToastError'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
@@ -31,6 +30,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import Modal from '../modals/Modal'
+import { getReferralIdInUrl } from '../referral/ReferralUrlChanger'
 
 const providerMapper: Record<
   Session['provider'],
@@ -130,6 +130,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
   )
 
   const { mutate: setReferrerId } = useSetReferrerId()
+  const [refInUrl] = useState(() => getReferralIdInUrl())
 
   const client = useQueryClient()
   const onFinishFlow = () => {
@@ -138,6 +139,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
     })
     sendEvent('login_oauth_successful', { provider })
     finalizeTemporaryAccount()
+    setReferrerId({ refId: refInUrl })
     onSuccess()
     signOut({ redirect: false })
 
@@ -219,7 +221,7 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [linkedIdentity, sendEvent, session, upsertProfile, setReferrerId])
+  }, [linkedIdentity, sendEvent, session, upsertProfile])
 
   const isAlreadyCalled = useRef(false)
   useEffect(() => {
@@ -235,7 +237,6 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
       const address = await loginAsTemporaryAccount()
       if (!address || !identity) return
 
-      setReferrerId({ refId: getReferralIdInUrl() })
       const payload = getExternalProviderPayload(session)
       if (!payload) {
         toast.error('Provider not supported')

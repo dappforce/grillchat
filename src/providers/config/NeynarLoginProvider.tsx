@@ -1,3 +1,4 @@
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { IdentityProvider } from '@/services/datahub/generated-query'
@@ -7,6 +8,7 @@ import {
   useLinkIdentity,
 } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
@@ -18,6 +20,7 @@ import {
   useContext,
   useEffect,
   useRef,
+  useState,
 } from 'react'
 
 declare global {
@@ -43,6 +46,8 @@ export default function NeynarLoginProvider({
   children: ReactNode
 }) {
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
+  const { mutate: setReferrerId } = useSetReferrerId()
+  const [refInUrl] = useState(() => getReferralIdInUrl())
 
   const {
     mutate: addExternalProvider,
@@ -72,10 +77,12 @@ export default function NeynarLoginProvider({
     if (linkedIdentity && foundIdentity) {
       resetLinking()
       resetAdding()
+      setReferrerId({ refId: refInUrl })
+      useMyAccount.getState().finalizeTemporaryAccount()
       onSuccessCalls.current.forEach((call) => call(linkedIdentity))
       onSuccessCalls.current = []
     }
-  }, [linkedIdentity, resetLinking, resetAdding])
+  }, [linkedIdentity, resetLinking, resetAdding, setReferrerId, refInUrl])
 
   useEffect(() => {
     window.onSignInSuccess = async (data) => {
