@@ -72,8 +72,6 @@ function NavigationItem({
 }) {
   const { pathname } = useRouter()
 
-  console.log('pathname', pathname)
-
   return (
     <CustomLink
       className={cx(
@@ -83,6 +81,7 @@ function NavigationItem({
       )}
       forceHardNavigation={forceHardNavigation}
       href={href}
+      shallow
     >
       <Icon className={cx('text-xl', iconClassName)} />
       <span className='text-sm font-medium leading-none'>{title}</span>

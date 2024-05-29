@@ -8,7 +8,6 @@ import PopOver from '@/components/floating/PopOver'
 import { Pluralize } from '@/components/layouts/CreatorSidebar/RewardInfo'
 import { CREATORS_CONSTANTS } from '@/components/layouts/CreatorSidebar/utils'
 import { spaceMono } from '@/fonts'
-import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
@@ -82,9 +81,6 @@ const ProfileCard = () => {
   const { isLoading, data: reward } = useCalculateTokenRewards({
     address: userAddress,
   })
-
-  const { data: balance, isLoading: isBalanceLoading } =
-    getBalanceQuery.useQuery(userAddress)
 
   return (
     <MainCardTemplate>
