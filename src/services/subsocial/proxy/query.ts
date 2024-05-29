@@ -2,7 +2,7 @@ import {
   createSubsocialQuery,
   SubsocialQueryData,
 } from '@/subsocial-query/subsocial/query'
-import { toSubsocialAddress } from '@subsocial/utils'
+import { convertAddressToSubsocialAddress } from '@/utils/account'
 
 async function getProxies({
   api,
@@ -16,7 +16,7 @@ async function getProxies({
       if (Array.isArray(proxyData)) {
         const data = proxyData[0] as any
         return {
-          address: toSubsocialAddress(data?.delegate)!,
+          address: convertAddressToSubsocialAddress(data?.delegate)!,
           proxyType: data?.proxyType,
         }
       }

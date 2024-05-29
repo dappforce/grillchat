@@ -10,9 +10,9 @@ import { getProxiesQuery } from '@/services/subsocial/proxy/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
+import { convertAddressToSubsocialAddress } from '@/utils/account'
 import { estimatedWaitTime } from '@/utils/network'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
-import { toSubsocialAddress } from '@subsocial/utils'
 import { useState } from 'react'
 import { PolkadotConnectContentProps } from './types'
 
@@ -120,7 +120,9 @@ export default function PolkadotConnectConfirmationContent({
                   className='w-full'
                   size='lg'
                   onClick={async () => {
-                    const address = toSubsocialAddress(connectedWallet?.address)
+                    const address = convertAddressToSubsocialAddress(
+                      connectedWallet?.address
+                    )
                     const signer = connectedWallet?.signer
                     if (address && signer) {
                       setIsProcessing(true)

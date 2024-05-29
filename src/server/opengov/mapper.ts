@@ -1,7 +1,7 @@
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import { getProposalResourceId } from '@/modules/opengov/ProposalDetailPage/context'
 import { getDiscussion } from '@/pages/api/discussion'
-import { toSubsocialAddress } from '@subsocial/utils'
+import { convertAddressToSubsocialAddress } from '@/utils/account'
 import { POLKADOT_BLOCK_TIME, getProposalPeriods } from './data'
 
 export type ProposalStatus =
@@ -220,13 +220,15 @@ export async function mapSubsquareProposalToProposal(
   )
   const decisionDeposit = proposal.onchainData?.info?.decisionDeposit ?? null
   if (decisionDeposit) {
-    decisionDeposit.who = toSubsocialAddress(decisionDeposit.who)!
+    decisionDeposit.who = convertAddressToSubsocialAddress(decisionDeposit.who)!
   }
 
   const submissionDeposit =
     proposal.onchainData?.info?.submissionDeposit ?? null
   if (submissionDeposit) {
-    submissionDeposit.who = toSubsocialAddress(submissionDeposit.who)!
+    submissionDeposit.who = convertAddressToSubsocialAddress(
+      submissionDeposit.who
+    )!
   }
 
   const trackInfo = proposal.onchainData.trackInfo ?? null
@@ -236,7 +238,7 @@ export async function mapSubsquareProposalToProposal(
     comments: mapComments(proposal, comments),
     chatId,
     beneficiary: proposal.onchainData.treasuryInfo?.beneficiary ?? '',
-    proposer: toSubsocialAddress(proposal.proposer)!,
+    proposer: convertAddressToSubsocialAddress(proposal.proposer)!,
     requested: BigInt(
       proposal.onchainData.treasuryInfo?.amount ?? '0'
     ).toString(),
