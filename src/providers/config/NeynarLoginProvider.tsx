@@ -90,7 +90,14 @@ export default function NeynarLoginProvider({
       onSuccessCalls.current.forEach((call) => call(linkedIdentity))
       onSuccessCalls.current = []
     }
-  }, [linkedIdentity, resetLinking, resetAdding, setReferrerId, refInUrl])
+  }, [
+    linkedIdentity,
+    resetLinking,
+    resetAdding,
+    setReferrerId,
+    refInUrl,
+    queryClient,
+  ])
 
   useEffect(() => {
     window.onSignInSuccess = async (data) => {
