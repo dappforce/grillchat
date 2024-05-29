@@ -101,7 +101,7 @@ export function convertAddressToSubsocialAddress(address?: string) {
   if (!address) return ''
   let subsocialAddress = ''
   try {
-    subsocialAddress = toSubsocialAddress(address ?? '')
+    subsocialAddress = toSubsocialAddress(address ?? '')!
   } catch {}
   return subsocialAddress
 }
