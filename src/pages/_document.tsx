@@ -1,7 +1,6 @@
 import { env } from '@/env.mjs'
 import { Head, Html, Main, NextScript } from 'next/document'
 import urlJoin from 'url-join'
-
 export default function Document() {
   return (
     <Html lang='en' className='bg-transparent'>
@@ -62,6 +61,11 @@ export default function Document() {
       <body className='bg-transparent text-text'>
         <Main />
         <NextScript />
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MQZ9PG2W" height="0" width="0" style="display: none; visibility: hidden;" />`,
+          }}
+        />
       </body>
     </Html>
   )
