@@ -1,3 +1,4 @@
+import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { Identity } from '@/services/datahub/identity/fetcher'
@@ -8,6 +9,7 @@ import {
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import {
   useMyAccount,
@@ -17,7 +19,7 @@ import {
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useInitDataRaw } from '@tma.js/sdk-react'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useQueryClient } from 'wagmi'
 import useGetPhotoPath from './useGetPhotoPath'
 
@@ -36,6 +38,8 @@ const useLoginInTelegramMiniApps = () => {
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
 
   const myGrillAddress = useMyGrillAddress() ?? ''
+  const { mutate: setReferrerId } = useSetReferrerId()
+  const [refInUrl] = useState(() => getReferralIdInUrl())
 
   const {
     mutate: addExternalProvider,
@@ -68,6 +72,8 @@ const useLoginInTelegramMiniApps = () => {
     if (!linkedIdentity || !foundMatchingProvider) return
 
     function callOnSuccesses() {
+      finalizeTemporaryAccount()
+      setReferrerId({ refId: refInUrl })
       onSuccessCalls.current.forEach((call) => call(linkedIdentity!))
       onSuccessCalls.current = []
     }
@@ -99,6 +105,7 @@ const useLoginInTelegramMiniApps = () => {
     resetAdding()
     resetLinking()
   }, [
+    finalizeTemporaryAccount,
     linkedIdentity,
     isSuccessLinking,
     isSuccessAdding,
@@ -164,7 +171,7 @@ const useLoginInTelegramMiniApps = () => {
 
   useEffect(() => {
     if (data && !myAddress && isInitialized) {
-      loginTelegram(() => finalizeTemporaryAccount())
+      loginTelegram()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, myAddress, isInitialized])
