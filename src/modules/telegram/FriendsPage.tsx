@@ -9,6 +9,7 @@ import { getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard, formatNumber } from '@/utils/strings'
 import { useState } from 'react'
 import urlJoin from 'url-join'
+import PointsWidget from '../points/PointsWidget'
 
 export default function FriendsPage() {
   const isMounted = useIsMounted()
@@ -33,6 +34,7 @@ export default function FriendsPage() {
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
+      <PointsWidget className='sticky top-0' />
       <div className='flex flex-col gap-4 px-4 pt-4'>
         <div className='flex flex-col gap-1'>
           <span className='text-lg font-semibold'>
@@ -45,7 +47,9 @@ export default function FriendsPage() {
         </div>
         <Card className='flex items-center gap-4 bg-background-light px-4 py-2'>
           {isMounted && myAddress ? (
-            <span className='line-clamp-1 break-all'>{referralLink}</span>
+            <span className='line-clamp-1 flex-1 break-all'>
+              {referralLink}
+            </span>
           ) : (
             <Skeleton className='w-20 flex-1' />
           )}
