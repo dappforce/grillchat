@@ -1,6 +1,7 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import OauthLoadingModal from '@/components/auth/OauthLoadingModal'
+import ProfileModal from '@/components/auth/ProfileModal'
 import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
@@ -151,6 +152,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
               <ErrorBoundary>
                 <EvmProvider>
                   <Component {...props} />
+                  <ProfileModal />
                 </EvmProvider>
               </ErrorBoundary>
             </div>
