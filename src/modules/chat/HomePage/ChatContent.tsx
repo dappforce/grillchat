@@ -4,6 +4,7 @@ import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import PointsWidget from '@/modules/points/PointsWidget'
 import { useExtensionData } from '@/stores/extension'
 import { useState } from 'react'
 import { LuPlusCircle } from 'react-icons/lu'
@@ -24,6 +25,10 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
         closeModal={() => setIsOpenModal(false)}
       />
       <ChatRoom
+        topElement={
+          <PointsWidget className='absolute left-0 top-0 z-10 w-full' />
+        }
+        scrollableContainerClassName='pt-12'
         asContainer
         chatId={chatId}
         hubId={hubId}

@@ -125,6 +125,7 @@ export default function EmojiChatItem({
         </div>
       )}
       <SuperLike
+        onButtonClick={(e) => e.stopPropagation()}
         isMyMessage={isMyMessage}
         withPostReward
         className={cx(

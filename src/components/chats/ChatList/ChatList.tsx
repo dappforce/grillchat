@@ -30,6 +30,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   hubId: string
   chatId: string
   newMessageNoticeClassName?: string
+  topElement?: React.ReactNode
 }
 
 export default function ChatList(props: ChatListProps) {

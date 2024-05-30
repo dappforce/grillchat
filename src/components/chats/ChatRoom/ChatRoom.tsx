@@ -21,6 +21,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   customAction?: ReactNode
   chatId: string
   hubId: string
+  topElement?: ReactNode
 }
 
 export default function ChatRoom({
@@ -30,14 +31,17 @@ export default function ChatRoom({
   customAction,
   chatId,
   hubId,
+  topElement,
   ...props
 }: ChatRoomProps) {
   const replyTo = useMessageData((state) => state.replyTo)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div {...props} className={cx('flex flex-1 flex-col', className)}>
+    <div {...props} className={cx('relative flex flex-1 flex-col', className)}>
+      {topElement}
       <ChatList
+        topElement={topElement}
         hubId={hubId}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
         chatId={chatId}

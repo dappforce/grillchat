@@ -30,6 +30,7 @@ import {
   useState,
 } from 'react'
 import toast from 'react-hot-toast'
+import Spinner from '../Spinner'
 import PopOver from '../floating/PopOver'
 import { sendEventWithRef } from '../referral/analytics'
 import PostRewardStat from './PostRewardStat'
@@ -56,6 +57,7 @@ export function SuperLikeWrapper({
     superLikeCount: number
     handleClick: () => void
     postRewards: PostRewards | undefined | null
+    isFetchingActiveStaker: boolean
   }) => ReactNode
 }) {
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
@@ -84,6 +86,7 @@ export function SuperLikeWrapper({
   const {
     data: isActiveStaker,
     isLoading: loadingActiveStaker,
+    isFetching: isFetchingActiveStaker,
     refetch,
   } = getIsActiveStakerQuery.useQuery(myAddress ?? '')
 
@@ -172,6 +175,7 @@ export function SuperLikeWrapper({
         hasILiked,
         superLikeCount: superLikeCount?.count ?? 0,
         postRewards,
+        isFetchingActiveStaker,
       })}
     </>
   )
@@ -182,8 +186,9 @@ export default function SuperLike({
   isMyMessage,
   withPostReward,
   showWhenZero,
+  onButtonClick,
   ...props
-}: SuperLikeProps) {
+}: SuperLikeProps & { onButtonClick?: (e: SyntheticEvent) => void }) {
   const myAddress = useMyMainAddress()
   const sendEvent = useSendEvent()
   if (currentNetwork !== 'subsocial') return null
@@ -197,11 +202,13 @@ export default function SuperLike({
         hasILiked,
         superLikeCount,
         postRewards,
+        isFetchingActiveStaker,
       }) => {
         if (superLikeCount <= 0 && !showWhenZero) return null
         const button = (
           <button
-            onClick={() => {
+            onClick={(e) => {
+              onButtonClick?.(e)
               sendEventWithRef(myAddress ?? '', (refId) => {
                 sendEvent(
                   'click_superlike',
@@ -222,7 +229,11 @@ export default function SuperLike({
                 '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white'
             )}
           >
-            <Image src={Thumbsup} alt='' className='h-4 w-auto' />
+            {isFetchingActiveStaker ? (
+              <Spinner className='h-4 w-4' />
+            ) : (
+              <Image src={Thumbsup} alt='' className='h-4 w-auto' />
+            )}
             <span className='relative -top-px'>{superLikeCount}</span>
           </button>
         )

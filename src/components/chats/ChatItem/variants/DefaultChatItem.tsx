@@ -163,6 +163,7 @@ export default function DefaultChatItem({
           className={cx('mt-1 flex items-center', !showSuperLike && 'hidden')}
         >
           <SuperLike
+            onButtonClick={(e) => e.stopPropagation()}
             isMyMessage={isMyMessage}
             withPostReward
             postId={message.id}
