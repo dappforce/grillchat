@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import PointsWidget from '@/modules/points/PointsWidget'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { truncateAddress } from '@/utils/account'
@@ -21,6 +22,7 @@ export default function AirdropPage() {
   const myAddress = useMyMainAddress()
   const openProfileModal = useProfileModal.use.openModal()
   const { evmAddress, isLoading } = useLinkedEvmAddress()
+  const sendEvent = useSendEvent()
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
@@ -71,9 +73,10 @@ export default function AirdropPage() {
             ) : (
               <Button
                 className='mt-0.5 flex items-center gap-1.5'
-                onClick={() =>
+                onClick={() => {
+                  sendEvent('set_rewards_address_click')
                   openProfileModal({ defaultOpenState: 'add-evm-provider' })
-                }
+                }}
               >
                 <TbCoins />
                 <span>Set Rewards Address</span>
