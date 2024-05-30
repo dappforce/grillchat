@@ -4,6 +4,7 @@ import { sendEventWithRef } from '@/components/referral/analytics'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
+import { getDayAndWeekTimestamp } from '@/services/datahub/utils'
 import { queryClient } from '@/services/provider'
 import {
   Signer,
@@ -159,6 +160,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
             {
               cohortDate: dayjs().toDate(),
               ref: refId,
+              week: getDayAndWeekTimestamp().week.toString(),
             }
           )
         })

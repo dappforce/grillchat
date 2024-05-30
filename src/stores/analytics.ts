@@ -27,6 +27,7 @@ export type UserProperties = {
   hasJoinedChats?: boolean
   hasPersonalizedProfile?: boolean
   ref?: string
+  week?: string
   userId?: string
 }
 

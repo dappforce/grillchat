@@ -16,8 +16,7 @@ import {
   GetSuperLikeCountsQuery,
   GetSuperLikeCountsQueryVariables,
 } from '../generated-query'
-import { datahubQueryRequest } from '../utils'
-import { getDayAndWeekTimestamp } from './utils'
+import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 
 const GET_SUPER_LIKE_COUNTS = gql`
   query GetSuperLikeCounts($postIds: [String!]!) {
