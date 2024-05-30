@@ -278,7 +278,13 @@ export default function ChatItemMenus({
         useClickPointAsAnchor
         manualMenuController={{
           open: isOpen,
-          onOpenChange: (isOpen) => {
+          onOpenChange: (isOpen, event) => {
+            const closestButton = (
+              event?.target as HTMLElement | undefined
+            )?.closest('button')
+            if (closestButton?.classList.contains('superlike') && isOpen) {
+              return
+            }
             setIsOpenChatMenu(isOpen ? messageId : null)
           },
         }}

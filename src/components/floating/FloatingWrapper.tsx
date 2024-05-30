@@ -29,7 +29,10 @@ export type FloatingWrapperProps = {
   }) => JSX.Element
   manualMenuController?: {
     open: boolean
-    onOpenChange: (open: boolean) => void
+    onOpenChange: (
+      open: boolean,
+      event?: Event | MouseEvent<Element, globalThis.MouseEvent>
+    ) => void
   }
   panel: (closeMenu: () => void) => React.ReactNode
   showOnHover?: boolean
@@ -103,7 +106,7 @@ export default function FloatingWrapper({
       clientClickX.current = e.clientX
       clientClickY.current = e.clientY
     }
-    onOpenChange(!open)
+    onOpenChange(!open, e)
   }
 
   const closeMenu = () => onOpenChange(false)

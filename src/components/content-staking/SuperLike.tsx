@@ -218,6 +218,8 @@ export default function SuperLike({
             }}
             disabled={isDisabled}
             className={cx(
+              // identifier for toggle chat menu checker in ChatItemMenus
+              'superlike',
               'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-[#7779F3] transition dark:bg-background-lighter',
               'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
               'disabled:!bg-border-gray/50 disabled:!text-text-muted',
