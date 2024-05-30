@@ -1,4 +1,4 @@
-import Diamond from '@/assets/graphics/landing/diamond.png'
+import Diamond from '@/assets/emojis/diamond.png'
 import { getPostRewardsQuery } from '@/services/datahub/content-staking/query'
 import { formatBalance } from '@/utils/balance'
 import { cx } from '@/utils/class-names'

@@ -1,5 +1,5 @@
+import Diamond from '@/assets/emojis/diamond.png'
 import ActivitiesImage from '@/assets/graphics/landing/activities.png'
-import Diamond from '@/assets/graphics/landing/diamond.png'
 import Button from '@/components/Button'
 import { useSendEvent } from '@/stores/analytics'
 import { cx, getBlurFallbackStyles } from '@/utils/class-names'

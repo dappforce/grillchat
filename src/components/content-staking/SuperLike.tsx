@@ -1,4 +1,4 @@
-import Thumbsup from '@/assets/graphics/landing/thumbsup.png'
+import Thumbsup from '@/assets/emojis/thumbsup.png'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery } from '@/services/api/query'
 import { getIsActiveStakerQuery } from '@/services/datahub/balances/query'

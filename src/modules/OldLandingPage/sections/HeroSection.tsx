@@ -1,6 +1,6 @@
+import MoneyImage from '@/assets/emojis/moneybag.png'
+import Thumbsup from '@/assets/emojis/thumbsup.png'
 import BgImage from '@/assets/graphics/landing/bg.png'
-import MoneyImage from '@/assets/graphics/landing/moneybag.png'
-import ThumbsUpImage from '@/assets/graphics/landing/thumbsup.png'
 import WritingImage from '@/assets/graphics/landing/writing.png'
 import Grill from '@/assets/logo/grill.svg'
 import Button from '@/components/Button'
@@ -59,7 +59,7 @@ const HeroSection = forwardRef<HTMLDivElement, ComponentProps<'section'>>(
                 <HiChevronRight />
               </span>
               <div className='flex basis-60 flex-col items-center justify-center gap-5 rounded-3xl bg-white/5 px-4 py-5 backdrop-blur-sm sm:p-8'>
-                <Image src={ThumbsUpImage} className='w-9 sm:w-14' alt='' />
+                <Image src={Thumbsup} className='w-9 sm:w-14' alt='' />
                 <span className='text-2xl font-bold sm:text-3xl'>Like</span>
               </div>
               <span className='flex-shrink-0 text-2xl text-[#7B77E0] sm:text-4xl'>

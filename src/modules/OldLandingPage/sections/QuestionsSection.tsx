@@ -1,4 +1,4 @@
-import Diamond from '@/assets/graphics/landing/diamond.png'
+import Diamond from '@/assets/emojis/diamond.png'
 import QuestionMark from '@/assets/graphics/landing/question-mark.png'
 import Button from '@/components/Button'
 import { useSendEvent } from '@/stores/analytics'

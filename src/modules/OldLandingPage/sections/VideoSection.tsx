@@ -1,4 +1,4 @@
-import Diamond from '@/assets/graphics/landing/diamond.png'
+import Diamond from '@/assets/emojis/diamond.png'
 import { YoutubeEmbed } from '@/components/chats/ChatItem/Embed'
 import { useSendEvent } from '@/stores/analytics'
 import { cx, getBlurFallbackStyles } from '@/utils/class-names'
