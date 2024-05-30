@@ -92,5 +92,6 @@ export function useSubstrateDonation(
 
 export const SubstrateDonationWrapper = createMutationWrapper(
   useSubstrateDonation,
-  'Failed to donate'
+  'Failed to donate',
+  true
 )

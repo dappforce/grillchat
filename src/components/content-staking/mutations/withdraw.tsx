@@ -5,6 +5,7 @@ import {
 } from '@/services/subsocial/utils/mutation'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyAccount } from '@/stores/my-account'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
@@ -52,12 +53,15 @@ type WithdrawTxWrapperProps = {
   }) => JSX.Element
 }
 
-const Wrapper = createMutationWrapper(
-  useWithdrawTx,
-  'Failed to withdraw unlocked tokens. Please try again.'
-)
-
 export const WithdrawTxWrapper = ({ children }: WithdrawTxWrapperProps) => {
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  const Wrapper = createMutationWrapper(
+    useWithdrawTx,
+    'Failed to withdraw unlocked tokens. Please try again.',
+    !!parentProxyAddress
+  )
+
   return (
     <Wrapper loadingUntilTxSuccess>
       {(props) => {

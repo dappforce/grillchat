@@ -201,15 +201,18 @@ type UnlockTxWrapperProps = {
   }) => JSX.Element
 }
 
-const Wrapper = createMutationWrapper(
-  useUnlockTx,
-  'Failed to unlock the tokens'
-)
-
 export const UnlockTxWrapper = ({
   closeModal,
   children,
 }: UnlockTxWrapperProps) => {
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  const Wrapper = createMutationWrapper(
+    useUnlockTx,
+    'Failed to unlock the tokens',
+    !!parentProxyAddress
+  )
+
   return (
     <Wrapper
       loadingUntilTxSuccess
