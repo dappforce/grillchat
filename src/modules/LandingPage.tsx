@@ -1,6 +1,6 @@
+import Laugh from '@/assets/emojis/laugh.png'
 import EllipseLeft from '@/assets/graphics/home/ellipse-left.png'
 import EllipseRight from '@/assets/graphics/home/ellipse-right.png'
-import Laugh from '@/assets/graphics/home/laugh.png'
 import Meme1 from '@/assets/graphics/home/meme-1.png'
 import Meme2 from '@/assets/graphics/home/meme-2.png'
 import Money from '@/assets/graphics/home/money.png'
