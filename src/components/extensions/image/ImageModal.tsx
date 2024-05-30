@@ -77,13 +77,14 @@ export default function ImageModal({
       hubId={hubId}
       onSubmit={onSubmit}
       extensionType='subsocial-image'
+      description='Posting a meme costs 2500 points.'
       isOpen={isOpen}
       closeModal={closeModal}
       size='md'
       mustHaveMessageBody={false}
       chatId={chatId}
       disableSendButton={!isImageLoaded}
-      title='🖼 Image'
+      title='Post meme'
       buildAdditionalTxParams={generateAdditionalTxParams}
     >
       <div className='mt-2 flex flex-col gap-4'>
@@ -169,7 +170,6 @@ function ImageLinkInput({
           <TextArea
             value={imageLink}
             onChange={(e) => setImageLink(e.target.value)}
-            size='sm'
             rows={1}
             ref={ref}
             placeholder='Paste Image URL'
@@ -275,8 +275,8 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
             <div className='mb-3 text-3xl'>
               {isLoading ? <Spinner className='h-8 w-8' /> : <ImageAdd />}
             </div>
-            <p className='text-xl'>Drag image here</p>
-            <p className='text-text-muted'>Or click to select</p>
+            <p className='text-xl'>Add a meme</p>
+            <p className='text-text-muted'>Or drag it here</p>
           </div>
         )}
       </Dropzone>

@@ -4,8 +4,6 @@ import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { augmentDatahubParams } from '@/services/datahub/utils'
-import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useExtensionData } from '@/stores/extension'
 import { useState } from 'react'
 import { LuPlusCircle } from 'react-icons/lu'
@@ -18,7 +16,6 @@ type Props = {
 
 export default function ChatContent({ chatId, hubId, className }: Props) {
   const [isOpenModal, setIsOpenModal] = useState(false)
-  const { mutate } = useUpsertPost()
   const openExtensionModal = useExtensionData.use.openExtensionModal()
   return (
     <>
@@ -34,6 +31,7 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
         customAction={
           <div className='grid grid-cols-[max-content_1fr] gap-2'>
             <Button
+              type='button'
               size='lg'
               className='flex items-center justify-center gap-2'
               variant='bgLighter'
@@ -43,16 +41,10 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
               <span className='text-text'>Rules</span>
             </Button>
             <Button
+              type='button'
               className='flex items-center justify-center gap-2'
               size='lg'
               onClick={() => {
-                mutate(
-                  augmentDatahubParams({
-                    image: '',
-                    spaceId: '0x89f814f1045fcc797b2b3d311abee22c',
-                    title: 'Test Post',
-                  })
-                )
                 openExtensionModal('subsocial-image', null)
               }}
             >
