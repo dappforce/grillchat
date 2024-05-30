@@ -5,6 +5,7 @@ import Speaker from '@/assets/emojis/speaker.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
@@ -14,6 +15,7 @@ import { HiChevronRight, HiXMark } from 'react-icons/hi2'
 import { Drawer } from 'vaul'
 
 export default function PointsWidget(props: ComponentProps<'div'>) {
+  const sendEvent = useSendEvent()
   return (
     <Drawer.Root
       shouldScaleBackground
@@ -30,6 +32,9 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
             'flex w-full cursor-pointer items-center justify-between rounded-b-2xl bg-black/50 px-4.5 py-3 backdrop-blur-xl',
             props.className
           )}
+          onClick={() => {
+            sendEvent('widget_expanded')
+          }}
         >
           <div className='flex items-center gap-2'>
             <Image className='h-6 w-6' src={Thumbsup} alt='' />
