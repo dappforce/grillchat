@@ -158,7 +158,7 @@ export default function ChatListSupportingContent({
       />
       <Component className='relative'>
         <div
-          className={cx('absolute bottom-2 right-3', newMessageNoticeClassName)}
+          className={cx('absolute bottom-2 right-4', newMessageNoticeClassName)}
         >
           {loadingToUnread ? (
             <Spinner />

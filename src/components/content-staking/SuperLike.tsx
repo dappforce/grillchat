@@ -1,3 +1,4 @@
+import Thumbsup from '@/assets/graphics/landing/thumbsup.png'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery } from '@/services/api/query'
 import { getIsActiveStakerQuery } from '@/services/datahub/balances/query'
@@ -20,6 +21,7 @@ import { currentNetwork } from '@/utils/network'
 import { LocalStorage } from '@/utils/storage'
 import dayjs from 'dayjs'
 import { verifyMessage } from 'ethers'
+import Image from 'next/image'
 import {
   ComponentProps,
   ReactNode,
@@ -28,7 +30,6 @@ import {
   useState,
 } from 'react'
 import toast from 'react-hot-toast'
-import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import PopOver from '../floating/PopOver'
 import { sendEventWithRef } from '../referral/analytics'
 import PostRewardStat from './PostRewardStat'
@@ -221,7 +222,7 @@ export default function SuperLike({
                 '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white'
             )}
           >
-            {hasILiked ? <IoDiamond /> : <IoDiamondOutline />}
+            <Image src={Thumbsup} alt='' className='h-4 w-auto' />
             <span className='relative -top-px'>{superLikeCount}</span>
           </button>
         )

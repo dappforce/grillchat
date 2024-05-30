@@ -1,6 +1,8 @@
+import Diamond from '@/assets/graphics/landing/diamond.png'
 import { getPostRewardsQuery } from '@/services/datahub/content-staking/query'
 import { formatBalance } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
+import Image from 'next/image'
 import { ComponentProps } from 'react'
 import PopOver from '../floating/PopOver'
 
@@ -78,7 +80,12 @@ export default function PostRewardStat({
           yOffset={4}
           panelSize='sm'
           triggerOnHover
-          trigger={<span>{totalReward} points</span>}
+          trigger={
+            <div className='flex items-center gap-2'>
+              <Image src={Diamond} alt='' className='h-4 w-auto' />
+              <span>{totalReward}</span>
+            </div>
+          }
         >
           <span>
             Points keep track of a user&apos;s score for that week. At the end

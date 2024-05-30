@@ -144,7 +144,7 @@ export default function DefaultChatItem({
         </p>
         <div
           className={cx(
-            'absolute bottom-0.5 right-2 z-10 flex items-center self-end rounded-full px-1.5 py-0.5',
+            'absolute bottom-1.5 right-2 z-10 flex items-center self-end rounded-full px-1.5 py-0.5',
             !showSuperLike && showLinkPreview && 'bg-black/35'
           )}
         >
