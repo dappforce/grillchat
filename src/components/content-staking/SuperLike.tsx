@@ -220,9 +220,9 @@ export default function SuperLike({
             className={cx(
               // identifier for toggle chat menu checker in ChatItemMenus
               'superlike',
-              'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-[#7779F3] transition dark:bg-background-lighter',
+              'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-text-muted transition dark:bg-background-lighter',
               'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
-              'disabled:!bg-border-gray/50 disabled:!text-text-muted',
+              'disabled:!opacity-50',
               isMyMessage &&
                 'dark:disabled:!bg-black/20 dark:disabled:!text-white/50',
               hasILiked &&

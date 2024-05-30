@@ -81,7 +81,7 @@ export default function PostRewardStat({
           panelSize='sm'
           triggerOnHover
           trigger={
-            <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-1.5'>
               <Image src={Diamond} alt='' className='h-5 w-auto' />
               <span>{totalReward}</span>
             </div>
