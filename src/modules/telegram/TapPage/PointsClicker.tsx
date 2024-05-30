@@ -3,7 +3,11 @@ import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { TouchEvent, TouchList, useRef, useState } from 'react'
 
-const PointsClicker = () => {
+type PointsClickerProps = {
+  className?: string
+}
+
+const PointsClicker = ({ className }: PointsClickerProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isTouched, setIsTouched] = useState(false)
   const [touches, setTouches] = useState<TouchList>()
@@ -44,7 +48,7 @@ const PointsClicker = () => {
   return (
     <div
       ref={ref}
-      className='relative max-h-[242px] max-w-[242px]'
+      className={cx('relative max-h-[242px] max-w-[242px]', className)}
       onTouchStart={onMouseDown}
       onTouchEnd={onMouseUp}
     >

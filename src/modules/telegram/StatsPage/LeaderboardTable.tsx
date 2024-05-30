@@ -13,12 +13,9 @@ import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { isEmptyArray } from '@subsocial/utils'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
-import epicConfig from '../../../../constants/config/epic'
 import LeaderboardModal from './LeaderboardModal'
 
 const TABLE_LIMIT = 10
-
-const { tokenSymbol } = epicConfig
 
 export const leaderboardColumns = (
   customColumnsClassNames?: (string | undefined)[]
@@ -27,7 +24,7 @@ export const leaderboardColumns = (
     index: 'rank',
     name: '#',
     className: cx(
-      'p-0 py-2 pl-4 w-[45px]',
+      'p-0 py-2 pl-2 w-[45px]',
       mutedTextColorStyles,
       customColumnsClassNames?.[0]
     ),
@@ -43,7 +40,7 @@ export const leaderboardColumns = (
     name: 'Points',
     align: 'right',
     className: cx(
-      'p-0 py-2 pr-4 md:w-[20%] w-[38%]',
+      'p-0 py-2 pr-2 md:w-[20%] w-[38%]',
       customColumnsClassNames?.[2]
     ),
   },
@@ -66,7 +63,6 @@ const parseTableRows = (
     reward: string
   }[],
   limit: number,
-  role: LeaderboardRole,
   address?: string
 ) => {
   return (
@@ -93,12 +89,13 @@ const LeaderboardTable = ({
   const { data: leaderboardData, isLoading } =
     getLeaderboardDataQuery.useInfiniteQuery(role)
 
+  const dataItems = leaderboardData?.pages[0].data || []
+
   const data = useMemo(() => {
     if (!currentUserRank || (currentUserRank.rank ?? 0) < TABLE_LIMIT) {
       return parseTableRows(
-        leaderboardData?.pages[0].data || [],
+        dataItems || [],
         TABLE_LIMIT,
-        role,
         currentUserRank?.address
       )
     }
@@ -111,11 +108,7 @@ const LeaderboardTable = ({
         rewards: <UserReward reward={currentUserRank.reward} />,
         className: 'dark:bg-slate-700 bg-[#EEF2FF]',
       },
-      ...parseTableRows(
-        leaderboardData?.pages[0].data || [],
-        TABLE_LIMIT - 1,
-        role
-      ),
+      ...parseTableRows(dataItems || [], TABLE_LIMIT - 1, role),
     ]
   }, [JSON.stringify(currentUserRank), role, leaderboardData?.pages[0]])
 
@@ -142,16 +135,16 @@ const LeaderboardTable = ({
           </div>
         ))}
       {!isEmptyArray(data) && (
-        <div className='my-4 flex w-full flex-col px-2'>
+        <div className='my-4 flex w-full flex-col'>
           <Table
             columns={leaderboardColumns(customColumnsClassNames)}
             data={data}
             className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
             headerClassName='!bg-transparent dark:!bg-transparent'
-            rowsClassName='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl'
+            rowsClassName='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl first:[&>td]:pl-2 last:[&>td]:pr-2'
             withDivider={false}
           />
-          {data.length > TABLE_LIMIT && (
+          {dataItems.length > TABLE_LIMIT && (
             <LinkText
               className='mt-3 w-full text-center hover:no-underline'
               onClick={() => setOpenModal(true)}

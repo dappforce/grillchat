@@ -25,7 +25,7 @@ const getUserProfilePhotos = async (userId: string) => {
 
 const getPhotoPath = async (userId: string) => {
   const photos = await getUserProfilePhotos(userId)
-  if (!photos) return
+  if (!photos?.result?.photos) return
 
   const fileId = photos.result.photos[0][0].file_id
 

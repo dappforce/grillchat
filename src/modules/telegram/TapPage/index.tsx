@@ -19,8 +19,8 @@ const TapPage = () => {
 
 const TapPageContent = () => {
   return (
-    <div className='flex flex-1 flex-col items-center justify-center gap-[57px] px-4'>
-      <PointsClicker />
+    <div className='grid flex-1 grid-rows-[2fr,1fr] items-center'>
+      <PointsClicker className='justify-self-center' />
       <div className='flex flex-col items-center gap-[22px]'>
         <span className={cx('text-center', mutedTextColorStyles)}>
           Tap2Earn is coming soon! While you wait, start earning points today by

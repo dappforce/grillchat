@@ -18,11 +18,11 @@ type LeaderboardModalProps = {
 const modalConfig = {
   staker: {
     title: 'Top Meme Likers this week',
-    desc: 'Meme Likers by the amount of SUB earned with Content Staking.',
+    desc: 'Meme Likers by the amount of Points earned with Content Staking.',
   },
   creator: {
     title: 'Top Meme Makers this week',
-    desc: 'Meme Makers ranked by the amount of SUB earned from their posts.',
+    desc: 'Meme Makers ranked by the amount of Points earned from their posts.',
   },
 }
 

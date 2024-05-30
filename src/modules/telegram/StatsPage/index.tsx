@@ -1,6 +1,7 @@
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import useIsMounted from '@/hooks/useIsMounted'
-import MainContent from '../chat/HomePage/epic-leaderboard/MainContent'
+import { cx } from '@/utils/class-names'
+import LeaderboardSection from './LeaderboardSection'
 
 const StatsPage = () => {
   const isMounted = useIsMounted()
@@ -10,13 +11,13 @@ const StatsPage = () => {
       className='relative'
       style={{ minHeight: '100dvh' }}
     >
-      {isMounted && <StatsPageContent />}
+      {isMounted && (
+        <div className={cx('w-full flex-1 px-4 pt-4')}>
+          <LeaderboardSection />
+        </div>
+      )}
     </LayoutWithBottomNavigation>
   )
-}
-
-const StatsPageContent = () => {
-  return <MainContent />
 }
 
 export default StatsPage
