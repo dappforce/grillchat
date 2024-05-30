@@ -12,7 +12,6 @@ import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
@@ -27,7 +26,6 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlOrigin } from '@/utils/links'
 import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
@@ -36,17 +34,13 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { BsFillPinAngleFill } from 'react-icons/bs'
-import { FiLink } from 'react-icons/fi'
-import { GrShareOption } from 'react-icons/gr'
 import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
 import { useInView } from 'react-intersection-observer'
-import urlJoin from 'url-join'
 import usePinnedMessage from '../hooks/usePinnedMessage'
-import { getShareMessageMenus } from './utils'
 
 export type ChatItemMenusProps = {
   messageId: string
@@ -111,23 +105,23 @@ export default function ChatItemMenus({
           ))
         },
       },
-      {
-        text: 'Copy Message Link',
-        icon: FiLink,
-        onClick: () => {
-          const messageLink = urlJoin(
-            getCurrentUrlOrigin(),
-            env.NEXT_PUBLIC_BASE_PATH,
-            '/message',
-            `/${messageId}`,
-            refSearchParam
-          )
-          copyToClipboard(messageLink)
-          toast.custom((t) => (
-            <Toast t={t} title='Message link copied to clipboard!' />
-          ))
-        },
-      },
+      // {
+      //   text: 'Copy Message Link',
+      //   icon: FiLink,
+      //   onClick: () => {
+      //     const messageLink = urlJoin(
+      //       getCurrentUrlOrigin(),
+      //       env.NEXT_PUBLIC_BASE_PATH,
+      //       '/message',
+      //       `/${messageId}`,
+      //       refSearchParam
+      //     )
+      //     copyToClipboard(messageLink)
+      //     toast.custom((t) => (
+      //       <Toast t={t} title='Message link copied to clipboard!' />
+      //     ))
+      //   },
+      // },
       {
         text: 'Show Metadata',
         icon: RiDatabase2Line,
@@ -198,12 +192,12 @@ export default function ChatItemMenus({
     if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
     if (canSendMessage && isMessageOwner) menus.unshift(editItem)
-    if (message)
-      menus.unshift({
-        text: 'Share',
-        icon: GrShareOption,
-        submenus: getShareMessageMenus(message),
-      })
+    // if (message)
+    //   menus.unshift({
+    //     text: 'Share',
+    //     icon: GrShareOption,
+    //     submenus: getShareMessageMenus(message),
+    //   })
     if (canSendMessage) menus.unshift(replyItem)
 
     return menus
