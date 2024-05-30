@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Script from 'next/script'
 
 export type HeadConfigProps = {
   title?: string | null
@@ -36,28 +37,31 @@ export default function HeadConfig({
   const usedImage = image || 'https://epicapp.net/cover.png'
 
   return (
-    <Head>
-      <title>{usedTitle}</title>
-      <meta name='description' content={usedDesc} />
+    <>
+      <Script src='https://telegram.org/js/telegram-web-app.js' />
+      <Head>
+        <title>{usedTitle}</title>
+        <meta name='description' content={usedDesc} />
 
-      <meta name='twitter:card' content={cardFormat} />
-      <meta name='twitter:title' content={usedTitle} />
-      <meta name='twitter:description' content={usedDesc} />
-      <meta name='twitter:image' content={usedImage} />
+        <meta name='twitter:card' content={cardFormat} />
+        <meta name='twitter:title' content={usedTitle} />
+        <meta name='twitter:description' content={usedDesc} />
+        <meta name='twitter:image' content={usedImage} />
 
-      <meta property='og:title' content={usedTitle} />
-      <meta property='og:description' content={usedDesc} />
-      <meta property='og:site_name' content='Epic' />
-      <meta property='og:image' content={usedImage} />
+        <meta property='og:title' content={usedTitle} />
+        <meta property='og:description' content={usedDesc} />
+        <meta property='og:site_name' content='Epic' />
+        <meta property='og:image' content={usedImage} />
 
-      {disableZoom ? (
-        <meta
-          name='viewport'
-          content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0'
-        />
-      ) : (
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-      )}
-    </Head>
+        {disableZoom ? (
+          <meta
+            name='viewport'
+            content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0'
+          />
+        ) : (
+          <meta name='viewport' content='width=device-width, initial-scale=1' />
+        )}
+      </Head>
+    </>
   )
 }

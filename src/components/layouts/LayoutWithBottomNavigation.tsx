@@ -1,4 +1,7 @@
+import useRedirectToTgBotOnDesktop from '@/hooks/useRedirectToTgBotOnDesktop'
 import { cx } from '@/utils/class-names'
+import { isTouchDevice } from '@/utils/device'
+import { useMiniAppRaw } from '@tma.js/sdk-react'
 import { ComponentProps } from 'react'
 import useLoginInTelegramMiniApps from '../navbar/Navbar/telegramLogin/useLoginInTelegramMiniApps'
 import MobileNavigation from './MobileNavigation'
@@ -16,6 +19,13 @@ export default function LayoutWithBottomNavigation({
   ...props
 }: DefaultLayoutProps) {
   useLoginInTelegramMiniApps()
+  const app = useMiniAppRaw(true)
+  const isMobile = isTouchDevice()
+  useRedirectToTgBotOnDesktop()
+
+  if (app?.result && !isMobile) {
+    return <>Use mobile device for better expirience</>
+  }
 
   return (
     <div
