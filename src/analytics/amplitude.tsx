@@ -8,8 +8,16 @@ export async function createAmplitudeInstance() {
 
   try {
     const amp = createInstance()
-    await amp.init(ampId, undefined, { identityStorage: 'localStorage' })
-      .promise
+    await amp.init(ampId, undefined, {
+      identityStorage: 'localStorage',
+      defaultTracking: {
+        attribution: true,
+        fileDownloads: false,
+        formInteractions: false,
+        pageViews: true,
+        sessions: true,
+      },
+    }).promise
     return amp
   } catch (e) {
     console.error('Error initializing amplitude', e)

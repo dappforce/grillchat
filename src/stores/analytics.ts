@@ -1,13 +1,9 @@
 import { createUserId } from '@/services/api/mutation'
 import { getIdFromSlug } from '@/utils/slug'
-import { LocalStorage } from '@/utils/storage'
 import { type BaseEvent, type BrowserClient } from '@amplitude/analytics-types'
 import Router from 'next/router'
 import { useParentData } from './parent'
 import { create, createSelectors } from './utils'
-
-const DEVICE_ID_STORAGE_KEY = 'device_id'
-const deviceIdStorage = new LocalStorage(() => DEVICE_ID_STORAGE_KEY)
 
 type EventProperties = {
   /// The source in Grill from which the event was sent
@@ -31,14 +27,12 @@ export type UserProperties = {
   hasJoinedChats?: boolean
   hasPersonalizedProfile?: boolean
   ref?: string
-  deviceId?: string
   userId?: string
 }
 
 type State = {
   amp: BrowserClient | null
   userId: string | undefined
-  deviceId: string | undefined
 }
 type Actions = {
   sendEvent: (
@@ -56,7 +50,6 @@ const queuedEvents: BaseEvent[] = []
 const initialState: State = {
   amp: null,
   userId: undefined,
-  deviceId: undefined,
 }
 
 const useAnalyticsBase = create<State & Actions>()((set, get) => {
@@ -90,7 +83,7 @@ const useAnalyticsBase = create<State & Actions>()((set, get) => {
       eventProperties?: EventProperties,
       userProperties?: UserProperties
     ) => {
-      const { amp, userId, deviceId } = get()
+      const { amp, userId } = get()
 
       const { parentOrigin } = useParentData.getState()
 
@@ -114,7 +107,6 @@ const useAnalyticsBase = create<State & Actions>()((set, get) => {
         event_properties: mergedEventProperties,
         user_properties: userProperties,
         user_id: userId,
-        device_id: deviceId,
       }
 
       if (!amp) queuedEvents.push(eventProps)
@@ -124,18 +116,10 @@ const useAnalyticsBase = create<State & Actions>()((set, get) => {
       const { createAmplitudeInstance } = await import('@/analytics/amplitude')
       const amp = await createAmplitudeInstance()
 
-      // TODO: need to test
-      let deviceId = deviceIdStorage.get() || undefined
-
-      if (!deviceId) {
-        deviceId = amp?.getDeviceId()
-      }
-
-      set({ amp, deviceId })
+      set({ amp })
       queuedEvents.forEach((props) => {
         amp?.logEvent({
           ...props,
-          device_id: deviceId,
         })
       })
     },

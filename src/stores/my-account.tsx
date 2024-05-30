@@ -5,7 +5,6 @@ import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { queryClient } from '@/services/provider'
-import { useParentData } from '@/stores/parent'
 import {
   Signer,
   decodeSecretKey,
@@ -153,13 +152,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     try {
       if (!secretKey) {
         secretKey = (await generateAccount()).secretKey
-        const { parentOrigin } = useParentData.getState()
         sendEventWithRef(address, (refId) => {
           analytics.sendEvent(
             'account_created',
             {},
             {
-              cameFrom: parentOrigin,
               cohortDate: dayjs().toDate(),
               ref: refId,
             }
