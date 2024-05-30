@@ -62,7 +62,6 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
       if (!address) return
       usedAddress = address
     }
-    console.log(usedAddress, hasEnoughEnergy)
 
     if (!hasEnoughEnergy) {
       const [_, res] = await Promise.all([
