@@ -16,6 +16,13 @@ export default function LayoutWithBottomNavigation({
   ...props
 }: DefaultLayoutProps) {
   useLoginInTelegramMiniApps()
+  // const app = useMiniAppRaw(true)
+  // const isMobile = isTouchDevice()
+  // useRedirectToTgBotOnDesktop()
+
+  // if (app?.result && !isMobile) {
+  //   return <>Use mobile device for better expirience</>
+  // }
 
   return (
     <div

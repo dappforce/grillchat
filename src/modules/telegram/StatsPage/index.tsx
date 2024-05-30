@@ -5,7 +5,6 @@ import LeaderboardSection from './LeaderboardSection'
 
 const StatsPage = () => {
   const isMounted = useIsMounted()
-
   return (
     <LayoutWithBottomNavigation
       className='relative'

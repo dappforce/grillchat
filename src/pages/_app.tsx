@@ -56,7 +56,9 @@ export default function App(props: AppProps<AppCommonProps>) {
         <Styles
           alwaysShowScrollbarOffset={props.pageProps.alwaysShowScrollbarOffset}
         />
-        <AppContent {...props} />
+        <SDKProvider>
+          <AppContent {...props} />
+        </SDKProvider>
       </ConfigProvider>
     </SessionProvider>
   )
@@ -107,49 +109,55 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
     initAllStores()
   }, [])
 
+  useEffect(() => {
+    const telegram = window.Telegram as any
+
+    const webApp = telegram?.WebApp
+
+    webApp?.expand()
+  })
+
   return (
-    <SDKProvider>
-      <ThemeProvider attribute='class' defaultTheme='dark' forcedTheme='dark'>
-        <QueryProvider dehydratedState={dehydratedState}>
-          <TelegramLoginProvider>
-            <NeynarLoginProvider>
-              <DatahubSubscriber />
-              <ToasterConfig />
-              <ReferralUrlChanger />
-              {/* <NextNProgress
+    <ThemeProvider attribute='class' defaultTheme='dark' forcedTheme='dark'>
+      <QueryProvider dehydratedState={dehydratedState}>
+        <TelegramLoginProvider>
+          <NeynarLoginProvider>
+            <DatahubSubscriber />
+            <ToasterConfig />
+            <ReferralUrlChanger />
+            {/* <NextNProgress
             color='#eb2f95'
             options={{ showSpinner: false }}
             showOnShallow={false}
           /> */}
-              <HeadConfig {...head} />
-              <Script id='gtm' strategy='afterInteractive'>
-                {`
+            <HeadConfig {...head} />
+            <Script id='gtm' strategy='afterInteractive'>
+              {`
                   (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
                   })(window,document,'script','dataLayer','GTM-MQZ9PG2W');
                 `}
-              </Script>
-              {/* <GoogleAnalytics
+            </Script>
+            {/* <GoogleAnalytics
             trackPageViews
             gaMeasurementId={getAugmentedGaId()}
           /> */}
-              <GlobalModals />
-              <SessionAccountChecker />
-              <OauthLoadingModal />
-              <div className={cx('font-sans')}>
-                <ErrorBoundary>
-                  <EvmProvider>
-                    <Component {...props} />
-                  </EvmProvider>
-                </ErrorBoundary>
-              </div>
-            </NeynarLoginProvider>
-          </TelegramLoginProvider>
-        </QueryProvider>
-      </ThemeProvider>
-    </SDKProvider>
+            <GlobalModals />
+            <SessionAccountChecker />
+            <OauthLoadingModal />
+            <div className={cx('font-sans')}>
+              <ErrorBoundary>
+                <EvmProvider>
+                  <Component {...props} />
+                </EvmProvider>
+              </ErrorBoundary>
+            </div>
+          </NeynarLoginProvider>
+        </TelegramLoginProvider>
+      </QueryProvider>
+    </ThemeProvider>
   )
 }
 
