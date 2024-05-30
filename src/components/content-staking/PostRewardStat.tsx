@@ -82,7 +82,7 @@ export default function PostRewardStat({
           triggerOnHover
           trigger={
             <div className='flex items-center gap-2'>
-              <Image src={Diamond} alt='' className='h-4 w-auto' />
+              <Image src={Diamond} alt='' className='h-5 w-auto' />
               <span>{totalReward}</span>
             </div>
           }

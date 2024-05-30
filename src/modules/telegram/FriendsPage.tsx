@@ -6,7 +6,7 @@ import useIsMounted from '@/hooks/useIsMounted'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { getCurrentUrlOrigin } from '@/utils/links'
-import { copyToClipboard } from '@/utils/strings'
+import { copyToClipboard, formatNumber } from '@/utils/strings'
 import { useState } from 'react'
 import urlJoin from 'url-join'
 
@@ -60,7 +60,7 @@ export default function FriendsPage() {
         <Card className='flex flex-col gap-2 bg-background-light px-4'>
           <span className='text-4xl font-bold'>
             {referralData ? (
-              <span>{referralData?.refCount}</span>
+              <span>{formatNumber(referralData?.refCount)}</span>
             ) : (
               <Skeleton className='w-16' />
             )}
@@ -72,7 +72,7 @@ export default function FriendsPage() {
         <Card className='flex flex-col gap-2 bg-background-light px-4'>
           <span className='text-4xl font-bold'>
             {referralData ? (
-              <span>{referralData?.pointsEarned}</span>
+              <span>{formatNumber(referralData?.pointsEarned)}</span>
             ) : (
               <Skeleton className='w-16' />
             )}

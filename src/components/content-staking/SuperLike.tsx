@@ -206,7 +206,7 @@ export default function SuperLike({
         if (superLikeCount <= 0 && !showWhenZero) return null
         const button = (
           <button
-            onClick={(e) => {
+            onClick={() => {
               sendEventWithRef(myAddress ?? '', (refId) => {
                 sendEvent(
                   'click_superlike',
@@ -250,7 +250,7 @@ export default function SuperLike({
                 triggerOnHover
                 trigger={button}
               >
-                <p>{disabledCause}</p>
+                <p className='max-w-32 text-center'>{disabledCause}</p>
               </PopOver>
             ) : (
               button
