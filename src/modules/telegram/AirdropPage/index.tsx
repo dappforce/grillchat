@@ -2,18 +2,25 @@ import Tokens from '@/assets/graphics/airdrop/tokens.png'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import { CopyTextInline } from '@/components/CopyText'
 import Name from '@/components/Name'
+import { Skeleton } from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
+import { truncateAddress } from '@/utils/account'
+import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { RiPencilFill } from 'react-icons/ri'
+import { SiEthereum } from 'react-icons/si'
 import { TbCoins } from 'react-icons/tb'
 
 export default function AirdropPage() {
   const myAddress = useMyMainAddress()
   const openProfileModal = useProfileModal.use.openModal()
+  const { evmAddress, isLoading } = useLinkedEvmAddress()
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
@@ -45,15 +52,33 @@ export default function AirdropPage() {
                 <RiPencilFill />
               </Button>
             </div>
-            <Button
-              className='mt-0.5 flex items-center gap-1.5'
-              onClick={() =>
-                openProfileModal({ defaultOpenState: 'add-evm-provider' })
-              }
-            >
-              <TbCoins />
-              <span>Set Rewards Address</span>
-            </Button>
+            {isLoading ? (
+              <Skeleton className='w-12' />
+            ) : evmAddress ? (
+              <div className='-mt-2 flex flex-col gap-1'>
+                <div className='flex flex-row items-center gap-1.5'>
+                  <SiEthereum className='text-xl text-text-muted' />
+                  <CopyTextInline
+                    text={truncateAddress(evmAddress)}
+                    tooltip='Copy my address'
+                    textToCopy={evmAddress}
+                    textClassName={cx(
+                      'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    )}
+                  />
+                </div>
+              </div>
+            ) : (
+              <Button
+                className='mt-0.5 flex items-center gap-1.5'
+                onClick={() =>
+                  openProfileModal({ defaultOpenState: 'add-evm-provider' })
+                }
+              >
+                <TbCoins />
+                <span>Set Rewards Address</span>
+              </Button>
+            )}
           </Card>
         </div>
       </div>
