@@ -56,7 +56,6 @@ const Wrapper = createMutationWrapper(
   useWithdrawTx,
   'Failed to withdraw unlocked tokens. Please try again.'
 )
-
 export const WithdrawTxWrapper = ({ children }: WithdrawTxWrapperProps) => {
   return (
     <Wrapper loadingUntilTxSuccess>

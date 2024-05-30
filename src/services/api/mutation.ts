@@ -16,6 +16,7 @@ import mutationWrapper from '@/subsocial-query/base'
 import { apiInstance } from './utils'
 
 export async function requestToken({ address }: ApiRequestTokenBody) {
+  if (!address) return
   // make request token as pending transaction so websocket won't disconnect for 10 secs after request token
   // this is to make energy subscription work
   const requestTokenId = `request-token-${Date.now()}`

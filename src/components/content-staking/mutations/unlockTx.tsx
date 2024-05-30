@@ -205,7 +205,6 @@ const Wrapper = createMutationWrapper(
   useUnlockTx,
   'Failed to unlock the tokens'
 )
-
 export const UnlockTxWrapper = ({
   closeModal,
   children,

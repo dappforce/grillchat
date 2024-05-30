@@ -10,7 +10,6 @@ import {
 } from '@/services/subsocial/utils/mutation'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal } from '@subsocial/utils'
@@ -100,13 +99,10 @@ const Wrapper = createMutationWrapper(
   useLockOrIncreaseTx,
   'Failed to stake or increase the stake tokens. Please try again.'
 )
-
 export const LockOrIncreaseTxWrapper = ({
   closeModal,
   children,
 }: LockOrIncreaseTxWrapperProps) => {
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-
   return (
     <Wrapper
       loadingUntilTxSuccess
