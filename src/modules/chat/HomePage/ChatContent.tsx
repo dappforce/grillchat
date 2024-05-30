@@ -1,3 +1,4 @@
+import Shield from '@/assets/icons/shield.svg'
 import Button from '@/components/Button'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { augmentDatahubParams } from '@/services/datahub/utils'
@@ -24,23 +25,33 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
       hubId={hubId}
       className='overflow-hidden'
       customAction={
-        <Button
-          className='flex items-center justify-center gap-2'
-          size='lg'
-          onClick={() => {
-            mutate(
-              augmentDatahubParams({
-                image: '',
-                spaceId: '0x89f814f1045fcc797b2b3d311abee22c',
-                title: 'Test Post',
-              })
-            )
-            openExtensionModal('subsocial-image', null)
-          }}
-        >
-          <LuPlusCircle className='relative top-px text-lg' />
-          <span>Post meme</span>
-        </Button>
+        <div className='grid grid-cols-[max-content_1fr] gap-2'>
+          <Button
+            size='lg'
+            className='flex items-center justify-center gap-2'
+            variant='bgLighter'
+          >
+            <Shield className='relative top-px text-text-muted' />
+            <span className='text-text'>Rules</span>
+          </Button>
+          <Button
+            className='flex items-center justify-center gap-2'
+            size='lg'
+            onClick={() => {
+              mutate(
+                augmentDatahubParams({
+                  image: '',
+                  spaceId: '0x89f814f1045fcc797b2b3d311abee22c',
+                  title: 'Test Post',
+                })
+              )
+              openExtensionModal('subsocial-image', null)
+            }}
+          >
+            <LuPlusCircle className='relative top-px text-lg' />
+            <span>Post meme</span>
+          </Button>
+        </div>
       }
     />
   )
