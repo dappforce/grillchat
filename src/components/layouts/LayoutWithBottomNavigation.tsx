@@ -21,7 +21,7 @@ export default function LayoutWithBottomNavigation({
     <div
       {...props}
       className={cx(
-        'flex flex-col bg-background text-text',
+        'mx-auto flex max-w-screen-md flex-col bg-background text-text',
         withFixedHeight && 'h-screen',
         props.className
       )}

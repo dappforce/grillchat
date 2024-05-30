@@ -58,7 +58,7 @@ export default function Document() {
           rel='stylesheet'
         />
       </Head>
-      <body className='bg-transparent text-text'>
+      <body className='text-text'>
         <Main />
         <NextScript />
         <noscript
