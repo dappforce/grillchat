@@ -11,6 +11,7 @@ const noticeStyles = cva('flex items-start gap-2', {
         'text-blue-600 bg-blue-500/10 dark:text-blue-400 dark:bg-blue-500/10'
       ),
       grey: cx('text-text-muted bg-background-lighter'),
+      warning: cx('bg-[#FACC15]/5 text-[#FACC15]'),
     },
   },
   defaultVariants: {
