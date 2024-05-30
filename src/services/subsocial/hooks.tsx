@@ -1,3 +1,4 @@
+import Toast from '@/components/Toast'
 import useLoginOption from '@/hooks/useLoginOption'
 import { useRequestToken } from '@/services/api/mutation'
 import {
@@ -10,6 +11,7 @@ import {
   WalletAccount,
 } from '@/subsocial-query/subsocial/types'
 import { UseMutationResult, useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
 export function getCurrentWallet(
   walletType: 'injected' | 'grill' = 'grill'
@@ -57,10 +59,20 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
 
   const workerFunc = async (params: Data) => {
     let usedAddress: string = address ?? ''
-    if (!grillAddress) {
-      const address = await promptUserForLogin()
-      if (!address) return
-      usedAddress = address
+    if (!usedAddress) {
+      if (isUsingConnectedWallet) {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            title='Please connect to your polkadot wallet to perform this action'
+          />
+        ))
+        return
+      } else {
+        const address = await promptUserForLogin()
+        if (!address) return
+        usedAddress = address
+      }
     }
 
     if (!hasEnoughEnergy) {
