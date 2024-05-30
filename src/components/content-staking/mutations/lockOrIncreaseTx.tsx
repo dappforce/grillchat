@@ -10,12 +10,10 @@ import {
 } from '@/services/subsocial/utils/mutation'
 import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount } from '@/stores/my-account'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal } from '@subsocial/utils'
 import { useQueryClient } from '@tanstack/react-query'
-import { useMemo } from 'react'
 import getAmountRange from '../utils/getAmountRangeForAnalytics'
 
 type MutationProps = {
@@ -97,20 +95,14 @@ type LockOrIncreaseTxWrapperProps = {
   }) => JSX.Element
 }
 
+const Wrapper = createMutationWrapper(
+  useLockOrIncreaseTx,
+  'Failed to stake or increase the stake tokens. Please try again.'
+)
 export const LockOrIncreaseTxWrapper = ({
   closeModal,
   children,
 }: LockOrIncreaseTxWrapperProps) => {
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-
-  const Wrapper = useMemo(() => {
-    return createMutationWrapper(
-      useLockOrIncreaseTx,
-      'Failed to stake or increase the stake tokens. Please try again.',
-      !!parentProxyAddress
-    )
-  }, [parentProxyAddress])
-
   return (
     <Wrapper
       loadingUntilTxSuccess
