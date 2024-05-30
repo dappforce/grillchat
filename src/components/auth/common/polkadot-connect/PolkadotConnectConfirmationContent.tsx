@@ -44,6 +44,8 @@ export default function PolkadotConnectConfirmationContent({
     { enabled: !!connectedWallet?.address }
   )
 
+  console.log(hasEnoughEnergy)
+
   return (
     <div className='mt-2 flex flex-col gap-6'>
       <div className='flex w-full flex-col items-center gap-4'>

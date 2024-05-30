@@ -39,6 +39,7 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
   otherProps?: OtherProps
 ) {
   const connectedWallet = useMyAccount((state) => state.connectedWallet)
+  const grillAddress = useMyAccount.use.address()
   const myAddress = useMyMainAddress()
   const address = isUsingConnectedWallet ? connectedWallet?.address : myAddress
 
@@ -56,11 +57,12 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
 
   const workerFunc = async (params: Data) => {
     let usedAddress: string = address ?? ''
-    if (!address) {
+    if (!grillAddress) {
       const address = await promptUserForLogin()
       if (!address) return
       usedAddress = address
     }
+    console.log(usedAddress, hasEnoughEnergy)
 
     if (!hasEnoughEnergy) {
       const [_, res] = await Promise.all([

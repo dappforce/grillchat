@@ -21,6 +21,7 @@ import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal, isDef } from '@subsocial/utils'
 import { useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { useGetMyCreatorsIds } from '../hooks/useGetMyCreatorsIds'
 import { ACTIVE_STAKING_SPACE_ID } from '../utils'
 
@@ -207,11 +208,13 @@ export const UnlockTxWrapper = ({
 }: UnlockTxWrapperProps) => {
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
-  const Wrapper = createMutationWrapper(
-    useUnlockTx,
-    'Failed to unlock the tokens',
-    !!parentProxyAddress
-  )
+  const Wrapper = useMemo(() => {
+    return createMutationWrapper(
+      useUnlockTx,
+      'Failed to unlock the tokens',
+      !!parentProxyAddress
+    )
+  }, [parentProxyAddress])
 
   return (
     <Wrapper

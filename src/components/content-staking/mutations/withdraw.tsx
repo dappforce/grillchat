@@ -9,6 +9,7 @@ import { useMyAccount } from '@/stores/my-account'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
 import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
 export function useWithdrawTx(config?: SubsocialMutationConfig<{}>) {
   const client = useQueryClient()
@@ -56,11 +57,13 @@ type WithdrawTxWrapperProps = {
 export const WithdrawTxWrapper = ({ children }: WithdrawTxWrapperProps) => {
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
-  const Wrapper = createMutationWrapper(
-    useWithdrawTx,
-    'Failed to withdraw unlocked tokens. Please try again.',
-    !!parentProxyAddress
-  )
+  const Wrapper = useMemo(() => {
+    return createMutationWrapper(
+      useWithdrawTx,
+      'Failed to withdraw unlocked tokens. Please try again.',
+      !!parentProxyAddress
+    )
+  }, [parentProxyAddress])
 
   return (
     <Wrapper loadingUntilTxSuccess>
