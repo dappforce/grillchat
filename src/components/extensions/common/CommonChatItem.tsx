@@ -249,7 +249,6 @@ export default function CommonChatItem({
           childrenElement}
 
         <SuperLike
-          onButtonClick={(e) => e.stopPropagation()}
           isMyMessage={isMyMessage}
           showWhenZero={showSuperLikeWhenZero}
           withPostReward

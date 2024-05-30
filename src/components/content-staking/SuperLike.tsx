@@ -186,9 +186,8 @@ export default function SuperLike({
   isMyMessage,
   withPostReward,
   showWhenZero,
-  onButtonClick,
   ...props
-}: SuperLikeProps & { onButtonClick?: (e: SyntheticEvent) => void }) {
+}: SuperLikeProps) {
   const myAddress = useMyMainAddress()
   const sendEvent = useSendEvent()
   if (currentNetwork !== 'subsocial') return null
@@ -208,7 +207,6 @@ export default function SuperLike({
         const button = (
           <button
             onClick={(e) => {
-              onButtonClick?.(e)
               sendEventWithRef(myAddress ?? '', (refId) => {
                 sendEvent(
                   'click_superlike',
