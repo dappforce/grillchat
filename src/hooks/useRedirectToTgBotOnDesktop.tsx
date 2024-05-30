@@ -11,8 +11,6 @@ const useRedirectToTgBotOnDesktop = () => {
     const isMobile = isTouchDevice()
 
     if (!isMobile && !app?.result && isMounted) {
-      console.log('redirect')
-
       window.location.href = 'https://t.me/botb1o1t_bot'
     }
   }, [!!app?.result, isMounted])
