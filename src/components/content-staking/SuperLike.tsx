@@ -85,10 +85,11 @@ export function SuperLikeWrapper({
   const myGrillAddress = useMyAccount.use.address()
   const {
     data: isActiveStaker,
-    isLoading: loadingActiveStaker,
+    isLoading: loadingActiveStakerRaw,
     isFetching: isFetchingActiveStaker,
     refetch,
   } = getIsActiveStakerQuery.useQuery(myAddress ?? '')
+  const isLoadingActiveStaker = loadingActiveStakerRaw && !!myAddress
 
   const { data: myLike, isFetching: loadingMyLike } =
     getAddressLikeCountToPostQuery.useQuery({
@@ -107,12 +108,12 @@ export function SuperLikeWrapper({
       isMyPost ||
       loadingMyLike ||
       loadingBlocked ||
-      loadingActiveStaker ||
+      isLoadingActiveStaker ||
       !message) &&
     !hasILiked
 
   let disabledCause = ''
-  if (loadingActiveStaker || loadingBlocked) disabledCause = 'Loading...'
+  if (isLoadingActiveStaker || loadingBlocked) disabledCause = 'Loading...'
   else if (isMyPost) {
     disabledCause = `You cannot like your own ${entity}`
   } else if (!isExist)

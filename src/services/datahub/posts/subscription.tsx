@@ -1,9 +1,12 @@
+import Toast from '@/components/Toast'
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
+import { getMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
 import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
@@ -144,6 +147,17 @@ async function processMessage(
     } else {
       await getPostQuery.fetchQuery(queryClient, newestId)
     }
+  }
+
+  const newPost = getPostQuery.getQueryData(queryClient, newestId)
+  if (newPost?.struct.ownerId === getMyMainAddress()) {
+    toast.custom((t) => (
+      <Toast
+        t={t}
+        title='Your meme was sent!'
+        description='Your points was deducted by 2500 points'
+      />
+    ))
   }
 
   const rootPostId = entity.rootPost?.persistentId
