@@ -3,7 +3,6 @@ import { getPluralText } from '@/components/PluralText'
 import Spinner from '@/components/Spinner'
 import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import ChatImage from '@/components/chats/ChatImage'
-import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
@@ -311,7 +310,7 @@ function NavbarChatInfo({
         <div className='flex flex-col'>
           <div className='flex items-center gap-2'>
             <span className='line-clamp-1 font-medium'>{chatTitle}</span>
-            <ChatModerateChip chatId={chatId} />
+            {/* <ChatModerateChip chatId={chatId} /> */}
             {chat?.struct.hidden && (
               <ChatHiddenChip popOverProps={{ placement: 'bottom' }} />
             )}

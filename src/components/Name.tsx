@@ -5,7 +5,6 @@ import { getUserProfileLink } from '@/utils/links'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps, ComponentPropsWithoutRef, forwardRef } from 'react'
 import { useInView } from 'react-intersection-observer'
-import ChatModerateChip from './chats/ChatModerateChip'
 import PopOver from './floating/PopOver'
 import CustomLink from './referral/CustomLink'
 
@@ -128,13 +127,13 @@ export default function Name({
         {additionalText} {name}{' '}
       </span>
       {/* {profileSourceIconPosition === 'right' && identitiesIcons} */}
-      {inView && showModeratorChip && (
+      {/* {inView && showModeratorChip && (
         <ChatModerateChip
           className='relative top-px flex items-center'
           chatId={labelingData?.chatId ?? ''}
           address={address}
         />
-      )}
+      )} */}
     </LinkOrText>
   )
 }

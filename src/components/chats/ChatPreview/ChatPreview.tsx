@@ -8,7 +8,6 @@ import { LinkProps } from 'next/link'
 import { ComponentProps } from 'react'
 import { RiPushpinLine } from 'react-icons/ri'
 import ChatImage, { ChatImageProps } from '../ChatImage'
-import ChatModerateChip from '../ChatModerateChip'
 import ChatLastMessage from './ChatLastMessage'
 
 // dynamic import to prevent hydration mismatch
@@ -118,7 +117,7 @@ export default function ChatPreview({
                 <span className='overflow-hidden text-ellipsis whitespace-nowrap font-medium'>
                   {usedTitle}
                 </span>
-                {chatId && <ChatModerateChip chatId={chatId} />}
+                {/* {chatId && <ChatModerateChip chatId={chatId} />} */}
               </div>
               {renderAdditionalData()}
             </div>
