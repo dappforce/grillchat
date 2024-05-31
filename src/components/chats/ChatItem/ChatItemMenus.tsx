@@ -1,8 +1,6 @@
 import Button from '@/components/Button'
 import MenuList from '@/components/MenuList'
-import Toast from '@/components/Toast'
 import { SuperLikeWrapper } from '@/components/content-staking/SuperLike'
-import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -10,35 +8,25 @@ import PopOver from '@/components/floating/PopOver'
 import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
-import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
-import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
-import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
-import { useLoginModal } from '@/stores/login-modal'
-import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
-import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
-import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
-import { MdContentCopy } from 'react-icons/md'
-import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
+import { LuShield } from 'react-icons/lu'
 import { useInView } from 'react-intersection-observer'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 
@@ -59,7 +47,7 @@ export default function ChatItemMenus({
   hubId,
   enableChatMenu = true,
 }: ChatItemMenusProps) {
-  const canSendMessage = useCanSendMessage(hubId, chatId)
+  // const canSendMessage = useCanSendMessage(hubId, chatId)
   const myAddress = useMyMainAddress()
 
   const isOpen = useChatMenu((state) => state.openedChatId === messageId)
@@ -69,42 +57,42 @@ export default function ChatItemMenus({
   const { data: post } = getPostQuery.useQuery(messageId)
   const ownerId = post?.struct.ownerId ?? ''
   const { ref, inView } = useInView({ triggerOnce: true })
-  const { evmAddress } = useLinkedEvmAddress(ownerId, { enabled: inView })
-  const refSearchParam = useReferralSearchParam()
+  // const { evmAddress } = useLinkedEvmAddress(ownerId, { enabled: inView })
+  // const refSearchParam = useReferralSearchParam()
 
-  const router = useRouter()
+  // const router = useRouter()
 
-  const address = useMyMainAddress()
+  // const address = useMyMainAddress()
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 
   const sendEvent = useSendEvent()
-  const openDonateExtension = useOpenDonateExtension(
-    message?.id,
-    message?.struct.ownerId ?? ''
-  )
+  // const openDonateExtension = useOpenDonateExtension(
+  //   message?.id,
+  //   message?.struct.ownerId ?? ''
+  // )
 
-  const setReplyTo = useMessageData((state) => state.setReplyTo)
-  const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
+  // const setReplyTo = useMessageData((state) => state.setReplyTo)
+  // const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { dataType } = message?.struct || {}
 
   const isOptimisticMessage = !dataType
 
-  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
+  // const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const menus: FloatingMenusProps['menus'] = [
-      {
-        text: 'Copy Text',
-        icon: MdContentCopy,
-        onClick: () => {
-          copyToClipboard(message?.content?.body ?? '')
-          toast.custom((t) => (
-            <Toast t={t} title='Message copied to clipboard!' />
-          ))
-        },
-      },
+      // {
+      //   text: 'Copy Text',
+      //   icon: MdContentCopy,
+      //   onClick: () => {
+      //     copyToClipboard(message?.content?.body ?? '')
+      //     toast.custom((t) => (
+      //       <Toast t={t} title='Message copied to clipboard!' />
+      //     ))
+      //   },
+      // },
       // {
       //   text: 'Copy Message Link',
       //   icon: FiLink,
@@ -122,11 +110,11 @@ export default function ChatItemMenus({
       //     ))
       //   },
       // },
-      {
-        text: 'Show Metadata',
-        icon: RiDatabase2Line,
-        onClick: () => setModalState('metadata'),
-      },
+      // {
+      //   text: 'Show Metadata',
+      //   icon: RiDatabase2Line,
+      //   onClick: () => setModalState('metadata'),
+      // },
     ]
 
     const hideMenu: FloatingMenusProps['menus'][number] = {
@@ -149,60 +137,63 @@ export default function ChatItemMenus({
 
     if (isOptimisticMessage) return menus
 
-    const donateMenuItem: FloatingMenusProps['menus'][number] = {
-      text: 'Donate',
-      icon: RiCopperCoinLine,
-      onClick: () => {
-        sendEventWithRef(myAddress ?? '', (refId) => {
-          sendEvent('click_donate', { postId: messageId }, { ref: refId })
-        })
-        if (!address) {
-          useLoginModal.getState().setIsOpen(true)
-          return
-        }
+    // const donateMenuItem: FloatingMenusProps['menus'][number] = {
+    //   text: 'Donate',
+    //   icon: RiCopperCoinLine,
+    //   onClick: () => {
+    //     sendEventWithRef(myAddress ?? '', (refId) => {
+    //       sendEvent('click_donate', { postId: messageId }, { ref: refId })
+    //     })
+    //     if (!address) {
+    //       useLoginModal.getState().setIsOpen(true)
+    //       return
+    //     }
 
-        sendEvent('open_donate_action_modal', { hubId, chatId })
-        openDonateExtension()
-      },
-    }
-    const replyItem: FloatingMenusProps['menus'][number] = {
-      text: 'Reply',
-      icon: LuReply,
-      onClick: () => {
-        sendEventWithRef(myAddress ?? '', (refId) => {
-          sendEvent(
-            'click_reply',
-            {
-              eventSource: 'message_menu',
-              postId: messageId,
-            },
-            { ref: refId }
-          )
-        })
-        setReplyTo(messageId)
-      },
-    }
-    const editItem: FloatingMenusProps['menus'][number] = {
-      text: 'Edit',
-      icon: LuPencil,
-      onClick: () => setMessageToEdit(messageId),
-    }
-    const showDonateMenuItem = canSendMessage && !isMessageOwner && evmAddress
+    //     sendEvent('open_donate_action_modal', { hubId, chatId })
+    //     openDonateExtension()
+    //   },
+    // }
+    // const replyItem: FloatingMenusProps['menus'][number] = {
+    //   text: 'Reply',
+    //   icon: LuReply,
+    //   onClick: () => {
+    //     sendEventWithRef(myAddress ?? '', (refId) => {
+    //       sendEvent(
+    //         'click_reply',
+    //         {
+    //           eventSource: 'message_menu',
+    //           postId: messageId,
+    //         },
+    //         { ref: refId }
+    //       )
+    //     })
+    //     setReplyTo(messageId)
+    //   },
+    // }
+    // const editItem: FloatingMenusProps['menus'][number] = {
+    //   text: 'Edit',
+    //   icon: LuPencil,
+    //   onClick: () => setMessageToEdit(messageId),
+    // }
+    // const showDonateMenuItem = canSendMessage && !isMessageOwner && evmAddress
 
-    if (showDonateMenuItem) menus.unshift(donateMenuItem)
-    if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
-    if (canSendMessage && isMessageOwner) menus.unshift(editItem)
+    // if (showDonateMenuItem) menus.unshift(donateMenuItem)
+    // if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    // if (canSendMessage && isMessageOwner) menus.unshift(editItem)
     // if (message)
     //   menus.unshift({
     //     text: 'Share',
     //     icon: GrShareOption,
     //     submenus: getShareMessageMenus(message),
     //   })
-    if (canSendMessage) menus.unshift(replyItem)
+    // if (canSendMessage) menus.unshift(replyItem)
 
     return menus
   }
-  const menus = enableChatMenu ? getChatMenus() : []
+  const menus =
+    enableChatMenu && (message?.struct.ownerId === myAddress || isAuthorized)
+      ? getChatMenus()
+      : []
 
   return (
     <>
