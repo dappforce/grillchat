@@ -152,7 +152,7 @@ function LikeCount() {
     myAddress ?? ''
   )
 
-  if (isLoading) {
+  if (isLoading && myAddress) {
     return (
       <Skeleton className='relative -top-0.5 inline-block w-12 align-middle' />
     )
@@ -167,7 +167,7 @@ function Points() {
     myAddress || ''
   )
 
-  if (isLoading) {
+  if (isLoading && myAddress) {
     return <Skeleton className='inline-block w-12' />
   }
 
