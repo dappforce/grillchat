@@ -5,23 +5,20 @@ import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNav
 import useIsMounted from '@/hooks/useIsMounted'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useMyMainAddress } from '@/stores/my-account'
-import { getCurrentUrlOrigin } from '@/utils/links'
 import { copyToClipboard, formatNumber } from '@/utils/strings'
 import { useState } from 'react'
-import urlJoin from 'url-join'
 import PointsWidget from '../points/PointsWidget'
+
+function getReferralLink(ref: string | null) {
+  return `https://t.me/subsocial_staging_bot?start=${ref ?? ''}`
+}
 
 export default function FriendsPage() {
   const isMounted = useIsMounted()
   const myAddress = useMyMainAddress()
   const [isCopied, setIsCopied] = useState(false)
-  const { data: referralData, isLoading } = getUserReferralsQuery.useQuery(
-    myAddress || ''
-  )
-  const referralLink =
-    isMounted && myAddress
-      ? urlJoin(getCurrentUrlOrigin(), `?ref=${myAddress}`)
-      : ''
+  const { data: referralData } = getUserReferralsQuery.useQuery(myAddress || '')
+  const referralLink = getReferralLink(myAddress)
 
   const onCopyClick = (text: string) => {
     copyToClipboard(text)
