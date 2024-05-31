@@ -15,6 +15,8 @@ import {
   GetPostRewardsQueryVariables,
   GetSuperLikeCountsQuery,
   GetSuperLikeCountsQueryVariables,
+  GetTodaySuperLikeCountQuery,
+  GetTodaySuperLikeCountQueryVariables,
 } from '../generated-query'
 import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 
@@ -439,6 +441,37 @@ export async function getRewardReport(address: string): Promise<RewardReport> {
 export const getRewardReportQuery = createQuery({
   key: 'getRewardReport',
   fetcher: getRewardReport,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+const GET_TODAY_SUPER_LIKE_COUNT = gql`
+  query GetTodaySuperLikeCount($address: String!, $day: Int!) {
+    activeStakingDailyStatsByStaker(
+      args: { address: $address, dayTimestamp: $day }
+    ) {
+      superLikesCount
+    }
+  }
+`
+export async function getTodaySuperLikeCount(
+  address: string
+): Promise<{ count: number }> {
+  const res = await datahubQueryRequest<
+    GetTodaySuperLikeCountQuery,
+    GetTodaySuperLikeCountQueryVariables
+  >({
+    document: GET_TODAY_SUPER_LIKE_COUNT,
+    variables: { address, ...getDayAndWeekTimestamp() },
+  })
+  return {
+    count: res.activeStakingDailyStatsByStaker.superLikesCount,
+  }
+}
+export const getTodaySuperLikeCountQuery = createQuery({
+  key: 'getTodaySuperLikeCount',
+  fetcher: getTodaySuperLikeCount,
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
   }),

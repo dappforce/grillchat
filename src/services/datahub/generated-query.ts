@@ -1851,6 +1851,19 @@ export type GetRewardReportQuery = {
   }>
 }
 
+export type GetTodaySuperLikeCountQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  day: Scalars['Int']['input']
+}>
+
+export type GetTodaySuperLikeCountQuery = {
+  __typename?: 'Query'
+  activeStakingDailyStatsByStaker: {
+    __typename?: 'DailyStatsByStakerResponse'
+    superLikesCount: number
+  }
+}
+
 export type GetRewardHistoryQueryVariables = Exact<{
   address: Scalars['String']['input']
 }>
@@ -3110,6 +3123,15 @@ export const GetRewardReport = gql`
           superLikesCount
         }
       }
+    }
+  }
+`
+export const GetTodaySuperLikeCount = gql`
+  query GetTodaySuperLikeCount($address: String!, $day: Int!) {
+    activeStakingDailyStatsByStaker(
+      args: { address: $address, dayTimestamp: $day }
+    ) {
+      superLikesCount
     }
   }
 `

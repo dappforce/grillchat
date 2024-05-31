@@ -6,6 +6,7 @@ import Thumbsup from '@/assets/emojis/thumbsup.png'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
+import { getTodaySuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -41,7 +42,10 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
         >
           <div className='flex items-center gap-2'>
             <Image className='h-6 w-6' src={Thumbsup} alt='' />
-            <span className='text-xl font-bold'>10/10</span>
+            <span className='text-xl font-bold'>
+              <LikeCount />
+              /10
+            </span>
           </div>
           <div className='flex items-center gap-2'>
             <Image className='h-7 w-7' src={Diamond} alt='' />
@@ -142,6 +146,21 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
   )
 }
 
+function LikeCount() {
+  const myAddress = useMyMainAddress()
+  const { data, isLoading } = getTodaySuperLikeCountQuery.useQuery(
+    myAddress ?? ''
+  )
+
+  if (isLoading) {
+    return (
+      <Skeleton className='relative -top-0.5 inline-block w-12 align-middle' />
+    )
+  }
+
+  return <span>{formatNumber(data?.count ?? '0')}</span>
+}
+
 function Points() {
   const myAddress = useMyMainAddress()
   const { data: referralData, isLoading } = getUserReferralsQuery.useQuery(
@@ -149,7 +168,7 @@ function Points() {
   )
 
   if (isLoading) {
-    return <Skeleton className='w-12' />
+    return <Skeleton className='inline-block w-12' />
   }
 
   return <span>{formatNumber(referralData?.pointsEarned ?? '0')}</span>
