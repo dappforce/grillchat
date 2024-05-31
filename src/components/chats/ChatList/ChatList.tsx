@@ -201,7 +201,7 @@ function ChatListContent({
                   return (
                     <Fragment key={message?.id ?? index}>
                       {shouldRenderUnreadMessageNotice && (
-                        <div className='mb-2 mt-4 w-full rounded-md bg-background py-0.5 text-center text-sm text-text-muted'>
+                        <div className='mb-2 mt-4 w-full rounded-md bg-background-light/50 py-0.5 text-center text-sm text-text-muted'>
                           Unread messages
                         </div>
                       )}
