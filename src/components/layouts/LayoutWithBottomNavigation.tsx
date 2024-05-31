@@ -1,5 +1,6 @@
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { ComponentProps } from 'react'
+import { ComponentProps, useEffect } from 'react'
 import useLoginInTelegramMiniApps from '../navbar/Navbar/telegramLogin/useLoginInTelegramMiniApps'
 import MobileNavigation from './MobileNavigation'
 
@@ -15,6 +16,7 @@ export default function LayoutWithBottomNavigation({
   withFixedWidth,
   ...props
 }: DefaultLayoutProps) {
+  const logout = useMyAccount((state) => state.logout)
   useLoginInTelegramMiniApps()
   // const app = useMiniAppRaw(true)
   // const isMobile = isTouchDevice()
@@ -23,6 +25,12 @@ export default function LayoutWithBottomNavigation({
   // if (app?.result && !isMobile) {
   //   return <>Use mobile device for better expirience</>
   // }
+
+  useEffect(() => {
+    window.addEventListener('beforeunload', () => {
+      logout()
+    })
+  }, [])
 
   return (
     <div
