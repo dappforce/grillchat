@@ -33,7 +33,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
         <div
           {...props}
           className={cx(
-            'flex w-full cursor-pointer items-center justify-between rounded-b-2xl bg-black/50 px-4.5 py-3 backdrop-blur-xl',
+            'z-20 flex w-full cursor-pointer items-center justify-between rounded-b-2xl bg-black/50 px-4.5 py-3 backdrop-blur-xl',
             props.className
           )}
           onClick={() => {
