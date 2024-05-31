@@ -1,48 +1,33 @@
+import Diamond from '@/assets/graphics/creators/diamonds/diamond.png'
 import MedalsImage from '@/assets/graphics/medals.png'
 import AddressAvatar from '@/components/AddressAvatar'
 import FormatBalance from '@/components/FormatBalance'
-import LinkText from '@/components/LinkText'
 import Loading from '@/components/Loading'
 import Name from '@/components/Name'
-import Table, { Column } from '@/components/Table'
-import { spaceGrotesk } from '@/fonts'
-import { getLeaderboardDataQuery } from '@/services/datahub/leaderboard/query'
+import { Column, TableRow } from '@/components/Table'
+import {
+  getLeaderboardDataQuery,
+  getUserStatisticsQuery,
+} from '@/services/datahub/leaderboard/query'
 import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
-import { getProfileQuery } from '@/services/datahub/profiles/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { isEmptyArray } from '@subsocial/utils'
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
-import LeaderboardModal from './LeaderboardModal'
+import { useMemo } from 'react'
 
-const TABLE_LIMIT = 10
+const TABLE_LIMIT = 100
 
-export const leaderboardColumns = (
-  customColumnsClassNames?: (string | undefined)[]
-): Column[] => [
-  {
-    index: 'rank',
-    name: '#',
-    className: cx(
-      'p-0 py-2 pl-2 w-[45px]',
-      mutedTextColorStyles,
-      customColumnsClassNames?.[0]
-    ),
-  },
+export const leaderboardColumns = (): Column[] => [
   {
     index: 'user-role',
-    name: 'User',
     align: 'left',
-    className: cx('p-0 py-2', customColumnsClassNames?.[1]),
+    className: cx('p-0 py-2 pl-2 w-[85%] '),
   },
   {
-    index: 'rewards',
-    name: 'Points',
+    index: 'rank',
     align: 'right',
-    className: cx(
-      'p-0 py-2 pr-2 md:w-[20%] w-[38%]',
-      customColumnsClassNames?.[2]
-    ),
+    className: cx('p-0 py-2 pr-2'),
   },
 ]
 
@@ -63,17 +48,27 @@ const parseTableRows = (
     reward: string
   }[],
   limit: number,
-  address?: string
+  currentUserRank: {
+    address: string
+    rank: number | null
+    reward: string
+  }
 ) => {
   return (
     data
       .map((item) => ({
         address: item.address,
         rank: item.rank!,
-        'user-role': <UserPreview address={item.address} />,
-        rewards: <UserReward reward={item.reward} />,
+        'user-role': (
+          <UserPreview
+            address={item.address}
+            desc={<UserReward reward={item.reward} />}
+          />
+        ),
         className:
-          item.address === address ? 'dark:bg-slate-700 bg-[#EEF2FF]' : '',
+          item.address === currentUserRank.address
+            ? 'bg-slate-800 sticky top-[3.5rem] z-20'
+            : '',
       }))
       .slice(0, limit) || []
   )
@@ -81,35 +76,52 @@ const parseTableRows = (
 
 const LeaderboardTable = ({
   role,
-  currentUserRank,
   customColumnsClassNames,
 }: LeaderboardTableProps) => {
-  const [openModal, setOpenModal] = useState(false)
-
+  const myAddress = useMyMainAddress()
   const { data: leaderboardData, isLoading } =
     getLeaderboardDataQuery.useInfiniteQuery(role)
+
+  const { data: userStats, isLoading: isUserStatsLoading } =
+    getUserStatisticsQuery.useQuery({
+      address: myAddress || '',
+    })
+  const { rank, earnedPointsByPeriod } = userStats?.[role] || {}
+
+  const currentUserRank = {
+    address: myAddress || '',
+    rank: rank || null,
+    reward: earnedPointsByPeriod?.toString() || '0',
+  }
 
   const dataItems = leaderboardData?.pages[0].data || []
 
   const data = useMemo(() => {
-    if (!currentUserRank || (currentUserRank.rank ?? 0) < TABLE_LIMIT) {
-      return parseTableRows(
-        dataItems || [],
-        TABLE_LIMIT,
-        currentUserRank?.address
-      )
+    if (
+      currentUserRank &&
+      currentUserRank.rank &&
+      currentUserRank.rank > TABLE_LIMIT
+    ) {
+      return [
+        {
+          address: currentUserRank.address,
+          rank: currentUserRank.rank!,
+          'user-role': (
+            <UserPreview
+              address={currentUserRank.address}
+              desc={<UserReward reward={currentUserRank.reward} />}
+            />
+          ),
+          className:
+            currentUserRank.address === currentUserRank.address
+              ? 'bg-slate-800 sticky top-[3.5rem] z-20'
+              : '',
+        },
+        ...parseTableRows(dataItems || [], TABLE_LIMIT, currentUserRank),
+      ]
     }
 
-    return [
-      {
-        address: currentUserRank.address,
-        rank: currentUserRank.rank!,
-        'user-role': <UserPreview address={currentUserRank.address} />,
-        rewards: <UserReward reward={currentUserRank.reward} />,
-        className: 'dark:bg-slate-700 bg-[#EEF2FF]',
-      },
-      ...parseTableRows(dataItems || [], TABLE_LIMIT - 1, role),
-    ]
+    return parseTableRows(dataItems || [], TABLE_LIMIT, currentUserRank)
   }, [JSON.stringify(currentUserRank), role, leaderboardData?.pages[0]])
 
   return (
@@ -135,33 +147,24 @@ const LeaderboardTable = ({
           </div>
         ))}
       {!isEmptyArray(data) && (
-        <div className='my-4 flex w-full flex-col'>
-          <Table
-            columns={leaderboardColumns(customColumnsClassNames)}
-            data={data}
-            className='rounded-none !bg-transparent dark:!bg-transparent [&>table]:table-fixed'
-            headerClassName='!bg-transparent dark:!bg-transparent'
-            rowsClassName='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl first:[&>td]:pl-2 last:[&>td]:pr-2'
-            withDivider={false}
-          />
-          {dataItems.length > TABLE_LIMIT && (
-            <LinkText
-              className='mt-3 w-full text-center hover:no-underline'
-              onClick={() => setOpenModal(true)}
-              variant={'primary'}
-            >
-              View more
-            </LinkText>
-          )}
+        <div className='flex w-full flex-col'>
+          <table className='w-full table-fixed text-left'>
+            <tbody>
+              {data.map((item, i) => {
+                return (
+                  <TableRow
+                    key={i}
+                    columns={leaderboardColumns()}
+                    item={item}
+                    withDivider={false}
+                    className='first:[&>td]:rounded-s-xl last:[&>td]:rounded-e-xl'
+                  />
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
-
-      <LeaderboardModal
-        openModal={openModal}
-        closeModal={() => setOpenModal(false)}
-        role={role}
-        currentUserAddress={currentUserRank?.address}
-      />
     </>
   )
 }
@@ -172,25 +175,25 @@ type UserRewardProps = {
 
 export const UserReward = ({ reward }: UserRewardProps) => {
   return (
-    <FormatBalance
-      value={reward}
-      symbol={''}
-      defaultMaximumFractionDigits={2}
-      loading={false}
-      className={cx('font-medium', spaceGrotesk.className)}
-    />
+    <div className='flex items-center gap-1'>
+      <Image src={Diamond} alt='' className='h-[14px] w-[14px]' />
+      <FormatBalance
+        value={reward}
+        symbol={''}
+        defaultMaximumFractionDigits={2}
+        loading={false}
+        className={cx('font-medium', mutedTextColorStyles)}
+      />
+    </div>
   )
 }
 
 type UserPreviewProps = {
   address: string
+  desc?: React.ReactNode
 }
 
-export const UserPreview = ({ address }: UserPreviewProps) => {
-  const { data: profile } = getProfileQuery.useQuery(address)
-
-  const about = profile?.profileSpace?.content?.about
-
+export const UserPreview = ({ address, desc }: UserPreviewProps) => {
   return (
     <div className='flex items-center gap-2'>
       <AddressAvatar address={address} className='h-[38px] w-[38px]' />
@@ -199,14 +202,13 @@ export const UserPreview = ({ address }: UserPreviewProps) => {
           address={address}
           className='text-sm font-medium leading-none !text-text'
         />
-        {about && (
+        {desc && (
           <div
             className={cx(
-              'overflow-hidden overflow-ellipsis whitespace-nowrap text-xs leading-none',
-              mutedTextColorStyles
+              'overflow-hidden overflow-ellipsis whitespace-nowrap text-xs leading-none'
             )}
           >
-            {about}
+            {desc}
           </div>
         )}
       </div>
