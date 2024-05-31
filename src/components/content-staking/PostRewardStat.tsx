@@ -4,7 +4,6 @@ import { formatBalance } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
-import PopOver from '../floating/PopOver'
 
 export type PostRewardStatProps = ComponentProps<'div'> & { postId: string }
 
@@ -75,7 +74,11 @@ export default function PostRewardStat({
             <TbCoins />
           )}
         </div> */}
-        <PopOver
+        <div className='flex items-center gap-1.5'>
+          <Image src={Diamond} alt='' className='h-5 w-auto' />
+          <span>{totalReward}</span>
+        </div>
+        {/* <PopOver
           placement='top'
           yOffset={4}
           panelSize='sm'
@@ -91,7 +94,7 @@ export default function PostRewardStat({
             Points keep track of a user&apos;s score for that week. At the end
             of each week, points are converted to memecoin rewards.
           </span>
-        </PopOver>
+        </PopOver> */}
         {/* <PopOver
           placement='top'
           yOffset={4}
