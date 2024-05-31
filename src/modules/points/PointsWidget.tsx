@@ -6,8 +6,8 @@ import Thumbsup from '@/assets/emojis/thumbsup.png'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
+import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { getTodaySuperLikeCountQuery } from '@/services/datahub/content-staking/query'
-import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -163,13 +163,11 @@ function LikeCount() {
 
 function Points() {
   const myAddress = useMyMainAddress()
-  const { data: referralData, isLoading } = getUserReferralsQuery.useQuery(
-    myAddress || ''
-  )
+  const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
 
   if (isLoading && myAddress) {
     return <Skeleton className='inline-block w-12' />
   }
 
-  return <span>{formatNumber(referralData?.pointsEarned ?? '0')}</span>
+  return <span>{formatNumber(data ?? '0')}</span>
 }

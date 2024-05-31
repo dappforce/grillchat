@@ -4,6 +4,7 @@ import { DataHubSubscriptionEventEnum } from '@subsocial/data-hub-sdk'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
+import { getBalanceQuery } from '../balances/query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
   getAddressLikeCountToPostQuery,
@@ -123,6 +124,7 @@ async function processSubscriptionEvent(
       address: myAddress,
       postId: post.persistentId,
     })
-    getTodaySuperLikeCountQuery.invalidate(queryClient)
+    getTodaySuperLikeCountQuery.invalidate(queryClient, myAddress)
+    getBalanceQuery.invalidate(queryClient, myAddress)
   }
 }
