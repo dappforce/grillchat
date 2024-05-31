@@ -5,7 +5,10 @@ import Speaker from '@/assets/emojis/speaker.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import { Skeleton } from '@/components/SkeletonFallback'
+import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useSendEvent } from '@/stores/analytics'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
@@ -42,7 +45,9 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
           </div>
           <div className='flex items-center gap-2'>
             <Image className='h-7 w-7' src={Diamond} alt='' />
-            <span className='text-xl font-bold'>134,459</span>
+            <span className='text-xl font-bold'>
+              <Points />
+            </span>
             <FaChevronDown className='relative top-0.5' />
           </div>
         </div>
@@ -57,7 +62,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
             <div className='flex items-center gap-3'>
               <Image src={Diamond} alt='' className='h-14 w-14' />
               <span className='text-4xl font-bold'>
-                {formatNumber('134459')}
+                <Points />
               </span>
             </div>
             <div className='flex w-full flex-col gap-4'>
@@ -135,4 +140,17 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
       </Drawer.Portal>
     </Drawer.Root>
   )
+}
+
+function Points() {
+  const myAddress = useMyMainAddress()
+  const { data: referralData, isLoading } = getUserReferralsQuery.useQuery(
+    myAddress || ''
+  )
+
+  if (isLoading) {
+    return <Skeleton className='w-12' />
+  }
+
+  return <span>{formatNumber(referralData?.pointsEarned ?? '0')}</span>
 }
