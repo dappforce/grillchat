@@ -7,8 +7,8 @@ import { useEffect, useRef } from 'react'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
   getAddressLikeCountToPostQuery,
-  getRewardReportQuery,
   getSuperLikeCountQuery,
+  getTodaySuperLikeCountQuery,
 } from './query'
 
 export function useDatahubContentStakingSubscriber() {
@@ -123,6 +123,6 @@ async function processSubscriptionEvent(
       address: myAddress,
       postId: post.persistentId,
     })
-    getRewardReportQuery.invalidate(queryClient, myAddress)
+    getTodaySuperLikeCountQuery.invalidate(queryClient)
   }
 }
