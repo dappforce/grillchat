@@ -49,7 +49,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
           </div>
           <div className='flex items-center gap-2'>
             <Image className='h-7 w-7' src={Diamond} alt='' />
-            <span className='text-xl font-bold'>
+            <span className='flex items-center text-xl font-bold'>
               <Points />
             </span>
             <FaChevronDown className='relative top-0.5' />
@@ -65,7 +65,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
           <div className='mx-auto flex h-full max-h-[650px] w-full max-w-screen-md flex-col items-center justify-evenly overflow-auto px-4 pt-8'>
             <div className='flex items-center gap-3'>
               <Image src={Diamond} alt='' className='h-14 w-14' />
-              <span className='text-4xl font-bold'>
+              <span className='flex items-center text-4xl font-bold'>
                 <Points />
               </span>
             </div>
