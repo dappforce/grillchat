@@ -50,7 +50,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
           <div className='flex items-center gap-2'>
             <Image className='h-7 w-7' src={Diamond} alt='' />
             <span className='flex items-center text-xl font-bold'>
-              <Points />
+              <Points shorten />
             </span>
             <FaChevronDown className='relative top-0.5' />
           </div>
@@ -146,7 +146,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
   )
 }
 
-function LikeCount() {
+function LikeCount({ shorten }: { shorten?: boolean }) {
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getTodaySuperLikeCountQuery.useQuery(
     myAddress ?? ''
@@ -158,10 +158,10 @@ function LikeCount() {
     )
   }
 
-  return <span>{formatNumber(data?.count ?? '0')}</span>
+  return <span>{formatNumber(data?.count ?? '0', { shorten })}</span>
 }
 
-function Points() {
+function Points({ shorten }: { shorten?: boolean }) {
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
 
@@ -169,5 +169,5 @@ function Points() {
     return <Skeleton className='inline-block w-12' />
   }
 
-  return <span>{formatNumber(data ?? '0')}</span>
+  return <span>{formatNumber(data ?? '0', { shorten })}</span>
 }

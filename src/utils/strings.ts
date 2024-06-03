@@ -45,8 +45,28 @@ export function getUrlFromText(str: string) {
 
 export const TAGS_REGEX = /#[a-zA-Z0-9_]+/g
 
-export function formatNumber(num: number | string) {
-  const [prefix, postfix] = num.toString().split('.')
+export function formatNumber(
+  num: number | string,
+  config?: { shorten?: boolean }
+) {
+  const { shorten } = config || {}
+  let [prefix, postfix] = num.toString().split('.')
+  if (prefix.length < 4) {
+    return (postfix = '')
+  }
+
+  if (shorten) {
+    if (prefix.length > 9) {
+      return `${(Number(prefix) / 1_000_000_000).toFixed(2)}b`
+    }
+    if (prefix.length > 6) {
+      return `${(Number(prefix) / 1_000_000).toFixed(2)}m`
+    }
+    if (prefix.length > 3) {
+      return `${(Number(prefix) / 1_000).toFixed(2)}k`
+    }
+  }
+
   const string = prefix.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   if (postfix) {
     return `${string}.${postfix}`

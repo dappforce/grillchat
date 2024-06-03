@@ -2,6 +2,7 @@ import Diamond from '@/assets/emojis/diamond.png'
 import { getPostRewardsQuery } from '@/services/datahub/content-staking/query'
 import { formatBalance } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
+import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
 import { ComponentProps } from 'react'
 
@@ -76,7 +77,7 @@ export default function PostRewardStat({
         </div> */}
         <div className='flex items-center gap-1.5'>
           <Image src={Diamond} alt='' className='h-5 w-auto' />
-          <span>{totalReward}</span>
+          <span>{formatNumber(totalReward, { shorten: true })}</span>
         </div>
         {/* <PopOver
           placement='top'
