@@ -10,6 +10,7 @@ import {
   getConfirmationMsgQuery,
   getPostRewardsQuery,
   getSuperLikeCountQuery,
+  getTodaySuperLikeCountQuery,
 } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
@@ -77,7 +78,8 @@ export function SuperLikeWrapper({
   const clientCanPostSuperLiked = useClientValidationOfPostSuperLike(
     post?.struct.createdAtTime ?? 0
   )
-  const { data: canPostSuperLike } = getCanPostSuperLikedQuery.useQuery(postId)
+  const { data: canPostSuperLike, isLoading: loadingCanPostSuperLiked } =
+    getCanPostSuperLikedQuery.useQuery(postId)
   const { canPostSuperLiked, isExist, validByCreatorMinStake } =
     canPostSuperLike || {}
 
@@ -91,6 +93,11 @@ export function SuperLikeWrapper({
   } = getIsActiveStakerQuery.useQuery(myAddress ?? '')
   const isLoadingActiveStaker = loadingActiveStakerRaw && !!myAddress
 
+  const { data: todaySuperLikeCount, isLoading: loadingTodayCountRaw } =
+    getTodaySuperLikeCountQuery.useQuery(myAddress ?? '')
+  const loadingTodayCount = loadingTodayCountRaw && !!myAddress
+  const hasLikedMoreThanLimit = (todaySuperLikeCount?.count ?? 0) >= 10
+
   const { data: myLike, isFetching: loadingMyLike } =
     getAddressLikeCountToPostQuery.useQuery({
       address: myAddress ?? '',
@@ -101,22 +108,34 @@ export function SuperLikeWrapper({
   const isMyPost = post?.struct.ownerId === myAddress
 
   const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
-  const entity = post?.struct.isComment ? 'message' : 'post'
+  // const entity = post?.struct.isComment ? 'message' : 'post'
+  const entity = 'memes'
 
   const isDisabled =
     (!canBeSuperliked ||
       isMyPost ||
       loadingMyLike ||
       loadingBlocked ||
+      loadingTodayCount ||
+      loadingCanPostSuperLiked ||
       isLoadingActiveStaker ||
+      hasLikedMoreThanLimit ||
       !message) &&
     !hasILiked
 
   let disabledCause = ''
-  if (isLoadingActiveStaker || loadingBlocked) disabledCause = 'Loading...'
+  if (
+    isLoadingActiveStaker ||
+    loadingBlocked ||
+    loadingTodayCount ||
+    loadingCanPostSuperLiked
+  )
+    disabledCause = 'Loading...'
   else if (isMyPost) {
     disabledCause = `You cannot like your own ${entity}`
-  } else if (!isExist)
+  } else if (hasLikedMoreThanLimit)
+    disabledCause = `You've liked 10 ${entity} today. Come back tomorrow for more fun!`
+  else if (!isExist)
     disabledCause = `This ${entity} is still being minted, please wait a few seconds`
   else if (!validByCreatorMinStake)
     disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
