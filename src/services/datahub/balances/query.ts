@@ -61,7 +61,7 @@ async function getBalance(address: string): Promise<number> {
     variables: { address },
   })
 
-  return Number(res.socialProfileBalances?.activeStakingPoints) ?? 0
+  return Number(res.socialProfileBalances?.activeStakingPoints ?? 0) || 0
 }
 export const getBalanceQuery = createQuery({
   key: 'getBalance',

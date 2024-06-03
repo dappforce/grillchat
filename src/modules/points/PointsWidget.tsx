@@ -167,8 +167,6 @@ function Points({ shorten }: { shorten?: boolean }) {
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
 
-  console.log(data, myAddress, isInitializedProxy)
-
   if ((isLoading && myAddress) || !isInitializedProxy) {
     return <Skeleton className='inline-block w-12' />
   }
