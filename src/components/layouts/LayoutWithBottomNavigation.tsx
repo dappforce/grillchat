@@ -1,6 +1,6 @@
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { ComponentProps, useEffect } from 'react'
+import { ComponentProps } from 'react'
 import useLoginInTelegramMiniApps from '../navbar/Navbar/telegramLogin/useLoginInTelegramMiniApps'
 import MobileNavigation from './MobileNavigation'
 
@@ -25,12 +25,6 @@ export default function LayoutWithBottomNavigation({
   // if (app?.result && !isMobile) {
   //   return <>Use mobile device for better expirience</>
   // }
-
-  useEffect(() => {
-    window.addEventListener('beforeunload', () => {
-      logout()
-    })
-  }, [])
 
   return (
     <div

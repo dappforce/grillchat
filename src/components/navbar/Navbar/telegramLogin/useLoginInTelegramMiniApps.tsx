@@ -169,12 +169,13 @@ const useLoginInTelegramMiniApps = () => {
     ]
   )
 
+  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   useEffect(() => {
-    if (data && !myAddress && useMyAccount.getState().isInitializedProxy) {
+    if (data && !myAddress && isInitializedProxy) {
       loginTelegram()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, myAddress])
+  }, [data, myAddress, isInitializedProxy])
 
   return { isLoading: isLoading, isSuccess: isSuccess }
 }
