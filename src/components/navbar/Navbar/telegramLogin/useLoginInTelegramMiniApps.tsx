@@ -115,6 +115,8 @@ const useLoginInTelegramMiniApps = () => {
     queryClient,
     data,
     photoPath,
+    refInUrl,
+    setReferrerId,
   ])
 
   const isLoading = isLinking || isAddingProvider || isUpsertingProfile
@@ -167,14 +169,12 @@ const useLoginInTelegramMiniApps = () => {
     ]
   )
 
-  const isInitialized = useMyAccount.getState().isInitialized
-
   useEffect(() => {
-    if (data && !myAddress && isInitialized) {
+    if (data && !myAddress && useMyAccount.getState().isInitializedProxy) {
       loginTelegram()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, myAddress, isInitialized])
+  }, [data, myAddress])
 
   return { isLoading: isLoading, isSuccess: isSuccess }
 }
