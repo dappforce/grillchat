@@ -7,7 +7,11 @@ import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
 import { DatahubParams, createSocialDataEventPayload } from '../utils'
-import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
+import {
+  getAddressLikeCountToPostQuery,
+  getSuperLikeCountQuery,
+  getTodaySuperLikeCountQuery,
+} from './query'
 
 type CreateSuperLikeArgs =
   SocialCallDataArgs<'synth_active_staking_create_super_like'>
@@ -24,6 +28,7 @@ async function createSuperLike(params: DatahubParams<CreateSuperLikeArgs>) {
   )
 }
 
+export const pendingSuperLikes = new Set<string>()
 export const useCreateSuperLike = mutationWrapper(
   async (data: CreateSuperLikeArgs) => {
     await createSuperLike({
@@ -59,6 +64,18 @@ export const useCreateSuperLike = mutationWrapper(
             }
           }
         )
+
+        getTodaySuperLikeCountQuery.setQueryData(
+          queryClient,
+          mainAddress,
+          (oldData) => {
+            if (!oldData) return { count: 1 }
+            return {
+              ...oldData,
+              count: oldData.count + 1,
+            }
+          }
+        )
       }
     },
     onError: (_, { postId }) => {
@@ -69,6 +86,18 @@ export const useCreateSuperLike = mutationWrapper(
           postId,
           address: mainAddress,
         })
+
+        getTodaySuperLikeCountQuery.setQueryData(
+          queryClient,
+          mainAddress,
+          (oldData) => {
+            if (!oldData) return oldData
+            return {
+              ...oldData,
+              count: oldData.count - 1,
+            }
+          }
+        )
       }
       allowWindowUnload()
     },

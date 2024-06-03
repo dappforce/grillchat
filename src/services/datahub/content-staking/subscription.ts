@@ -6,11 +6,7 @@ import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import { getBalanceQuery } from '../balances/query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
-import {
-  getAddressLikeCountToPostQuery,
-  getSuperLikeCountQuery,
-  getTodaySuperLikeCountQuery,
-} from './query'
+import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
 
 export function useDatahubContentStakingSubscriber() {
   const queryClient = useQueryClient()
@@ -124,7 +120,6 @@ async function processSubscriptionEvent(
       address: myAddress,
       postId: post.persistentId,
     })
-    getTodaySuperLikeCountQuery.invalidate(queryClient, myAddress)
     getBalanceQuery.invalidate(queryClient, myAddress)
   }
 }

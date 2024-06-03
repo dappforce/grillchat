@@ -8,6 +8,7 @@ import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import sortKeysRecursive from 'sort-keys-recursive'
 import { getBalanceQuery } from '../balances/query'
+import { getTodaySuperLikeCountQuery } from '../content-staking/query'
 import {
   ServiceMessageStatusCode,
   SocialCallName,
@@ -182,6 +183,22 @@ async function processSubscriptionEvent(
         if (optimisticId)
           deleteOptimisticData({ client, idToDelete: optimisticId })
       }
+    }
+    if (
+      eventData.meta.callName ===
+      SocialCallName.SynthActiveStakingCreateSuperLike
+    ) {
+      getTodaySuperLikeCountQuery.setQueryData(
+        client,
+        mainAddress,
+        (oldData) => {
+          if (!oldData) return oldData
+          return {
+            ...oldData,
+            count: oldData.count - 1,
+          }
+        }
+      )
     }
 
     toast.custom((t) => (
