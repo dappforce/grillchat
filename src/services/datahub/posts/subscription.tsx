@@ -7,6 +7,7 @@ import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
+import { getCanPostSuperLikedQuery } from '../content-staking/query'
 import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
@@ -154,15 +155,19 @@ async function processMessage(
     }
   }
 
-  const newPost = getPostQuery.getQueryData(queryClient, newestId)
-  if (newPost?.struct.ownerId === getMyMainAddress() && isCreationEvent) {
-    toast.custom((t) => (
-      <Toast
-        t={t}
-        title='✨ Meme Sent!'
-        description='2500 points have been used. More memes, more fun!'
-      />
-    ))
+  if (isCreationEvent) {
+    getCanPostSuperLikedQuery.fetchQuery(queryClient, newestId, true)
+
+    const newPost = getPostQuery.getQueryData(queryClient, newestId)
+    if (newPost?.struct.ownerId === getMyMainAddress() && isCreationEvent) {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          title='✨ Meme Sent!'
+          description='2500 points have been used. More memes, more fun!'
+        />
+      ))
+    }
   }
 
   const rootPostId = entity.rootPost?.persistentId
