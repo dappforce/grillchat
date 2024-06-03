@@ -159,8 +159,8 @@ async function processMessage(
     toast.custom((t) => (
       <Toast
         t={t}
-        title='🎉 Meme Uploaded Successfully!'
-        description='2500 points have been used. Keep the fun coming!'
+        title='✨ Meme Sent!'
+        description='2500 points have been used. More memes, more fun!'
       />
     ))
   }
