@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/SkeletonFallback'
 import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { getTodaySuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
@@ -147,12 +147,13 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
 }
 
 function LikeCount({ shorten }: { shorten?: boolean }) {
+  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getTodaySuperLikeCountQuery.useQuery(
     myAddress ?? ''
   )
 
-  if (isLoading && myAddress) {
+  if ((isLoading && myAddress) || !isInitializedProxy) {
     return (
       <Skeleton className='relative -top-0.5 inline-block w-12 align-middle' />
     )
@@ -162,10 +163,13 @@ function LikeCount({ shorten }: { shorten?: boolean }) {
 }
 
 function Points({ shorten }: { shorten?: boolean }) {
+  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
 
-  if (isLoading && myAddress) {
+  console.log(data, myAddress, isInitializedProxy)
+
+  if ((isLoading && myAddress) || !isInitializedProxy) {
     return <Skeleton className='inline-block w-12' />
   }
 
