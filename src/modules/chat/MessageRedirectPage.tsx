@@ -22,9 +22,7 @@ export default function MessageRedirectPage({
 
   useEffect(() => {
     if (!router.isReady) return
-    console.log(isBlocked)
     if (!isBlocked) {
-      console.log(urlJoin('/memes', `?messageId=${messageId}`))
       router.replace(urlJoin('/memes', `?messageId=${messageId}`))
     } else {
       router.replace(urlJoin('/memes'))
