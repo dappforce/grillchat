@@ -51,9 +51,6 @@ export function formatNumber(
 ) {
   const { shorten } = config || {}
   let [prefix, postfix] = num.toString().split('.')
-  if (prefix.length < 4) {
-    return (postfix = '')
-  }
 
   if (shorten) {
     if (prefix.length > 9) {
@@ -67,6 +64,9 @@ export function formatNumber(
     }
   }
 
+  if (prefix.length < 4) {
+    return prefix
+  }
   const string = prefix.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   if (postfix) {
     return `${string}.${postfix}`
