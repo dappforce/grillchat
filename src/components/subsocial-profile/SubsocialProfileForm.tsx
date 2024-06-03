@@ -71,15 +71,14 @@ export default function SubsocialProfileForm({
   }, [onProfileChangeRef, name, image])
 
   const { mutateAsync, isLoading: isUpserting } = useUpsertProfile()
-  const { refetch, isLoading: isLoadingBalance } =
-    getIsBalanceSufficientQuery.useQuery(
-      {
-        address: myAddress ?? '',
-        socialAction: SocialAction.UpdateSpace,
-      },
-      { enabled: false }
-    )
-  const isLoading = isUpserting || isLoadingBalance
+  const { refetch } = getIsBalanceSufficientQuery.useQuery(
+    {
+      address: myAddress ?? '',
+      socialAction: SocialAction.UpdateSpace,
+    },
+    { enabled: false }
+  )
+  const isLoading = isUpserting
 
   const onSubmit = handleSubmit(async (data) => {
     const isSufficient = await refetch()

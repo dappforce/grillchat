@@ -17,7 +17,7 @@ export default function useLinkedEvmAddress(
     })
   const { data: linkedIdentity, isLoading: isLoadingMainAddress } =
     getLinkedIdentityFromMainAddressQuery.useQuery(address ?? '', {
-      enabled: !!address,
+      enabled: !!address && config.enabled,
     })
 
   const usedLinkedIdentity = address ? linkedIdentity : myLinkedIdentity
