@@ -68,7 +68,7 @@ export function formatNumber(
     return prefix
   }
   const string = prefix.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  if (postfix) {
+  if (postfix && prefix.length < 4) {
     return `${string}.${postfix}`
   }
   return string
