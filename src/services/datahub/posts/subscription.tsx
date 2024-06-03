@@ -112,13 +112,18 @@ async function processSubscriptionEvent(
     eventData.event === DataHubSubscriptionEventEnum.PostCreated ||
     eventData.event === DataHubSubscriptionEventEnum.PostStateUpdated
   ) {
-    await processMessage(queryClient, eventData)
+    await processMessage(
+      queryClient,
+      eventData,
+      eventData.event === DataHubSubscriptionEventEnum.PostCreated
+    )
   }
 }
 
 async function processMessage(
   queryClient: QueryClient,
-  eventData: SubscribePostSubscription['post']
+  eventData: SubscribePostSubscription['post'],
+  isCreationEvent?: boolean
 ) {
   const entity = eventData.entity
   const newestId = entity.persistentId || entity.id
@@ -150,12 +155,12 @@ async function processMessage(
   }
 
   const newPost = getPostQuery.getQueryData(queryClient, newestId)
-  if (newPost?.struct.ownerId === getMyMainAddress()) {
+  if (newPost?.struct.ownerId === getMyMainAddress() && isCreationEvent) {
     toast.custom((t) => (
       <Toast
         t={t}
-        title='Your meme was sent!'
-        description='Your points was deducted by 2500 points'
+        title='🎉 Meme Uploaded Successfully!'
+        description='2500 points have been used. Keep the fun coming!'
       />
     ))
   }
