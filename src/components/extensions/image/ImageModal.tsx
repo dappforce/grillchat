@@ -1,11 +1,9 @@
 import ImageAdd from '@/assets/icons/image-add.svg'
-import AutofocusWrapper from '@/components/AutofocusWrapper'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import MediaLoader, { MediaLoaderProps } from '@/components/MediaLoader'
 import Spinner from '@/components/Spinner'
 import { SUPPORTED_IMAGE_EXTENSIONS } from '@/components/inputs/ImageInput'
-import TextArea from '@/components/inputs/TextArea'
 import {
   COMPRESSED_IMAGE_MAX_SIZE,
   SOURCE_IMAGE_MAX_SIZE,
@@ -95,15 +93,6 @@ export default function ImageModal({
           />
         )}
 
-        {!isAnyShowingImage && (
-          <div className='relative flex items-center justify-center'>
-            <div className='absolute top-1/2 h-px w-full bg-border-gray' />
-            <span className='relative bg-background-light px-3 text-xs text-text-muted'>
-              OR
-            </span>
-          </div>
-        )}
-
         {!imageLinkStatus.isShowingImage && (
           <ImageUpload
             initialImage={typeof initialData !== 'string' ? initialData : null}
@@ -165,19 +154,6 @@ function ImageLinkInput({
 
   return (
     <>
-      <AutofocusWrapper autofocusInTouchDevices>
-        {({ ref }) => (
-          <TextArea
-            value={imageLink}
-            onChange={(e) => setImageLink(e.target.value)}
-            rows={1}
-            ref={ref}
-            placeholder='Paste Image URL'
-            variant='fill-bg'
-            error={!!isImageLinkError}
-          />
-        )}
-      </AutofocusWrapper>
       {isImageLinkError && (
         <InfoPanel>😥 Sorry, we cannot parse this URL.</InfoPanel>
       )}
