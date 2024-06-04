@@ -6,6 +6,7 @@ import { CopyTextInline } from '@/components/CopyText'
 import Name from '@/components/Name'
 import { Skeleton } from '@/components/SkeletonFallback'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
+import UpsertChatForm from '@/components/community/content/UpsertChatForm'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
@@ -90,6 +91,7 @@ export default function AirdropPage() {
           </Card>
         </div>
       </div>
+      <UpsertChatForm />
       <SubsocialProfileModal
         title='✏️ Edit Profile'
         closeModal={() => setOpenProfileModal(false)}
