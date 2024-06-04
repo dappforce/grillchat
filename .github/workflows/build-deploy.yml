@@ -51,12 +51,12 @@ jobs:
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://epic-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://epic-queue-data-hub.subsocial.network/graphql
             GH_NOTIFICATIONS_URL=https://epic-notif-data-hub.subsocial.network/graphql
-            GH_NEXT_PUBLIC_APP_ID=1
+            GH_NEXT_PUBLIC_APP_ID=0xd25962422081e4086fbce5ae5b6232c6
             GH_NEXT_PUBLIC_NOTIFICATION_APP_ID=BECyoVsDLEgsOj9MvhoetL3YGYZVCE5RzhADmBugpp0hu7QBV_xG8veiT_qAFxF9S8qXKhPvaPiD5oMrdWrFNB0
             GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/grill_notifications_bot/
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12662
-            GH_NEXT_PUBLIC_SPACE_IDS=0x0dcee290f7ae9d44e5a2f24ebaef6b6f
-            GH_NEXT_PUBLIC_MAIN_CHAT_ID=0xbaede0a172cfbbf19783e99e31db685a
+            GH_NEXT_PUBLIC_SPACE_IDS=0xd25962422081e4086fbce5ae5b6232c6
+            GH_NEXT_PUBLIC_MAIN_CHAT_ID=0x22379846e332920ee808735a978c7008
             GH_NEXT_PUBLIC_AMP_ID=40d4174295c7edf657fc3bedf2748549
             GH_NEXT_PUBLIC_COMMUNITY_HUB_ID=12455
             GH_NEXT_PUBLIC_GA_ID=G-TP1XEFNHQD
@@ -103,7 +103,7 @@ jobs:
             GH_NOTIFICATIONS_URL=https://epic-fast-test-epic-notif-data-hub-core.subsocial.network/graphql
             GH_NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS=12468
             GH_NEXT_PUBLIC_PROPOSALS_HUB=12364
-            GH_NEXT_PUBLIC_APP_ID=12364
+            GH_NEXT_PUBLIC_APP_ID=0xa580866e85dc3f78346ab3131210064e
             GH_NEXT_PUBLIC_SPACE_IDS=0xa580866e85dc3f78346ab3131210064e
             GH_NEXT_PUBLIC_MAIN_CHAT_ID=0x6c975987eac223e03deae00f2f7fa8e8
             GH_NEXT_PUBLIC_TELEGRAM_NOTIFICATION_BOT=https://t.me/g_notif_staging_bot/
