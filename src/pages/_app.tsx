@@ -3,7 +3,6 @@ import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import LoginModal from '@/components/auth/LoginModal'
 import OauthLoadingModal from '@/components/auth/OauthLoadingModal'
 import GlobalModals from '@/components/modals/GlobalModals'
-import WelcomeModal from '@/components/modals/WelcomeModal'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
@@ -154,7 +153,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
                 <EvmProvider>
                   <Component {...props} />
                   <LoginModal />
-                  <WelcomeModal />
                 </EvmProvider>
               </ErrorBoundary>
             </div>

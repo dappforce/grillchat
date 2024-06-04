@@ -13,6 +13,7 @@ export default function WelcomeModal() {
   useEffect(() => {
     const hasVisited = hasVisitedStorage.get() === 'true'
     if (!hasVisited) {
+      hasVisitedStorage.set('true')
       setIsOpenModal(true)
     }
   }, [])
@@ -25,7 +26,6 @@ export default function WelcomeModal() {
       isOpen={isOpenModal}
       closeModal={() => {
         setIsOpenModal(false)
-        hasVisitedStorage.set('true')
       }}
     >
       <div className='flex flex-col gap-6'>
