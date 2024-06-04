@@ -47,11 +47,19 @@ const TapPageContent = () => {
 
 const MobileDeviceForBetterExp = () => {
   return (
-    <div className='relative flex flex-1 items-end justify-center overflow-hidden'>
-      <span className='z-[2] text-center text-xl font-bold'>
+    <div className='relative flex flex-1 justify-center'>
+      <span className='absolute bottom-[15%] z-[2] text-center text-xl font-bold'>
         Use a mobile device for better experience
       </span>
-      <Image src={TapFromMobileImage} alt='' className='absolute top-0' />
+      <div
+        style={{ transform: 'translate3d(0, 0, 0)' }}
+        className='absolute top-[-100px] my-auto h-[175px] w-[175px] bg-[#5E81EA] blur-[102px]'
+      ></div>
+      <Image
+        src={TapFromMobileImage}
+        alt=''
+        className='absolute top-0 h-full w-auto'
+      />
     </div>
   )
 }
