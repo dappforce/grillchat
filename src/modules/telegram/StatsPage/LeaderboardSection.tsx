@@ -6,21 +6,21 @@ const customColumnsClassNames = [undefined, undefined, 'md:w-[30%]']
 
 const tabs = [
   {
-    id: 'top-meme-makers',
-    text: 'Top Meme Makers',
+    id: 'week',
+    text: 'Week',
     content: () => (
       <LeaderboardTable
-        role='creator'
+        period='week'
         customColumnsClassNames={customColumnsClassNames}
       />
     ),
   },
   {
-    id: 'top-meme-likers',
-    text: 'Top Meme Likers',
+    id: 'allTime',
+    text: 'All-Time',
     content: () => (
       <LeaderboardTable
-        role='staker'
+        period='allTime'
         customColumnsClassNames={customColumnsClassNames}
       />
     ),
@@ -31,7 +31,7 @@ const LeaderboardSection = () => {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col gap-1'>
-        <span className='text-lg font-semibold'>Weekly leaderboard</span>
+        <span className='text-lg font-semibold'>Leaderboard</span>
         <span className='text-text-muted'>
           Compete with other meme lovers to get extra points later
         </span>

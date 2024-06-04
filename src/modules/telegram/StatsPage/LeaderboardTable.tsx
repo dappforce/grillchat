@@ -6,10 +6,10 @@ import Loading from '@/components/Loading'
 import Name from '@/components/Name'
 import { Column, TableRow } from '@/components/Table'
 import {
-  getLeaderboardDataQuery,
-  getUserStatisticsQuery,
+  leaderboardDataQueryByPeriod,
+  userDataQueryByPeriod,
 } from '@/services/datahub/leaderboard/query'
-import { LeaderboardRole } from '@/services/datahub/leaderboard/types'
+import { LeaderboardDataPeriod } from '@/services/datahub/leaderboard/types'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { isDef, isEmptyArray } from '@subsocial/utils'
@@ -32,7 +32,7 @@ export const leaderboardColumns = (): Column[] => [
 ]
 
 type LeaderboardTableProps = {
-  role: LeaderboardRole
+  period: LeaderboardDataPeriod
   currentUserRank?: {
     address: string
     rank: number | null
@@ -94,10 +94,10 @@ function createObserver(
   observer.observe(boxElement)
 }
 
-const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
+const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
   const myAddress = useMyMainAddress()
-  const { data: leaderboardData, isLoading } =
-    getLeaderboardDataQuery.useInfiniteQuery(role)
+  const { data: leaderboardDataResult, isLoading } =
+    leaderboardDataQueryByPeriod[period].useQuery(period)
 
   const [isElementIntersecting, setIsElementIntersecting] = useState<
     boolean | undefined
@@ -108,23 +108,24 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
 
   const ref = useRef<HTMLDivElement>(null)
 
-  const { data: userStats } = getUserStatisticsQuery.useQuery({
-    address: myAddress || '',
-  })
-  const { rank, earnedPointsByPeriod } = userStats?.[role] || {}
+  const { data: userStats } = userDataQueryByPeriod[period].useQuery(
+    myAddress || ''
+  )
+
+  const { rank, address, reward } = userStats || {}
 
   const currentUserRank = useMemo(
     () => ({
-      address: myAddress || '',
+      address: address || '',
       rank: rank || null,
-      reward: earnedPointsByPeriod?.toString() || '0',
+      reward: reward || '0',
     }),
-    [myAddress, rank, earnedPointsByPeriod]
+    [address, rank, reward]
   )
 
   const dataItems = useMemo(
-    () => leaderboardData?.pages[0].data || [],
-    [leaderboardData]
+    () => leaderboardDataResult || [],
+    [leaderboardDataResult]
   )
 
   useEffect(() => {
@@ -176,7 +177,9 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
     }
 
     return [
-      !initIsIntersection ? currentUserRankItem : undefined,
+      initIsIntersection !== undefined && !initIsIntersection
+        ? currentUserRankItem
+        : undefined,
       ...parseTableRows(
         dataItems || [],
         TABLE_LIMIT,
@@ -202,9 +205,7 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
               className='relative w-[70px] max-w-sm'
             />
             <span className={cx(mutedTextColorStyles)}>
-              {role === 'creator'
-                ? 'Create great content and get the most likes to show up here!'
-                : 'Like the most posts to reach the top!'}
+              Create great content and get the most likes to show up here!
             </span>
           </div>
         ))}
