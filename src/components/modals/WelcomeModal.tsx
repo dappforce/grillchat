@@ -2,6 +2,7 @@ import IntroImage from '@/assets/graphics/meme2earn-intro.png'
 import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import Button from '../Button'
 import LinkText from '../LinkText'
 import Modal from './Modal'
 
@@ -35,12 +36,15 @@ export default function WelcomeModal() {
             📅 Your meme can earn unlimited points for the first 7 days
           </span>
         </div>
-        <Image src={IntroImage} alt='' className='h-auto w-full' />
+        <Image src={IntroImage} alt='' className='h-auto w-full px-4' />
         <div className='flex justify-center'>
           <LinkText variant='primary' href='/guide'>
             Read the detailed information
           </LinkText>
         </div>
+        <Button size='lg' onClick={() => setIsOpenModal(false)}>
+          Got it!
+        </Button>
       </div>
     </Modal>
   )
