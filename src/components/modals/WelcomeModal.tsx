@@ -36,7 +36,7 @@ export default function WelcomeModal() {
             📅 Your meme can earn unlimited points for the first 7 days
           </span>
         </div>
-        <Image src={IntroImage} alt='' className='h-auto w-full px-4' />
+        <Image src={IntroImage} alt='' className='h-auto w-full px-3' />
         <div className='flex justify-center'>
           <LinkText variant='primary' href='/guide'>
             Read the detailed information

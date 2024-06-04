@@ -2,8 +2,8 @@ import { useAnalytics } from '@/stores/analytics'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import Button from '../Button'
-import Modal, { ModalFunctionalityProps, ModalProps } from '../modals/Modal'
 import Toast from '../Toast'
+import Modal, { ModalFunctionalityProps, ModalProps } from '../modals/Modal'
 import SubsocialProfileForm from './SubsocialProfileForm'
 
 export type SubsocialProfileModalProps = ModalFunctionalityProps &
@@ -33,11 +33,7 @@ export default function SubsocialProfileModal({
   }
 
   return (
-    <Modal
-      {...props}
-      title={title || '🎩 Update nickname'}
-      description='This will help other people recognize you better. You can change it at any time.'
-    >
+    <Modal {...props} title={title || '✏️ Edit Profile'}>
       <SubsocialProfileForm onSuccess={onSuccess} />
       {cancelButtonText && (
         <Button

@@ -5,22 +5,26 @@ import Card from '@/components/Card'
 import { CopyTextInline } from '@/components/CopyText'
 import Name from '@/components/Name'
 import { Skeleton } from '@/components/SkeletonFallback'
+import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
+import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
-import { useProfileModal } from '@/stores/profile-modal'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
+import { useState } from 'react'
 import { RiPencilFill } from 'react-icons/ri'
 import { SiEthereum } from 'react-icons/si'
 import { TbCoins } from 'react-icons/tb'
 
 export default function AirdropPage() {
+  const [openProfileModal, setOpenProfileModal] = useState(false)
+  const [openAddEvmModal, setOpenAddEvmModal] = useState(false)
   const myAddress = useMyMainAddress()
-  const openProfileModal = useProfileModal.use.openModal()
   const { evmAddress, isLoading } = useLinkedEvmAddress()
   const sendEvent = useSendEvent()
 
@@ -47,9 +51,10 @@ export default function AirdropPage() {
                 size='circleSm'
                 variant='muted'
                 className='inline'
-                onClick={() =>
-                  openProfileModal({ defaultOpenState: 'profile-settings' })
-                }
+                onClick={() => {
+                  sendEvent('edit_profile_click')
+                  setOpenProfileModal(true)
+                }}
               >
                 <RiPencilFill />
               </Button>
@@ -75,7 +80,7 @@ export default function AirdropPage() {
                 className='mt-0.5 flex items-center gap-1.5'
                 onClick={() => {
                   sendEvent('set_rewards_address_click')
-                  openProfileModal({ defaultOpenState: 'add-evm-provider' })
+                  setOpenAddEvmModal(true)
                 }}
               >
                 <TbCoins />
@@ -85,7 +90,41 @@ export default function AirdropPage() {
           </Card>
         </div>
       </div>
+      <SubsocialProfileModal
+        title='✏️ Edit Profile'
+        closeModal={() => setOpenProfileModal(false)}
+        isOpen={openProfileModal}
+      />
+      <AddEvmProviderModal
+        isOpen={openAddEvmModal}
+        closeModal={() => setOpenAddEvmModal(false)}
+      />
     </LayoutWithBottomNavigation>
+  )
+}
+
+function AddEvmProviderModal(props: ModalFunctionalityProps) {
+  const [isError, setIsError] = useState(false)
+  const sendEvent = useSendEvent()
+
+  return (
+    <Modal
+      {...props}
+      title='🔑 Connect EVM'
+      description='Create an on-chain proof to link your Epic account.'
+    >
+      <CommonEVMLoginContent
+        mutationType='add-provider'
+        buttonLabel={isError ? 'Try again' : undefined}
+        onError={() => {
+          setIsError(true)
+        }}
+        onSuccess={() => {
+          sendEvent(`finish_add_provider_evm_standalone`)
+          props.closeModal()
+        }}
+      />
+    </Modal>
   )
 }
 
