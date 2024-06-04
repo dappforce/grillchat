@@ -1,8 +1,10 @@
-const myAddressIndex = 1001
+const myAddressIndex = 10001
+
+const myAddressTmp = '0x3C66e2cE7B0d28415A0Ad1A0C4837E03ca407071'
 
 export const getTmpData = () => {
   return Array.from({ length: 100 }, (_, i) => {
-    const myAddress = '0x3C66e2cE7B0d28415A0Ad1A0C4837E03ca407071'
+    const myAddress = myAddressTmp
 
     return {
       reward: '100',
@@ -13,4 +15,10 @@ export const getTmpData = () => {
           : '0x271930190814fb893C3DfC73A52e9Cf21a608DAF',
     }
   })
+}
+
+export const currentUserRankRmp = {
+  address: myAddressTmp,
+  rank: myAddressIndex + 1,
+  reward: '100',
 }

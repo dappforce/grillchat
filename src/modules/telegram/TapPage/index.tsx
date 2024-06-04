@@ -18,7 +18,7 @@ const TapPage = () => {
 
 const TapPageContent = () => {
   return (
-    <div className='grid flex-1 grid-rows-[2fr,1fr] items-center'>
+    <div className='grid flex-1 grid-rows-[70%,30%] items-center'>
       <PointsClicker className='justify-self-center' />
       <div className='flex flex-col items-center gap-[22px] px-4'>
         <span className={cx('text-center', mutedTextColorStyles)}>
