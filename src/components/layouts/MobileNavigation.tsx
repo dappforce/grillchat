@@ -3,6 +3,7 @@ import Friends from '@/assets/icons/bottomNavbar/friends.svg'
 import Stats from '@/assets/icons/bottomNavbar/stats.svg'
 import Tap from '@/assets/icons/bottomNavbar/tap.svg'
 import TopMemes from '@/assets/icons/bottomNavbar/top-memes.svg'
+import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
@@ -65,6 +66,7 @@ const MobileNavigation = ({}: MobileNavigationProps) => {
             href={href}
             icon={Icon}
             title={text}
+            id={id}
             className={customClassName}
           />
         ))}
@@ -80,6 +82,7 @@ function NavigationItem({
   forceHardNavigation,
   iconClassName,
   className,
+  id,
 }: {
   icon: IconType
   title: string
@@ -87,8 +90,14 @@ function NavigationItem({
   forceHardNavigation?: boolean
   iconClassName?: string
   className?: string
+  id: string
 }) {
   const { pathname } = useRouter()
+  const sendEvent = useSendEvent()
+
+  const onButtonClick = () => {
+    sendEvent('navbar_clicked', { value: id })
+  }
 
   return (
     <CustomLink
@@ -101,6 +110,7 @@ function NavigationItem({
       forceHardNavigation={forceHardNavigation}
       href={href}
       shallow
+      onClick={onButtonClick}
     >
       <Icon className={cx('text-xl', iconClassName)} />
       <span className='text-sm font-medium leading-none'>{title}</span>
