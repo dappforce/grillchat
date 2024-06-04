@@ -40,6 +40,10 @@ export type AppCommonProps = {
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
+  useEffect(() => {
+    import('eruda').then((lib) => lib.default.init())
+  }, [])
+
   return (
     <SessionProvider
       basePath={
