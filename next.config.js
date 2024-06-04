@@ -55,6 +55,11 @@ const nextConfig = {
         destination: 'https://forms.gle/nKjNwentimo2f6Yi6',
         permanent: false,
       },
+      {
+        source: '/guide',
+        destination: 'https://paragraph.xyz/@epic/guide',
+        permanent: false,
+      },
     ]
   },
   images: {
