@@ -98,12 +98,13 @@ const useLoginInTelegramMiniApps = () => {
             callOnSuccesses()
           }
         })
+      resetAdding()
+      resetLinking()
     } else if (isSuccessAdding) {
       callOnSuccesses()
+      resetAdding()
+      resetLinking()
     }
-
-    resetAdding()
-    resetLinking()
   }, [
     finalizeTemporaryAccount,
     linkedIdentity,
