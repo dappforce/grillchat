@@ -6,6 +6,7 @@ import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { useMiniAppRaw } from '@tma.js/sdk-react'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import PointsClicker from './PointsClicker'
 
 const TapPage = () => {
@@ -23,6 +24,7 @@ const TapPage = () => {
 const TapPageContent = () => {
   const app = useMiniAppRaw(true)
   const isMobile = isTouchDevice()
+  const router = useRouter()
 
   if (app?.result && !isMobile) {
     return <MobileDeviceForBetterExp />
@@ -37,7 +39,12 @@ const TapPageContent = () => {
           creating and liking memes.
         </span>
 
-        <Button variant='primary' size={'md'} className='w-fit'>
+        <Button
+          variant='primary'
+          size={'md'}
+          className='w-fit'
+          onClick={() => router.replace('/tg/memes')}
+        >
           Try Meme to Earn
         </Button>
       </div>

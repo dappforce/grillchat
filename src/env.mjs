@@ -4,6 +4,8 @@ import { z } from 'zod'
 export const env = createEnv({
   server: {
     SERVER_MNEMONIC: z.string().default(''),
+    TELEGRAM_BOT_TOKEN: z.string().default(''),
+
     USER_ID_SALT: z.string().default(''),
 
     CRUST_IPFS_AUTH: z.string().default(''),
