@@ -1,7 +1,6 @@
 import Thumbsup from '@/assets/emojis/thumbsup.png'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery } from '@/services/api/query'
-import { getIsActiveStakerQuery } from '@/services/datahub/balances/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import {
   PostRewards,
@@ -31,7 +30,6 @@ import {
   useState,
 } from 'react'
 import toast from 'react-hot-toast'
-import Spinner from '../Spinner'
 import PopOver from '../floating/PopOver'
 import { sendEventWithRef } from '../referral/analytics'
 import PostRewardStat from './PostRewardStat'
@@ -58,7 +56,6 @@ export function SuperLikeWrapper({
     superLikeCount: number
     handleClick: () => void
     postRewards: PostRewards | undefined | null
-    isFetchingActiveStaker: boolean
   }) => ReactNode
 }) {
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
@@ -85,13 +82,6 @@ export function SuperLikeWrapper({
 
   const myAddress = useMyMainAddress()
   const myGrillAddress = useMyAccount.use.address()
-  const {
-    data: isActiveStaker,
-    isLoading: loadingActiveStakerRaw,
-    isFetching: isFetchingActiveStaker,
-    refetch,
-  } = getIsActiveStakerQuery.useQuery(myAddress ?? '')
-  const isLoadingActiveStaker = loadingActiveStakerRaw && !!myAddress
 
   const { data: todaySuperLikeCount, isLoading: loadingTodayCountRaw } =
     getTodaySuperLikeCountQuery.useQuery(myAddress ?? '')
@@ -118,18 +108,12 @@ export function SuperLikeWrapper({
       loadingBlocked ||
       loadingTodayCount ||
       loadingCanPostSuperLiked ||
-      isLoadingActiveStaker ||
       hasLikedMoreThanLimit ||
       !message) &&
     !hasILiked
 
   let disabledCause = ''
-  if (
-    isLoadingActiveStaker ||
-    loadingBlocked ||
-    loadingTodayCount ||
-    loadingCanPostSuperLiked
-  )
+  if (loadingBlocked || loadingTodayCount || loadingCanPostSuperLiked)
     disabledCause = 'Loading...'
   else if (isMyPost) {
     disabledCause = `You cannot like your own ${entity}`
@@ -156,14 +140,6 @@ export function SuperLikeWrapper({
     if (!myAddress || !myGrillAddress) {
       setIsOpen(true)
       return
-    }
-
-    if (!isActiveStaker) {
-      const res = await refetch()
-      if (!res.data) {
-        setOpenMessageModal('should-stake')
-        return
-      }
     }
 
     let sig = currentWeekSigStorage.get()
@@ -195,7 +171,6 @@ export function SuperLikeWrapper({
         hasILiked,
         superLikeCount: superLikeCount?.count ?? 0,
         postRewards,
-        isFetchingActiveStaker,
       })}
     </>
   )
@@ -221,7 +196,6 @@ export default function SuperLike({
         hasILiked,
         superLikeCount,
         postRewards,
-        isFetchingActiveStaker,
       }) => {
         if (superLikeCount <= 0 && !showWhenZero) return null
         const button = (
@@ -251,11 +225,7 @@ export default function SuperLike({
                   '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white'
               )}
             >
-              {isFetchingActiveStaker ? (
-                <Spinner className='h-4 w-4' />
-              ) : (
-                <Image src={Thumbsup} alt='' className='h-4 w-auto' />
-              )}
+              <Image src={Thumbsup} alt='' className='h-4 w-auto' />
               <span className='relative -top-px'>{superLikeCount}</span>
             </button>
           </div>
