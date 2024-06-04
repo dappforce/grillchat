@@ -23,8 +23,8 @@ export function mapBlockedResources<T>(
 export function getBlockedResourceType(
   resourceId: string
 ): ResourceTypes | null {
-  if (isPostId(resourceId) || resourceId.startsWith('0x')) return 'postId'
   if (isValidAddress(resourceId)) return 'address'
+  if (isPostId(resourceId) || resourceId.startsWith('0x')) return 'postId'
   if (isValidCID(resourceId)) return 'cid'
 
   return null

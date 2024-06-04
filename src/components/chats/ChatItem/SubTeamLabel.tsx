@@ -26,7 +26,7 @@ export default function SubTeamLabel({
           WebkitTextFillColor: 'transparent',
         }}
       >
-        SUB Team
+        Epic Team
       </span>
     </div>
   )
