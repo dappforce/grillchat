@@ -64,11 +64,21 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
             <HiXMark className='text-3xl' />
           </Drawer.Close>
           <div className='mx-auto flex h-full max-h-[650px] w-full max-w-screen-md flex-col items-center justify-evenly overflow-auto px-4 pt-8'>
-            <div className='flex items-center gap-3'>
-              <Image src={Diamond} alt='' className='h-14 w-14' />
-              <span className='flex items-center text-4xl font-bold'>
-                <Points />
-              </span>
+            <div className='flex flex-col gap-2'>
+              <div className='mr-3 flex items-center justify-center gap-3'>
+                <Image src={Diamond} alt='' className='h-14 w-14' />
+                <span className='flex items-center text-4xl font-bold'>
+                  <Points />
+                </span>
+              </div>
+              <div className='flex justify-center'>
+                <Button
+                  href='/guide'
+                  className='bg-[#6395FD]/10 px-5 py-2 text-text-primary'
+                >
+                  How it works
+                </Button>
+              </div>
             </div>
             <div className='flex w-full flex-col gap-4'>
               <span className='text-center text-lg font-bold text-text-muted'>
