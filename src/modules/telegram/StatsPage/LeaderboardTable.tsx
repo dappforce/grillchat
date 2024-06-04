@@ -140,7 +140,7 @@ const LeaderboardTable = ({ role }: LeaderboardTableProps) => {
     ) {
       setInitIsIntersection(isElementIntersecting)
     }
-  }, [isElementIntersecting])
+  }, [initIsIntersection, isElementIntersecting])
 
   const data = useMemo(() => {
     const currentUserRankItem = currentUserRank.rank
