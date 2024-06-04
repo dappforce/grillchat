@@ -33,14 +33,14 @@ export type GeneralStatistics = {
   stakersEarnedPointsTotal: string
 }
 
-export type LeaderboardRole = 'staker' | 'creator'
+export type LeaderboardDataPeriod = 'allTime' | 'week'
 
 export type LeaderboardData = {
   total: number
   page: number
   data: { reward: string; rank: number | null; address: string }[]
   hasMore: boolean
-  role: LeaderboardRole
+  role: LeaderboardDataPeriod
 }
 
 export type RewardHistory = {
