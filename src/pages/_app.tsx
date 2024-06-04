@@ -1,5 +1,6 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import LoginModal from '@/components/auth/LoginModal'
 import OauthLoadingModal from '@/components/auth/OauthLoadingModal'
 import ProfileModal from '@/components/auth/ProfileModal'
 import GlobalModals from '@/components/modals/GlobalModals'
@@ -153,6 +154,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
                 <EvmProvider>
                   <Component {...props} />
                   <ProfileModal />
+                  <LoginModal />
                 </EvmProvider>
               </ErrorBoundary>
             </div>
