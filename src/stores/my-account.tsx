@@ -197,12 +197,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
             onInvalidProxy: () => {
               get().logout()
               toast.custom((t) => (
-                <Toast
-                  t={t}
-                  type='error'
-                  title='Login failed'
-                  subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
-                />
+                <Toast t={t} type='error' title='Login failed' />
               ))
             },
           })
@@ -303,7 +298,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
               t={t}
               type='error'
               title='Logged out'
-              subtitle='You seem to have logged in to your wallet in another device, please relogin to use it here'
+              subtitle='Please reopen the page'
             />
           ))
         },
@@ -326,6 +321,7 @@ async function validateParentProxyAddress({
   try {
     // Remove proxy with type 'Any'
     const currentProxy = await getParentProxyAddress(grillAddress)
+    // console.log(grillAddress, currentProxy)
     if (!currentProxy || currentProxy !== parentProxyAddress) {
       onInvalidProxy()
     }
