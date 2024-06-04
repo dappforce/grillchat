@@ -57,8 +57,8 @@ const tabs: Tab[] = [
 
 const MobileNavigation = ({}: MobileNavigationProps) => {
   return (
-    <div className={cx('sticky bottom-0 z-20 mt-auto w-full p-3')}>
-      <div className='flex items-center justify-around rounded-[20px] bg-background-light p-2'>
+    <div className={cx('sticky bottom-0 z-20 mt-auto w-full p-2')}>
+      <div className='flex items-center justify-around rounded-[20px] bg-background-light p-1'>
         {tabs.map(({ id, text, Icon, href, customClassName }) => (
           <NavigationItem
             key={id}
@@ -93,7 +93,7 @@ function NavigationItem({
   return (
     <CustomLink
       className={cx(
-        'flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl px-1 py-2',
+        'flex h-full w-full flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2',
         '!text-slate-400 [&_path]:fill-slate-400',
         pathname === href && 'bg-slate-900 !text-text [&_path]:fill-text',
         className

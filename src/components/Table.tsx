@@ -37,7 +37,7 @@ const Table = ({
   className,
   withDivider = true,
   onRowClick,
-  rowsClassName
+  rowsClassName,
 }: TableProps) => {
   return (
     <div
@@ -112,6 +112,7 @@ type TableRowProps = {
   showLastDivider?: boolean
   onRowClick?: (item: any) => void
   className?: string
+  rowRef?: any
 }
 
 export const TableRow = ({
@@ -121,9 +122,11 @@ export const TableRow = ({
   showLastDivider,
   onRowClick,
   className,
+  rowRef,
 }: TableRowProps) => {
   return (
     <tr
+      ref={rowRef}
       className={cx(item?.className, className, {
         ['border-b border-[#D4E2EF] dark:border-white/20']: withDivider,
         ['border-none']: showLastDivider,

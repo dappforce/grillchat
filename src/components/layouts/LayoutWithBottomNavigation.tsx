@@ -1,4 +1,4 @@
-import { useMyAccount } from '@/stores/my-account'
+import useRedirectToTgBotOnDesktop from '@/hooks/useRedirectToTgBotOnDesktop'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import useLoginInTelegramMiniApps from '../navbar/Navbar/telegramLogin/useLoginInTelegramMiniApps'
@@ -16,15 +16,8 @@ export default function LayoutWithBottomNavigation({
   withFixedWidth,
   ...props
 }: DefaultLayoutProps) {
-  const logout = useMyAccount((state) => state.logout)
   useLoginInTelegramMiniApps()
-  // const app = useMiniAppRaw(true)
-  // const isMobile = isTouchDevice()
-  // useRedirectToTgBotOnDesktop()
-
-  // if (app?.result && !isMobile) {
-  //   return <>Use mobile device for better expirience</>
-  // }
+  useRedirectToTgBotOnDesktop()
 
   return (
     <div
