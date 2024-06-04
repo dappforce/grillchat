@@ -13,6 +13,7 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
+import Link from 'next/link'
 import { ComponentProps } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiChevronRight, HiXMark } from 'react-icons/hi2'
@@ -73,71 +74,90 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
               <span className='text-center text-lg font-bold text-text-muted'>
                 How to earn Points:
               </span>
-              <Card className='flex w-full items-center gap-4 bg-background-light'>
-                <Image
-                  src={Pointup}
-                  alt=''
-                  className='h-14 w-14 flex-shrink-0'
-                />
-                <div className='flex flex-col gap-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-lg font-bold'>Tap2Earn</span>
-                    <div className='rounded-full bg-background px-2 py-0.5 text-sm text-text-muted'>
-                      Soon
+              <Link
+                href='/tg'
+                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
+              >
+                <Card className='flex w-full items-center gap-4 bg-background-light'>
+                  <Image
+                    src={Pointup}
+                    alt=''
+                    className='h-14 w-14 flex-shrink-0'
+                  />
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg font-bold'>Tap2Earn</span>
+                      <div className='rounded-full bg-background px-2 py-0.5 text-sm text-text-muted'>
+                        Soon
+                      </div>
                     </div>
+                    <p className='text-sm text-text-muted'>
+                      Tap on the laughing emoji and earn Points.
+                    </p>
                   </div>
-                  <p className='text-sm text-text-muted'>
-                    Tap on the laughing emoji and earn Points.
-                  </p>
-                </div>
-                <Button
-                  size='circle'
-                  className='ml-auto flex-shrink-0 text-lg'
-                  variant='transparent'
-                >
-                  <HiChevronRight />
-                </Button>
-              </Card>
-              <Card className='flex w-full items-center gap-4 bg-background-light'>
-                <Image src={Laugh} alt='' className='h-14 w-14 flex-shrink-0' />
-                <div className='flex flex-col gap-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-lg font-bold'>Meme2Earn</span>
+                  <Button
+                    size='circle'
+                    className='ml-auto flex-shrink-0 text-lg'
+                    variant='transparent'
+                  >
+                    <HiChevronRight />
+                  </Button>
+                </Card>
+              </Link>
+              <Link
+                href='/tg/memes'
+                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
+              >
+                <Card className='flex w-full items-center gap-4 bg-background-light'>
+                  <Image
+                    src={Laugh}
+                    alt=''
+                    className='h-14 w-14 flex-shrink-0'
+                  />
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg font-bold'>Meme2Earn</span>
+                    </div>
+                    <p className='text-sm text-text-muted'>
+                      Post and like memes to earn even more Points.
+                    </p>
                   </div>
-                  <p className='text-sm text-text-muted'>
-                    Post and like memes to earn even more Points.
-                  </p>
-                </div>
-                <Button
-                  size='circle'
-                  className='ml-auto flex-shrink-0 text-lg'
-                  variant='transparent'
-                >
-                  <HiChevronRight />
-                </Button>
-              </Card>
-              <Card className='flex w-full items-center gap-4 bg-background-light'>
-                <Image
-                  src={Speaker}
-                  alt=''
-                  className='h-14 w-14 flex-shrink-0'
-                />
-                <div className='flex flex-col gap-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-lg font-bold'>Invite2Earn</span>
+                  <Button
+                    size='circle'
+                    className='ml-auto flex-shrink-0 text-lg'
+                    variant='transparent'
+                  >
+                    <HiChevronRight />
+                  </Button>
+                </Card>
+              </Link>
+              <Link
+                href='/tg/friends'
+                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
+              >
+                <Card className='flex w-full items-center gap-4 bg-background-light'>
+                  <Image
+                    src={Speaker}
+                    alt=''
+                    className='h-14 w-14 flex-shrink-0'
+                  />
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg font-bold'>Invite2Earn</span>
+                    </div>
+                    <p className='text-sm text-text-muted'>
+                      Invite your friends and earn 10% from their Points.
+                    </p>
                   </div>
-                  <p className='text-sm text-text-muted'>
-                    Invite your friends and earn 10% from their Points.
-                  </p>
-                </div>
-                <Button
-                  size='circle'
-                  className='ml-auto flex-shrink-0 text-lg'
-                  variant='transparent'
-                >
-                  <HiChevronRight />
-                </Button>
-              </Card>
+                  <Button
+                    size='circle'
+                    className='ml-auto flex-shrink-0 text-lg'
+                    variant='transparent'
+                  >
+                    <HiChevronRight />
+                  </Button>
+                </Card>
+              </Link>
             </div>
           </div>
         </Drawer.Content>
