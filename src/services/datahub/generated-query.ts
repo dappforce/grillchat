@@ -180,6 +180,15 @@ export type AddressRankByRewardsForPeriodResponseDto = {
   reward?: Maybe<Scalars['String']['output']>
 }
 
+export type AddressRankByTotalRewardsForPeriodInput = {
+  aboveCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  address: Scalars['String']['input']
+  belowCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  period: ActiveStakingPeriod
+  timestamp?: InputMaybe<Scalars['String']['input']>
+  withReward?: InputMaybe<Scalars['Boolean']['input']>
+}
+
 export type AddressRankedBySuperLikesForPeriodResponseDto = {
   __typename?: 'AddressRankedBySuperLikesForPeriodResponseDto'
   address: Scalars['String']['output']
@@ -212,6 +221,18 @@ export type AddressesRankedBySuperLikesForPeriodInput = {
   limit?: InputMaybe<Scalars['Int']['input']>
   order?: InputMaybe<ActiveStakingListOrder>
   toTime?: InputMaybe<Scalars['String']['input']>
+}
+
+export type AddressesRankedByTotalRewardsForPeriodFilter = {
+  period: ActiveStakingPeriod
+  timestamp?: InputMaybe<Scalars['String']['input']>
+}
+
+export type AddressesRankedByTotalRewardsForPeriodInput = {
+  filter: AddressesRankedByTotalRewardsForPeriodFilter
+  limit?: InputMaybe<Scalars['Int']['input']>
+  offset?: InputMaybe<Scalars['Int']['input']>
+  order?: InputMaybe<ActiveStakingListOrder>
 }
 
 export type BalancesInput = {
@@ -980,7 +1001,9 @@ export type Query = {
   __typename?: 'Query'
   activeStakingAccountActivityMetricsForFixedPeriod: AccountActivityMetricsForFixedPeriodResponseDto
   activeStakingAddressRankByRewardsForPeriod?: Maybe<AddressRankByRewardsForPeriodResponseDto>
+  activeStakingAddressRankByTotalRewardsForPeriod?: Maybe<AddressRankByRewardsForPeriodResponseDto>
   activeStakingAddressesRankedByRewardsForPeriod: AddressesRankedByRewardsForPeriodResponseDto
+  activeStakingAddressesRankedByTotalRewardsForPeriod: AddressesRankedByRewardsForPeriodResponseDto
   activeStakingCanDoSuperLikeByPost: Array<CanDoSuperLikeByPostsResponseDto>
   activeStakingCreatorsRankedBySuperLikesForPeriod: Array<AddressRankedBySuperLikesForPeriodResponseDto>
   activeStakingDailyStatsByStaker: DailyStatsByStakerResponse
@@ -1000,6 +1023,8 @@ export type Query = {
   activeStakingTotalActivityMetricsForFixedPeriod: TotalActivityMetricsForFixedPeriodResponseDto
   domains: DomainsResponse
   findPosts: FindPostsResponseDto
+  gamificationTappingActivityStatsByDate: TappingActivityStatsByDateResponseDto
+  gamificationTappingEnergyState?: Maybe<TappingEnergyStateResponseDto>
   isBalanceSufficientForSocialAction: IsBalanceSufficientForSocialActionResponse
   linkedIdentity?: Maybe<LinkedIdentity>
   moderationBlockedResourceIds: Array<Scalars['String']['output']>
@@ -1029,8 +1054,16 @@ export type QueryActiveStakingAddressRankByRewardsForPeriodArgs = {
   args: AddressRankByRewardsForPeriodInput
 }
 
+export type QueryActiveStakingAddressRankByTotalRewardsForPeriodArgs = {
+  args: AddressRankByTotalRewardsForPeriodInput
+}
+
 export type QueryActiveStakingAddressesRankedByRewardsForPeriodArgs = {
   args: AddressesRankedByRewardsForPeriodInput
+}
+
+export type QueryActiveStakingAddressesRankedByTotalRewardsForPeriodArgs = {
+  args: AddressesRankedByTotalRewardsForPeriodInput
 }
 
 export type QueryActiveStakingCanDoSuperLikeByPostArgs = {
@@ -1095,6 +1128,14 @@ export type QueryDomainsArgs = {
 
 export type QueryFindPostsArgs = {
   where: FindPostsArgs
+}
+
+export type QueryGamificationTappingActivityStatsByDateArgs = {
+  args: TappingActivityStatsByDateInput
+}
+
+export type QueryGamificationTappingEnergyStateArgs = {
+  args: TappingEnergyStateInput
 }
 
 export type QueryIsBalanceSufficientForSocialActionArgs = {
@@ -1306,6 +1347,8 @@ export type RewardsReportItem = {
 export enum ServiceMessageStatusCode {
   BadRequest = 'BAD_REQUEST',
   Created = 'CREATED',
+  DailySuperLikesMaxLimitReached = 'DAILY_SUPER_LIKES_MAX_LIMIT_REACHED',
+  DailyTapsMaxLimitReached = 'DAILY_TAPS_MAX_LIMIT_REACHED',
   EntityAlreadyExists = 'ENTITY_ALREADY_EXISTS',
   EntityNotFound = 'ENTITY_NOT_FOUND',
   Forbidden = 'FORBIDDEN',
@@ -1314,6 +1357,7 @@ export enum ServiceMessageStatusCode {
   InternalServerError = 'INTERNAL_SERVER_ERROR',
   InvalidProxyForSigner = 'INVALID_PROXY_FOR_SIGNER',
   InvalidSigner = 'INVALID_SIGNER',
+  InvalidTapsValue = 'INVALID_TAPS_VALUE',
   Moved = 'MOVED',
   PaymentRequired = 'PAYMENT_REQUIRED',
   Processed = 'PROCESSED',
@@ -1373,6 +1417,7 @@ export enum SocialCallName {
   SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
   SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
+  SynthGamificationAddTappingActivityStates = 'synth_gamification_add_tapping_activity_states',
   SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
@@ -1618,6 +1663,40 @@ export type SuperLikesWhereInput = {
   pageSize?: InputMaybe<Scalars['Int']['input']>
   postIds?: InputMaybe<Array<Scalars['String']['input']>>
   postPersistentIds?: InputMaybe<Array<Scalars['String']['input']>>
+}
+
+export type TappingActivityStatsByDateInput = {
+  where: TappingActivityStatsByDateWhereArgs
+}
+
+export type TappingActivityStatsByDateResponseDto = {
+  __typename?: 'TappingActivityStatsByDateResponseDto'
+  data: Array<TappingActivityStatsForDate>
+}
+
+export type TappingActivityStatsByDateWhereArgs = {
+  address: Scalars['String']['input']
+  dates?: InputMaybe<Array<Scalars['Int']['input']>>
+}
+
+export type TappingActivityStatsForDate = {
+  __typename?: 'TappingActivityStatsForDate'
+  date: Scalars['Int']['output']
+  tapsCount: Scalars['Int']['output']
+}
+
+export type TappingEnergyStateInput = {
+  where: TappingEnergyWhereArgs
+}
+
+export type TappingEnergyStateResponseDto = {
+  __typename?: 'TappingEnergyStateResponseDto'
+  energyValue: Scalars['Int']['output']
+  timestamp: Scalars['String']['output']
+}
+
+export type TappingEnergyWhereArgs = {
+  address: Scalars['String']['input']
 }
 
 export type TokenomicMetadataResponse = {
@@ -2015,138 +2094,65 @@ export type SubscribeIdentitySubscription = {
   }
 }
 
-export type GetTopUsersQueryVariables = Exact<{
-  from: Scalars['String']['input']
-}>
-
-export type GetTopUsersQuery = {
-  __typename?: 'Query'
-  creator: {
-    __typename?: 'AddressesRankedByRewardsForPeriodResponseDto'
-    data: Array<{
-      __typename?: 'RankedAddressWithDetails'
-      address: string
-      reward: string
-    }>
-  }
-}
-
-export type GetUserStatsQueryVariables = Exact<{
-  address: Scalars['String']['input']
-  timestamp: Scalars['String']['input']
-}>
-
-export type GetUserStatsQuery = {
-  __typename?: 'Query'
-  staker?: {
-    __typename?: 'AddressRankByRewardsForPeriodResponseDto'
-    rankIndex: number
-  } | null
-  creator?: {
-    __typename?: 'AddressRankByRewardsForPeriodResponseDto'
-    rankIndex: number
-  } | null
-  activeStakingAccountActivityMetricsForFixedPeriod: {
-    __typename?: 'AccountActivityMetricsForFixedPeriodResponseDto'
-    staker?: {
-      __typename?: 'StakerActivityMetrics'
-      likedCreators?: number | null
-      likedPosts?: number | null
-      earnedByPeriod?: string | null
-      earnedTotal?: string | null
-      earnedPointsByPeriod?: string | null
-    } | null
-    creator?: {
-      __typename?: 'CreatorActivityMetrics'
-      likesCountByPeriod?: number | null
-      stakersWhoLiked?: number | null
-      earnedByPeriod?: string | null
-      earnedTotal?: string | null
-      earnedPointsByPeriod?: string | null
-    } | null
-  }
-}
-
-export type GetGeneralStatsByWeekQueryVariables = Exact<{
+export type GetLeaderboardTableDataByAllTimeQueryVariables = Exact<{
   [key: string]: never
 }>
 
-export type GetGeneralStatsByWeekQuery = {
+export type GetLeaderboardTableDataByAllTimeQuery = {
   __typename?: 'Query'
-  activeStakingTotalActivityMetricsForFixedPeriod: {
-    __typename?: 'TotalActivityMetricsForFixedPeriodResponseDto'
-    likedPostsCount?: number | null
-    likedCreatorsCount?: number | null
-    stakersEarnedTotal?: string | null
-    creatorEarnedTotal?: string | null
-    creatorEarnedPointsTotal?: string | null
-    stakersEarnedPointsTotal?: string | null
-  }
-}
-
-export type GetLeaderboardTableDataQueryVariables = Exact<{
-  role: ActiveStakingAccountRole
-  timestamp: Scalars['String']['input']
-  limit: Scalars['Int']['input']
-  offset: Scalars['Int']['input']
-}>
-
-export type GetLeaderboardTableDataQuery = {
-  __typename?: 'Query'
-  activeStakingAddressesRankedByRewardsForPeriod: {
+  activeStakingAddressesRankedByTotalRewardsForPeriod: {
     __typename?: 'AddressesRankedByRewardsForPeriodResponseDto'
-    total: number
-    limit: number
     data: Array<{
       __typename?: 'RankedAddressWithDetails'
-      address: string
       reward: string
       rank: number
+      address: string
     }>
   }
 }
 
-export type GetActiveStakingStatsByUserQueryVariables = Exact<{
-  address: Scalars['String']['input']
-  dayTimestamp: Scalars['String']['input']
+export type GetLeaderboardTableDataByWeekQueryVariables = Exact<{
+  timestamp: Scalars['String']['input']
 }>
 
-export type GetActiveStakingStatsByUserQuery = {
+export type GetLeaderboardTableDataByWeekQuery = {
   __typename?: 'Query'
-  activeStakingAccountActivityMetricsForFixedPeriod: {
-    __typename?: 'AccountActivityMetricsForFixedPeriodResponseDto'
-    staker?: {
-      __typename?: 'StakerActivityMetrics'
-      likedCreators?: number | null
-      likedPosts?: number | null
-      earnedByPeriod?: string | null
-      earnedTotal?: string | null
-      earnedPointsByPeriod?: string | null
-    } | null
-    creator?: {
-      __typename?: 'CreatorActivityMetrics'
-      likesCountByPeriod?: number | null
-      stakersWhoLiked?: number | null
-      earnedByPeriod?: string | null
-      earnedTotal?: string | null
-      earnedPointsByPeriod?: string | null
-    } | null
+  activeStakingAddressesRankedByTotalRewardsForPeriod: {
+    __typename?: 'AddressesRankedByRewardsForPeriodResponseDto'
+    data: Array<{
+      __typename?: 'RankedAddressWithDetails'
+      reward: string
+      rank: number
+      address: string
+    }>
   }
 }
 
-export type GetGeneralStatsByPeriodQueryVariables = Exact<{
-  periodValue: Scalars['String']['input']
+export type GetUserDataByAllTimeQueryVariables = Exact<{
+  address: Scalars['String']['input']
 }>
 
-export type GetGeneralStatsByPeriodQuery = {
+export type GetUserDataByAllTimeQuery = {
   __typename?: 'Query'
-  activeStakingTotalActivityMetricsForFixedPeriod: {
-    __typename?: 'TotalActivityMetricsForFixedPeriodResponseDto'
-    stakersEarnedTotal?: string | null
-    creatorEarnedTotal?: string | null
-    creatorEarnedPointsTotal?: string | null
-    stakersEarnedPointsTotal?: string | null
-  }
+  activeStakingAddressRankByTotalRewardsForPeriod?: {
+    __typename?: 'AddressRankByRewardsForPeriodResponseDto'
+    rankIndex: number
+    reward?: string | null
+  } | null
+}
+
+export type GetUserDataByWeekQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  timestamp: Scalars['String']['input']
+}>
+
+export type GetUserDataByWeekQuery = {
+  __typename?: 'Query'
+  activeStakingAddressRankByTotalRewardsForPeriod?: {
+    __typename?: 'AddressRankByRewardsForPeriodResponseDto'
+    rankIndex: number
+    reward?: string | null
+  } | null
 }
 
 export type GetUserReferralsQueryVariables = Exact<{
@@ -2166,18 +2172,6 @@ export type GetUserReferralsQuery = {
         totalPoints?: string | null
       } | null
     }>
-  }
-}
-
-export type GetActiveStakingTokenomicMetagataQueryVariables = Exact<{
-  [key: string]: never
-}>
-
-export type GetActiveStakingTokenomicMetagataQuery = {
-  __typename?: 'Query'
-  activeStakingTokenomicMetadata: {
-    __typename?: 'TokenomicMetadataResponse'
-    maxTotalDailyRewardPoints: string
   }
 }
 
@@ -3264,185 +3258,54 @@ export const SubscribeIdentity = gql`
     }
   }
 `
-export const GetTopUsers = gql`
-  query GetTopUsers($from: String!) {
-    creator: activeStakingAddressesRankedByRewardsForPeriod(
-      args: {
-        filter: { period: WEEK, role: CREATOR, timestamp: $from }
-        limit: 3
-        offset: 0
-        order: DESC
-      }
+export const GetLeaderboardTableDataByAllTime = gql`
+  query GetLeaderboardTableDataByAllTime {
+    activeStakingAddressesRankedByTotalRewardsForPeriod(
+      args: { filter: { period: ALL_TIME }, limit: 100 }
     ) {
       data {
-        address
-        reward
-      }
-    }
-  }
-`
-export const GetUserStats = gql`
-  query GetUserStats($address: String!, $timestamp: String!) {
-    staker: activeStakingAddressRankByRewardsForPeriod(
-      args: {
-        address: $address
-        period: WEEK
-        role: STAKER
-        timestamp: $timestamp
-      }
-    ) {
-      rankIndex
-    }
-    creator: activeStakingAddressRankByRewardsForPeriod(
-      args: {
-        address: $address
-        period: WEEK
-        role: CREATOR
-        timestamp: $timestamp
-      }
-    ) {
-      rankIndex
-    }
-    activeStakingAccountActivityMetricsForFixedPeriod(
-      args: {
-        address: $address
-        period: WEEK
-        staker: {
-          likedPosts: false
-          likedCreators: false
-          earnedByPeriod: false
-          earnedTotal: true
-          earnedPointsByPeriod: true
-        }
-        creator: {
-          likesCountByPeriod: false
-          stakersWhoLiked: false
-          earnedByPeriod: false
-          earnedTotal: true
-          earnedPointsByPeriod: true
-        }
-      }
-    ) {
-      staker {
-        likedCreators
-        likedPosts
-        earnedByPeriod
-        earnedTotal
-        earnedPointsByPeriod
-      }
-      creator {
-        likesCountByPeriod
-        stakersWhoLiked
-        earnedByPeriod
-        earnedTotal
-        earnedPointsByPeriod
-      }
-    }
-  }
-`
-export const GetGeneralStatsByWeek = gql`
-  query GetGeneralStatsByWeek {
-    activeStakingTotalActivityMetricsForFixedPeriod(
-      args: {
-        period: WEEK
-        likedPostsCount: true
-        likedCreatorsCount: true
-        stakersEarnedTotal: true
-        creatorEarnedTotal: true
-      }
-    ) {
-      likedPostsCount
-      likedCreatorsCount
-      stakersEarnedTotal
-      creatorEarnedTotal
-      creatorEarnedPointsTotal
-      stakersEarnedPointsTotal
-    }
-  }
-`
-export const GetLeaderboardTableData = gql`
-  query GetLeaderboardTableData(
-    $role: ActiveStakingAccountRole!
-    $timestamp: String!
-    $limit: Int!
-    $offset: Int!
-  ) {
-    activeStakingAddressesRankedByRewardsForPeriod(
-      args: {
-        filter: { period: WEEK, role: $role, timestamp: $timestamp }
-        limit: $limit
-        offset: $offset
-        order: DESC
-      }
-    ) {
-      data {
-        address
         reward
         rank
+        address
       }
-      total
-      limit
     }
   }
 `
-export const GetActiveStakingStatsByUser = gql`
-  query GetActiveStakingStatsByUser($address: String!, $dayTimestamp: String!) {
-    activeStakingAccountActivityMetricsForFixedPeriod(
+export const GetLeaderboardTableDataByWeek = gql`
+  query GetLeaderboardTableDataByWeek($timestamp: String!) {
+    activeStakingAddressesRankedByTotalRewardsForPeriod(
+      args: { filter: { period: WEEK, timestamp: $timestamp }, limit: 100 }
+    ) {
+      data {
+        reward
+        rank
+        address
+      }
+    }
+  }
+`
+export const GetUserDataByAllTime = gql`
+  query GetUserDataByAllTime($address: String!) {
+    activeStakingAddressRankByTotalRewardsForPeriod(
+      args: { period: ALL_TIME, address: $address, withReward: true }
+    ) {
+      rankIndex
+      reward
+    }
+  }
+`
+export const GetUserDataByWeek = gql`
+  query GetUserDataByWeek($address: String!, $timestamp: String!) {
+    activeStakingAddressRankByTotalRewardsForPeriod(
       args: {
+        period: ALL_TIME
         address: $address
-        period: DAY
-        periodValue: $dayTimestamp
-        staker: {
-          likedPosts: false
-          likedCreators: false
-          earnedByPeriod: false
-          earnedTotal: false
-          earnedPointsByPeriod: true
-        }
-        creator: {
-          likesCountByPeriod: false
-          stakersWhoLiked: false
-          earnedByPeriod: false
-          earnedTotal: false
-          earnedPointsByPeriod: true
-        }
+        withReward: true
+        timestamp: $timestamp
       }
     ) {
-      staker {
-        likedCreators
-        likedPosts
-        earnedByPeriod
-        earnedTotal
-        earnedPointsByPeriod
-      }
-      creator {
-        likesCountByPeriod
-        stakersWhoLiked
-        earnedByPeriod
-        earnedTotal
-        earnedPointsByPeriod
-      }
-    }
-  }
-`
-export const GetGeneralStatsByPeriod = gql`
-  query GetGeneralStatsByPeriod($periodValue: String!) {
-    activeStakingTotalActivityMetricsForFixedPeriod(
-      args: {
-        period: DAY
-        periodValue: $periodValue
-        likedPostsCount: false
-        likedCreatorsCount: false
-        stakersEarnedTotal: true
-        creatorEarnedTotal: true
-        creatorEarnedPointsTotal: true
-        stakersEarnedPointsTotal: true
-      }
-    ) {
-      stakersEarnedTotal
-      creatorEarnedTotal
-      creatorEarnedPointsTotal
-      stakersEarnedPointsTotal
+      rankIndex
+      reward
     }
   }
 `
@@ -3461,13 +3324,6 @@ export const GetUserReferrals = gql`
           totalPoints
         }
       }
-    }
-  }
-`
-export const GetActiveStakingTokenomicMetagata = gql`
-  query GetActiveStakingTokenomicMetagata {
-    activeStakingTokenomicMetadata {
-      maxTotalDailyRewardPoints
     }
   }
 `

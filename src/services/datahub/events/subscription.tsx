@@ -174,6 +174,12 @@ async function processSubscriptionEvent(
     case ServiceMessageStatusCode.InvalidProxyForSigner:
       reason = 'Invalid proxy, please relogin and try again'
       break
+    case ServiceMessageStatusCode.DailySuperLikesMaxLimitReached:
+      reason = 'Daily super likes limit reached'
+      break
+    case ServiceMessageStatusCode.DailyTapsMaxLimitReached:
+      reason = 'Daily taps limit reached'
+      break
   }
   if (reason) {
     if (eventData.meta.callName === SocialCallName.CreatePost) {
@@ -183,8 +189,7 @@ async function processSubscriptionEvent(
         if (optimisticId)
           deleteOptimisticData({ client, idToDelete: optimisticId })
       }
-    }
-    if (
+    } else if (
       eventData.meta.callName ===
       SocialCallName.SynthActiveStakingCreateSuperLike
     ) {
@@ -199,6 +204,11 @@ async function processSubscriptionEvent(
           }
         }
       )
+    } else if (
+      eventData.meta.code ===
+      ServiceMessageStatusCode.DailySuperLikesMaxLimitReached
+    ) {
+      getTodaySuperLikeCountQuery.invalidate(client, mainAddress)
     }
 
     toast.custom((t) => (
