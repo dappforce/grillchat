@@ -79,7 +79,11 @@ function RulesModal(props: ModalFunctionalityProps) {
           ⚠️ All those who break these rules will be banned and will lose all
           their points.
         </Notice>
-        <LinkText variant='secondary' className='text-center'>
+        <LinkText
+          variant='secondary'
+          className='text-center'
+          href='/legal/content-policy'
+        >
           Read the detailed information
         </LinkText>
         <Button size='lg' onClick={() => props.closeModal()}>
