@@ -141,7 +141,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
           <AutocompleteInput
             value={recipient}
             setValue={setRecipient}
-            items={[]}
+            items={filteredAccountItems}
             label='Recipient'
             filterItems={filterItems}
           />
