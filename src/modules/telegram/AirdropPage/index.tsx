@@ -32,11 +32,11 @@ export default function AirdropPage() {
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
       <PointsWidget className='sticky top-0' />
       <div className='flex flex-col gap-4'>
-        <div className='flex flex-col px-4'>
+        <div className='flex flex-col'>
           <TokenGraphics />
           <div className='-mt-2 flex flex-col gap-2 text-center'>
             <span className='text-lg font-semibold'>Rewards soon</span>
-            <span className='text-text-muted'>
+            <span className='px-4 text-text-muted'>
               Points are in-app rewards exchangeable for something really cool
               later
             </span>
