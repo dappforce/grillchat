@@ -317,7 +317,7 @@ export default function ProfileModal({
     },
     'withdraw-tokens': {
       title: '💰 Withdraw',
-      withBackButton: false,
+      withBackButton: true,
     },
     'wallet-action-required': {
       title: '🔐 Wallet Action Required',
