@@ -15,7 +15,7 @@ export function useDatahubBalancesSubscriber() {
     if (!myAddress) return
 
     const listener = () => {
-      unsubRef.current = subscription(queryClient)
+      unsubRef.current = subscription(queryClient, myAddress!)
     }
     listener()
     document.addEventListener('visibilitychange', listener)
@@ -27,8 +27,8 @@ export function useDatahubBalancesSubscriber() {
 }
 
 const SUBSCRIBE_BALANCES = gql`
-  subscription SubscribeBalances {
-    socialProfileBalancesSubscription {
+  subscription SubscribeBalances($address: String!) {
+    socialProfileBalancesSubscription(args: { address: $address }) {
       event
       entity {
         activeStakingPoints
@@ -38,14 +38,14 @@ const SUBSCRIBE_BALANCES = gql`
 `
 
 let isSubscribed = false
-function subscription(queryClient: QueryClient) {
+function subscription(queryClient: QueryClient, myAddress: string) {
   if (isSubscribed) return
   isSubscribed = true
 
   const client = datahubSubscription()
   async function subscribe() {
     let unsub = client.subscribe<SubscribeBalancesSubscription>(
-      { query: SUBSCRIBE_BALANCES },
+      { query: SUBSCRIBE_BALANCES, variables: { address: myAddress } },
       {
         complete: () => undefined,
         next: async (data) => {

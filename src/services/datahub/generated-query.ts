@@ -1472,6 +1472,10 @@ export type SocialProfileBalances = {
   id: Scalars['String']['output']
 }
 
+export type SocialProfileBalancesSubscriptionInput = {
+  address: Scalars['String']['input']
+}
+
 export type SocialProfileBalancesSubscriptionPayload = {
   __typename?: 'SocialProfileBalancesSubscriptionPayload'
   entity: SocialProfileBalances
@@ -1578,6 +1582,10 @@ export type Subscription = {
 
 export type SubscriptionServiceMessageToTargetArgs = {
   args: AccountServiceMessageInput
+}
+
+export type SubscriptionSocialProfileBalancesSubscriptionArgs = {
+  args: SocialProfileBalancesSubscriptionInput
 }
 
 export type SubscriptionServiceAccountTokenMessage = {
@@ -1839,7 +1847,7 @@ export type GetIsActiveStakerQuery = {
 }
 
 export type SubscribeBalancesSubscriptionVariables = Exact<{
-  [key: string]: never
+  address: Scalars['String']['input']
 }>
 
 export type SubscribeBalancesSubscription = {
@@ -3073,8 +3081,8 @@ export const GetIsActiveStaker = gql`
   }
 `
 export const SubscribeBalances = gql`
-  subscription SubscribeBalances {
-    socialProfileBalancesSubscription {
+  subscription SubscribeBalances($address: String!) {
+    socialProfileBalancesSubscription(args: { address: $address }) {
       event
       entity {
         activeStakingPoints
