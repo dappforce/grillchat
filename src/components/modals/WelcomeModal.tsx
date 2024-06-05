@@ -1,49 +1,64 @@
-import IntroImage from '@/assets/graphics/meme2earn-intro.png'
+import Diamond from '@/assets/emojis/diamond.png'
+import Laugh from '@/assets/emojis/laugh.png'
+import Speaker from '@/assets/emojis/speaker.png'
 import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Button from '../Button'
-import LinkText from '../LinkText'
 import Modal from './Modal'
 
-const hasVisitedStorage = new LocalStorage(() => 'has-visited')
+const hasVisitedHomeStorage = new LocalStorage(() => 'has-visited-home')
 
 export default function WelcomeModal() {
   const [isOpenModal, setIsOpenModal] = useState(false)
   useEffect(() => {
-    const hasVisited = hasVisitedStorage.get() === 'true'
+    const hasVisited = hasVisitedHomeStorage.get() === 'true'
     if (!hasVisited) {
-      hasVisitedStorage.set('true')
+      hasVisitedHomeStorage.set('true')
       setIsOpenModal(true)
     }
   }, [])
 
   return (
     <Modal
-      title='How Meme2Earn works'
+      title='Welcome to Epic!'
       titleClassName='font-medium'
-      withCloseButton
       isOpen={isOpenModal}
-      closeModal={() => {
-        setIsOpenModal(false)
-      }}
+      closeModal={() => undefined}
     >
       <div className='flex flex-col gap-6'>
-        <div className='flex flex-col gap-3.5 text-text-muted'>
-          <span>👍 Post and like memes to earn Points</span>
-          <span>💎 Creating a meme costs 2500 Points</span>
-          <span>
-            📅 Your meme can earn unlimited points for the first 7 days
-          </span>
+        <div className='flex flex-col gap-4 text-text-muted'>
+          <div className='flex items-center gap-3'>
+            <Image src={Laugh} className='h-8 w-8 flex-shrink-0' alt='' />
+            <span className='font-medium text-text-muted'>
+              Epic is the Meme2Earn gaming platform for meme lovers!
+            </span>
+          </div>
+          <div className='flex items-center gap-3'>
+            <Image src={Diamond} className='h-8 w-8 flex-shrink-0' alt='' />
+            <span className='font-medium text-text-muted'>
+              Users get points by having fun creating, liking, and tapping on
+              memes.
+            </span>
+          </div>
+          <div className='flex items-center gap-3'>
+            <Image src={Speaker} className='h-8 w-8 flex-shrink-0' alt='' />
+            <span className='font-medium text-text-muted'>
+              Invite friends to join you, and get 10% of their earnings!
+            </span>
+          </div>
         </div>
-        <Image src={IntroImage} alt='' className='h-auto w-full px-3' />
-        <div className='flex justify-center'>
-          <LinkText variant='primary' href='/guide'>
-            Read the detailed information
-          </LinkText>
+        <div className='flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-background p-4'>
+          <span className='font-medium text-text-muted'>
+            Your welcome bonus:
+          </span>
+          <div className='-ml-2 flex items-center gap-2.5'>
+            <Image src={Diamond} alt='' className='h-12 w-12' />
+            <span className='flex items-center text-4xl font-bold'>15,000</span>
+          </div>
         </div>
         <Button size='lg' onClick={() => setIsOpenModal(false)}>
-          Got it!
+          Claim my bonus!
         </Button>
       </div>
     </Modal>
