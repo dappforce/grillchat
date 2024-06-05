@@ -59,12 +59,12 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className='fixed inset-0 z-10 h-full w-full bg-black/50 backdrop-blur-lg' />
-        <Drawer.Content className='fixed inset-0 z-10 flex h-full max-h-[calc(100dvh_-_6rem)] w-full flex-col justify-center rounded-t-[10px] bg-transparent outline-none'>
+        <Drawer.Content className='fixed inset-0 z-10 flex h-full max-h-[calc(100dvh_-_6rem)] w-full flex-col rounded-t-[10px] bg-transparent outline-none'>
           <Drawer.Close className='absolute right-4 top-4'>
             <HiXMark className='text-3xl' />
           </Drawer.Close>
-          <div className='mx-auto flex h-full max-h-[650px] w-full max-w-screen-md flex-col items-center justify-evenly overflow-auto px-4 pt-8'>
-            <div className='flex flex-col gap-2'>
+          <div className='mx-auto flex h-full w-full max-w-screen-md flex-col items-center overflow-auto px-4 pt-24'>
+            <div className='mb-16 flex flex-col gap-2'>
               <div className='mr-3 flex items-center justify-center gap-3'>
                 <Image src={Diamond} alt='' className='h-14 w-14' />
                 <span className='flex items-center text-4xl font-bold'>
@@ -80,40 +80,10 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
                 </Button>
               </div>
             </div>
-            <div className='flex w-full flex-col gap-4'>
+            <div className='flex w-full flex-col gap-4 pb-8'>
               <span className='text-center text-lg font-bold text-text-muted'>
                 How to earn Points:
               </span>
-              <Link
-                href='/tg'
-                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
-              >
-                <Card className='flex w-full items-center gap-4 bg-background-light'>
-                  <Image
-                    src={Pointup}
-                    alt=''
-                    className='h-14 w-14 flex-shrink-0'
-                  />
-                  <div className='flex flex-col gap-1'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-lg font-bold'>Tap2Earn</span>
-                      <div className='rounded-full bg-background px-2 py-0.5 text-sm text-text-muted'>
-                        Soon
-                      </div>
-                    </div>
-                    <p className='text-sm text-text-muted'>
-                      Tap on the laughing emoji and earn Points.
-                    </p>
-                  </div>
-                  <Button
-                    size='circle'
-                    className='ml-auto flex-shrink-0 text-lg'
-                    variant='transparent'
-                  >
-                    <HiChevronRight />
-                  </Button>
-                </Card>
-              </Link>
               <Link
                 href='/tg/memes'
                 className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
@@ -157,6 +127,36 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
                     </div>
                     <p className='text-sm text-text-muted'>
                       Invite your friends and earn 10% from their Points.
+                    </p>
+                  </div>
+                  <Button
+                    size='circle'
+                    className='ml-auto flex-shrink-0 text-lg'
+                    variant='transparent'
+                  >
+                    <HiChevronRight />
+                  </Button>
+                </Card>
+              </Link>
+              <Link
+                href='/tg'
+                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
+              >
+                <Card className='flex w-full items-center gap-4 bg-background-light'>
+                  <Image
+                    src={Pointup}
+                    alt=''
+                    className='h-14 w-14 flex-shrink-0'
+                  />
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg font-bold'>Tap2Earn</span>
+                      <div className='rounded-full bg-background px-2 py-0.5 text-sm text-text-muted'>
+                        Soon
+                      </div>
+                    </div>
+                    <p className='text-sm text-text-muted'>
+                      Tap on the laughing emoji and earn Points.
                     </p>
                   </div>
                   <Button
