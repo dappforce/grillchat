@@ -15,8 +15,10 @@ import AutocompleteInput, {
 } from '@/components/inputs/AutocompleteInput'
 import SelectInput from '@/components/inputs/SelectInput'
 import { useMyMainAddress } from '@/stores/my-account'
-import { convertAddressToGenericAddress } from '@/utils/account'
-import { encodeAddress } from '@polkadot/keyring'
+import {
+  convertAddressToGenericAddress,
+  convertAddressToSubsocialAddress,
+} from '@/utils/account'
 import { isAddress } from '@polkadot/util-crypto'
 import { isEmptyArray } from '@subsocial/utils'
 import BN from 'bignumber.js'
@@ -53,15 +55,19 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
       items?.filter(
         (item) =>
           convertAddressToGenericAddress(item.id) !==
-          convertAddressToGenericAddress(myAddress)
+            convertAddressToGenericAddress(myAddress) &&
+          !!convertAddressToGenericAddress(item.id)
       ) || []
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts?.length, isLoading, myAddress])
 
-  const [recipient, setRecipient] = useState<InputItem | undefined>(
-    accountItems[0]
-  )
+  const [recipient, setRecipient] = useState<InputItem | undefined>(undefined)
+  useEffect(() => {
+    if (!recipient) {
+      setRecipient(accountItems?.[0])
+    }
+  }, [accountItems])
 
   useEffect(() => {
     if (!isLoading && accounts && !isEmptyArray(accounts)) {
@@ -103,8 +109,10 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
     return (
       accountItems?.filter(
         (item) =>
-          encodeAddress(item.id) !== encodeAddress(myAddress).toString() &&
-          item.id !== recipient?.id
+          convertAddressToSubsocialAddress(item.id) !==
+            convertAddressToSubsocialAddress(myAddress) &&
+          item.id !== recipient?.id &&
+          !!convertAddressToSubsocialAddress(item.id)
       ) || []
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,7 +141,7 @@ const WithdrawContent = ({ setCurrentState }: ProfileModalContentProps) => {
           <AutocompleteInput
             value={recipient}
             setValue={setRecipient}
-            items={filteredAccountItems}
+            items={[]}
             label='Recipient'
             filterItems={filterItems}
           />
