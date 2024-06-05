@@ -1,7 +1,7 @@
 import WaiterImage from '@/assets/graphics/waiter.png'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
-import { TouchEvent, TouchList, useRef, useState } from 'react'
+import { TouchEvent, TouchList, useEffect, useRef, useState } from 'react'
 
 type PointsClickerProps = {
   className?: string
@@ -11,13 +11,48 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isTouched, setIsTouched] = useState(false)
   const [touches, setTouches] = useState<TouchList>()
+  const hapticRef = useRef<any>(null)
+
+  useEffect(() => {
+    const telegram = window.Telegram as any
+
+    const webApp = telegram?.WebApp
+
+    hapticRef.current = webApp?.HapticFeedback
+  })
+
+  useEffect(() => {
+    let ts: number | undefined
+    const onTouchStart = (e: any) => {
+      ts = e.touches[0].clientY
+    }
+    const onTouchMove = (e: any) => {
+      if (ref.current) {
+        const scroll = ref.current.scrollTop
+        const te = e.changedTouches[0].clientY
+        if (scroll <= 0 && ts! < te) {
+          e.preventDefault()
+        }
+      } else {
+        e.preventDefault()
+      }
+    }
+    ref.current?.addEventListener('touchstart', onTouchStart, {
+      passive: false,
+    })
+    ref.current?.addEventListener('touchmove', onTouchMove, {
+      passive: false,
+    })
+
+    return () => {
+      ref.current?.removeEventListener('touchstart', onTouchStart)
+      ref.current?.removeEventListener('touchmove', onTouchMove)
+    }
+  }, [])
 
   const onMouseDown = (event: TouchEvent<HTMLDivElement>) => {
     setIsTouched(true)
     setTouches(event.touches)
-    if (navigator.vibrate) {
-      navigator.vibrate(200)
-    }
   }
 
   const onMouseUp = () => {
@@ -32,7 +67,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
         word.textContent = 'Soon'
 
         word.style.left = touch.clientX - 110 + 'px'
-        word.style.top = touch.clientY - 75 + 'px'
+        word.style.top = touch.clientY - 130 + 'px'
 
         ref.current.appendChild(word)
 
@@ -41,6 +76,8 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
         }, 3000)
       }
     }
+
+    hapticRef.current?.impactOccurred('medium')
 
     setTouches(undefined)
   }
