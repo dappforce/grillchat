@@ -7,7 +7,7 @@ const customColumnsClassNames = [undefined, undefined, 'md:w-[30%]']
 const tabs = [
   {
     id: 'week',
-    text: 'Week',
+    text: 'This week',
     content: () => (
       <LeaderboardTable
         period='week'
