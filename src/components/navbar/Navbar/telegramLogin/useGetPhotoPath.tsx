@@ -9,7 +9,7 @@ const useGetPhotoPath = (userId?: string) => {
 
     const getFunc = async () => {
       const res = await apiInstance.get(`/api/telegram-image?address=${userId}`)
-      setPath(res.data)
+      setPath(res.data?.data)
     }
 
     getFunc()
