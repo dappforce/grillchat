@@ -33,7 +33,7 @@ export default function SubsocialProfileModal({
   }
 
   return (
-    <Modal {...props} title={title || '✏️ Edit Profile'}>
+    <Modal {...props} title={title || '✏️ Edit Profile'} withCloseButton>
       <SubsocialProfileForm onSuccess={onSuccess} />
       {cancelButtonText && (
         <Button

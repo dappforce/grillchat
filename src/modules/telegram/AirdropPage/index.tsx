@@ -117,6 +117,7 @@ function AddEvmProviderModal(props: ModalFunctionalityProps) {
       {...props}
       title='🔑 Connect EVM'
       description='Create an on-chain proof to link your Epic account.'
+      withCloseButton
     >
       <CommonEVMLoginContent
         mutationType='add-provider'
