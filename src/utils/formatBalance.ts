@@ -29,6 +29,10 @@ export const formatBalance = ({
     }
   }
 
+  if (intPart.length > 3) {
+    maximumFractionDigits = 0
+  }
+
   return Number(value).toLocaleString('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits,
