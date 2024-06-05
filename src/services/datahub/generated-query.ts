@@ -394,6 +394,8 @@ export enum DataHubSubscriptionEventEnum {
   ServiceAccountInfoEvent = 'SERVICE_ACCOUNT_INFO_EVENT',
   ServiceAccountSuccessEvent = 'SERVICE_ACCOUNT_SUCCESS_EVENT',
   ServiceAccountWarningEvent = 'SERVICE_ACCOUNT_WARNING_EVENT',
+  SocialProfileBalancesCreated = 'SOCIAL_PROFILE_BALANCES_CREATED',
+  SocialProfileBalancesStateUpdated = 'SOCIAL_PROFILE_BALANCES_STATE_UPDATED',
 }
 
 export enum DataType {
@@ -1470,6 +1472,12 @@ export type SocialProfileBalances = {
   id: Scalars['String']['output']
 }
 
+export type SocialProfileBalancesSubscriptionPayload = {
+  __typename?: 'SocialProfileBalancesSubscriptionPayload'
+  entity: SocialProfileBalances
+  event: DataHubSubscriptionEventEnum
+}
+
 export type SocialProfileInput = {
   where: SocialProfileInputWhereArgs
 }
@@ -1565,6 +1573,7 @@ export type Subscription = {
   moderationOrganization: ModerationOrganizationSubscriptionPayload
   post: PostSubscriptionPayload
   serviceMessageToTarget: AccountServiceMessageToTargetResponse
+  socialProfileBalancesSubscription: SocialProfileBalancesSubscriptionPayload
 }
 
 export type SubscriptionServiceMessageToTargetArgs = {
@@ -1827,6 +1836,22 @@ export type GetIsActiveStakerQueryVariables = Exact<{
 export type GetIsActiveStakerQuery = {
   __typename?: 'Query'
   activeStakingIsActiveStaker: boolean
+}
+
+export type SubscribeBalancesSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type SubscribeBalancesSubscription = {
+  __typename?: 'Subscription'
+  socialProfileBalancesSubscription: {
+    __typename?: 'SocialProfileBalancesSubscriptionPayload'
+    event: DataHubSubscriptionEventEnum
+    entity: {
+      __typename?: 'SocialProfileBalances'
+      activeStakingPoints: string
+    }
+  }
 }
 
 export type GetSuperLikeCountsQueryVariables = Exact<{
@@ -3045,6 +3070,16 @@ export const GetBalance = gql`
 export const GetIsActiveStaker = gql`
   query GetIsActiveStaker($address: String!) {
     activeStakingIsActiveStaker(address: $address)
+  }
+`
+export const SubscribeBalances = gql`
+  subscription SubscribeBalances {
+    socialProfileBalancesSubscription {
+      event
+      entity {
+        activeStakingPoints
+      }
+    }
   }
 `
 export const GetSuperLikeCounts = gql`

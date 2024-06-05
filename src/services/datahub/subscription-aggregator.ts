@@ -1,5 +1,6 @@
 import { getIdFromSlug } from '@/utils/slug'
 import { useRouter } from 'next/router'
+import { useDatahubBalancesSubscriber } from './balances/subscription'
 import { useDatahubContentStakingSubscriber } from './content-staking/subscription'
 import { useDatahubEventsSubscriber } from './events/subscription'
 import { useDatahubIdentitySubscriber } from './identity/subscription'
@@ -16,4 +17,5 @@ export function useDatahubSubscription() {
   useDatahubIdentitySubscriber()
   useDatahubContentStakingSubscriber()
   useDatahubEventsSubscriber()
+  useDatahubBalancesSubscriber()
 }

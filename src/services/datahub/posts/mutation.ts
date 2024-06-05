@@ -11,7 +11,6 @@ import {
 } from '@/services/subsocial/commentIds/optimistic'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
-import { getMyMainAddress } from '@/stores/my-account'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { TAGS_REGEX } from '@/utils/strings'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
@@ -28,7 +27,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
-import { getBalanceQuery } from '../balances/query'
 import { DatahubParams, createSignedSocialDataEvent } from '../utils'
 
 type GetDeterministicIdInput = {
@@ -264,10 +262,6 @@ export function useSendMessage(
     onSuccess: async (...params) => {
       config?.onSuccess?.(...params)
       allowWindowUnload()
-
-      setTimeout(() => {
-        getBalanceQuery.invalidate(client, getMyMainAddress())
-      }, 500)
 
       const [callId, data] = params
 

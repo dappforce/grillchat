@@ -3,7 +3,6 @@ import { useSubscriptionState } from '@/stores/subscription'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import { getBalanceQuery } from '../balances/query'
 import {
   DataHubSubscriptionEventEnum,
   SubscribeIdentitySubscription,
@@ -167,7 +166,6 @@ async function processExternalProviderUpdate(
   if (!myMainAddress || externalProvider.linkedIdentity.id !== myMainAddress)
     return
 
-  getBalanceQuery.invalidate(queryClient, myMainAddress)
   getLinkedIdentityQuery.setQueryData(queryClient, myGrillAddress, (data) => {
     if (!data) return data
     const hasIncludedCurrentProvider = data.externalProviders.some((p) => {

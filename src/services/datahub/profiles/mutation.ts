@@ -17,7 +17,6 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getCurrentWallet } from '../../subsocial/hooks'
 import { createMutationWrapper } from '../../subsocial/utils/mutation'
-import { getBalanceQuery } from '../balances/query'
 import { getDeterministicId } from '../posts/mutation'
 
 type CommonParams = {
@@ -103,9 +102,6 @@ function useUpsertProfileRaw(config?: MutationConfig<UpsertProfileParams>) {
     onSuccess: async (...params) => {
       config?.onSuccess?.(...params)
       allowWindowUnload()
-      setTimeout(() => {
-        getBalanceQuery.invalidate(client, getMyMainAddress())
-      }, 500)
     },
   })
 }

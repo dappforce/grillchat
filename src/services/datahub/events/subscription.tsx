@@ -7,7 +7,6 @@ import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import sortKeysRecursive from 'sort-keys-recursive'
-import { getBalanceQuery } from '../balances/query'
 import { getTodaySuperLikeCountQuery } from '../content-staking/query'
 import {
   ServiceMessageStatusCode,
@@ -118,7 +117,6 @@ async function processSubscriptionEvent(
   eventData: SubscribeEventsSubscription['serviceMessageToTarget']
 ) {
   const mainAddress = getMyMainAddress() ?? ''
-  getBalanceQuery.invalidate(client, mainAddress)
 
   let action = 'previous action'
   switch (eventData.meta.callName) {
@@ -171,6 +169,7 @@ async function processSubscriptionEvent(
     case ServiceMessageStatusCode.InvalidSigner:
       reason = 'Invalid signer, please relogin and try again'
       break
+
     case ServiceMessageStatusCode.InvalidProxyForSigner:
       reason = 'Invalid proxy, please relogin and try again'
       break
