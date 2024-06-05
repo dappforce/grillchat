@@ -12,7 +12,6 @@ import {
 import { LeaderboardDataPeriod } from '@/services/datahub/leaderboard/types'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
-import { isDef, isEmptyArray } from '@subsocial/utils'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -186,7 +185,7 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
         currentUserRank,
         ref || undefined
       ),
-    ].filter(isDef)
+    ].filter(Boolean)
   }, [currentUserRank, dataItems, isElementIntersecting, initIsIntersection])
 
   return (
@@ -209,7 +208,7 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
             </span>
           </div>
         ))}
-      {!isEmptyArray(data) && (
+      {!!data.length && (
         <div className='flex w-full flex-col'>
           <table className='w-full table-fixed text-left'>
             <tbody>

@@ -1,6 +1,5 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
-import LoginModal from '@/components/auth/LoginModal'
 import OauthLoadingModal from '@/components/auth/OauthLoadingModal'
 import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
@@ -40,10 +39,6 @@ export type AppCommonProps = {
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
-  useEffect(() => {
-    import('eruda').then((lib) => lib.default.init())
-  }, [])
-
   return (
     <SessionProvider
       basePath={
@@ -152,7 +147,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
               <ErrorBoundary>
                 <EvmProvider>
                   <Component {...props} />
-                  <LoginModal />
                 </EvmProvider>
               </ErrorBoundary>
             </div>
