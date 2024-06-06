@@ -48,7 +48,7 @@ export default function WelcomeModal() {
             </span>
           </div>
         </div>
-        <div className='flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-background p-4'>
+        <div className='flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-background-lighter p-4'>
           <span className='font-medium text-text-muted'>
             Your welcome bonus:
           </span>
