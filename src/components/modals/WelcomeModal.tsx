@@ -8,6 +8,9 @@ import Button from '../Button'
 import Modal from './Modal'
 
 const hasVisitedHomeStorage = new LocalStorage(() => 'has-visited-home')
+export const isWelcomeModalOpenStorage = new LocalStorage(
+  () => 'is-welcome-modal-open'
+)
 
 export default function WelcomeModal() {
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -16,6 +19,7 @@ export default function WelcomeModal() {
     if (!hasVisited) {
       hasVisitedHomeStorage.set('true')
       setIsOpenModal(true)
+      isWelcomeModalOpenStorage.set('true')
     }
   }, [])
 
@@ -57,7 +61,13 @@ export default function WelcomeModal() {
             <span className='flex items-center text-4xl font-bold'>15,000</span>
           </div>
         </div>
-        <Button size='lg' onClick={() => setIsOpenModal(false)}>
+        <Button
+          size='lg'
+          onClick={() => {
+            setIsOpenModal(false)
+            isWelcomeModalOpenStorage.set('false')
+          }}
+        >
           Claim my bonus!
         </Button>
       </div>

@@ -2,19 +2,13 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
-import { env } from '@/env.mjs'
+import { getReferralLink } from '@/components/referral/utils'
 import useIsMounted from '@/hooks/useIsMounted'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { copyToClipboard, formatNumber } from '@/utils/strings'
 import { useState } from 'react'
 import PointsWidget from '../points/PointsWidget'
-
-function getReferralLink(ref: string | null) {
-  return `https://t.me/${env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}?start=${
-    ref ?? ''
-  }`
-}
 
 export default function FriendsPage() {
   const isMounted = useIsMounted()

@@ -17,6 +17,8 @@ import {
   GetSuperLikeCountsQueryVariables,
   GetTodaySuperLikeCountQuery,
   GetTodaySuperLikeCountQueryVariables,
+  GetUserYesterdayRewardQuery,
+  GetUserYesterdayRewardQueryVariables,
 } from '../generated-query'
 import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 
@@ -549,5 +551,59 @@ export const getRewardHistoryQuery = createQuery({
   fetcher: getRewardHistory,
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
+  }),
+})
+
+const GET_USER_YESTERDAY_REWARD = gql`
+  query GetUserYesterdayReward($address: String!, $timestamp: String!) {
+    activeStakingAccountActivityMetricsForFixedPeriod(
+      args: {
+        address: $address
+        period: DAY
+        periodValue: $timestamp
+        staker: { likedPosts: true, earnedByPeriod: true }
+        creator: { earnedByPeriod: true }
+      }
+    ) {
+      creator {
+        earnedByPeriod
+      }
+      staker {
+        likedPosts
+        earnedByPeriod
+      }
+    }
+  }
+`
+async function getUserYesterdayReward({ address }: { address: string }) {
+  const yesterday = dayjs.utc().subtract(1, 'day')
+  const { day } = getDayAndWeekTimestamp(yesterday.toDate())
+
+  const res = await datahubQueryRequest<
+    GetUserYesterdayRewardQuery,
+    GetUserYesterdayRewardQueryVariables
+  >({
+    document: GET_USER_YESTERDAY_REWARD,
+    variables: {
+      address,
+      timestamp: day.toString(),
+    },
+  })
+  const data = res.activeStakingAccountActivityMetricsForFixedPeriod
+
+  return {
+    address,
+    earned: {
+      creator: data.creator?.earnedByPeriod ?? '0',
+      staker: data.staker?.earnedByPeriod ?? '0',
+    },
+    likedPosts: data.staker?.likedPosts,
+  }
+}
+export const getUserYesterdayRewardQuery = createQuery({
+  key: 'getUserYesterdayReward',
+  fetcher: getUserYesterdayReward,
+  defaultConfigGenerator: (param) => ({
+    enabled: !!param?.address,
   }),
 })

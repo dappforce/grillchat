@@ -1990,6 +1990,27 @@ export type GetRewardHistoryQuery = {
   }>
 }
 
+export type GetUserYesterdayRewardQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  timestamp: Scalars['String']['input']
+}>
+
+export type GetUserYesterdayRewardQuery = {
+  __typename?: 'Query'
+  activeStakingAccountActivityMetricsForFixedPeriod: {
+    __typename?: 'AccountActivityMetricsForFixedPeriodResponseDto'
+    creator?: {
+      __typename?: 'CreatorActivityMetrics'
+      earnedByPeriod?: string | null
+    } | null
+    staker?: {
+      __typename?: 'StakerActivityMetrics'
+      likedPosts?: number | null
+      earnedByPeriod?: string | null
+    } | null
+  }
+}
+
 export type SubscribeSuperLikeSubscriptionVariables = Exact<{
   [key: string]: never
 }>
@@ -3179,6 +3200,27 @@ export const GetRewardHistory = gql`
       week
       creator {
         total
+      }
+    }
+  }
+`
+export const GetUserYesterdayReward = gql`
+  query GetUserYesterdayReward($address: String!, $timestamp: String!) {
+    activeStakingAccountActivityMetricsForFixedPeriod(
+      args: {
+        address: $address
+        period: DAY
+        periodValue: $timestamp
+        staker: { likedPosts: true, earnedByPeriod: true }
+        creator: { earnedByPeriod: true }
+      }
+    ) {
+      creator {
+        earnedByPeriod
+      }
+      staker {
+        likedPosts
+        earnedByPeriod
       }
     }
   }
