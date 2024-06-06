@@ -56,7 +56,7 @@ export default function LandingPage() {
           </h2>
           <div className='mt-auto grid w-full grid-cols-1 gap-8 sm:mt-0 sm:grid-cols-2'>
             <Link
-              href='https://epicapp.net/what-is-meme2earn'
+              href='https://paragraph.xyz/@epic/guide'
               className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-transparent transition hover:bg-[#F9E539] hover:text-background-primary focus-visible:bg-[#F9E539] focus-visible:text-background-primary sm:flex-col sm:p-8'
               onClick={() => sendEvent('lp_learn_more')}
             >
@@ -68,7 +68,7 @@ export default function LandingPage() {
               <span className='text-xl font-bold sm:text-3xl'>LEARN MORE</span>
             </Link>
             <Link
-              href='/tg'
+              href='https://t.me/EpicAppBot'
               className='flex items-center gap-4 rounded-[30px] bg-white/20 p-4 outline-none ring-8 ring-inset ring-[#F9E539] transition hover:bg-[#F9E539] hover:text-background-primary focus-visible:bg-[#F9E539] focus-visible:text-background-primary sm:flex-col sm:p-8'
               onClick={() => sendEvent('lp_open_app')}
             >
