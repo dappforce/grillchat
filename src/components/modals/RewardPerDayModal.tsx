@@ -34,8 +34,9 @@ export default function ProgressModal() {
   const { data } = getUserYesterdayRewardQuery.useQuery({
     address: myAddress ?? '',
   })
-  const hasEarnedAnything =
+  const hasEarnedAnything = !!(
     Number(data?.earned.creator ?? '0') || Number(data?.earned.staker ?? '0')
+  )
 
   useEffect(() => {
     const shouldOpen =
@@ -46,7 +47,7 @@ export default function ProgressModal() {
     if (shouldOpen) {
       sendEvent('open_progress_modal')
     }
-    setIsOpen(!progressModalStorage.getIsClosed() && !!myAddress)
+    setIsOpen(shouldOpen)
   }, [myAddress, sendEvent, hasEarnedAnything])
 
   if (!isOpen) return null
@@ -96,7 +97,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
                   Points for liking memes
                 </span>
               </Card>
-              {creatorReward && (
+              {!!creatorReward && (
                 <Card className='flex flex-col gap-2 p-4'>
                   <div className='mr-3 flex gap-2'>
                     <Image src={Diamond} alt='' className='h-10 w-10' />
