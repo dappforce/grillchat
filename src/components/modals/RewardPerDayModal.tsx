@@ -54,6 +54,11 @@ export default function ProgressModal() {
   const stakerReward = Number(data?.earned.staker ?? '0')
   const creatorReward = Number(data?.earned.creator ?? '0')
 
+  const twitterShareText = `💰 Turn your love of memes into rewards! 
+Epic lets you earn tokens simply by liking and posting memes. 
+
+Sounds too good to be true? Join me and see for yourself! 😉`
+
   return (
     <Drawer.Root
       shouldScaleBackground
@@ -111,9 +116,18 @@ export default function ProgressModal() {
                 size='lg'
                 onClick={() => {
                   openNewWindow(
-                    twitterShareUrl(getReferralLink(myAddress), '', {
-                      tags: ['meme2earn', 'memetoken'],
-                    })
+                    twitterShareUrl(
+                      getReferralLink(myAddress),
+                      twitterShareText,
+                      {
+                        tags: [
+                          'meme2earn',
+                          'tap2earn',
+                          'memecoins',
+                          'memetokens',
+                        ],
+                      }
+                    )
                   )
                   sendEvent('progress_modal_share_clicked')
                 }}
