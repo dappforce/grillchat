@@ -61,7 +61,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className='fixed inset-0 z-10 h-full w-full bg-black/50 backdrop-blur-lg' />
-        <Drawer.Content className='fixed inset-0 z-10 flex h-full max-h-[calc(100dvh_-_5rem)] w-full flex-col rounded-t-[10px] bg-transparent outline-none'>
+        <Drawer.Content className='fixed inset-0 z-10 flex h-full w-full flex-col rounded-t-[10px] bg-transparent pb-20 outline-none'>
           <Drawer.Close className='absolute right-4 top-4'>
             <HiXMark className='text-3xl' />
           </Drawer.Close>
