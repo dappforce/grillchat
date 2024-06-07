@@ -566,11 +566,11 @@ const GET_USER_YESTERDAY_REWARD = gql`
       }
     ) {
       creator {
-        earnedByPeriod
+        earnedPointsByPeriod
       }
       staker {
         likedPosts
-        earnedByPeriod
+        earnedPointsByPeriod
       }
     }
   }
@@ -594,8 +594,8 @@ async function getUserYesterdayReward({ address }: { address: string }) {
   return {
     address,
     earned: {
-      creator: data.creator?.earnedByPeriod ?? '0',
-      staker: data.staker?.earnedByPeriod ?? '0',
+      creator: data.creator?.earnedPointsByPeriod ?? '0',
+      staker: data.staker?.earnedPointsByPeriod ?? '0',
     },
     likedPosts: data.staker?.likedPosts,
   }

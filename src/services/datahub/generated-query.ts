@@ -2001,12 +2001,12 @@ export type GetUserYesterdayRewardQuery = {
     __typename?: 'AccountActivityMetricsForFixedPeriodResponseDto'
     creator?: {
       __typename?: 'CreatorActivityMetrics'
-      earnedByPeriod?: string | null
+      earnedPointsByPeriod?: string | null
     } | null
     staker?: {
       __typename?: 'StakerActivityMetrics'
       likedPosts?: number | null
-      earnedByPeriod?: string | null
+      earnedPointsByPeriod?: string | null
     } | null
   }
 }
@@ -3216,11 +3216,11 @@ export const GetUserYesterdayReward = gql`
       }
     ) {
       creator {
-        earnedByPeriod
+        earnedPointsByPeriod
       }
       staker {
         likedPosts
-        earnedByPeriod
+        earnedPointsByPeriod
       }
     }
   }
