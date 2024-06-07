@@ -90,7 +90,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
                 <div className='mr-3 flex gap-2'>
                   <Image src={Diamond} alt='' className='h-10 w-10' />
                   <span className='flex items-center text-3xl font-bold'>
-                    {formatNumber(stakerReward)}
+                    {formatNumber(stakerReward, { shorten: true })}
                   </span>
                 </div>
                 <span className='text-sm font-medium text-text-muted'>
@@ -102,7 +102,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
                   <div className='mr-3 flex gap-2'>
                     <Image src={Diamond} alt='' className='h-10 w-10' />
                     <span className='flex items-center text-3xl font-bold'>
-                      {formatNumber(creatorReward)}
+                      {formatNumber(creatorReward, { shorten: true })}
                     </span>
                   </div>
                   <span className='text-sm font-medium text-text-muted'>
