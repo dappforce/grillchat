@@ -17,7 +17,7 @@ export default function BlockedModal(props: ModalFunctionalityProps) {
       }
       description='You are now restricted from taking actions on Epic.'
     >
-      <div className='grid w-full grid-cols-2 gap-4'>
+      <div className='grid w-full gap-4'>
         <Button size='lg' variant='primaryOutline' href='/appeal'>
           Appeal
         </Button>
