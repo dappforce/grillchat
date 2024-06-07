@@ -1,5 +1,6 @@
 import WaiterImage from '@/assets/graphics/waiter.png'
 import { cx } from '@/utils/class-names'
+import { useHapticFeedback } from '@tma.js/sdk-react'
 import Image from 'next/image'
 import { TouchEvent, TouchList, useEffect, useRef, useState } from 'react'
 
@@ -11,15 +12,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isTouched, setIsTouched] = useState(false)
   const [touches, setTouches] = useState<TouchList>()
-  const hapticRef = useRef<any>(null)
-
-  useEffect(() => {
-    const telegram = window.Telegram as any
-
-    const webApp = telegram?.WebApp
-
-    hapticRef.current = webApp?.HapticFeedback
-  })
+  const haptic = useHapticFeedback(true)
 
   useEffect(() => {
     let ts: number | undefined
@@ -77,7 +70,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
       }
     }
 
-    hapticRef.current?.impactOccurred('medium')
+    haptic?.impactOccurred('medium')
 
     setTouches(undefined)
   }
