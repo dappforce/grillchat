@@ -1,6 +1,6 @@
 import WaiterImage from '@/assets/graphics/waiter.png'
 import { cx } from '@/utils/class-names'
-import { useHapticFeedback } from '@tma.js/sdk-react'
+import { useHapticFeedbackRaw } from '@tma.js/sdk-react'
 import Image from 'next/image'
 import { TouchEvent, TouchList, useEffect, useRef, useState } from 'react'
 
@@ -12,16 +12,17 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isTouched, setIsTouched] = useState(false)
   const [touches, setTouches] = useState<TouchList>()
-  const haptic = useHapticFeedback(true)
+  const haptic = useHapticFeedbackRaw(true)
 
   useEffect(() => {
+    const refCurrent = ref.current
     let ts: number | undefined
     const onTouchStart = (e: any) => {
       ts = e.touches[0].clientY
     }
     const onTouchMove = (e: any) => {
-      if (ref.current) {
-        const scroll = ref.current.scrollTop
+      if (refCurrent) {
+        const scroll = refCurrent.scrollTop
         const te = e.changedTouches[0].clientY
         if (scroll <= 0 && ts! < te) {
           e.preventDefault()
@@ -30,16 +31,16 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
         e.preventDefault()
       }
     }
-    ref.current?.addEventListener('touchstart', onTouchStart, {
+    refCurrent?.addEventListener('touchstart', onTouchStart, {
       passive: false,
     })
-    ref.current?.addEventListener('touchmove', onTouchMove, {
+    refCurrent?.addEventListener('touchmove', onTouchMove, {
       passive: false,
     })
 
     return () => {
-      ref.current?.removeEventListener('touchstart', onTouchStart)
-      ref.current?.removeEventListener('touchmove', onTouchMove)
+      refCurrent?.removeEventListener('touchstart', onTouchStart)
+      refCurrent?.removeEventListener('touchmove', onTouchMove)
     }
   }, [])
 
@@ -70,7 +71,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
       }
     }
 
-    haptic?.impactOccurred('medium')
+    haptic?.result?.impactOccurred('medium')
 
     setTouches(undefined)
   }

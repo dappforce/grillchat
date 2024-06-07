@@ -5,7 +5,7 @@ import Tap from '@/assets/icons/bottomNavbar/tap.svg'
 import TopMemes from '@/assets/icons/bottomNavbar/top-memes.svg'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
-import { useHapticFeedback } from '@tma.js/sdk-react'
+import { useHapticFeedbackRaw } from '@tma.js/sdk-react'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
 import CustomLink from 'src/components/referral/CustomLink'
@@ -95,11 +95,11 @@ function NavigationItem({
 }) {
   const { pathname } = useRouter()
   const sendEvent = useSendEvent()
-  const haptic = useHapticFeedback(true)
+  const haptic = useHapticFeedbackRaw(true)
 
   const onButtonClick = () => {
     sendEvent('navbar_clicked', { value: id })
-    haptic?.impactOccurred('medium')
+    haptic?.result?.impactOccurred('medium')
   }
 
   return (
