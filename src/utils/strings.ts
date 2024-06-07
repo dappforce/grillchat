@@ -45,6 +45,12 @@ export function getUrlFromText(str: string) {
 
 export const TAGS_REGEX = /#[a-zA-Z0-9_]+/g
 
+function formatNumberToPrecision(number: number) {
+  const str = number.toPrecision(2)
+  const [prefix, postfix] = str.split('.')
+  return Number(postfix) > 0 ? str : prefix
+}
+
 export function formatNumber(
   num: number | string,
   config?: { shorten?: boolean }
@@ -54,13 +60,13 @@ export function formatNumber(
 
   if (shorten) {
     if (prefix.length > 9) {
-      return `${(Number(prefix) / 1_000_000_000).toFixed(2)}b`
+      return `${formatNumberToPrecision(Number(prefix) / 1_000_000_000)}B`
     }
     if (prefix.length > 6) {
-      return `${(Number(prefix) / 1_000_000).toFixed(2)}m`
+      return `${formatNumberToPrecision(Number(prefix) / 1_000_000)}M`
     }
     if (prefix.length > 3) {
-      return `${(Number(prefix) / 1_000).toFixed(2)}k`
+      return `${formatNumberToPrecision(Number(prefix) / 1_000)}K`
     }
   }
 
