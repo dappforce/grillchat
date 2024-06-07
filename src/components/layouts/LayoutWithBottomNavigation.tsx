@@ -1,4 +1,3 @@
-import useRedirectToTgBotOnDesktop from '@/hooks/useRedirectToTgBotOnDesktop'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
 import useLoginInTelegramMiniApps from '../navbar/Navbar/telegramLogin/useLoginInTelegramMiniApps'
@@ -17,7 +16,7 @@ export default function LayoutWithBottomNavigation({
   ...props
 }: DefaultLayoutProps) {
   useLoginInTelegramMiniApps()
-  useRedirectToTgBotOnDesktop()
+  // useRedirectToTgBotOnDesktop()
 
   return (
     <div
