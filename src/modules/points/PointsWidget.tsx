@@ -74,7 +74,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
               <div className='flex justify-center'>
                 <Button
                   href='/guide'
-                  className='bg-[#6395FD]/10 px-5 py-2 text-text-primary'
+                  className='bg-[#6395FD]/10 px-5 py-2 text-text'
                 >
                   How it works
                 </Button>
