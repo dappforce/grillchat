@@ -65,9 +65,9 @@ Sounds too good to be true? Join me and see for yourself! 😉`
       shouldScaleBackground
       direction='bottom'
       open={isOpen}
-      onClose={() => {
-        setIsOpen(false)
-        progressModalStorage.close()
+      onOpenChange={(open) => {
+        setIsOpen(open)
+        if (!open) progressModalStorage.close()
       }}
     >
       <Drawer.Portal>
