@@ -2,16 +2,17 @@ import Diamond from '@/assets/emojis/diamond.png'
 import { getUserYesterdayRewardQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { getCurrentUrlOrigin } from '@/utils/links'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { formatNumber } from '@/utils/strings'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { HiXMark } from 'react-icons/hi2'
+import urlJoin from 'url-join'
 import { Drawer } from 'vaul'
 import Button from '../Button'
 import Card from '../Card'
-import { getReferralLink } from '../referral/utils'
 import { isWelcomeModalOpenStorage } from './WelcomeModal'
 
 const progressModalStorage = {
@@ -118,7 +119,11 @@ Sounds too good to be true? Join me and see for yourself! 😉`
                 onClick={() => {
                   openNewWindow(
                     twitterShareUrl(
-                      getReferralLink(myAddress),
+                      urlJoin(
+                        getCurrentUrlOrigin(),
+                        '/tg',
+                        `?ref=${myAddress}`
+                      ),
                       twitterShareText,
                       {
                         tags: [
