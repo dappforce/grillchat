@@ -14,6 +14,7 @@ import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { ComponentProps } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiChevronRight, HiXMark } from 'react-icons/hi2'
@@ -21,6 +22,7 @@ import { Drawer } from 'vaul'
 
 export default function PointsWidget(props: ComponentProps<'div'>) {
   const sendEvent = useSendEvent()
+
   return (
     <Drawer.Root
       shouldScaleBackground
@@ -84,10 +86,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
               <span className='text-center text-lg font-bold text-text-muted'>
                 How to earn Points:
               </span>
-              <Link
-                href='/tg/memes'
-                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
-              >
+              <LinkWrapper href='/tg/memes'>
                 <Card className='flex w-full items-center gap-4 bg-background-light'>
                   <Image
                     src={Laugh}
@@ -110,11 +109,8 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
                     <HiChevronRight />
                   </Button>
                 </Card>
-              </Link>
-              <Link
-                href='/tg/friends'
-                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
-              >
+              </LinkWrapper>
+              <LinkWrapper href='/tg/friends'>
                 <Card className='flex w-full items-center gap-4 bg-background-light'>
                   <Image
                     src={Speaker}
@@ -137,11 +133,8 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
                     <HiChevronRight />
                   </Button>
                 </Card>
-              </Link>
-              <Link
-                href='/tg'
-                className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
-              >
+              </LinkWrapper>
+              <LinkWrapper href='/tg'>
                 <Card className='flex w-full items-center gap-4 bg-background-light'>
                   <Image
                     src={Pointup}
@@ -167,13 +160,37 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
                     <HiChevronRight />
                   </Button>
                 </Card>
-              </Link>
+              </LinkWrapper>
             </div>
           </div>
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
   )
+}
+
+function LinkWrapper({
+  href,
+  children,
+}: {
+  href: string
+  children: React.ReactNode
+}) {
+  const router = useRouter()
+
+  const link = (
+    <Link
+      href={href}
+      className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
+    >
+      {children}
+    </Link>
+  )
+
+  if (router.pathname === href) {
+    return <Drawer.Close asChild>{link}</Drawer.Close>
+  }
+  return link
 }
 
 function LikeCount({ shorten }: { shorten?: boolean }) {
