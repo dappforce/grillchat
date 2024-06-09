@@ -4,7 +4,7 @@ import {
   GetBalanceQuery,
   GetBalanceQueryVariables,
 } from '../../generated-query'
-import { datahubQueryRequest } from '../../utils'
+import { datahubQueryRequest, getDayAndWeekTimestamp } from '../../utils'
 
 export const FULL_ENERGY_VALUE = 100
 
@@ -68,6 +68,48 @@ const getEnergyState = async (address: string) => {
 export const getEnergyStateQuery = createQuery({
   key: 'getEnergyState',
   fetcher: getEnergyState,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+const GET_CLICKED_POINTS_BY_DAYS = gql`
+  query GetClickedPointsByDayS($address: String!, $dates: [Int!]!) {
+    gamificationTappingActivityStatsByDate(
+      args: { where: { dates: $dates, address: $address } }
+    ) {
+      data {
+        tapsCount
+        date
+      }
+    }
+  }
+`
+const getClickedPointsByDays = async (address: string) => {
+  const { day } = getDayAndWeekTimestamp()
+
+  const res = await datahubQueryRequest<
+    {
+      gamificationTappingActivityStatsByDate: {
+        tapsCount: number
+        date: string
+      }
+    },
+    { address: string; dates: number[] }
+  >({
+    document: GET_CLICKED_POINTS_BY_DAYS,
+    variables: { address, dates: [day] },
+  })
+
+  return {
+    tapsCount: res.gamificationTappingActivityStatsByDate?.tapsCount || 0,
+    date: res.gamificationTappingActivityStatsByDate?.date,
+  }
+}
+
+export const getClickedPointsByDayQuery = createQuery({
+  key: 'getClickedPointsByDay',
+  fetcher: getClickedPointsByDays,
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
   }),
