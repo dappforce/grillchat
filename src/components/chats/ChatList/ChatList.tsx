@@ -18,8 +18,6 @@ import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatTopNotice from './ChatTopNotice'
 import PinnedMessage from './PinnedMessage'
-import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
-import useLoadMoreIfNoScroll from './hooks/useLoadMoreIfNoScroll'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import { ChatListContext } from './provider'
 
@@ -79,16 +77,16 @@ function ChatListContent({
     hubId,
     chatId,
   })
-  const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
+  // const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
 
   useEffect(() => {
     sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())
   }, [totalDataCount])
 
-  useLoadMoreIfNoScroll(loadMore, messageIds?.length ?? 0, {
-    scrollContainer: scrollContainerRef,
-    innerContainer: innerRef,
-  })
+  // useLoadMoreIfNoScroll(loadMore, messageIds?.length ?? 0, {
+  //   scrollContainer: scrollContainerRef,
+  //   innerContainer: innerRef,
+  // })
 
   const pinnedMessageId = usePinnedMessage(chatId)
   const scrollToMessage = useScrollToMessage(
