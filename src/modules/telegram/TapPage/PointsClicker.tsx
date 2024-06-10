@@ -1,4 +1,4 @@
-import DogClicker from '@/components/DogClicker'
+import CatClicker from '@/components/CatClicker'
 import {
   decreaseEnergyValue,
   increasePointsBalance,
@@ -92,8 +92,8 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
         word.classList.add('floating-word')
         word.textContent = '+1'
 
-        word.style.left = touch.clientX - 110 + 'px'
-        word.style.top = touch.clientY - 200 + 'px'
+        word.style.left = touch.clientX - 70 + 'px'
+        word.style.top = touch.clientY - 190 + 'px'
 
         ref.current.appendChild(word)
 
@@ -125,7 +125,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
     <>
       <div
         ref={ref}
-        className={cx('relative max-h-[242px] max-w-[242px]', className)}
+        className={cx('relative max-h-[300px] max-w-[300px]', className)}
         onTouchStart={isEmptyEnergy ? undefined : onMouseDown}
         onTouchEnd={isEmptyEnergy ? undefined : onMouseUp}
       >
@@ -136,7 +136,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
           )}
           style={{ transform: 'translate3d(0, 0, 0)' }}
         ></div>
-        <DogClicker
+        <CatClicker
           isPaused={!startAnimation || isEmptyEnergy}
           style={{
             filter: isEmptyEnergy ? 'brightness(0.7) grayscale(0.8)' : '',
