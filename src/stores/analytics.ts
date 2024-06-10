@@ -16,7 +16,7 @@ type EventProperties = {
 
 export type UserProperties = {
   cameFrom?: string
-  cohortDate?: Date
+  cohortDate?: string
   polkadotLinked?: boolean
   twitterLinked?: boolean
   pwaInstalled?: boolean
