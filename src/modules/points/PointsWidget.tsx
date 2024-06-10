@@ -18,6 +18,7 @@ import { useRouter } from 'next/router'
 import { ComponentProps } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiChevronRight, HiXMark } from 'react-icons/hi2'
+import SlotCounter from 'react-slot-counter'
 import { Drawer } from 'vaul'
 
 export default function PointsWidget(props: ComponentProps<'div'>) {
@@ -218,5 +219,14 @@ function Points({ shorten }: { shorten?: boolean }) {
     return <Skeleton className='inline-block w-12' />
   }
 
-  return <span>{formatNumber(data ?? '0', { shorten })}</span>
+  const formatted = formatNumber(data ?? '0', { shorten })
+
+  return (
+    <SlotCounter
+      containerClassName='relative -top-0.5'
+      value={formatted.split('')}
+      animateOnVisible={false}
+      sequentialAnimationMode
+    />
+  )
 }
