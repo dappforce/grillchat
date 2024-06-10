@@ -39,7 +39,7 @@ const LeaderboardSection = () => {
 
       <Tabs
         className='p-0'
-        panelClassName='mt-0 w-full max-w-full px-0'
+        panelClassName='mt-0 w-full max-w-full px-0 z-0'
         tabClassName={(selected) =>
           cx(
             {
