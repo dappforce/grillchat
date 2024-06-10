@@ -18,12 +18,14 @@ import { isWelcomeModalOpenStorage } from './WelcomeModal'
 const progressModalStorage = {
   getIsClosed: () => {
     const today = dayjs.utc().startOf('day').unix()
+    console.log(today)
     const closedTimestamp = localStorage.getItem('progress-modal-closed')
     if (!closedTimestamp) return false
     return today === Number(closedTimestamp)
   },
   close: () => {
     const today = dayjs.utc().startOf('day').unix()
+    console.log(today)
     localStorage.setItem('progress-modal-closed', String(today))
   },
 }
@@ -68,7 +70,9 @@ Sounds too good to be true? Join me and see for yourself! 😉`
       open={isOpen}
       onOpenChange={(open) => {
         setIsOpen(open)
-        if (!open) progressModalStorage.close()
+        if (!open) {
+          progressModalStorage.close()
+        }
       }}
     >
       <Drawer.Portal>
@@ -145,6 +149,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
                 onClick={() => {
                   sendEvent('progress_modal_got_it_clicked')
                   setIsOpen(false)
+                  progressModalStorage.close()
                 }}
               >
                 Got it!
