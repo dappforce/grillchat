@@ -9,7 +9,6 @@ import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
 import { RiPencilFill } from 'react-icons/ri'
 import { SiEthereum } from 'react-icons/si'
-import { TbCoins } from 'react-icons/tb'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
@@ -113,36 +112,37 @@ const ProfilePreview = ({
           />
           {onEditClick && !isLoading && editButton}
         </div>
-        {isLoadingEvmAddress ? (
-          <Skeleton className='w-32' />
-        ) : showAddress && linkedEvmAddress ? (
-          <div className='flex flex-col gap-1'>
-            <div className='flex flex-row items-center gap-1.5'>
-              <SiEthereum className='text-xl text-text-muted' />
-              <CopyTextInline
-                text={truncateAddress(linkedEvmAddress)}
-                tooltip={`Copy${isMyAddressPart} address`}
-                textToCopy={linkedEvmAddress}
-                textClassName={cx(
-                  'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
-                )}
-              />
+        {
+          isLoadingEvmAddress ? (
+            <Skeleton className='w-32' />
+          ) : showAddress && linkedEvmAddress ? (
+            <div className='flex flex-col gap-1'>
+              <div className='flex flex-row items-center gap-1.5'>
+                <SiEthereum className='text-xl text-text-muted' />
+                <CopyTextInline
+                  text={truncateAddress(linkedEvmAddress)}
+                  tooltip={`Copy${isMyAddressPart} address`}
+                  textToCopy={linkedEvmAddress}
+                  textClassName={cx(
+                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                  )}
+                />
+              </div>
             </div>
-          </div>
-        ) : (
-          onSetRewardAddressClick && (
-            <div>
-              <Button
-                className='mt-0.5 flex items-center gap-1.5 px-3 py-1 text-sm'
-                size='sm'
-                onClick={onSetRewardAddressClick}
-              >
-                <TbCoins />
-                <span>Set Rewards Address</span>
-              </Button>
-            </div>
-          )
-        )}
+          ) : null
+          // onSetRewardAddressClick && (
+          //   <div>
+          //     <Button
+          //       className='mt-0.5 flex items-center gap-1.5 px-3 py-1 text-sm'
+          //       size='sm'
+          //       onClick={onSetRewardAddressClick}
+          //     >
+          //       <TbCoins />
+          //       <span>Set Rewards Address</span>
+          //     </Button>
+          //   </div>
+          // )
+        }
       </div>
     </div>
   )
