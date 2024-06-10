@@ -5,6 +5,7 @@ import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNav
 import { getReferralLink } from '@/components/referral/utils'
 import useIsMounted from '@/hooks/useIsMounted'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { copyToClipboard, formatNumber } from '@/utils/strings'
 import { useState } from 'react'
@@ -16,8 +17,10 @@ export default function FriendsPage() {
   const [isCopied, setIsCopied] = useState(false)
   const { data: referralData } = getUserReferralsQuery.useQuery(myAddress || '')
   const referralLink = getReferralLink(myAddress)
+  const sendEvent = useSendEvent()
 
   const onCopyClick = (text: string) => {
+    sendEvent('ref_copied')
     copyToClipboard(text)
 
     setIsCopied(true)
