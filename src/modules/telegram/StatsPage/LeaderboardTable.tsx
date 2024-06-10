@@ -65,7 +65,7 @@ const parseTableRows = (
         ),
         className:
           item.address === currentUserRank.address
-            ? 'bg-slate-800 sticky top-[3.5rem] z-[1]'
+            ? 'bg-slate-800 sticky top-[3.5rem] z-[2]'
             : '',
         rowRef: item.address === currentUserRank.address ? ref : null,
       }))
@@ -154,9 +154,7 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
             />
           ),
           className: cx(
-            currentUserRank.address === currentUserRank.address
-              ? 'bg-slate-800 sticky top-[3.5rem] z-[2]'
-              : '',
+            'bg-slate-800 sticky top-[3.5rem] z-[2]',
             'transition-opacity duration-100',
             isElementIntersecting ? 'opacity-0' : 'opacity-100'
           ),
