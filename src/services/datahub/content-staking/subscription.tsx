@@ -1,9 +1,11 @@
+import Toast from '@/components/Toast'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { DataHubSubscriptionEventEnum } from '@subsocial/data-hub-sdk'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
 import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
 
@@ -119,5 +121,6 @@ async function processSubscriptionEvent(
       address: myAddress,
       postId: post.persistentId,
     })
+    toast.custom((t) => <Toast t={t} title='🎉 You earned 200 points!' />)
   }
 }
