@@ -14,6 +14,7 @@ import {
   isSecretKeyUsingMiniSecret,
   loginWithSecretKey,
 } from '@/utils/account'
+import { getDayOfYear } from '@/utils/date'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import dayjs from 'dayjs'
@@ -158,7 +159,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
             'account_created',
             {},
             {
-              cohortDate: dayjs().toDate(),
+              cohortDate: `${getDayOfYear()}-${dayjs().year()}`,
               ref: refId,
               week: getDayAndWeekTimestamp().week.toString(),
             }
