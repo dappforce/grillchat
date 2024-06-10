@@ -31,7 +31,7 @@ export default function ProfilePreviewModalWrapper({
         isOpen={isOpenAccountModal}
         closeModal={() => setIsOpenAccountModal(false)}
       >
-        <ProfilePreview asLink address={address} className='mb-2' />
+        <ProfilePreview address={address} className='mb-2' />
         {/* {messageId && (
           <ActionCard
             className='mt-2'
