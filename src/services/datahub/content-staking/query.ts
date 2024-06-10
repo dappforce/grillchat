@@ -561,8 +561,8 @@ const GET_USER_YESTERDAY_REWARD = gql`
         address: $address
         period: DAY
         periodValue: $timestamp
-        staker: { likedPosts: true, earnedByPeriod: true }
-        creator: { earnedByPeriod: true }
+        staker: { likedPosts: true, earnedPointsByPeriod: true }
+        creator: { earnedPointsByPeriod: true }
       }
     ) {
       creator {
