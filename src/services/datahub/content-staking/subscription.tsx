@@ -121,6 +121,6 @@ async function processSubscriptionEvent(
       address: myAddress,
       postId: post.persistentId,
     })
-    toast.custom((t) => <Toast t={t} title='🎉 You earned 200 points!' />)
+    toast.custom((t) => <Toast t={t} title='🎉 You earned 2000 points!' />)
   }
 }
