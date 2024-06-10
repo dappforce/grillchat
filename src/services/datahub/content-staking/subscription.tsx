@@ -1,6 +1,7 @@
 import Toast from '@/components/Toast'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
+import { cx } from '@/utils/class-names'
 import { DataHubSubscriptionEventEnum } from '@subsocial/data-hub-sdk'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
@@ -121,6 +122,16 @@ async function processSubscriptionEvent(
       address: myAddress,
       postId: post.persistentId,
     })
-    toast.custom((t) => <Toast t={t} title='🎉 You earned 2000 points!' />)
+    toast.custom((t) => (
+      <Toast
+        t={t}
+        icon={(className) => (
+          <span className={cx(className, 'relative -top-px text-base')}>
+            🎉
+          </span>
+        )}
+        title='You earned 2000 points!'
+      />
+    ))
   }
 }
