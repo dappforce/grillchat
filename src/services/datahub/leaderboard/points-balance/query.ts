@@ -6,7 +6,7 @@ import {
 } from '../../generated-query'
 import { datahubQueryRequest, getDayAndWeekTimestamp } from '../../utils'
 
-export const FULL_ENERGY_VALUE = 100
+export const FULL_ENERGY_VALUE = 3600
 
 const GET_BALANCE = gql`
   query GetBalance($address: String!) {

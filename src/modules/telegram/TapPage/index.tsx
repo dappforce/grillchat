@@ -14,11 +14,20 @@ import { isTouchDevice } from '@/utils/device'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMiniAppRaw } from '@tma.js/sdk-react'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import PointsClicker from './PointsClicker'
 
 const TapPage = () => {
+  useEffect(() => {
+    document.body.style.position = 'fixed'
+    document.body.style.width = '100%'
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.removeProperty('overflow')
+      document.body.style.removeProperty('position')
+    }
+  }, [])
+
   return (
     <LayoutWithBottomNavigation
       className='relative'
@@ -35,7 +44,6 @@ const TapPage = () => {
 const TapPageContent = () => {
   const app = useMiniAppRaw(true)
   const isMobile = isTouchDevice()
-  const router = useRouter()
 
   if (app?.result && !isMobile) {
     return <MobileDeviceForBetterExp />
