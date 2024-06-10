@@ -7,7 +7,7 @@ import { IconType } from 'react-icons'
 import { BiChat, BiNews } from 'react-icons/bi'
 import { GoLaw } from 'react-icons/go'
 import { LuCompass } from 'react-icons/lu'
-import { MdOutlineLeaderboard } from 'react-icons/md'
+import { MdOutlineLeaderboard, MdOutlineLocalPolice } from 'react-icons/md'
 import { RiLineChartLine } from 'react-icons/ri'
 import { TbCoins, TbWorld } from 'react-icons/tb'
 import { TiFlashOutline } from 'react-icons/ti'
@@ -72,6 +72,13 @@ export default function Sidebar() {
           title='What is Grill?'
           href='/landing'
           iconClassName='[&_path]:fill-current'
+        />
+
+        <SidebarItem
+          icon={MdOutlineLocalPolice}
+          title='Content Policy'
+          href='/legal/content-policy'
+          forceHardNavigation
         />
       </ul>
     </aside>

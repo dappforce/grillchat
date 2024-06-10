@@ -55,7 +55,7 @@ const nextConfig = {
       },
       {
         source: '/report',
-        destination: 'https://forms.gle/Gjh3ELaNHTBotiwN7',
+        destination: 'https://grillapp.net/c/subsocial/177594',
         permanent: false,
       },
       {
