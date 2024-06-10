@@ -1,9 +1,11 @@
 import dayjs from 'dayjs'
+import dayOfYear from 'dayjs/plugin/dayOfYear'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(relativeTime)
 dayjs.extend(duration)
+dayjs.extend(dayOfYear)
 
 export function getTimeRelativeToNow(date: Date | string | number) {
   const dateObj = new Date(date)
@@ -70,4 +72,8 @@ export function getDurationWithPredefinedUnit(time: number): {
     unit: 'minutes',
     text: `${duration} min${duration > 1 ? 's' : ''}`,
   }
+}
+
+export function getDayOfYear(date?: Date) {
+  return dayjs(date).dayOfYear()
 }
