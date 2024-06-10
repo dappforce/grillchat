@@ -109,7 +109,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           <div
             className={cx(
               'absolute inset-0 h-full w-full transition-opacity',
-              !isAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
+              !isAvatarError ? 'z-[1] opacity-100' : '-z-[1] opacity-0'
             )}
           >
             <div className='relative h-full w-full'>
