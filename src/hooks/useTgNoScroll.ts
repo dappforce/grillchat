@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+// Solution from https://github.com/deptyped/vue-telegram/issues/11#issuecomment-1999265843
 export default function useTgNoScroll() {
   useEffect(() => {
     const overflow = 500
