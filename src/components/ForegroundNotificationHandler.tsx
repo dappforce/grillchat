@@ -4,8 +4,8 @@ import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import * as firebaseMessaging from 'firebase/messaging'
 import { useEffect } from 'react'
-import { toast } from 'react-hot-toast'
 import { HiArrowUpRight } from 'react-icons/hi2'
+import { toast } from 'sonner'
 import Button from './Button'
 import Toast from './Toast'
 import ChatImage from './chats/ChatImage'
@@ -43,7 +43,7 @@ export default function ForegroundNotificationHandler() {
                 href={urlToOpen}
                 target='_blank'
                 variant='transparent'
-                onClick={() => toast.dismiss(t.id)}
+                onClick={() => toast.dismiss(t)}
               >
                 <HiArrowUpRight />
               </Button>

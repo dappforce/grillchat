@@ -10,7 +10,7 @@ import { decodeSecretKey } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
 import QrScanner from 'qr-scanner'
 import { useEffect, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 import { LoginModalContentProps } from '../LoginModalContent'
 import { finishLogin } from '../utils'
 

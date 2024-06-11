@@ -29,7 +29,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 import PopOver from '../floating/PopOver'
 import { sendEventWithRef } from '../referral/analytics'
 import PostRewardStat from './PostRewardStat'

@@ -9,11 +9,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { toast } from 'react-hot-toast'
 import {
   HiMiniArrowUturnLeft,
   HiOutlineInformationCircle,
 } from 'react-icons/hi2'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import FormButton from '../FormButton'
 import LinkText from '../LinkText'
@@ -111,7 +111,7 @@ export default function ModerationForm({
               <LinkText
                 onClick={() => {
                   undo()
-                  toast.dismiss(t.id)
+                  toast.dismiss(t)
                 }}
                 variant='primary'
                 className='flex items-center gap-1 text-sm'

@@ -26,7 +26,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 
 declare global {
   interface Options {

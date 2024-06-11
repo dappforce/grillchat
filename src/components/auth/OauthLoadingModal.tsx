@@ -28,7 +28,7 @@ import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 import Modal from '../modals/Modal'
 import { getReferralIdInUrl } from '../referral/ReferralUrlChanger'
 

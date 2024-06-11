@@ -1,8 +1,8 @@
 import Button from '@/components/Button'
 import Toast from '@/components/Toast'
 import { apiInstance } from '@/services/api/utils'
-import { toast } from 'react-hot-toast'
 import { IoRefresh } from 'react-icons/io5'
+import { toast } from 'sonner'
 import { create, createSelectors } from './utils'
 
 type State = {

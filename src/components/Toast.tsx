@@ -2,7 +2,6 @@ import { cx } from '@/utils/class-names'
 // import { Transition } from '@headlessui/react'
 import { cva, VariantProps } from 'class-variance-authority'
 import { ReactNode } from 'react'
-import { Toast as ToastId } from 'react-hot-toast'
 
 const toastStyles = cva(
   'flex max-w-lg items-start rounded-2xl p-3 text-text shadow-xl ring-1 ring-black ring-opacity-5',
@@ -20,7 +19,7 @@ const toastStyles = cva(
 )
 
 export type ToastProps = VariantProps<typeof toastStyles> & {
-  t: ToastId
+  t: number | string
   title: ReactNode
   subtitle?: ReactNode
   description?: ReactNode
@@ -40,17 +39,6 @@ export default function Toast({
   const isTitleOnly = !description && !subtitle
 
   return (
-    // <Transition
-    //   appear
-    //   show={t.visible}
-    //   className='relative top-12'
-    //   enter={cx('transition duration-150')}
-    //   enterFrom={cx('-translate-y-6 opacity-0')}
-    //   enterTo={cx('translate-y-0 opacity-100')}
-    //   leave={cx('transition duration-150')}
-    //   leaveFrom={cx('translate-y-0 opacity-100')}
-    //   leaveTo={cx('-translate-y-6 opacity-0')}
-    // >
     <div className={cx(toastStyles({ type }), isTitleOnly && 'items-center')}>
       {icon?.(cx('text-3xl mr-2.5 text-text-muted')) ?? (
         <span className='mr-1'>{type === 'error' ? '😥' : 'ℹ️'}</span>
@@ -75,6 +63,5 @@ export default function Toast({
         <div className='ml-2 flex-shrink-0 self-center text-text'>{action}</div>
       )}
     </div>
-    // </Transition>
   )
 }

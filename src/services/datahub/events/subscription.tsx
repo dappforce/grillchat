@@ -5,7 +5,7 @@ import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 import sortKeysRecursive from 'sort-keys-recursive'
 import { getTodaySuperLikeCountQuery } from '../content-staking/query'
 import {

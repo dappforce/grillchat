@@ -32,9 +32,9 @@ import {
   useRef,
   useState,
 } from 'react'
-import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IoRefresh } from 'react-icons/io5'
+import { toast } from 'sonner'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 import { sendEventWithRef } from '../referral/analytics'
@@ -414,7 +414,7 @@ function showErrorSendingMessageToast(
               variant='transparent'
               className='text-lg'
               onClick={() => {
-                toast.dismiss(t.id)
+                toast.dismiss(t)
                 window.location.reload()
               }}
             >

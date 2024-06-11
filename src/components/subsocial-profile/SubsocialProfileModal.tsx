@@ -1,6 +1,6 @@
 import { useAnalytics } from '@/stores/analytics'
 import { useEffect } from 'react'
-import { toast } from 'react-hot-toast'
+import { toast } from 'sonner'
 import Button from '../Button'
 import Toast from '../Toast'
 import Modal, { ModalFunctionalityProps, ModalProps } from '../modals/Modal'

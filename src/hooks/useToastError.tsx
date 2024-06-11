@@ -1,15 +1,15 @@
 import CustomToast from '@/components/Toast'
 import { ReactNode, useEffect, useRef } from 'react'
-import { toast, Toast, ToastOptions } from 'react-hot-toast'
+import { ExternalToast, toast } from 'sonner'
 
 export function showErrorToast<ErrorType>(
   error: unknown,
   errorTitle: ReactNode,
   config?: {
-    getDescription?: (t: Toast) => ReactNode
+    getDescription?: (t: string | number) => ReactNode
     getMessage?: (error: ErrorType) => string
-    actionButton?: (t: Toast) => ReactNode
-    toastConfig?: ToastOptions
+    actionButton?: (t: string | number) => ReactNode
+    toastConfig?: ExternalToast
   }
 ) {
   const { actionButton, getMessage, toastConfig } = config ?? {}

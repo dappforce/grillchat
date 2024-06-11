@@ -28,7 +28,7 @@ import type { AppProps } from 'next/app'
 // import { GoogleAnalytics } from 'nextjs-google-analytics'
 import Script from 'next/script'
 import { useEffect, useRef } from 'react'
-import { Toaster } from 'react-hot-toast'
+import { Toaster } from 'sonner'
 import urlJoin from 'url-join'
 
 export type AppCommonProps = {
@@ -163,7 +163,7 @@ function DatahubSubscriber() {
 }
 
 function ToasterConfig() {
-  return <Toaster position='top-center' />
+  return <Toaster position='top-center' offset={58} />
 }
 
 function SessionAccountChecker() {

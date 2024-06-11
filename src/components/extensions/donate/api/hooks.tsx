@@ -3,8 +3,8 @@ import useToastError from '@/hooks/useToastError'
 import { isTouchDevice } from '@/utils/device'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useEffect } from 'react'
-import { toast } from 'react-hot-toast'
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2'
+import { toast } from 'sonner'
 import {
   useAccount,
   useBalance,
