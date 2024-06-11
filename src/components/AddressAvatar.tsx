@@ -43,9 +43,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
     const [isAvatarError, setIsAvatarError] = useState(false)
     const onImageError = useCallback(() => setIsAvatarError(true), [])
 
-    const { data: profile, isLoading } = getProfileQuery.useQuery(address, {
-      refetchOnMount: 'always',
-    })
+    const { data: profile, isLoading } = getProfileQuery.useQuery(address)
 
     const profileSource = profile?.profileSpace?.content?.profileSource
     const subsocialProfileImage = profile?.profileSpace?.content?.image
