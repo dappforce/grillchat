@@ -95,6 +95,8 @@ function createObserver(
 
 const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
   const myAddress = useMyMainAddress()
+
+  console.log('My main address', myAddress)
   const { data: leaderboardDataResult, isLoading } =
     leaderboardDataQueryByPeriod[period].useQuery(period)
 
@@ -122,8 +124,10 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
     [address, rank, reward]
   )
 
+  console.log('CurrentUserRank', currentUserRank)
+
   const dataItems = useMemo(
-    () => leaderboardDataResult || [],
+    () => (leaderboardDataResult as any[]) || [],
     [leaderboardDataResult]
   )
 
@@ -185,6 +189,8 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
       ),
     ].filter(Boolean)
   }, [currentUserRank, dataItems, isElementIntersecting, initIsIntersection])
+
+  console.log('Leaderboard data', data)
 
   return (
     <>

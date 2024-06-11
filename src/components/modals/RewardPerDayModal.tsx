@@ -18,14 +18,12 @@ import { isWelcomeModalOpenStorage } from './WelcomeModal'
 const progressModalStorage = {
   getIsClosed: () => {
     const today = dayjs.utc().startOf('day').unix()
-    console.log(today)
     const closedTimestamp = localStorage.getItem('progress-modal-closed')
     if (!closedTimestamp) return false
     return today === Number(closedTimestamp)
   },
   close: () => {
     const today = dayjs.utc().startOf('day').unix()
-    console.log(today)
     localStorage.setItem('progress-modal-closed', String(today))
   },
 }
