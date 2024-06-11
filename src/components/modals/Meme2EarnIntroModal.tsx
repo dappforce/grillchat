@@ -42,7 +42,7 @@ export default function Meme2EarnIntroModal() {
   const [isOpenModal, setIsOpenModal] = useState(false)
   useEffect(() => {
     const hasVisited = hasVisitedStorage.get() === 'true'
-    if (!hasVisited || true) {
+    if (!hasVisited) {
       hasVisitedStorage.set('true')
       setIsOpenModal(true)
     }
