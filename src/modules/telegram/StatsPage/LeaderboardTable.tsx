@@ -12,7 +12,7 @@ import {
 import { LeaderboardDataPeriod } from '@/services/datahub/leaderboard/types'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
-import Image from 'next/image'
+import Image, { ImageProps } from 'next/image'
 import { useMemo } from 'react'
 
 const TABLE_LIMIT = 100
@@ -82,6 +82,7 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
           rank: userStats.rank!,
           'user-role': (
             <UserPreview
+              loading='eager'
               address={userStats.address}
               desc={<UserReward reward={userStats.reward} />}
             />
@@ -163,10 +164,18 @@ type UserPreviewProps = {
   desc?: React.ReactNode
 }
 
-export const UserPreview = ({ address, desc }: UserPreviewProps) => {
+export const UserPreview = ({
+  address,
+  desc,
+  loading,
+}: UserPreviewProps & { loading?: ImageProps['loading'] }) => {
   return (
     <div className='flex items-center gap-2'>
-      <AddressAvatar address={address} className='h-[38px] w-[38px]' />
+      <AddressAvatar
+        address={address}
+        className='h-[38px] w-[38px]'
+        loading={loading}
+      />
       <div className='flex flex-col gap-2'>
         <Name
           address={address}

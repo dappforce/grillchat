@@ -5,7 +5,7 @@ import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getUserProfileLink } from '@/utils/links'
 import { decodeProfileSource } from '@/utils/profile'
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
+import Image, { ImageProps } from 'next/image'
 import {
   ComponentProps,
   ComponentPropsWithoutRef,
@@ -31,11 +31,18 @@ export type AddressAvatarProps = ComponentProps<'div'> & {
   address: string
   asLink?: boolean
   forceProfileSource?: ForceProfileSource
+  loading?: ImageProps['loading']
 }
 
 const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
   function AddressAvatar(
-    { address, forceProfileSource, asLink, ...props }: AddressAvatarProps,
+    {
+      address,
+      forceProfileSource,
+      asLink,
+      loading,
+      ...props
+    }: AddressAvatarProps,
     ref
   ) {
     const backgroundColor = useRandomColor(address)
@@ -114,6 +121,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
           >
             <div className='relative h-full w-full'>
               <Image
+                loading={loading}
                 width={500}
                 height={500}
                 className={cx(
