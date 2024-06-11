@@ -10,7 +10,6 @@ import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Button from '../Button'
-import Card from '../Card'
 import LinkText from '../LinkText'
 import Modal from './Modal'
 
@@ -43,7 +42,6 @@ export default function Meme2EarnIntroModal() {
   useEffect(() => {
     const hasVisited = hasVisitedStorage.get() === 'true'
     if (!hasVisited) {
-      hasVisitedStorage.set('true')
       setIsOpenModal(true)
     }
   }, [])
@@ -64,14 +62,11 @@ export default function Meme2EarnIntroModal() {
       title={content.title}
       description={content.description}
       titleClassName='font-medium'
-      withCloseButton
       isOpen={isOpenModal}
-      closeModal={() => {
-        setIsOpenModal(false)
-      }}
+      closeModal={() => undefined}
     >
       <div className='flex flex-col gap-6'>
-        <Content />
+        <Content setStep={setStep} />
         <Button
           size='lg'
           onClick={() => {
@@ -80,6 +75,7 @@ export default function Meme2EarnIntroModal() {
               return
             }
             setIsOpenModal(false)
+            hasVisitedStorage.set('true')
           }}
         >
           {step === steps.length - 1 ? 'Got it' : 'Next'}
@@ -107,32 +103,23 @@ function HowItWorks() {
   )
 }
 
-function WhatCanIPost1() {
+function WhatCanIPost1({ setStep }: { setStep: (number: number) => void }) {
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='flex flex-wrap gap-2 whitespace-nowrap'>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={CheckImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Memes</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={CheckImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Funny images</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Selfies</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Personal photos</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Full-screen screenshots</span>
-        </Card>
-      </div>
-      <div className='grid grid-cols-2 gap-6'>
+    <div className='grid grid-cols-2 gap-x-4 gap-y-6'>
+      <div className='flex flex-col justify-between gap-6'>
+        <div className='flex flex-col gap-4'>
+          <span className='font-medium text-green-600'>ALLOWED:</span>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center gap-2.5'>
+              <Image src={CheckImage} alt='' className='h-4 w-4' />
+              <span>Memes</span>
+            </div>
+            <div className='flex items-center gap-2.5'>
+              <Image src={CheckImage} alt='' className='h-4 w-4' />
+              <span>Funny images</span>
+            </div>
+          </div>
+        </div>
         <div className='flex flex-col items-center'>
           <Image
             src={Check1Image}
@@ -140,6 +127,25 @@ function WhatCanIPost1() {
             className='aspect-square h-full w-full rounded-lg object-cover'
           />
           <Image src={CheckImage} alt='' className='-mt-4 h-10 w-10' />
+        </div>
+      </div>
+      <div className='flex flex-col justify-between gap-6'>
+        <div className='flex flex-col gap-4'>
+          <span className='font-medium text-red-400'>NOT ALLOWED:</span>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center gap-2.5'>
+              <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
+              <span>Not Memes</span>
+            </div>
+            <div className='flex items-center gap-2.5'>
+              <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
+              <span>Nature</span>
+            </div>
+            <div className='flex items-center gap-2.5'>
+              <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
+              <span>Personal Photos</span>
+            </div>
+          </div>
         </div>
         <div className='flex flex-col items-center'>
           <Image
@@ -150,36 +156,41 @@ function WhatCanIPost1() {
           <Image src={ForbiddenImage} alt='' className='-mt-4 h-10 w-10' />
         </div>
       </div>
+      <div className='col-span-2 flex justify-center gap-2'>
+        <button
+          onClick={() => setStep(1)}
+          className='h-2 w-2 rounded-full bg-background-primary'
+        />
+        <button
+          onClick={() => setStep(2)}
+          className='h-2 w-2 rounded-full bg-background-lightest'
+        />
+        <button
+          onClick={() => setStep(3)}
+          className='h-2 w-2 rounded-full bg-background-lightest'
+        />
+      </div>
     </div>
   )
 }
 
-function WhatCanIPost2() {
+function WhatCanIPost2({ setStep }: { setStep: (num: number) => void }) {
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='flex flex-wrap gap-2 whitespace-nowrap'>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={CheckImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Memes</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={CheckImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Funny images</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Selfies</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Personal photos</span>
-        </Card>
-        <Card className='flex items-center gap-2 rounded-full bg-background-lighter py-2 pl-3 pr-3.5'>
-          <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
-          <span className='relative -top-px'>Full-screen screenshots</span>
-        </Card>
-      </div>
-      <div className='grid grid-cols-2 gap-6'>
+    <div className='grid grid-cols-2 gap-x-4 gap-y-6'>
+      <div className='flex flex-col justify-between gap-6'>
+        <div className='flex flex-col gap-4'>
+          <span className='font-medium text-green-600'>ALLOWED:</span>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center gap-2.5'>
+              <Image src={CheckImage} alt='' className='h-4 w-4' />
+              <span>Memes</span>
+            </div>
+            <div className='flex items-center gap-2.5'>
+              <Image src={CheckImage} alt='' className='h-4 w-4' />
+              <span>Funny images</span>
+            </div>
+          </div>
+        </div>
         <div className='flex flex-col items-center'>
           <Image
             src={Check2Image}
@@ -187,6 +198,25 @@ function WhatCanIPost2() {
             className='aspect-square h-full w-full rounded-lg object-cover'
           />
           <Image src={CheckImage} alt='' className='-mt-4 h-10 w-10' />
+        </div>
+      </div>
+      <div className='flex flex-col justify-between gap-6'>
+        <div className='flex flex-col gap-4'>
+          <span className='font-medium text-red-400'>NOT ALLOWED:</span>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center gap-2.5'>
+              <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
+              <span>Not Memes</span>
+            </div>
+            <div className='flex items-center gap-2.5'>
+              <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
+              <span>Nature</span>
+            </div>
+            <div className='flex items-center gap-2.5'>
+              <Image src={ForbiddenImage} alt='' className='h-4 w-4' />
+              <span>Personal Photos</span>
+            </div>
+          </div>
         </div>
         <div className='flex flex-col items-center'>
           <Image
@@ -197,14 +227,42 @@ function WhatCanIPost2() {
           <Image src={ForbiddenImage} alt='' className='-mt-4 h-10 w-10' />
         </div>
       </div>
+      <div className='col-span-2 flex justify-center gap-2'>
+        <button
+          onClick={() => setStep(1)}
+          className='h-2 w-2 rounded-full bg-background-lightest'
+        />
+        <button
+          onClick={() => setStep(2)}
+          className='h-2 w-2 rounded-full bg-background-primary'
+        />
+        <button
+          onClick={() => setStep(3)}
+          className='h-2 w-2 rounded-full bg-background-lightest'
+        />
+      </div>
     </div>
   )
 }
 
-function FinalCheck() {
+function FinalCheck({ setStep }: { setStep: (num: number) => void }) {
   return (
-    <div className='flex items-center justify-center py-4'>
+    <div className='flex flex-col items-center justify-center gap-8 py-4'>
       <Image src={OpenHandsImage} alt='' className='h-28 w-28' />
+      <div className='col-span-2 flex justify-center gap-2'>
+        <button
+          onClick={() => setStep(1)}
+          className='h-2 w-2 rounded-full bg-background-lightest'
+        />
+        <button
+          onClick={() => setStep(2)}
+          className='h-2 w-2 rounded-full bg-background-lightest'
+        />
+        <button
+          onClick={() => setStep(3)}
+          className='h-2 w-2 rounded-full bg-background-primary'
+        />
+      </div>
     </div>
   )
 }
