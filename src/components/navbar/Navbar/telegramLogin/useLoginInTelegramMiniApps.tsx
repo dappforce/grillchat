@@ -171,11 +171,9 @@ const useLoginInTelegramMiniApps = () => {
   )
 
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
-  const logout = useMyAccount.use.logout()
   useEffect(() => {
     const login = async () => {
       if (data && !myAddress && isInitializedProxy) {
-        logout()
         await loginTelegram()
       }
     }

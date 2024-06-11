@@ -19,7 +19,7 @@ import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
 import { isWebNotificationsEnabled } from '@/utils/window'
 import dayjs from 'dayjs'
 import { getAddress } from 'ethers'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 import { UserProperties, useAnalytics } from './analytics'
 import { create, createSelectors } from './utils'
 
@@ -288,23 +288,36 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       parentProxyAddress: parentProxyAddress ?? undefined,
     })
 
-    if (parentProxyAddress && !get().isTemporaryAccount) {
-      await validateParentProxyAddress({
-        grillAddress: get().address!,
-        parentProxyAddress,
-        onInvalidProxy: () => {
-          get().logout()
-          toast.custom((t) => (
-            <Toast
-              t={t}
-              type='error'
-              title='Logged out'
-              subtitle='Please reopen the page'
-            />
-          ))
-        },
-      })
+    if (!get().isTemporaryAccount) {
+      if (address && !parentProxyAddress) {
+        get().logout()
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            type='error'
+            title='Logged out'
+            subtitle='Please reopen the page'
+          />
+        ))
+      } else if (parentProxyAddress && !get().isTemporaryAccount) {
+        await validateParentProxyAddress({
+          grillAddress: get().address!,
+          parentProxyAddress,
+          onInvalidProxy: () => {
+            get().logout()
+            toast.custom((t) => (
+              <Toast
+                t={t}
+                type='error'
+                title='Logged out'
+                subtitle='Please reopen the page'
+              />
+            ))
+          },
+        })
+      }
     }
+
     set({ isInitializedProxy: true })
   },
 }))
