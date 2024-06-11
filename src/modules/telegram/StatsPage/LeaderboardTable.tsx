@@ -13,7 +13,7 @@ import { LeaderboardDataPeriod } from '@/services/datahub/leaderboard/types'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import Image from 'next/image'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 
 const TABLE_LIMIT = 100
 
@@ -46,12 +46,7 @@ type Data = {
   reward: string
 }
 
-const parseTableRows = (
-  data: Data[],
-  limit: number,
-  currentUserRank: Data,
-  ref?: any
-) => {
+const parseTableRows = (data: Data[], limit: number, currentUserRank: Data) => {
   return (
     data
       .map((item) => ({
@@ -64,33 +59,10 @@ const parseTableRows = (
           />
         ),
         className:
-          item.address === currentUserRank.address
-            ? 'bg-slate-800 sticky top-[3.5rem] z-[2]'
-            : '',
-        rowRef: item.address === currentUserRank.address ? ref : null,
+          item.address === currentUserRank?.address ? 'bg-slate-800' : '',
       }))
       .slice(0, limit) || []
   )
-}
-
-function createObserver(
-  boxElement: HTMLElement,
-  setElementintesecting: (isIntersecting: boolean) => void
-) {
-  let observer
-
-  let options = {
-    root: null,
-    rootMargin: '0px 0px -8% 0px',
-    threshold: 1.0,
-  }
-
-  observer = new IntersectionObserver((entries) => {
-    entries.map((entry) => {
-      setElementintesecting(entry.isIntersecting)
-    })
-  }, options)
-  observer.observe(boxElement)
 }
 
 const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
@@ -99,93 +71,30 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
   const { data: leaderboardDataResult, isLoading } =
     leaderboardDataQueryByPeriod[period].useQuery(period)
 
-  const [isElementIntersecting, setIsElementIntersecting] = useState<
-    boolean | undefined
-  >()
-  const [initIsIntersection, setInitIsIntersection] = useState<
-    boolean | undefined
-  >(undefined)
-
-  const ref = useRef<HTMLDivElement>(null)
-
   const { data: userStats } = userDataQueryByPeriod[period].useQuery(
     myAddress || ''
   )
 
-  const { rank, address, reward } = userStats || {}
-
-  const currentUserRank = useMemo(
-    () => ({
-      address: address || '',
-      rank: rank || null,
-      reward: reward || '0',
-    }),
-    [address, rank, reward]
-  )
-
-  const dataItems = useMemo(
-    () => (leaderboardDataResult as any[]) || [],
-    [leaderboardDataResult]
-  )
-
-  useEffect(() => {
-    if (ref.current) {
-      createObserver(ref.current, setIsElementIntersecting)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (
-      initIsIntersection === undefined &&
-      isElementIntersecting !== undefined
-    ) {
-      setInitIsIntersection(isElementIntersecting)
-    }
-  }, [initIsIntersection, isElementIntersecting])
-
   const data = useMemo(() => {
-    const currentUserRankItem = currentUserRank.rank
+    const currentUserRankItem = userStats?.rank
       ? {
-          address: currentUserRank.address,
-          rank: currentUserRank.rank!,
+          address: userStats.address,
+          rank: userStats.rank!,
           'user-role': (
             <UserPreview
-              address={currentUserRank.address}
-              desc={<UserReward reward={currentUserRank.reward} />}
+              address={userStats.address}
+              desc={<UserReward reward={userStats.reward} />}
             />
           ),
-          className: cx(
-            'bg-slate-800 sticky top-[3.5rem] z-[2]',
-            'transition-opacity duration-100',
-            isElementIntersecting ? 'opacity-0' : 'opacity-100'
-          ),
-          rowRef: null,
+          className: cx('bg-slate-800 sticky bottom-[4.8rem] z-[11]'),
         }
       : undefined
 
-    if (
-      currentUserRank &&
-      currentUserRank.rank &&
-      currentUserRank.rank > TABLE_LIMIT
-    ) {
-      return [
-        currentUserRankItem,
-        ...parseTableRows(dataItems || [], TABLE_LIMIT, currentUserRank),
-      ]
-    }
-
     return [
-      initIsIntersection !== undefined && !initIsIntersection
-        ? currentUserRankItem
-        : undefined,
-      ...parseTableRows(
-        dataItems || [],
-        TABLE_LIMIT,
-        currentUserRank,
-        ref || undefined
-      ),
+      ...parseTableRows(leaderboardDataResult || [], TABLE_LIMIT, userStats),
+      currentUserRankItem,
     ].filter(Boolean)
-  }, [currentUserRank, dataItems, isElementIntersecting, initIsIntersection])
+  }, [userStats, leaderboardDataResult])
 
   return (
     <>
@@ -215,7 +124,6 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
                 return (
                   <TableRow
                     key={i}
-                    rowRef={item?.rowRef}
                     columns={leaderboardColumns()}
                     item={item}
                     withDivider={false}
