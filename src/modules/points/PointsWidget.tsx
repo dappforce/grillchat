@@ -227,6 +227,8 @@ function Points({ shorten }: { shorten?: boolean }) {
       value={formatted.split('')}
       animateOnVisible={false}
       sequentialAnimationMode
+      startValue={formatted.split('')}
+      startValueOnce
     />
   )
 }
