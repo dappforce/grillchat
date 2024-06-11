@@ -163,7 +163,7 @@ LinkOrText.displayName = 'LinkOrText'
 
 export function useName(address: string) {
   const { data: profile, isLoading: isLoadingProfile } =
-    getProfileQuery.useQuery(address)
+    getProfileQuery.useQuery(address, { refetchOnMount: 'always' })
   const textColor = useRandomColor(address)
 
   let name = generateRandomName(address)
