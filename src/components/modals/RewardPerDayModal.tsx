@@ -68,7 +68,9 @@ Sounds too good to be true? Join me and see for yourself! 😉`
       open={isOpen}
       onOpenChange={(open) => {
         setIsOpen(open)
-        if (!open) progressModalStorage.close()
+        if (!open) {
+          progressModalStorage.close()
+        }
       }}
     >
       <Drawer.Portal>
@@ -145,6 +147,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
                 onClick={() => {
                   sendEvent('progress_modal_got_it_clicked')
                   setIsOpen(false)
+                  progressModalStorage.close()
                 }}
               >
                 Got it!

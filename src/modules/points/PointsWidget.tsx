@@ -18,6 +18,7 @@ import { useRouter } from 'next/router'
 import { ComponentProps } from 'react'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiChevronRight, HiXMark } from 'react-icons/hi2'
+import SlotCounter from 'react-slot-counter'
 import { Drawer } from 'vaul'
 
 export default function PointsWidget(props: ComponentProps<'div'>) {
@@ -61,7 +62,7 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className='fixed inset-0 z-10 h-full w-full bg-black/50 backdrop-blur-lg' />
-        <Drawer.Content className='fixed inset-0 z-10 flex h-full max-h-[calc(100dvh_-_5rem)] w-full flex-col rounded-t-[10px] bg-transparent outline-none'>
+        <Drawer.Content className='fixed inset-0 z-10 flex h-full w-full flex-col rounded-t-[10px] bg-transparent pb-20 outline-none'>
           <Drawer.Close className='absolute right-4 top-4'>
             <HiXMark className='text-3xl' />
           </Drawer.Close>
@@ -218,5 +219,16 @@ function Points({ shorten }: { shorten?: boolean }) {
     return <Skeleton className='inline-block w-12' />
   }
 
-  return <span>{formatNumber(data ?? '0', { shorten })}</span>
+  const formatted = formatNumber(data ?? '0', { shorten })
+
+  return (
+    <SlotCounter
+      containerClassName='relative -top-0.5'
+      value={formatted.split('')}
+      animateOnVisible={false}
+      sequentialAnimationMode
+      startValue={formatted.split('')}
+      startValueOnce
+    />
+  )
 }

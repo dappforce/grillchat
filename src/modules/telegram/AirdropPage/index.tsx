@@ -2,9 +2,7 @@ import Tokens from '@/assets/graphics/airdrop/tokens.png'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
-import { CopyTextInline } from '@/components/CopyText'
 import Name from '@/components/Name'
-import { Skeleton } from '@/components/SkeletonFallback'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
@@ -13,13 +11,9 @@ import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
-import { truncateAddress } from '@/utils/account'
-import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { useState } from 'react'
 import { RiPencilFill } from 'react-icons/ri'
-import { SiEthereum } from 'react-icons/si'
-import { TbCoins } from 'react-icons/tb'
 
 export default function AirdropPage() {
   const [openProfileModal, setOpenProfileModal] = useState(false)
@@ -59,7 +53,7 @@ export default function AirdropPage() {
                 <RiPencilFill />
               </Button>
             </div>
-            {isLoading ? (
+            {/* {isLoading ? (
               <Skeleton className='w-12' />
             ) : evmAddress ? (
               <div className='-mt-2 flex flex-col gap-1'>
@@ -86,7 +80,7 @@ export default function AirdropPage() {
                 <TbCoins />
                 <span>Set Rewards Address</span>
               </Button>
-            )}
+            )} */}
           </Card>
         </div>
       </div>

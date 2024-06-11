@@ -15,6 +15,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { z } from 'zod'
 import { ForceProfileSource } from './ProfilePreview'
 import PopOver from './floating/PopOver'
 import CustomLink from './referral/CustomLink'
@@ -104,11 +105,11 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
         )}
         style={{ backgroundColor }}
       >
-        {profileAvatar && (
+        {profileAvatar && z.string().url().safeParse(profileAvatar).success && (
           <div
             className={cx(
               'absolute inset-0 h-full w-full transition-opacity',
-              !isAvatarError ? 'z-10 opacity-100' : '-z-10 opacity-0'
+              !isAvatarError ? 'z-[1] opacity-100' : '-z-[1] opacity-0'
             )}
           >
             <div className='relative h-full w-full'>

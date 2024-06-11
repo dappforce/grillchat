@@ -69,7 +69,7 @@ const GET_USER_DATA_BY_WEEK = gql`
   query GetUserDataByWeek($address: String!, $timestamp: String!) {
     activeStakingAddressRankByTotalRewardsForPeriod(
       args: {
-        period: ALL_TIME
+        period: WEEK
         address: $address
         withReward: true
         timestamp: $timestamp
