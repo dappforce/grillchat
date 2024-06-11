@@ -10,8 +10,13 @@ export type SubsocialProfile = {
 }
 
 const GET_PROFILES = gql`
-  query GetProfiles($addresses: [String!]) {
-    spaces(args: { filter: { asProfileForAccounts: $addresses } }) {
+  query GetProfiles($addresses: [String!], $pageSize: Int!) {
+    spaces(
+      args: {
+        filter: { asProfileForAccounts: $addresses }
+        pageSize: $pageSize
+      }
+    ) {
       data {
         id
         name
@@ -32,10 +37,10 @@ export async function getProfiles(
   if (addresses.length === 0) return []
   const res = await datahubQueryRequest<
     GetProfilesQuery,
-    GetProfilesQueryVariables
+    GetProfilesQueryVariables & { pageSize: number }
   >({
     document: GET_PROFILES,
-    variables: { addresses },
+    variables: { addresses, pageSize: addresses.length },
   })
   return res.spaces.data.map((space) => ({
     isUpdated: space.updatedAtTime !== space.createdAtTime,
