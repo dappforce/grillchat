@@ -4,7 +4,7 @@ import { cva, VariantProps } from 'class-variance-authority'
 import { ReactNode } from 'react'
 
 const toastStyles = cva(
-  'flex max-w-lg items-start rounded-2xl p-3 text-text shadow-xl ring-1 ring-black ring-opacity-5',
+  'flex max-w-lg items-start rounded-2xl p-3 text-text shadow-xl ring-1 ring-black ring-opacity-5 top-12',
   {
     variants: {
       type: {
