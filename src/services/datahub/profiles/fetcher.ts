@@ -40,7 +40,7 @@ export async function getProfiles(
     GetProfilesQueryVariables & { pageSize: number }
   >({
     document: GET_PROFILES,
-    variables: { addresses, pageSize: addresses.length },
+    variables: { addresses, pageSize: addresses.length + 1 },
   })
   return res.spaces.data.map((space) => ({
     isUpdated: space.updatedAtTime !== space.createdAtTime,
