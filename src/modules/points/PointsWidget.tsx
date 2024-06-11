@@ -21,7 +21,9 @@ import { HiChevronRight, HiXMark } from 'react-icons/hi2'
 import SlotCounter from 'react-slot-counter'
 import { Drawer } from 'vaul'
 
-export default function PointsWidget(props: ComponentProps<'div'>) {
+export default function PointsWidget(
+  props: ComponentProps<'div'> & { isNoTgScroll?: boolean }
+) {
   const sendEvent = useSendEvent()
 
   return (
@@ -30,7 +32,13 @@ export default function PointsWidget(props: ComponentProps<'div'>) {
       direction='top'
       onOpenChange={(open) => {
         // To make bottom menu still clickable when this drawer is open
-        if (open) setTimeout(() => (document.body.style.pointerEvents = ''), 0)
+        setTimeout(() => {
+          if (open) {
+            document.body.style.pointerEvents = ''
+          } else if (props.isNoTgScroll) {
+            document.body.style.paddingTop = '500px'
+          }
+        }, 0)
       }}
     >
       <Drawer.Trigger asChild>

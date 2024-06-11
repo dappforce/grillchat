@@ -26,7 +26,10 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
       />
       <ChatRoom
         topElement={
-          <PointsWidget className='absolute left-0 top-0 z-10 w-full' />
+          <PointsWidget
+            className='absolute left-0 top-0 z-10 w-full'
+            isNoTgScroll
+          />
         }
         scrollableContainerClassName='pt-12'
         asContainer
