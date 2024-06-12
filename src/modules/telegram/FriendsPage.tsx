@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import { getReferralLink } from '@/components/referral/utils'
 import useIsMounted from '@/hooks/useIsMounted'
+import useTgNoScroll from '@/hooks/useTgNoScroll'
 import { getUserReferralsQuery } from '@/services/datahub/leaderboard/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -12,6 +13,8 @@ import { useState } from 'react'
 import PointsWidget from '../points/PointsWidget'
 
 export default function FriendsPage() {
+  useTgNoScroll()
+
   const isMounted = useIsMounted()
   const myAddress = useMyMainAddress()
   const [isCopied, setIsCopied] = useState(false)
@@ -31,8 +34,8 @@ export default function FriendsPage() {
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
-      <PointsWidget className='sticky top-0' />
-      <div className='flex flex-col gap-4 px-4 pt-4'>
+      <PointsWidget isNoTgScroll className='sticky top-0' />
+      <div className='flex flex-1 flex-col gap-4 overflow-auto px-4 pt-4'>
         <div className='flex flex-col gap-1'>
           <span className='text-lg font-semibold'>
             Earn 10% of Friends Rewards
