@@ -109,8 +109,8 @@ function ChatListContent({
 
   const Component = asContainer ? Container<'div'> : 'div'
 
-  // let alreadyRenderLastReadMessage = false
-  // let isFirstRenderedMessage = true
+  let alreadyRenderLastReadMessage = false
+  let isFirstRenderedMessage = true
 
   const renderedMessageQueries = getPostQuery.useQueries(messageIds)
 
@@ -179,30 +179,30 @@ function ChatListContent({
                   // bottom message is the first element, because the flex direction is reversed
                   if (!message) return null
 
-                  // const isBottomMessage = isFirstRenderedMessage
-                  // isFirstRenderedMessage = false
+                  const isBottomMessage = isFirstRenderedMessage
+                  isFirstRenderedMessage = false
 
-                  // const isMessageRead =
-                  //   lastFocusedTime >= message.struct.createdAtTime
+                  const isMessageRead =
+                    lastFocusedTime >= message.struct.createdAtTime
                   // Only show the unread message notice for first message that is marked as read
-                  // const currentAlreadyRenderLastReadMessage =
-                  //   alreadyRenderLastReadMessage
-                  // if (isMessageRead) {
-                  //   alreadyRenderLastReadMessage = true
-                  // }
+                  const currentAlreadyRenderLastReadMessage =
+                    alreadyRenderLastReadMessage
+                  if (isMessageRead) {
+                    alreadyRenderLastReadMessage = true
+                  }
 
-                  // const shouldRenderUnreadMessageNotice =
-                  //   !isBottomMessage &&
-                  //   !currentAlreadyRenderLastReadMessage &&
-                  //   isMessageRead
+                  const shouldRenderUnreadMessageNotice =
+                    !isBottomMessage &&
+                    !currentAlreadyRenderLastReadMessage &&
+                    isMessageRead
 
                   return (
                     <Fragment key={message?.id ?? index}>
-                      {/* {shouldRenderUnreadMessageNotice && (
+                      {shouldRenderUnreadMessageNotice && (
                         <div className='mb-2 mt-4 w-full rounded-md bg-background-light/50 py-0.5 text-center text-sm text-text-muted'>
                           Unread messages
                         </div>
-                      )} */}
+                      )}
                       <ChatItemWithMenu
                         chatItemClassName='mt-2'
                         chatId={chatId}
