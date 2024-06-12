@@ -24,7 +24,7 @@ export type ToastProps = VariantProps<typeof toastStyles> & {
   subtitle?: ReactNode
   description?: ReactNode
   action?: React.ReactNode
-  icon?: (className: string) => JSX.Element
+  icon?: (className: string) => ReactNode
 }
 
 export default function Toast({
@@ -40,7 +40,7 @@ export default function Toast({
 
   return (
     <div className={cx(toastStyles({ type }), isTitleOnly && 'items-center')}>
-      {icon?.(cx('text-3xl mr-2.5 text-text-muted')) ?? (
+      {icon?.(cx('text-3xl mr-2.5 text-text-muted flex-shrink-0')) ?? (
         <span className='mr-1'>{type === 'error' ? '😥' : 'ℹ️'}</span>
       )}
       <div className={cx('flex flex-col', !icon && 'mx-2')}>
