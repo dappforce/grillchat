@@ -8,10 +8,18 @@ export type CustomLinkProps = React.ComponentProps<typeof Link> & {
 export default function ProfileLinkCustomLink({
   forceHardNavigation,
   ...props
-}: React.ComponentProps<typeof Link> & { forceHardNavigation?: boolean }) {
+}: Omit<React.ComponentProps<typeof Link>, 'href'> & {
+  forceHardNavigation?: boolean
+  href?: LinkProps['href']
+}) {
   const refId = useReferralId()
+  const { href, as } = props
+
+  if (!href) {
+    return <span {...props} />
+  }
+
   if (refId) {
-    const { href, as } = props
     props = {
       ...props,
       href: augmentLink(href, refId),
@@ -23,7 +31,7 @@ export default function ProfileLinkCustomLink({
     return <a {...props} href={props.href} />
   }
 
-  return <Link {...props} />
+  return <Link {...props} href={href} />
 }
 
 function augmentLink(link: LinkProps['href'], refId: string) {

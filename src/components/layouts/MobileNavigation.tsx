@@ -111,7 +111,8 @@ function NavigationItem({
         className
       )}
       forceHardNavigation={forceHardNavigation}
-      href={href}
+      // Need to do this so that the page won't scroll back to top which is an issue with useTgNoScroll
+      href={pathname === href ? undefined : href}
       shallow
       onClick={onButtonClick}
     >
