@@ -18,6 +18,7 @@ import ChatListEventManager from './ChatListEventManager'
 import ChatListSupportingContent from './ChatListSupportingContent'
 import ChatTopNotice from './ChatTopNotice'
 import PinnedMessage from './PinnedMessage'
+import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
 import useScrollToMessage from './hooks/useScrollToMessage'
 import { ChatListContext } from './provider'
 
@@ -77,7 +78,7 @@ function ChatListContent({
     hubId,
     chatId,
   })
-  // const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
+  const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
 
   useEffect(() => {
     sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())

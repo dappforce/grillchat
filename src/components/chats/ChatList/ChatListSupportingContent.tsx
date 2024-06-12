@@ -11,7 +11,6 @@ import { getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
 import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 import { ChatListProps } from './ChatList'
@@ -41,7 +40,6 @@ export default function ChatListSupportingContent({
   isLoadingIds,
 }: ChatListSupportingContentProps) {
   const queryClient = useQueryClient()
-  const router = useRouter()
   const isInitialized = useRef(false)
   const [loadingToUnread, setLoadingToUnread] = useState(false)
 
@@ -97,6 +95,8 @@ export default function ChatListSupportingContent({
         const newMessageCount =
           nearestMessageIndex === -1 ? 0 : nearestMessageIndex
 
+        console.log(nearestMessageIndex)
+
         sendMessageToParentWindow('unread', newMessageCount.toString())
         setUnreadMessage({
           count: newMessageCount,
@@ -106,11 +106,13 @@ export default function ChatListSupportingContent({
 
       setLoadingToUnread(true)
 
+      console.log(!lastMessageTime || lastReadTime >= lastMessageTime)
       if (!lastMessageTime || lastReadTime >= lastMessageTime) afterScroll()
       else {
         scrollToMessage(lastReadTime, {
           shouldHighlight: false,
           smooth: false,
+          maxLoadMoreCount: 0,
         }).then(afterScroll)
       }
     } else {

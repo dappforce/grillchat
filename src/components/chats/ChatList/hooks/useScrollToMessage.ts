@@ -22,7 +22,10 @@ export default function useScrollToMessage(
       messageIdOrTime: string | number,
       config?: ScrollToMessageElementConfig
     ) => {
-      const element = await getElement(messageIdOrTime)
+      const element = await getElement(
+        messageIdOrTime,
+        config?.maxLoadMoreCount
+      )
       if (!element) return
 
       loadMoreControllerRef.current?.pause()
