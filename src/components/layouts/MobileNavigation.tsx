@@ -3,12 +3,18 @@ import Friends from '@/assets/icons/bottomNavbar/friends.svg'
 import Stats from '@/assets/icons/bottomNavbar/stats.svg'
 import Tap from '@/assets/icons/bottomNavbar/tap.svg'
 import TopMemes from '@/assets/icons/bottomNavbar/top-memes.svg'
+import { env } from '@/env.mjs'
+import useIsMounted from '@/hooks/useIsMounted'
+import { getPostQuery } from '@/services/api/query'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { useHapticFeedbackRaw } from '@tma.js/sdk-react'
 import { useRouter } from 'next/router'
+import { ComponentProps } from 'react'
 import { IconType } from 'react-icons'
 import CustomLink from 'src/components/referral/CustomLink'
+import useLastReadTimeFromStorage from '../chats/hooks/useLastReadMessageTimeFromStorage'
 
 export type HomePageView = 'memes' | 'stats' | 'airdrop' | 'friends' | 'tap'
 
@@ -26,7 +32,12 @@ const tabs: Tab[] = [
   {
     id: 'memes',
     text: 'Memes',
-    Icon: TopMemes,
+    Icon: (props: ComponentProps<'div'>) => (
+      <div {...props} className={cx('relative', props.className)}>
+        <TopMemes />
+        <NewMemeNotice />
+      </div>
+    ),
     href: '/tg/memes',
   },
   {
@@ -120,6 +131,36 @@ function NavigationItem({
       <span className='text-sm font-medium leading-none'>{title}</span>
     </CustomLink>
   )
+}
+
+function NewMemeNotice() {
+  const { pathname } = useRouter()
+  const { data: postMetadata } = getPostMetadataQuery.useQuery(
+    env.NEXT_PUBLIC_MAIN_CHAT_ID
+  )
+  const { data: lastMessage } = getPostQuery.useQuery(
+    postMetadata?.lastCommentId ?? '',
+    {
+      enabled: !!postMetadata?.lastCommentId,
+    }
+  )
+  const { getLastReadTime } = useLastReadTimeFromStorage(
+    env.NEXT_PUBLIC_MAIN_CHAT_ID
+  )
+
+  const isMounted = useIsMounted()
+
+  if (
+    pathname !== '/tg/memes' &&
+    isMounted &&
+    lastMessage &&
+    getLastReadTime() < lastMessage.struct.createdAtTime
+  ) {
+    return (
+      <div className='absolute right-0 top-0 h-2 w-2 translate-x-[150%] rounded-full bg-red-500' />
+    )
+  }
+  return null
 }
 
 export default MobileNavigation
