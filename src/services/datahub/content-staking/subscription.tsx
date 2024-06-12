@@ -8,7 +8,11 @@ import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
-import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
+import {
+  getAddressLikeCountToPostQuery,
+  getSuperLikeCountQuery,
+  getTodaySuperLikeCountQuery,
+} from './query'
 
 export function useDatahubContentStakingSubscriber() {
   const queryClient = useQueryClient()
@@ -122,15 +126,25 @@ async function processSubscriptionEvent(
       address: myAddress,
       postId: post.persistentId,
     })
+    const todayLike = getTodaySuperLikeCountQuery.getQueryData(
+      queryClient,
+      myAddress
+    )
+    const remaining = 10 - todayLike.count
+    let desc =
+      '✅ Great progress today! You used all the available likes. Come back tomorrow 😉'
+    if (remaining > 0) {
+      desc = `You earned 💎 2000 Points for liking the meme. ${remaining} more likes left for today`
+    }
     toast.custom((t) => (
       <Toast
         t={t}
         icon={(className) => (
           <span className={cx(className, 'relative -top-px text-base')}>
-            🎉
+            💎
           </span>
         )}
-        title='You earned 2000 points!'
+        title={desc}
       />
     ))
   }
