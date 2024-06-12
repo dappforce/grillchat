@@ -6,7 +6,7 @@ import {
 } from '../../generated-query'
 import { datahubQueryRequest, getDayAndWeekTimestamp } from '../../utils'
 
-export const FULL_ENERGY_VALUE = 3600
+export const FULL_ENERGY_VALUE: number = 3600
 
 const GET_BALANCE = gql`
   query GetBalance($address: String!) {
@@ -91,8 +91,10 @@ const getClickedPointsByDays = async (address: string) => {
   const res = await datahubQueryRequest<
     {
       gamificationTappingActivityStatsByDate: {
-        tapsCount: number
-        date: string
+        data: {
+          tapsCount: number
+          date: string
+        }[]
       }
     },
     { address: string; dates: number[] }
@@ -101,9 +103,11 @@ const getClickedPointsByDays = async (address: string) => {
     variables: { address, dates: [day] },
   })
 
+  const data = res.gamificationTappingActivityStatsByDate?.data || []
+
   return {
-    tapsCount: res.gamificationTappingActivityStatsByDate?.tapsCount || 0,
-    date: res.gamificationTappingActivityStatsByDate?.date,
+    tapsCount: data[0]?.tapsCount,
+    date: data[0]?.date,
   }
 }
 

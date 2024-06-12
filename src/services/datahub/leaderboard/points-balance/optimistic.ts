@@ -1,3 +1,4 @@
+import { setEnergyState } from '@/modules/telegram/TapPage/store'
 import { QueryClient } from '@tanstack/react-query'
 import {
   FULL_ENERGY_VALUE,
@@ -50,6 +51,11 @@ export const increaseEnergyValue = ({
   getEnergyStateQuery.setQueryData(client, address, (oldData) => {
     if (!oldData || (oldData && oldData.energyValue === FULL_ENERGY_VALUE))
       return oldData
+
+    setEnergyState({
+      energyValue: (oldData.energyValue + energyValuePerClick).toString(),
+    })
+
     return {
       energyValue: oldData.energyValue + energyValuePerClick,
       timestamp: oldData.timestamp,

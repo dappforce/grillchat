@@ -7,7 +7,6 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
 import useIsMounted from '@/hooks/useIsMounted'
-import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { getTodaySuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -69,7 +68,7 @@ export default function PointsWidget(
         <div className='flex items-center gap-2'>
           <Image className='h-7 w-7' src={Diamond} alt='' />
           <span className='flex items-center text-xl font-bold'>
-            <Points shorten />
+            <Points />
           </span>
           <FaChevronDown className='relative top-0.5' />
         </div>

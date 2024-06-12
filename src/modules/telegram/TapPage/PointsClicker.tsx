@@ -3,12 +3,25 @@ import {
   decreaseEnergyValue,
   increasePointsBalance,
 } from '@/services/datahub/leaderboard/points-balance/optimistic'
-import { getEnergyStateQuery } from '@/services/datahub/leaderboard/points-balance/query'
+import {
+  FULL_ENERGY_VALUE,
+  getEnergyStateQuery,
+} from '@/services/datahub/leaderboard/points-balance/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useQueryClient } from '@tanstack/react-query'
 import { useHapticFeedbackRaw } from '@tma.js/sdk-react'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { TouchEvent, TouchList, useEffect, useRef, useState } from 'react'
+import {
+  getEnergyState,
+  getTappedPointsState,
+  setEnergyState,
+  setTappedPointsState,
+} from './store'
+
+dayjs.extend(utc)
 
 type PointsClickerProps = {
   className?: string
@@ -108,6 +121,27 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
             client,
             address: myAddress,
             energyValuePerClick: 1,
+          })
+          const storedTappedPoints = getTappedPointsState()
+
+          const newTappedPoints = storedTappedPoints?.tappedPoints
+            ? parseInt(storedTappedPoints.tappedPoints) + 1
+            : 1
+
+          setTappedPointsState({
+            tappedPoints: newTappedPoints.toString(),
+            sendStatus: 'pending',
+          })
+
+          const storedEnergy = getEnergyState()
+
+          const newEnergyValue = storedEnergy?.energyValue
+            ? parseInt(storedEnergy.energyValue) - 1
+            : FULL_ENERGY_VALUE - 1
+
+          setEnergyState({
+            energyValue: newEnergyValue.toString(),
+            sendStatus: 'pending',
           })
         }
         setTimeout(() => {

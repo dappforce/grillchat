@@ -4,36 +4,23 @@ import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNav
 import ProgressModal from '@/components/modals/RewardPerDayModal'
 import WelcomeModal from '@/components/modals/WelcomeModal'
 import PointsWidget from '@/modules/points/PointsWidget'
-import { increaseEnergyValue } from '@/services/datahub/leaderboard/points-balance/optimistic'
 import {
   FULL_ENERGY_VALUE,
   getEnergyStateQuery,
 } from '@/services/datahub/leaderboard/points-balance/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
-import { useQueryClient } from '@tanstack/react-query'
 import { useMiniAppRaw } from '@tma.js/sdk-react'
 import Image from 'next/image'
-import { useEffect } from 'react'
 import PointsClicker from './PointsClicker'
 
 const TapPage = () => {
-  useEffect(() => {
-    document.body.style.position = 'fixed'
-    document.body.style.width = '100%'
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.removeProperty('overflow')
-      document.body.style.removeProperty('position')
-    }
-  }, [])
-
   return (
     <LayoutWithBottomNavigation
       className='relative'
       style={{ minHeight: '100dvh' }}
     >
-      <PointsWidget className='sticky top-0' />
+      <PointsWidget isNoTgScroll className='sticky top-0' />
       <TapPageContent />
       <WelcomeModal />
       <ProgressModal />
@@ -59,30 +46,18 @@ const TapPageContent = () => {
 
 const EnergyState = () => {
   const myAddress = useMyMainAddress()
-  const client = useQueryClient()
 
   const { data, isLoading } = getEnergyStateQuery.useQuery(myAddress || '')
 
   const { energyValue } = data || {}
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (energyValue === FULL_ENERGY_VALUE) return
-      increaseEnergyValue({
-        client,
-        address: myAddress || '',
-        energyValuePerClick: 1,
-      })
-    }, 2000)
-
-    return () => clearInterval(interval)
-  })
-
   return (
     <span className='text-base font-bold leading-[22px]'>
       🔋{' '}
-      <SkeletonFallback isLoading={isLoading}>{energyValue}</SkeletonFallback> /
-      {FULL_ENERGY_VALUE}
+      <SkeletonFallback className='w-fit' isLoading={isLoading}>
+        {energyValue}
+      </SkeletonFallback>{' '}
+      / {FULL_ENERGY_VALUE}
     </span>
   )
 }

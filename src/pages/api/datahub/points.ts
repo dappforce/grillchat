@@ -5,19 +5,13 @@ import { ApiDatahubPointsAndEnergyBody } from '@/services/datahub/leaderboard/po
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
-const inputSchema = z.object({
-  id: z.string(),
-  provider: z.string(),
-  payload: z.any(),
-})
-
 export type ApiDatahubModerationResponse = ApiResponse
 const POST_handler = handlerWrapper({
-  inputSchema,
+  inputSchema: z.any(),
   dataGetter: (req) => req.body,
 })({
   allowedMethods: ['POST'],
-  errorLabel: 'identity-action',
+  errorLabel: 'points-and-energy',
   handler: async (data, req, res) => {
     const { payload } = data as ApiDatahubPointsAndEnergyBody
 
