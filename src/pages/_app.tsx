@@ -24,6 +24,7 @@ import { SDKProvider } from '@tma.js/sdk-react'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
+// import { GoogleAnalytics } from 'nextjs-google-analytics'
 import Script from 'next/script'
 import React, { useEffect, useRef, useState } from 'react'
 import { Toaster } from 'sonner'
@@ -37,10 +38,6 @@ export type AppCommonProps = {
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
-  useEffect(() => {
-    import('eruda').then((lib) => lib.default.init())
-  }, [])
-
   return (
     <SessionProvider
       basePath={
@@ -110,19 +107,6 @@ function Styles({
       ${scrollbarStyling}
     `}</style>
   )
-}
-
-const changeBodyStyle = (webApp: any, e: any) => {
-  console.log('isExpanded and isStable', webApp.isExpanded, e.isStateStable)
-
-  // if (webApp.isExpanded) {
-
-  //   document.body.style.overflow = 'hidden'
-  //   document.body.style.height = `${webApp.viewportStableHeight}px`
-  //   document.body.style.maxHeight = `${webApp.viewportStableHeight}px`
-  // } else {
-  //   document.body.style.overflow = 'auto'
-  // }
 }
 
 function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {

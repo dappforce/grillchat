@@ -1,32 +1,23 @@
 import TapFromMobileImage from '@/assets/graphics/tap-from-mobile.png'
-import SkeletonFallback from '@/components/SkeletonFallback'
+import Button from '@/components/Button'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import WelcomeModal from '@/components/modals/WelcomeModal'
-import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
-import { increaseEnergyValue } from '@/services/datahub/leaderboard/points-balance/optimistic'
-import {
-  FULL_ENERGY_VALUE,
-  getEnergyStateQuery,
-} from '@/services/datahub/leaderboard/points-balance/query'
-import { useMyMainAddress } from '@/stores/my-account'
+import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
-import { useQueryClient } from '@tanstack/react-query'
 import { useMiniAppRaw } from '@tma.js/sdk-react'
 import Image from 'next/image'
-import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import PointsClicker from './PointsClicker'
 
 const TapPage = () => {
-  useTgNoScroll()
-
   return (
     <LayoutWithBottomNavigation
       className='relative'
       style={{ minHeight: '100dvh' }}
     >
-      <PointsWidget isNoTgScroll className='sticky top-0' />
+      <PointsWidget className='sticky top-0' />
       <TapPageContent />
       <WelcomeModal />
       <RewardPerDayModal />
@@ -37,51 +28,31 @@ const TapPage = () => {
 const TapPageContent = () => {
   const app = useMiniAppRaw(true)
   const isMobile = isTouchDevice()
+  const router = useRouter()
 
   if (app?.result && !isMobile) {
     return <MobileDeviceForBetterExp />
   }
 
   return (
-    <div className='flex flex-1 flex-col items-center justify-center gap-14'>
+    <div className='grid flex-1 grid-rows-[70%,30%] items-center'>
       <PointsClicker className='justify-self-center' />
-      <EnergyState />
+      <div className='flex flex-col items-center gap-[22px] px-4'>
+        <span className={cx('text-center', mutedTextColorStyles)}>
+          Tap2Earn is coming soon! While you wait, start earning points today by
+          creating and liking memes.
+        </span>
+
+        <Button
+          variant='primary'
+          size={'md'}
+          className='w-fit'
+          onClick={() => router.replace('/tg/memes')}
+        >
+          Try Meme to Earn
+        </Button>
+      </div>
     </div>
-  )
-}
-
-const EnergyState = () => {
-  const myAddress = useMyMainAddress()
-  const client = useQueryClient()
-
-  const { data, isLoading } = getEnergyStateQuery.useQuery(myAddress || '')
-
-  const { energyValue } = data || {}
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (energyValue === FULL_ENERGY_VALUE) return
-      increaseEnergyValue({
-        client,
-        address: myAddress || '',
-        energyValuePerClick: 1,
-      })
-    }, 2000)
-
-    return () => clearInterval(interval)
-  })
-
-  return (
-    <span className='text-base font-bold leading-[22px]'>
-      🔋{' '}
-      <SkeletonFallback
-        className='relative -top-0.5 inline-block w-16 align-middle'
-        isLoading={isLoading}
-      >
-        {energyValue}
-      </SkeletonFallback>{' '}
-      /{FULL_ENERGY_VALUE}
-    </span>
   )
 }
 

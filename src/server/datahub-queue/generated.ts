@@ -388,7 +388,6 @@ export enum SocialCallName {
   SynthDeleteLinkedIdentity = 'synth_delete_linked_identity',
   SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
-  SynthGamificationAddTappingActivityStates = 'synth_gamification_add_tapping_activity_states',
   SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
