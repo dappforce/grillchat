@@ -3,8 +3,10 @@ import Laugh from '@/assets/emojis/laugh.png'
 import Pointup from '@/assets/emojis/pointup.png'
 import Speaker from '@/assets/emojis/speaker.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
+import BlueGradient from '@/assets/graphics/blue-gradient.png'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import LinkText from '@/components/LinkText'
 import { Skeleton } from '@/components/SkeletonFallback'
 import useIsMounted from '@/hooks/useIsMounted'
 import { getBalanceQuery } from '@/services/datahub/balances/query'
@@ -92,7 +94,7 @@ function PointsDrawerContent({
       <Transition
         appear
         show={isOpen}
-        className='fixed inset-0 z-10 h-full w-full bg-black/50 backdrop-blur-md transition duration-300'
+        className='fixed inset-0 z-10 h-full w-full bg-background transition duration-300'
         enterFrom={cx('opacity-0')}
         enterTo='opacity-100'
         leaveFrom='h-auto'
@@ -101,112 +103,145 @@ function PointsDrawerContent({
       <Transition
         appear
         show={isOpen}
-        className='fixed inset-0 z-10 h-full w-full pb-20 transition duration-300'
+        className='fixed inset-0 z-10 flex h-full w-full flex-col bg-background pb-20 transition duration-300'
         enterFrom={cx('opacity-0 -translate-y-48')}
         enterTo='opacity-100 translate-y-0'
         leaveFrom='h-auto'
         leaveTo='opacity-0 -translate-y-24 !duration-150'
       >
-        <Button
-          className='absolute right-4 top-4'
-          variant='transparent'
-          size='circleSm'
-          onClick={() => setIsOpen(false)}
-        >
-          <HiXMark className='text-3xl' />
-        </Button>
-        <div className='mx-auto flex h-full w-full max-w-screen-md flex-col items-center overflow-auto px-4 pt-24'>
-          <div className='mb-16 flex flex-col gap-2'>
-            <div className='mr-3 flex items-center justify-center gap-3'>
-              <Image src={Diamond} alt='' className='h-14 w-14' />
-              <span className='flex items-center text-4xl font-bold'>
-                <Points />
-              </span>
-            </div>
-            <div className='flex justify-center'>
-              <Button
-                href='/guide'
-                className='bg-[#6395FD]/10 px-5 py-2 text-text'
-              >
-                How it works
-              </Button>
-            </div>
+        <div className='flex max-w-screen-md flex-1 flex-col overflow-auto'>
+          <Image
+            src={BlueGradient}
+            alt=''
+            className='absolute left-1/2 top-0 w-full -translate-x-1/2'
+          />
+          <div className='relative mx-auto flex w-full items-center justify-between px-4 py-4'>
+            <span className='text-xl font-bold'>My Progress</span>
+            <Button
+              className='-mr-2'
+              variant='transparent'
+              size='circleSm'
+              onClick={() => setIsOpen(false)}
+            >
+              <HiXMark className='text-3xl' />
+            </Button>
           </div>
-          <div className='flex w-full flex-1 flex-col gap-4 pb-8'>
-            <span className='text-center text-lg font-bold text-text-muted'>
-              How to earn Points:
-            </span>
-            <LinkWrapper close={() => setIsOpen(false)} href='/tg/memes'>
-              <Card className='flex w-full items-center gap-4 bg-background-light'>
-                <Image src={Laugh} alt='' className='h-14 w-14 flex-shrink-0' />
-                <div className='flex flex-col gap-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-lg font-bold'>Meme2Earn</span>
-                  </div>
-                  <p className='text-sm text-text-muted'>
-                    Post and like memes to earn even more Points.
-                  </p>
+          <div className='relative mx-auto flex h-full w-full flex-col items-center px-4 pt-12'>
+            <div className='mb-14 grid w-full grid-cols-2 gap-3'>
+              <div className='flex flex-col gap-2'>
+                <span className='text-center text-text-muted'>
+                  LIKES LEFT TODAY:
+                </span>
+                <div className='flex items-center justify-center gap-3'>
+                  <Image src={Thumbsup} alt='' className='h-8 w-8' />
+                  <span className='text-2xl font-bold'>
+                    <LikeCount />
+                    /10
+                  </span>
                 </div>
-                <Button
-                  size='circle'
-                  className='ml-auto flex-shrink-0 text-lg'
-                  variant='transparent'
-                >
-                  <HiChevronRight />
-                </Button>
-              </Card>
-            </LinkWrapper>
-            <LinkWrapper close={() => setIsOpen(false)} href='/tg/friends'>
-              <Card className='flex w-full items-center gap-4 bg-background-light'>
-                <Image
-                  src={Speaker}
-                  alt=''
-                  className='h-14 w-14 flex-shrink-0'
-                />
-                <div className='flex flex-col gap-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-lg font-bold'>Invite2Earn</span>
-                  </div>
-                  <p className='text-sm text-text-muted'>
-                    Invite your friends and earn 10% from their Points.
-                  </p>
+                <div className='flex justify-center'>
+                  <LinkText href='/guide' variant='primary'>
+                    How it works?
+                  </LinkText>
                 </div>
-                <Button
-                  size='circle'
-                  className='ml-auto flex-shrink-0 text-lg'
-                  variant='transparent'
-                >
-                  <HiChevronRight />
-                </Button>
-              </Card>
-            </LinkWrapper>
-            <LinkWrapper close={() => setIsOpen(false)} href='/tg'>
-              <Card className='flex w-full items-center gap-4 bg-background-light'>
-                <Image
-                  src={Pointup}
-                  alt=''
-                  className='h-14 w-14 flex-shrink-0'
-                />
-                <div className='flex flex-col gap-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='text-lg font-bold'>Tap2Earn</span>
-                    <div className='rounded-full bg-background px-2 py-0.5 text-sm text-text-muted'>
-                      Soon
+              </div>
+              <div className='flex flex-col gap-2'>
+                <span className='text-center text-text-muted'>
+                  POINTS EARNED:
+                </span>
+                <div className='mr-1 flex items-center justify-center gap-3'>
+                  <Image src={Diamond} alt='' className='h-8 w-8' />
+                  <span className='flex h-8 items-center text-2xl font-bold'>
+                    <Points />
+                  </span>
+                </div>
+                <div className='flex justify-center'>
+                  <LinkText href='/guide' variant='primary'>
+                    How it works?
+                  </LinkText>
+                </div>
+              </div>
+            </div>
+            <div className='flex w-full flex-1 flex-col gap-4 pb-8'>
+              <span className='text-center text-lg font-bold text-text-muted'>
+                How to earn Points:
+              </span>
+              <LinkWrapper close={() => setIsOpen(false)} href='/tg/memes'>
+                <Card className='flex w-full items-center gap-4 bg-background-light'>
+                  <Image
+                    src={Laugh}
+                    alt=''
+                    className='h-14 w-14 flex-shrink-0'
+                  />
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg font-bold'>Meme2Earn</span>
                     </div>
+                    <p className='text-sm text-text-muted'>
+                      Post and like memes to earn even more Points.
+                    </p>
                   </div>
-                  <p className='text-sm text-text-muted'>
-                    Tap on the laughing emoji and earn Points.
-                  </p>
-                </div>
-                <Button
-                  size='circle'
-                  className='ml-auto flex-shrink-0 text-lg'
-                  variant='transparent'
-                >
-                  <HiChevronRight />
-                </Button>
-              </Card>
-            </LinkWrapper>
+                  <Button
+                    size='circle'
+                    className='ml-auto flex-shrink-0 text-lg'
+                    variant='transparent'
+                  >
+                    <HiChevronRight />
+                  </Button>
+                </Card>
+              </LinkWrapper>
+              <LinkWrapper close={() => setIsOpen(false)} href='/tg/friends'>
+                <Card className='flex w-full items-center gap-4 bg-background-light'>
+                  <Image
+                    src={Speaker}
+                    alt=''
+                    className='h-14 w-14 flex-shrink-0'
+                  />
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg font-bold'>Invite2Earn</span>
+                    </div>
+                    <p className='text-sm text-text-muted'>
+                      Invite your friends and earn 10% from their Points.
+                    </p>
+                  </div>
+                  <Button
+                    size='circle'
+                    className='ml-auto flex-shrink-0 text-lg'
+                    variant='transparent'
+                  >
+                    <HiChevronRight />
+                  </Button>
+                </Card>
+              </LinkWrapper>
+              <LinkWrapper close={() => setIsOpen(false)} href='/tg'>
+                <Card className='flex w-full items-center gap-4 bg-background-light'>
+                  <Image
+                    src={Pointup}
+                    alt=''
+                    className='h-14 w-14 flex-shrink-0'
+                  />
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-lg font-bold'>Tap2Earn</span>
+                      <div className='rounded-full bg-background px-2 py-0.5 text-sm text-text-muted'>
+                        Soon
+                      </div>
+                    </div>
+                    <p className='text-sm text-text-muted'>
+                      Tap on the laughing emoji and earn Points.
+                    </p>
+                  </div>
+                  <Button
+                    size='circle'
+                    className='ml-auto flex-shrink-0 text-lg'
+                    variant='transparent'
+                  >
+                    <HiChevronRight />
+                  </Button>
+                </Card>
+              </LinkWrapper>
+            </div>
           </div>
         </div>
       </Transition>
