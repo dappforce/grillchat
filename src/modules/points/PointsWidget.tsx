@@ -70,7 +70,7 @@ export default function PointsWidget(
           <span className='flex items-center text-xl font-bold'>
             <Points shorten />
           </span>
-          <FaChevronDown className='relative top-0.5' />
+          <FaChevronDown className='relative' />
         </div>
       </div>
       {isMounted && (
