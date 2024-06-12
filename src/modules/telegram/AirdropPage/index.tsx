@@ -8,6 +8,7 @@ import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNav
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
+import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -16,6 +17,7 @@ import { useState } from 'react'
 import { RiPencilFill } from 'react-icons/ri'
 
 export default function AirdropPage() {
+  useTgNoScroll()
   const [openProfileModal, setOpenProfileModal] = useState(false)
   const [openAddEvmModal, setOpenAddEvmModal] = useState(false)
   const myAddress = useMyMainAddress()
@@ -24,8 +26,8 @@ export default function AirdropPage() {
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
-      <PointsWidget className='sticky top-0' />
-      <div className='flex flex-col gap-4'>
+      <PointsWidget isNoTgScroll className='sticky top-0' />
+      <div className='flex flex-1 flex-col gap-4 overflow-auto'>
         <div className='flex flex-col'>
           <TokenGraphics />
           <div className='-mt-2 flex flex-col gap-2 text-center'>

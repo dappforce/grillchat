@@ -1,5 +1,6 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
+import Spinner from '@/components/Spinner'
 import OauthLoadingModal from '@/components/auth/OauthLoadingModal'
 import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
@@ -7,8 +8,6 @@ import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useSaveTappedPointsAndEnergy from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergy'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
-import NeynarLoginProvider from '@/providers/config/NeynarLoginProvider'
-import TelegramLoginProvider from '@/providers/config/TelegramLoginProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { increaseEnergyValue } from '@/services/datahub/leaderboard/points-balance/optimistic'
@@ -33,7 +32,7 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
 import Script from 'next/script'
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Toaster } from 'sonner'
 import urlJoin from 'url-join'
 
@@ -58,12 +57,28 @@ export default function App(props: AppProps<AppCommonProps>) {
       }
       session={props.pageProps.session}
     >
+      <Script id='gtm' strategy='afterInteractive'>
+        {`
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-MQZ9PG2W');
+    `}
+      </Script>
       <ConfigProvider>
         <Styles
           alwaysShowScrollbarOffset={props.pageProps.alwaysShowScrollbarOffset}
         />
         <SDKProvider>
-          <AppContent {...props} />
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='dark'
+            forcedTheme='dark'
+          >
+            <HeadConfig {...props.pageProps.head} />
+            <AppContent {...props} />
+          </ThemeProvider>
         </SDKProvider>
       </ConfigProvider>
     </SessionProvider>
@@ -115,53 +130,68 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
     initAllStores()
   }, [])
 
-  useEffect(() => {
+  return (
+    <TelegramScriptWrapper>
+      <QueryProvider dehydratedState={dehydratedState}>
+        <DatahubSubscriber />
+        <ToasterConfig />
+        <ReferralUrlChanger />
+
+        <GlobalModals />
+        <SessionAccountChecker />
+        <OauthLoadingModal />
+        <div className={cx('font-sans')}>
+          <ErrorBoundary>
+            <EvmProvider>
+              <Component {...props} />
+            </EvmProvider>
+          </ErrorBoundary>
+        </div>
+      </QueryProvider>
+    </TelegramScriptWrapper>
+  )
+}
+
+function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const onLoad = () => {
     const telegram = window.Telegram as any
-
     const webApp = telegram?.WebApp
-
-    if (webApp) {
+    const isFromATelegramApp = !!webApp.initData
+    if (webApp && isFromATelegramApp) {
       webApp.ready()
-
       webApp.expand()
+      webApp.onEvent('viewportChanged', () => {
+        if (webApp.isExpanded) {
+          setIsExpanded(true)
+        }
+      })
+    } else {
+      // if not a telegram webapp, just show the content
+      setIsExpanded(true)
     }
-  })
+  }
+
+  if (!isExpanded) {
+    children = (
+      <div className='flex h-screen w-full flex-col items-center justify-center'>
+        <div className='flex items-center gap-2 text-text-muted'>
+          <Spinner />
+          <span>Loading...</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <ThemeProvider attribute='class' defaultTheme='dark' forcedTheme='dark'>
-      <QueryProvider dehydratedState={dehydratedState}>
-        <TelegramLoginProvider>
-          <NeynarLoginProvider>
-            <DatahubSubscriber />
-            <ToasterConfig />
-            <ReferralUrlChanger />
-            <HeadConfig {...head} />
-            <Script id='gtm' strategy='afterInteractive'>
-              {`
-                  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                  })(window,document,'script','dataLayer','GTM-MQZ9PG2W');
-                `}
-            </Script>
-
-            <GlobalModals />
-            <SessionAccountChecker />
-            <OauthLoadingModal />
-            <div className={cx('font-sans')}>
-              <ErrorBoundary>
-                <EvmProvider>
-                  <TappingHooksWrapper>
-                    <Component {...props} />
-                  </TappingHooksWrapper>
-                </EvmProvider>
-              </ErrorBoundary>
-            </div>
-          </NeynarLoginProvider>
-        </TelegramLoginProvider>
-      </QueryProvider>
-    </ThemeProvider>
+    <>
+      <Script
+        onLoad={onLoad}
+        src='https://telegram.org/js/telegram-web-app.js'
+      />
+      {children}
+    </>
   )
 }
 

@@ -59,7 +59,11 @@ export default function useGetMessageElement({
   }, [client, renderedMessageIds, hasMore])
 
   const loadMoreUntilMessageIdIsLoaded = useCallback(
-    async (messageId: string) => {
+    async (
+      messageId: string,
+      currentTry: number,
+      maxLoadMoreCount?: number
+    ) => {
       const isMessageIdIncluded = checkIfMessageIdIsIncluded(
         client,
         messageId,
@@ -67,14 +71,21 @@ export default function useGetMessageElement({
       )
       if (isMessageIdIncluded || !hasMoreRef.current) return
 
+      if (maxLoadMoreCount !== undefined && currentTry > maxLoadMoreCount)
+        return
+
       await awaitableLoadMore()
-      await loadMoreUntilMessageIdIsLoaded(messageId)
+      await loadMoreUntilMessageIdIsLoaded(
+        messageId,
+        currentTry + 1,
+        maxLoadMoreCount
+      )
     },
     [client, awaitableLoadMore, renderedIdsRef, hasMoreRef]
   )
 
   const getMessageElementById = useCallback(
-    async (messageId: string) => {
+    async (messageId: string, maxLoadMoreCount?: number) => {
       const {
         getPromise: getMessageDataLoadedPromise,
         getResolver: getMessageDataLoadedResolver,
@@ -86,7 +97,7 @@ export default function useGetMessageElement({
       if (element) return element
 
       // load more until message id is included in current page
-      await loadMoreUntilMessageIdIsLoaded(messageId)
+      await loadMoreUntilMessageIdIsLoaded(messageId, 1, maxLoadMoreCount)
 
       // if its already rendered, get and return it
       if (
@@ -118,7 +129,11 @@ export default function useGetMessageElement({
   )
 
   const getMessageElementByTime = useCallback(
-    async (time: number): Promise<HTMLElement | null> => {
+    async (
+      time: number,
+      currentTry: number,
+      maxLoadMoreCount?: number
+    ): Promise<HTMLElement | null> => {
       const renderedIds = renderedIdsRef.current
       const oldestRenderedId = renderedIds[renderedIds.length - 1]
       const oldestMessage = getPostQuery.getQueryData(client, oldestRenderedId)
@@ -126,8 +141,15 @@ export default function useGetMessageElement({
       if (!oldestMessageTime) return null
 
       if (time < oldestMessageTime && hasMoreRef.current) {
+        if (maxLoadMoreCount !== undefined && currentTry > maxLoadMoreCount) {
+          return null
+        }
         await awaitableLoadMore()
-        return await getMessageElementByTime(time)
+        return await getMessageElementByTime(
+          time,
+          currentTry + 1,
+          maxLoadMoreCount
+        )
       }
 
       const { id: nearestMessageId } = getNearestMessageIdToTimeFromRenderedIds(
@@ -153,11 +175,11 @@ export default function useGetMessageElement({
   )
 
   const getMessageElement = useCallback(
-    (messageIdOrTime: string | number) => {
+    (messageIdOrTime: string | number, maxLoadMoreCount?: number) => {
       if (typeof messageIdOrTime === 'string') {
-        return getMessageElementById(messageIdOrTime)
+        return getMessageElementById(messageIdOrTime, maxLoadMoreCount)
       } else {
-        return getMessageElementByTime(messageIdOrTime)
+        return getMessageElementByTime(messageIdOrTime, 1, maxLoadMoreCount)
       }
     },
     [getMessageElementById, getMessageElementByTime]

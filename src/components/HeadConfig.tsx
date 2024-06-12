@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Script from 'next/script'
 
 export type HeadConfigProps = {
   title?: string | null
@@ -38,7 +37,6 @@ export default function HeadConfig({
 
   return (
     <>
-      <Script src='https://telegram.org/js/telegram-web-app.js' />
       <Head>
         <title>{usedTitle}</title>
         <meta name='description' content={usedDesc} />

@@ -1,6 +1,7 @@
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
+import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
 import { SubscribeBalancesSubscription } from '../generated-query'
 import { getBalanceQuery } from '../leaderboard/points-balance/query'
@@ -10,9 +11,10 @@ export function useDatahubBalancesSubscriber() {
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
   const myAddress = useMyMainAddress()
+  const { pathname } = useRouter()
 
   useEffect(() => {
-    if (!myAddress) return
+    if (!myAddress || pathname !== '/tg/memes') return
 
     const listener = () => {
       unsubRef.current = subscription(queryClient, myAddress!)
@@ -23,7 +25,7 @@ export function useDatahubBalancesSubscriber() {
       document.removeEventListener('visibilitychange', listener)
       unsubRef.current?.()
     }
-  }, [queryClient, myAddress])
+  }, [queryClient, myAddress, pathname])
 }
 
 const SUBSCRIBE_BALANCES = gql`

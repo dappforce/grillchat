@@ -9,6 +9,7 @@ export type ScrollToMessageElementConfig = {
   shouldHighlight?: boolean
   smooth?: boolean
   scrollOffset?: 'normal' | 'large'
+  maxLoadMoreCount?: number
 }
 export async function scrollToMessageElement(
   element: HTMLElement | null,

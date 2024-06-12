@@ -1,4 +1,6 @@
 import Container from '@/components/Container'
+import Spinner from '@/components/Spinner'
+import useLastReadTimeFromStorage from '@/components/chats/hooks/useLastReadMessageTimeFromStorage'
 import MessageModal from '@/components/modals/MessageModal'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
@@ -7,13 +9,15 @@ import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { validateNumber } from '@/utils/strings'
-import { replaceUrl } from '@/utils/window'
+import { replaceUrl, sendMessageToParentWindow } from '@/utils/window'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 import { ChatListProps } from './ChatList'
 import { NewMessageNotice } from './NewMessageNotice'
+import { getNearestMessageIdToTimeFromRenderedIds } from './hooks/useGetChatElement'
 import useIsAtBottom from './hooks/useIsAtBottom'
+import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
 import { ScrollToMessage } from './hooks/useScrollToMessage'
 
 export type ChatListSupportingContentProps = Pick<
@@ -37,17 +41,17 @@ export default function ChatListSupportingContent({
 }: ChatListSupportingContentProps) {
   const queryClient = useQueryClient()
   const isInitialized = useRef(false)
-  // const [loadingToUnread, setLoadingToUnread] = useState(false)
+  const [loadingToUnread, setLoadingToUnread] = useState(false)
 
   const unreadMessage = useMessageData((state) => state.unreadMessage)
   const setUnreadMessage = useMessageData((state) => state.setUnreadMessage)
-  // const { setLastReadTime } = useLastReadTimeFromStorage(chatId)
+  const { setLastReadTime } = useLastReadTimeFromStorage(chatId)
 
   const lastMessageId = renderedMessageIds?.[0] ?? ''
   const lastMessage = getPostQuery.getQueryData(queryClient, lastMessageId)
   const lastMessageTime = lastMessage?.struct.createdAtTime
 
-  // const lastReadTime = useLastFocusedMessageTime(chatId, lastMessageId)
+  const lastReadTime = useLastFocusedMessageTime(chatId, lastMessageId)
 
   const [recipient, setRecipient] = useState('')
 
@@ -77,40 +81,43 @@ export default function ChatListSupportingContent({
       setRecipient(recipient)
     }
 
-    // if (lastReadTime) {
-    //   const afterScroll = () => {
-    //     setLoadingToUnread(false)
-    //     isInitialized.current = true
+    if (lastReadTime) {
+      const afterScroll = () => {
+        setLoadingToUnread(false)
+        isInitialized.current = true
 
-    //     const { index: nearestMessageIndex } =
-    //       getNearestMessageIdToTimeFromRenderedIds(
-    //         queryClient,
-    //         renderedMessageIdsRef.current,
-    //         lastReadTime
-    //       )
-    //     const newMessageCount =
-    //       nearestMessageIndex === -1 ? 0 : nearestMessageIndex
+        const { index: nearestMessageIndex } =
+          getNearestMessageIdToTimeFromRenderedIds(
+            queryClient,
+            renderedMessageIdsRef.current,
+            lastReadTime
+          )
+        const newMessageCount =
+          nearestMessageIndex === -1 ? 0 : nearestMessageIndex
 
-    //     sendMessageToParentWindow('unread', newMessageCount.toString())
-    //     setUnreadMessage({
-    //       count: newMessageCount,
-    //       lastMessageTime: lastReadTime,
-    //     })
-    //   }
+        console.log(nearestMessageIndex)
 
-    //   setLoadingToUnread(true)
+        sendMessageToParentWindow('unread', newMessageCount.toString())
+        setUnreadMessage({
+          count: newMessageCount,
+          lastMessageTime: lastReadTime,
+        })
+      }
 
-    //   if (!lastMessageTime || lastReadTime >= lastMessageTime) afterScroll()
-    //   else {
-    //     scrollToMessage(lastReadTime, {
-    //       shouldHighlight: false,
-    //       smooth: false,
-    //     }).then(afterScroll)
-    //   }
-    // } else {
-    //   isInitialized.current = true
-    // }
-    isInitialized.current = true
+      setLoadingToUnread(true)
+
+      console.log(!lastMessageTime || lastReadTime >= lastMessageTime)
+      if (!lastMessageTime || lastReadTime >= lastMessageTime) afterScroll()
+      else {
+        scrollToMessage(lastReadTime, {
+          shouldHighlight: false,
+          smooth: false,
+          maxLoadMoreCount: 0,
+        }).then(afterScroll)
+      }
+    } else {
+      isInitialized.current = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingIds, renderedMessageIdsRef, hasScrolledToMessageRef])
 
@@ -127,8 +134,8 @@ export default function ChatListSupportingContent({
       if (!newLastReadTime) return
     }
 
-    // setLastReadTime(newLastReadTime)
-  }, [lastMessageTime, unreadMessage, queryClient])
+    setLastReadTime(newLastReadTime)
+  }, [setLastReadTime, lastMessageTime, unreadMessage, queryClient])
 
   useEffect(() => {
     if (messageModalMsgId) {
@@ -155,14 +162,14 @@ export default function ChatListSupportingContent({
         <div
           className={cx('absolute bottom-2 right-4', newMessageNoticeClassName)}
         >
-          {/* {loadingToUnread ? (
+          {loadingToUnread ? (
             <Spinner />
-          ) : ( */}
-          <NewMessageNotice
-            renderedMessageIds={renderedMessageIds ?? []}
-            scrollContainerRef={scrollContainerRef}
-          />
-          {/* )} */}
+          ) : (
+            <NewMessageNotice
+              renderedMessageIds={renderedMessageIds ?? []}
+              scrollContainerRef={scrollContainerRef}
+            />
+          )}
         </div>
       </Component>
       <ScrollToBottom

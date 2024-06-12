@@ -1,7 +1,7 @@
 import TapFromMobileImage from '@/assets/graphics/tap-from-mobile.png'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
-import ProgressModal from '@/components/modals/RewardPerDayModal'
+import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import WelcomeModal from '@/components/modals/WelcomeModal'
 import PointsWidget from '@/modules/points/PointsWidget'
 import {
@@ -23,7 +23,7 @@ const TapPage = () => {
       <PointsWidget isNoTgScroll className='sticky top-0' />
       <TapPageContent />
       <WelcomeModal />
-      <ProgressModal />
+      <RewardPerDayModal />
     </LayoutWithBottomNavigation>
   )
 }
