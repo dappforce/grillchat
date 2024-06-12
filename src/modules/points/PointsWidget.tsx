@@ -18,7 +18,7 @@ import { Transition } from '@headlessui/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ComponentProps, useEffect, useState } from 'react'
+import { ComponentProps, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { FaChevronDown } from 'react-icons/fa'
@@ -70,7 +70,7 @@ export default function PointsWidget(
           <span className='flex items-center text-xl font-bold'>
             <Points shorten />
           </span>
-          <FaChevronDown className='relative top-0.5' />
+          <FaChevronDown className='relative' />
         </div>
       </div>
       {isMounted && (
@@ -101,7 +101,7 @@ function PointsDrawerContent({
       <Transition
         appear
         show={isOpen}
-        className='fixed inset-0 z-10 h-full w-full transition duration-300'
+        className='fixed inset-0 z-10 h-full w-full pb-20 transition duration-300'
         enterFrom={cx('opacity-0 -translate-y-48')}
         enterTo='opacity-100 translate-y-0'
         leaveFrom='h-auto'
@@ -262,19 +262,22 @@ function Points({ shorten }: { shorten?: boolean }) {
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
 
+  const formatted = formatNumber(data ?? '0', { shorten })
+  const splitValues = useMemo(() => {
+    return formatted.split('')
+  }, [formatted])
+
   if ((isLoading && myAddress) || !isInitializedProxy) {
     return <Skeleton className='inline-block w-12' />
   }
 
-  const formatted = formatNumber(data ?? '0', { shorten })
-
   return (
     <SlotCounter
       containerClassName='relative -top-0.5'
-      value={formatted.split('')}
+      value={splitValues}
       animateOnVisible={false}
       sequentialAnimationMode
-      startValue={formatted.split('')}
+      startValue={splitValues}
       startValueOnce
     />
   )

@@ -87,7 +87,7 @@ const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
               desc={<UserReward reward={userStats.reward} />}
             />
           ),
-          className: cx('bg-slate-800 sticky bottom-[4.8rem] z-[11]'),
+          className: cx('bg-slate-800 sticky bottom-0 z-[11]'),
         }
       : undefined
 
