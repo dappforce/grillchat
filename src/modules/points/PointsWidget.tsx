@@ -101,7 +101,7 @@ function PointsDrawerContent({
       <Transition
         appear
         show={isOpen}
-        className='fixed inset-0 z-10 h-full w-full transition duration-300'
+        className='fixed inset-0 z-10 h-full w-full pb-20 transition duration-300'
         enterFrom={cx('opacity-0 -translate-y-48')}
         enterTo='opacity-100 translate-y-0'
         leaveFrom='h-auto'
