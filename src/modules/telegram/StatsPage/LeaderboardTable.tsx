@@ -13,7 +13,7 @@ import { LeaderboardDataPeriod } from '@/services/datahub/leaderboard/types'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import Image, { ImageProps } from 'next/image'
-import { useMemo } from 'react'
+import { Dispatch, SetStateAction, useEffect, useMemo } from 'react'
 
 const TABLE_LIMIT = 100
 
@@ -38,6 +38,13 @@ type LeaderboardTableProps = {
     reward: string
   }
   customColumnsClassNames?: (string | undefined)[]
+  refetchTab: { [key in LeaderboardDataPeriod]: boolean }
+  setRefetchTab: Dispatch<
+    SetStateAction<{
+      allTime: boolean
+      week: boolean
+    }>
+  >
 }
 
 type Data = {
@@ -65,15 +72,30 @@ const parseTableRows = (data: Data[], limit: number, currentUserRank: Data) => {
   )
 }
 
-const LeaderboardTable = ({ period }: LeaderboardTableProps) => {
+const LeaderboardTable = ({
+  period,
+  refetchTab,
+  setRefetchTab,
+}: LeaderboardTableProps) => {
   const myAddress = useMyMainAddress()
 
   const { data: leaderboardDataResult, isLoading } =
-    leaderboardDataQueryByPeriod[period].useQuery(period)
+    leaderboardDataQueryByPeriod[period].useQuery(period, {
+      refetchOnMount: refetchTab[period] ? 'always' : false,
+    })
 
   const { data: userStats } = userDataQueryByPeriod[period].useQuery(
-    myAddress || ''
+    myAddress || '',
+    { refetchOnMount: refetchTab[period] ? 'always' : false }
   )
+
+  useEffect(() => {
+    const refetchTabByPeriod = refetchTab[period]
+
+    if (refetchTabByPeriod) {
+      setRefetchTab((prev) => ({ ...prev, [period]: false }))
+    }
+  }, [period, refetchTab, setRefetchTab])
 
   const data = useMemo(() => {
     const currentUserRankItem = userStats?.rank
