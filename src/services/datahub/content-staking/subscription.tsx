@@ -5,7 +5,7 @@ import { cx } from '@/utils/class-names'
 import { DataHubSubscriptionEventEnum } from '@subsocial/data-hub-sdk'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import { useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
@@ -131,21 +131,35 @@ async function processSubscriptionEvent(
       myAddress
     )
     const remaining = 10 - todayLike.count
-    let desc =
-      '✅ Great progress today! You used all the available likes. Come back tomorrow 😉'
+    let desc: ReactNode =
+      'Great progress today! You used all the available likes. Come back tomorrow 😉'
+    let icon: ((className: string) => ReactNode) | undefined = (className) => (
+      <span
+        className={cx(className, 'relative top-px mr-1.5 self-start text-base')}
+      >
+        ✅
+      </span>
+    )
     if (remaining > 0) {
-      desc = `You earned 💎 2000 Points for liking the meme. ${remaining} more likes left for today`
+      desc = (
+        <div>
+          <p>You earned 💎 2000 Points for liking the meme.</p>
+          <p className='text-text-muted'>
+            {remaining} more likes left for today
+          </p>
+        </div>
+      )
+      icon = (className) => (
+        <span
+          className={cx(
+            className,
+            'relative top-px mr-1.5 self-start text-base'
+          )}
+        >
+          ℹ️
+        </span>
+      )
     }
-    toast.custom((t) => (
-      <Toast
-        t={t}
-        icon={(className) => (
-          <span className={cx(className, 'relative -top-px text-base')}>
-            💎
-          </span>
-        )}
-        title={desc}
-      />
-    ))
+    toast.custom((t) => <Toast t={t} title={desc} icon={icon} />)
   }
 }
