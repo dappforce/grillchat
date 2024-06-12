@@ -164,7 +164,8 @@ function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
   const onLoad = () => {
     const telegram = window.Telegram as any
     const webApp = telegram?.WebApp
-    if (webApp) {
+    const isFromATelegramApp = !!webApp.initData
+    if (webApp && isFromATelegramApp) {
       webApp.ready()
       webApp.expand()
       webApp.onEvent('viewportChanged', () => {
