@@ -172,6 +172,9 @@ function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
           setIsExpanded(true)
         }
       })
+    } else {
+      // if not a telegram webapp, just show the content
+      setIsExpanded(true)
     }
   }
 
