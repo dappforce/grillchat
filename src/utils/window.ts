@@ -136,3 +136,11 @@ export function isWebNotificationsEnabled() {
 export function sendMessageToParentWindow(name: string, value: string) {
   window.parent?.postMessage(`grill:${name}:${value}`, '*')
 }
+
+export function preventWindowScroll() {
+  document.body.style.overflow = 'hidden'
+}
+
+export function allowWindowScroll() {
+  document.body.style.overflow = 'initial'
+}
