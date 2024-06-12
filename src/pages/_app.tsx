@@ -163,7 +163,7 @@ function DatahubSubscriber() {
 }
 
 function ToasterConfig() {
-  return <Toaster position='top-center' offset={58} />
+  return <Toaster position='top-center' className='!top-16 [&>*]:w-full' />
 }
 
 function SessionAccountChecker() {
