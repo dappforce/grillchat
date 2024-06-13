@@ -80,7 +80,7 @@ export default function ChatItemMenus({
 
   const isOptimisticMessage = !dataType
 
-  // const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
+  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const menus: FloatingMenusProps['menus'] = [
       // {
@@ -178,7 +178,7 @@ export default function ChatItemMenus({
     // const showDonateMenuItem = canSendMessage && !isMessageOwner && evmAddress
 
     // if (showDonateMenuItem) menus.unshift(donateMenuItem)
-    // if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
     // if (canSendMessage && isMessageOwner) menus.unshift(editItem)
     // if (message)
     //   menus.unshift({
