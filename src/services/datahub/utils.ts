@@ -89,7 +89,7 @@ export function signDatahubPayload(
   payload.sig = sig
 }
 
-export function createSocialDataEventPayload<
+export async function createSocialDataEventPayload<
   T extends keyof typeof socialCallName
 >(
   callName: T,
@@ -113,7 +113,7 @@ export function createSocialDataEventPayload<
       name: callName,
       signer: owner || '',
       args: JSON.stringify(eventArgs),
-      timestamp: timestamp || Date.now(),
+      timestamp: timestamp || (await getServerTime()),
       uuid: uuid || crypto.randomUUID(),
       proxy: proxyToAddress ? address : undefined,
     },
@@ -124,7 +124,7 @@ export function createSocialDataEventPayload<
   return payload
 }
 
-export function createSignedSocialDataEvent<
+export async function createSignedSocialDataEvent<
   T extends keyof typeof socialCallName
 >(
   callName: T,
@@ -132,7 +132,7 @@ export function createSignedSocialDataEvent<
   eventArgs: SocialCallDataArgs<T>,
   content?: any
 ) {
-  const payload = createSocialDataEventPayload(
+  const payload = await createSocialDataEventPayload(
     callName,
     params,
     eventArgs,
@@ -146,13 +146,7 @@ export function createSignedSocialDataEvent<
 export async function augmentDatahubParams<T>(
   params: T
 ): Promise<{ uuid: string; timestamp: number } & T> {
-  let timestamp = Date.now()
-  try {
-    const serverTime = await getServerTime()
-    timestamp = serverTime
-  } catch (err) {
-    console.error('Failed to get server time', err)
-  }
+  const timestamp = await getServerTime()
   return {
     ...params,
     uuid: crypto.randomUUID(),

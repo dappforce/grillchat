@@ -122,7 +122,7 @@ export async function createProfileData(
     ipfsSrc: cid,
   }
 
-  const input = createSignedSocialDataEvent(
+  const input = await createSignedSocialDataEvent(
     socialCallName.create_space_as_profile,
     params,
     eventArgs,

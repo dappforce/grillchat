@@ -128,6 +128,11 @@ export const getHasUserStakedQuery = createQuery({
 })
 
 export async function getServerTime() {
-  const res = await apiInstance.get('/api/time')
-  return (res.data as ApiTimeResponse).time
+  try {
+    const res = await apiInstance.get('/api/time')
+    return (res.data as ApiTimeResponse).time
+  } catch (err) {
+    console.error('Failed to get server time', err)
+    throw new Error('Failed to get server time')
+  }
 }

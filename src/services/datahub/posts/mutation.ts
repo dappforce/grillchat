@@ -80,7 +80,7 @@ async function createPostData(
     ipfsSrc: cid,
   }
 
-  const input = createSignedSocialDataEvent(
+  const input = await createSignedSocialDataEvent(
     socialCallName.create_post,
     params,
     eventArgs,
@@ -118,7 +118,7 @@ async function updatePostData(
     postId,
     ipfsSrc: content?.cid ?? null,
   }
-  const input = createSignedSocialDataEvent(
+  const input = await createSignedSocialDataEvent(
     socialCallName.update_post,
     params,
     eventArgs,
