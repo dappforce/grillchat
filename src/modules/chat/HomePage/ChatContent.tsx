@@ -3,9 +3,12 @@ import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
+import usePinnedMessage from '@/components/chats/hooks/usePinnedMessage'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import PointsWidget from '@/modules/points/PointsWidget'
+import { getPostQuery } from '@/services/api/query'
 import { useExtensionData } from '@/stores/extension'
+import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import { LuPlusCircle } from 'react-icons/lu'
 
@@ -18,6 +21,12 @@ type Props = {
 export default function ChatContent({ chatId, hubId, className }: Props) {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const openExtensionModal = useExtensionData.use.openExtensionModal()
+  const pinnedMessageId = usePinnedMessage(chatId)
+  const { data: message } = getPostQuery.useQuery(pinnedMessageId ?? '', {
+    enabled: !!pinnedMessageId,
+  })
+  const hasPinnedMessage = !!message
+
   return (
     <>
       <RulesModal
@@ -27,7 +36,10 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
       <ChatRoom
         topElement={
           <PointsWidget
-            className='absolute left-0 top-0 z-10 w-full'
+            className={cx(
+              'absolute left-0 top-0 z-10 w-full',
+              hasPinnedMessage && 'top-14'
+            )}
             isNoTgScroll
           />
         }

@@ -109,7 +109,7 @@ function PointsDrawerContent({
         leaveFrom='h-auto'
         leaveTo='opacity-0 -translate-y-24 !duration-150'
       >
-        <div className='flex max-w-screen-md flex-1 flex-col overflow-auto'>
+        <div className='mx-auto flex w-full max-w-screen-md flex-1 flex-col overflow-auto'>
           <Image
             src={BlueGradient}
             alt=''
