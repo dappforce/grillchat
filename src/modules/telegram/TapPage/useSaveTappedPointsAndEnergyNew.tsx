@@ -160,6 +160,13 @@ const useSaveTappedPointsAndEnergyNew = () => {
       const tappedPointsStore = getTappedPointsStateStore()
       const tappedPointsSavedStore = tappedPointsSavedStorage.get()
 
+      console.log(
+        'Stores',
+        energyStore,
+        tappedPointsStore,
+        tappedPointsSavedStore
+      )
+
       if (!tappedPointsStore && !energyStore) return
 
       let energyParams: GamificationTapEnergyState | undefined
@@ -192,6 +199,7 @@ const useSaveTappedPointsAndEnergyNew = () => {
         }
       }
 
+      console.log('Params', tappedPointsParams, energyParams)
       if (!tappedPointsParams && !energyParams) return
 
       const params: SynthGamificationAddTappingActivityStatesCallParsedArgs = {
