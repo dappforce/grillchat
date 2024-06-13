@@ -1,33 +1,16 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import Laugh from '@/assets/emojis/laugh.png'
 import Speaker from '@/assets/emojis/speaker.png'
-import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
 import Button from '../Button'
-import Modal from './Modal'
+import Modal, { ModalFunctionalityProps } from './Modal'
 
-const hasVisitedHomeStorage = new LocalStorage(() => 'has-visited-home')
-export const isWelcomeModalOpenStorage = new LocalStorage(
-  () => 'is-welcome-modal-open'
-)
-
-export default function WelcomeModal() {
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  useEffect(() => {
-    const hasVisited = hasVisitedHomeStorage.get() === 'true'
-    if (!hasVisited) {
-      hasVisitedHomeStorage.set('true')
-      setIsOpenModal(true)
-      isWelcomeModalOpenStorage.set('true')
-    }
-  }, [])
-
+export default function WelcomeModal(props: ModalFunctionalityProps) {
   return (
     <Modal
+      {...props}
       title='Welcome to Epic!'
       titleClassName='font-medium'
-      isOpen={isOpenModal}
       closeModal={() => undefined}
     >
       <div className='flex flex-col gap-6'>
@@ -64,8 +47,7 @@ export default function WelcomeModal() {
         <Button
           size='lg'
           onClick={() => {
-            setIsOpenModal(false)
-            isWelcomeModalOpenStorage.set('false')
+            props.closeModal()
           }}
         >
           Claim my bonus!

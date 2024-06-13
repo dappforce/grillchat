@@ -1,8 +1,7 @@
 import TapFromMobileImage from '@/assets/graphics/tap-from-mobile.png'
 import Button from '@/components/Button'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
-import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
-import WelcomeModal from '@/components/modals/WelcomeModal'
+import HomePageModals from '@/components/modals/HomePageModals'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
@@ -19,8 +18,7 @@ const TapPage = () => {
     >
       <PointsWidget className='sticky top-0' />
       <TapPageContent />
-      <WelcomeModal />
-      <RewardPerDayModal />
+      <HomePageModals />
     </LayoutWithBottomNavigation>
   )
 }

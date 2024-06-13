@@ -11,6 +11,8 @@ import {
   GetAddressLikeCountToPostsQueryVariables,
   GetCanPostsSuperLikedQuery,
   GetCanPostsSuperLikedQueryVariables,
+  GetDailyRewardQuery,
+  GetDailyRewardQueryVariables,
   GetPostRewardsQuery,
   GetPostRewardsQueryVariables,
   GetSuperLikeCountsQuery,
@@ -605,5 +607,40 @@ export const getUserYesterdayRewardQuery = createQuery({
   fetcher: getUserYesterdayReward,
   defaultConfigGenerator: (param) => ({
     enabled: !!param?.address,
+  }),
+})
+
+export const GET_DAILY_REWARD = gql`
+  query GetDailyReward($address: String!) {
+    gamificationEntranceDailyRewardSequence(
+      args: { where: { address: $address } }
+    ) {
+      claimsCount
+      claims {
+        index
+        openToClaim
+        claimRewardPoints
+        claimRewardPointsRange
+        claimValidDay
+        hiddenClaimReward
+      }
+    }
+  }
+`
+async function getDailyReward(address: string) {
+  const res = await datahubQueryRequest<
+    GetDailyRewardQuery,
+    GetDailyRewardQueryVariables
+  >({
+    document: GET_DAILY_REWARD,
+    variables: { address },
+  })
+  return res.gamificationEntranceDailyRewardSequence
+}
+export const getDailyRewardQuery = createQuery({
+  key: 'getDailyReward',
+  fetcher: getDailyReward,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
   }),
 })

@@ -7,52 +7,26 @@ import { getCurrentUrlOrigin } from '@/utils/links'
 import { openNewWindow, twitterShareUrl } from '@/utils/social-share'
 import { formatNumber } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
-import dayjs from 'dayjs'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { HiXMark } from 'react-icons/hi2'
 import urlJoin from 'url-join'
 import Button from '../Button'
 import Card from '../Card'
-import { isWelcomeModalOpenStorage } from './WelcomeModal'
 
-const progressModalStorage = {
-  getIsClosed: () => {
-    const today = dayjs.utc().startOf('day').unix()
-    const closedTimestamp = localStorage.getItem('progress-modal-closed')
-    if (!closedTimestamp) return false
-    return today === Number(closedTimestamp)
-  },
-  close: () => {
-    const today = dayjs.utc().startOf('day').unix()
-    localStorage.setItem('progress-modal-closed', String(today))
-  },
-}
-
-export default function RewardPerDayModal() {
+export default function RewardPerDayModal({
+  close,
+  isOpen,
+}: {
+  isOpen: boolean
+  close: () => void
+}) {
   const sendEvent = useSendEvent()
-  const [isOpen, setIsOpen] = useState(false)
   const myAddress = useMyMainAddress()
   const { data } = getUserYesterdayRewardQuery.useQuery({
     address: myAddress ?? '',
   })
-  const hasEarnedAnything = !!(
-    Number(data?.earned.creator ?? '0') || Number(data?.earned.staker ?? '0')
-  )
-
-  useEffect(() => {
-    const shouldOpen =
-      !progressModalStorage.getIsClosed() &&
-      !!myAddress &&
-      hasEarnedAnything &&
-      isWelcomeModalOpenStorage.get() !== 'true'
-    if (shouldOpen) {
-      sendEvent('open_progress_modal')
-    }
-    setIsOpen(shouldOpen)
-  }, [myAddress, sendEvent, hasEarnedAnything])
 
   const stakerReward = Number(data?.earned.staker ?? '0')
   const creatorReward = Number(data?.earned.creator ?? '0')
@@ -62,12 +36,7 @@ Epic lets you earn tokens simply by liking and posting memes.
 
 Sounds too good to be true? Join me and see for yourself! 😉`
 
-  const closeDrawer = () => {
-    setIsOpen(false)
-    progressModalStorage.close()
-  }
-
-  useHotkeys('esc', closeDrawer)
+  useHotkeys('esc', close)
 
   return createPortal(
     <>
@@ -79,7 +48,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
         enterTo='opacity-100'
         leaveFrom='h-auto'
         leaveTo='opacity-0 !duration-150'
-        onClick={closeDrawer}
+        onClick={close}
       />
       <Transition
         show={isOpen}
@@ -94,7 +63,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
           size='circleSm'
           variant='transparent'
           className='absolute right-4 top-4'
-          onClick={closeDrawer}
+          onClick={close}
         >
           <HiXMark className='text-lg' />
         </Button>
@@ -161,8 +130,7 @@ Sounds too good to be true? Join me and see for yourself! 😉`
               size='lg'
               onClick={() => {
                 sendEvent('progress_modal_got_it_clicked')
-                setIsOpen(false)
-                progressModalStorage.close()
+                close()
               }}
             >
               Got it!

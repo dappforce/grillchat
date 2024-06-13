@@ -447,6 +447,25 @@ export type DomainsResponse = {
   total: Scalars['Int']['output']
 }
 
+export type EntranceDailyRewardSequenceInput = {
+  where: EntranceDailyRewardSequenceWhereArgs
+}
+
+export type EntranceDailyRewardSequenceWhereArgs = {
+  address: Scalars['String']['input']
+}
+
+export type EntranceDailyRewardsSequenceItem = {
+  __typename?: 'EntranceDailyRewardsSequenceItem'
+  claimRewardPoints: Scalars['String']['output']
+  claimRewardPointsRange?: Maybe<Array<Scalars['Int']['output']>>
+  claimValidDay?: Maybe<Scalars['String']['output']>
+  claimedAt?: Maybe<Scalars['String']['output']>
+  hiddenClaimReward: Scalars['Boolean']['output']
+  index: Scalars['Int']['output']
+  openToClaim: Scalars['Boolean']['output']
+}
+
 export type EvmAccount = {
   __typename?: 'EvmAccount'
   id: Scalars['String']['output']
@@ -546,6 +565,17 @@ export type FindSpacesWithFilterResponseDto = {
   offset?: Maybe<Scalars['Int']['output']>
   pageSize?: Maybe<Scalars['Int']['output']>
   total?: Maybe<Scalars['Int']['output']>
+}
+
+export type GamificationEntranceDailyRewardsSequence = {
+  __typename?: 'GamificationEntranceDailyRewardsSequence'
+  active: Scalars['Boolean']['output']
+  claims: Array<EntranceDailyRewardsSequenceItem>
+  claimsCount: Scalars['Int']['output']
+  date: Scalars['BigInt']['output']
+  id: Scalars['String']['output']
+  socialProfile: SocialProfile
+  totalSequenceRewardPoints: Scalars['String']['output']
 }
 
 export type GetModeratorByInput = {
@@ -1025,6 +1055,7 @@ export type Query = {
   activeStakingTotalActivityMetricsForFixedPeriod: TotalActivityMetricsForFixedPeriodResponseDto
   domains: DomainsResponse
   findPosts: FindPostsResponseDto
+  gamificationEntranceDailyRewardSequence?: Maybe<GamificationEntranceDailyRewardsSequence>
   gamificationTappingActivityStatsByDate: TappingActivityStatsByDateResponseDto
   gamificationTappingEnergyState?: Maybe<TappingEnergyStateResponseDto>
   isBalanceSufficientForSocialAction: IsBalanceSufficientForSocialActionResponse
@@ -1130,6 +1161,10 @@ export type QueryDomainsArgs = {
 
 export type QueryFindPostsArgs = {
   where: FindPostsArgs
+}
+
+export type QueryGamificationEntranceDailyRewardSequenceArgs = {
+  args: EntranceDailyRewardSequenceInput
 }
 
 export type QueryGamificationTappingActivityStatsByDateArgs = {
@@ -1353,7 +1388,9 @@ export enum ServiceMessageStatusCode {
   DailyTapsMaxLimitReached = 'DAILY_TAPS_MAX_LIMIT_REACHED',
   EntityAlreadyExists = 'ENTITY_ALREADY_EXISTS',
   EntityNotFound = 'ENTITY_NOT_FOUND',
+  ExpiredEntranceDailyRewardClaimForbidden = 'EXPIRED_ENTRANCE_DAILY_REWARD_CLAIM_FORBIDDEN',
   Forbidden = 'FORBIDDEN',
+  FutureEntranceDailyRewardClaimForbidden = 'FUTURE_ENTRANCE_DAILY_REWARD_CLAIM_FORBIDDEN',
   Info = 'INFO',
   InsufficientBalance = 'INSUFFICIENT_BALANCE',
   InternalServerError = 'INTERNAL_SERVER_ERROR',
@@ -1382,6 +1419,11 @@ export enum SocialAction {
   UpdateRegularPost = 'UPDATE_REGULAR_POST',
   UpdateReply = 'UPDATE_REPLY',
   UpdateSpace = 'UPDATE_SPACE',
+}
+
+export type SocialActionPriceResponse = {
+  __typename?: 'SocialActionPriceResponse'
+  createCommentPoints: Scalars['String']['output']
 }
 
 export enum SocialCallName {
@@ -1420,6 +1462,7 @@ export enum SocialCallName {
   SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
   SynthGamificationAddTappingActivityStates = 'synth_gamification_add_tapping_activity_states',
+  SynthGamificationClaimEntranceDailyReward = 'synth_gamification_claim_entrance_daily_reward',
   SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
@@ -1448,10 +1491,14 @@ export enum SocialEventDataType {
 export type SocialProfile = {
   __typename?: 'SocialProfile'
   account: Account
+  activeEntranceDailyRewardSequence?: Maybe<GamificationEntranceDailyRewardsSequence>
   activeStakingTrial: Scalars['Boolean']['output']
   activeStakingTrialFinishedAtTime?: Maybe<Scalars['DateTime']['output']>
   activeStakingTrialStartedAtTime?: Maybe<Scalars['DateTime']['output']>
   balances?: Maybe<SocialProfileBalances>
+  entranceDailyRewardSequences?: Maybe<
+    Array<GamificationEntranceDailyRewardsSequence>
+  >
   id: Scalars['String']['output']
   notificationsAccountLinks?: Maybe<Array<NotificationsAccountsLink>>
   notificationsSettings?: Maybe<NotificationsSettings>
@@ -1588,6 +1635,11 @@ export type SubscriptionSocialProfileBalancesSubscriptionArgs = {
   args: SocialProfileBalancesSubscriptionInput
 }
 
+export type SubscriptionPayloadMeta = {
+  __typename?: 'SubscriptionPayloadMeta'
+  stakerDistributedRewardPoints: Scalars['String']['output']
+}
+
 export type SubscriptionServiceAccountTokenMessage = {
   proxy: Scalars['String']['input']
   signer: Scalars['String']['input']
@@ -1641,6 +1693,7 @@ export type SuperLikeSubscriptionPayload = {
   __typename?: 'SuperLikeSubscriptionPayload'
   entity: ActiveStakingSuperLike
   event: DataHubSubscriptionEventEnum
+  meta: SubscriptionPayloadMeta
 }
 
 export type SuperLikesCreatorRewards = {
@@ -1719,6 +1772,8 @@ export type TappingEnergyWhereArgs = {
 export type TokenomicMetadataResponse = {
   __typename?: 'TokenomicMetadataResponse'
   maxTotalDailyRewardPoints: Scalars['String']['output']
+  socialActionPrice: SocialActionPriceResponse
+  superLikeWeightPoints: Scalars['String']['output']
 }
 
 export type TotalActivityMetricsForFixedPeriodInput = {
@@ -2009,6 +2064,27 @@ export type GetUserYesterdayRewardQuery = {
       earnedPointsByPeriod?: string | null
     } | null
   }
+}
+
+export type GetDailyRewardQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetDailyRewardQuery = {
+  __typename?: 'Query'
+  gamificationEntranceDailyRewardSequence?: {
+    __typename?: 'GamificationEntranceDailyRewardsSequence'
+    claimsCount: number
+    claims: Array<{
+      __typename?: 'EntranceDailyRewardsSequenceItem'
+      index: number
+      openToClaim: boolean
+      claimRewardPoints: string
+      claimRewardPointsRange?: Array<number> | null
+      claimValidDay?: string | null
+      hiddenClaimReward: boolean
+    }>
+  } | null
 }
 
 export type SubscribeSuperLikeSubscriptionVariables = Exact<{
@@ -2898,6 +2974,7 @@ export type GetProfilesQueryVariables = Exact<{
   addresses?: InputMaybe<
     Array<Scalars['String']['input']> | Scalars['String']['input']
   >
+  pageSize: Scalars['Int']['input']
 }>
 
 export type GetProfilesQuery = {
@@ -3211,8 +3288,8 @@ export const GetUserYesterdayReward = gql`
         address: $address
         period: DAY
         periodValue: $timestamp
-        staker: { likedPosts: true, earnedByPeriod: true }
-        creator: { earnedByPeriod: true }
+        staker: { likedPosts: true, earnedPointsByPeriod: true }
+        creator: { earnedPointsByPeriod: true }
       }
     ) {
       creator {
@@ -3221,6 +3298,23 @@ export const GetUserYesterdayReward = gql`
       staker {
         likedPosts
         earnedPointsByPeriod
+      }
+    }
+  }
+`
+export const GetDailyReward = gql`
+  query GetDailyReward($address: String!) {
+    gamificationEntranceDailyRewardSequence(
+      args: { where: { address: $address } }
+    ) {
+      claimsCount
+      claims {
+        index
+        openToClaim
+        claimRewardPoints
+        claimRewardPointsRange
+        claimValidDay
+        hiddenClaimReward
       }
     }
   }
@@ -3383,7 +3477,7 @@ export const GetUserDataByWeek = gql`
   query GetUserDataByWeek($address: String!, $timestamp: String!) {
     activeStakingAddressRankByTotalRewardsForPeriod(
       args: {
-        period: ALL_TIME
+        period: WEEK
         address: $address
         withReward: true
         timestamp: $timestamp
@@ -3616,8 +3710,13 @@ export const SubscribePost = gql`
   }
 `
 export const GetProfiles = gql`
-  query GetProfiles($addresses: [String!]) {
-    spaces(args: { filter: { asProfileForAccounts: $addresses } }) {
+  query GetProfiles($addresses: [String!], $pageSize: Int!) {
+    spaces(
+      args: {
+        filter: { asProfileForAccounts: $addresses }
+        pageSize: $pageSize
+      }
+    ) {
       data {
         id
         name
