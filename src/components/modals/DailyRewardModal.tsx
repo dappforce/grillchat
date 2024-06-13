@@ -1,5 +1,6 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import { getServerDayQuery } from '@/services/api/query'
+import { useClaimDailyReward } from '@/services/datahub/content-staking/mutation'
 import { getDailyRewardQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -21,6 +22,9 @@ export default function DailyRewardModal({
   const myAddress = useMyMainAddress()
   const { data } = getDailyRewardQuery.useQuery(myAddress ?? '')
   const { data: serverDay } = getServerDayQuery.useQuery(null)
+  const { mutate: claim, isLoading } = useClaimDailyReward({
+    onSuccess: () => close(),
+  })
 
   return createPortal(
     <>
@@ -91,9 +95,10 @@ export default function DailyRewardModal({
           <div className='grid w-full grid-cols-1 gap-4'>
             <Button
               size='lg'
+              isLoading={isLoading}
               onClick={() => {
                 sendEvent('daily_reward_claimed')
-                // TODO: Claim reward
+                claim({})
               }}
             >
               Claim

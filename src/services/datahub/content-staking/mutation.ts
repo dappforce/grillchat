@@ -1,3 +1,4 @@
+import { ApiDatahubContentStakingMutationBody } from '@/pages/api/datahub/content-staking'
 import { ApiDatahubSuperLikeMutationBody } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
 import { queryClient } from '@/services/provider'
@@ -104,5 +105,29 @@ export const useCreateSuperLike = mutationWrapper(
     onSuccess: () => {
       allowWindowUnload()
     },
+  }
+)
+
+type ClaimDailyRewardArgs =
+  SocialCallDataArgs<'synth_gamification_claim_entrance_daily_reward'>
+async function claimDailyReward(params: DatahubParams<ClaimDailyRewardArgs>) {
+  const input = await createSocialDataEventPayload(
+    socialCallName.synth_gamification_claim_entrance_daily_reward,
+    params,
+    params.args
+  )
+
+  await apiInstance.post<any, any, ApiDatahubContentStakingMutationBody>(
+    '/api/datahub/content-staking',
+    input as any
+  )
+}
+
+export const useClaimDailyReward = mutationWrapper(
+  async ({ ...data }: Omit<ClaimDailyRewardArgs, 'clientId'>) => {
+    await claimDailyReward({
+      ...getCurrentWallet(),
+      args: { ...data },
+    })
   }
 )
