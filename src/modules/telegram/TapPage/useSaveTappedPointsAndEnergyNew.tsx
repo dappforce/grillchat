@@ -1,4 +1,3 @@
-import Toast from '@/components/Toast'
 import { useSavePointsAndEnergy } from '@/services/datahub/leaderboard/points-balance/mutation'
 import { increasePointsBalance } from '@/services/datahub/leaderboard/points-balance/optimistic'
 import {
@@ -16,11 +15,11 @@ import { useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
 import {
   energyStorage,
   getEnergyStateStore,
   getTappedPointsStateStore,
+  tappedPointsSavedStorage,
   tappedPointsStorage,
 } from './store'
 
@@ -47,6 +46,7 @@ const useSaveTappedPointsAndEnergyNew = () => {
         return
 
       const tappedPointsStore = getTappedPointsStateStore()
+      const tappedPointsSavedStore = tappedPointsSavedStorage.get()
       const energyStore = getEnergyStateStore()
 
       if (!tappedPointsStore && !energyStore) {
@@ -81,9 +81,12 @@ const useSaveTappedPointsAndEnergyNew = () => {
       }
 
       if (tappedPointsStore && clickedPointsByDayRef.current?.tapsCount) {
+        const tappedPointsDifference =
+          parseInt(tappedPointsStore.tappedPoints) -
+          parseInt(tappedPointsSavedStore || '0')
+
         const newTappedPoints =
-          clickedPointsByDayRef.current.tapsCount +
-          parseInt(tappedPointsStore.tappedPoints)
+          clickedPointsByDayRef.current.tapsCount + tappedPointsDifference
 
         tappedPointsParams = {
           tapsCount: newTappedPoints,
@@ -107,10 +110,12 @@ const useSaveTappedPointsAndEnergyNew = () => {
           }
 
           if (tappedPointsParams && tappedPointsStore) {
+            const tappedPointsDifference =
+              parseInt(tappedPointsStore.tappedPoints) -
+              parseInt(tappedPointsSavedStore || '0')
+
             increasePointsBalance({
-              pointsByClick: parseInt(
-                tappedPointsStore.tappedPoints!.toString()
-              ),
+              pointsByClick: tappedPointsDifference,
               address: myAddress || '',
               client,
             })
@@ -120,6 +125,7 @@ const useSaveTappedPointsAndEnergyNew = () => {
               date: clickedPointsByDayRef.current?.date || '',
             })
             tappedPointsStorage.remove()
+            tappedPointsSavedStorage.remove()
           }
         },
       })
@@ -152,6 +158,7 @@ const useSaveTappedPointsAndEnergyNew = () => {
     const interval = setInterval(() => {
       const energyStore = getEnergyStateStore()
       const tappedPointsStore = getTappedPointsStateStore()
+      const tappedPointsSavedStore = tappedPointsSavedStorage.get()
 
       if (!tappedPointsStore && !energyStore) return
 
@@ -167,9 +174,18 @@ const useSaveTappedPointsAndEnergyNew = () => {
       let tappedPointsParams: GamificationTapsState | undefined
 
       if (tappedPointsStore && clickedPointsByDayRef.current?.tapsCount) {
+        const tappedPointsDifference =
+          parseInt(tappedPointsStore.tappedPoints) -
+          parseInt(tappedPointsSavedStore || '0')
+
+        console.log(
+          tappedPointsStore.tappedPoints,
+          tappedPointsSavedStore,
+          tappedPointsDifference
+        )
+
         const newTappedPoints =
-          clickedPointsByDayRef.current.tapsCount +
-          parseInt(tappedPointsStore.tappedPoints)
+          clickedPointsByDayRef.current.tapsCount + tappedPointsDifference
 
         tappedPointsParams = {
           tapsCount: newTappedPoints,
@@ -192,8 +208,10 @@ const useSaveTappedPointsAndEnergyNew = () => {
             energyStorage.remove()
           }
 
-          if (tappedPointsParams) {
-            tappedPointsStorage.remove()
+          if (tappedPointsStore && tappedPointsParams) {
+            tappedPointsSavedStorage.set(
+              tappedPointsStore.tappedPoints.toString()
+            )
 
             getClickedPointsByDayQuery.setQueryData(client, myAddress || '', {
               tapsCount: tappedPointsParams.tapsCount!,
@@ -231,28 +249,6 @@ const updatePointsAndEnergy = async ({
 }: UpdatePointsAndEnergyProps) => {
   try {
     await saveData(params)
-
-    console.info(
-      `Tapped points (${params.tapsState?.tapsCount}: +${
-        getTappedPointsStateStore()?.tappedPoints
-      }) with balance - ${
-        getTappedPointsStateStore()?.currentBalance
-      } and energy (${params.energyState?.value}) saved!`
-    )
-
-    toast.custom(
-      (t) => (
-        <Toast
-          t={t}
-          title={`Tapped points (${params.tapsState?.tapsCount}: +${
-            getTappedPointsStateStore()?.tappedPoints
-          }) with balance - ${
-            getTappedPointsStateStore()?.currentBalance
-          } and energy (${params.energyState?.value}) saved!`}
-        />
-      ),
-      { duration: 4_000 }
-    )
 
     onSuccess?.()
     return { sendStatus: 'success' }

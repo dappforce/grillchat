@@ -1,11 +1,15 @@
 import { LocalStorage } from '@/utils/storage'
 
 export const tappedPointsStorage = new LocalStorage(() => 'tapped-points')
+export const tappedPointsSavedStorage = new LocalStorage(
+  () => 'tapped-points-saved'
+)
 
 export const energyStorage = new LocalStorage(() => 'tapping-energy')
 
 type TappedPoints = {
   tappedPoints: string
+  tappedPointsSaved: string
   currentBalance: string
   sendStatus: 'pending' | 'success' | 'error'
 }
