@@ -150,7 +150,7 @@ function PointsDrawerContent({
                   POINTS EARNED:
                 </span>
                 <div className='mr-1 flex items-center justify-center gap-3'>
-                  <Image src={Diamond} alt='' className='h-8 w-8' />
+                  <Image src={Diamond} alt='' className='-mr-1.5 h-8 w-8' />
                   <span className='flex h-8 items-center text-2xl font-bold'>
                     <Points />
                   </span>
