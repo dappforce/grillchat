@@ -3,6 +3,7 @@ import SkeletonFallback from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import WelcomeModal from '@/components/modals/WelcomeModal'
+import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
 import {
   FULL_ENERGY_VALUE,
@@ -15,6 +16,8 @@ import Image from 'next/image'
 import PointsClicker from './PointsClicker'
 
 const TapPage = () => {
+  useTgNoScroll()
+
   return (
     <LayoutWithBottomNavigation
       className='relative'

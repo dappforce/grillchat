@@ -141,6 +141,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
 
           setEnergyState({
             energyValue: newEnergyValue.toString(),
+            timestamp: dayjs().utc().unix().toString(),
             sendStatus: 'pending',
           })
         }
