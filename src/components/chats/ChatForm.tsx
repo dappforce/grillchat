@@ -237,7 +237,8 @@ export default function ChatForm({
         return
       }
       resetForm()
-      sendMessage(augmentDatahubParams(messageParams))
+      const augmented = await augmentDatahubParams(messageParams)
+      sendMessage(augmented)
     } else {
       openLoginModal(true)
       return

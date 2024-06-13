@@ -115,15 +115,14 @@ function CreateProfileForm({
   const handleCreateProfileSubmit = handleSubmit(async (data) => {
     sendEvent('account_settings_changed', { profileSource: 'custom' })
     onSubmit?.()
-    await mutateAsync(
-      augmentDatahubParams({
-        content: {
-          name: data.name,
-          image: data.image,
-          about: data.about,
-        },
-      })
-    )
+    const augmented = await augmentDatahubParams({
+      content: {
+        name: data.name,
+        image: data.image,
+        about: data.about,
+      },
+    })
+    await mutateAsync(augmented)
     onSuccessSent?.()
   })
 

@@ -20,7 +20,7 @@ export async function linkIdentity(
 ) {
   params.isOffchain = true
 
-  const input = createSocialDataEventPayload(
+  const input = await createSocialDataEventPayload(
     socialCallName.synth_init_linked_identity,
     params,
     params.args
@@ -87,7 +87,7 @@ async function addExternalProviderToIdentity(
     SocialCallDataArgs<'synth_add_linked_identity_external_provider'>
   >
 ) {
-  const input = createSocialDataEventPayload(
+  const input = await createSocialDataEventPayload(
     socialCallName.synth_add_linked_identity_external_provider,
     params,
     params.args

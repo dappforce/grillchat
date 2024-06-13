@@ -81,19 +81,18 @@ const useLoginInTelegramMiniApps = () => {
     if (isSuccessLinking) {
       getProfileQuery
         .fetchQuery(queryClient, linkedIdentity?.mainAddress ?? '')
-        .then((profile) => {
+        .then(async (profile) => {
           if (!profile) {
             const firstName = data.firstName || ''
             const lastName = data.lastName || ''
 
-            upsertProfile(
-              augmentDatahubParams({
-                content: {
-                  name: `${firstName} ${lastName}`,
-                  image: photoPath,
-                },
-              })
-            )?.then(() => callOnSuccesses())
+            const augmented = await augmentDatahubParams({
+              content: {
+                name: `${firstName} ${lastName}`,
+                image: photoPath,
+              },
+            })
+            upsertProfile(augmented)?.then(() => callOnSuccesses())
           } else {
             callOnSuccesses()
           }
