@@ -7,7 +7,11 @@ import { getMyMainAddress } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
-import { DatahubParams, createSocialDataEventPayload } from '../utils'
+import {
+  DatahubParams,
+  createSignedSocialDataEvent,
+  createSocialDataEventPayload,
+} from '../utils'
 import {
   getAddressLikeCountToPostQuery,
   getSuperLikeCountQuery,
@@ -111,10 +115,10 @@ export const useCreateSuperLike = mutationWrapper(
 type ClaimDailyRewardArgs =
   SocialCallDataArgs<'synth_gamification_claim_entrance_daily_reward'>
 async function claimDailyReward(params: DatahubParams<ClaimDailyRewardArgs>) {
-  const input = await createSocialDataEventPayload(
+  const input = await createSignedSocialDataEvent(
     socialCallName.synth_gamification_claim_entrance_daily_reward,
     params,
-    params.args
+    undefined
   )
 
   await apiInstance.post<any, any, ApiDatahubContentStakingMutationBody>(
@@ -123,11 +127,9 @@ async function claimDailyReward(params: DatahubParams<ClaimDailyRewardArgs>) {
   )
 }
 
-export const useClaimDailyReward = mutationWrapper(
-  async ({ ...data }: Omit<ClaimDailyRewardArgs, 'clientId'>) => {
-    await claimDailyReward({
-      ...getCurrentWallet(),
-      args: { ...data },
-    })
-  }
-)
+export const useClaimDailyReward = mutationWrapper(async () => {
+  await claimDailyReward({
+    ...getCurrentWallet(),
+    args: undefined as any,
+  })
+})

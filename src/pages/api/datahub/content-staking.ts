@@ -1,5 +1,5 @@
 import { ApiResponse, handlerWrapper } from '@/server/common'
-import { createSuperLike } from '@/server/datahub-queue/super-like'
+import { claimDailyReward } from '@/server/datahub-queue/content-staking'
 import { SocialEventDataApiInput } from '@subsocial/data-hub-sdk'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
@@ -10,9 +10,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export type ApiDatahubContentStakingMutationBody = {
-  payload: SocialEventDataApiInput
-}
+export type ApiDatahubContentStakingMutationBody = SocialEventDataApiInput
 
 export type ApiDatahubContentStakingResponse = ApiResponse
 const POST_handler = handlerWrapper({
@@ -22,7 +20,7 @@ const POST_handler = handlerWrapper({
   allowedMethods: ['POST'],
   errorLabel: 'content-staking',
   handler: async (data: ApiDatahubContentStakingMutationBody, _, res) => {
-    await createSuperLike(data.payload)
+    await claimDailyReward(data)
     res.status(200).json({ message: 'OK', success: true })
   },
 })

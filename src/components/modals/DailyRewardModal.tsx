@@ -36,7 +36,6 @@ export default function DailyRewardModal({
         enterTo='opacity-100'
         leaveFrom='h-auto'
         leaveTo='opacity-0 !duration-150'
-        onClick={close}
       />
       <Transition
         show={isOpen}
@@ -98,7 +97,7 @@ export default function DailyRewardModal({
               isLoading={isLoading}
               onClick={() => {
                 sendEvent('daily_reward_claimed')
-                claim({})
+                claim(undefined)
               }}
             >
               Claim
