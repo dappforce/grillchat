@@ -19,6 +19,7 @@ import {
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
+import { isTouchDevice } from '@/utils/device'
 import '@rainbow-me/rainbowkit/styles.css'
 import { SDKProvider } from '@tma.js/sdk-react'
 import { SessionProvider } from 'next-auth/react'
@@ -27,6 +28,7 @@ import type { AppProps } from 'next/app'
 // import { GoogleAnalytics } from 'nextjs-google-analytics'
 import Script from 'next/script'
 import React, { useEffect, useRef, useState } from 'react'
+import { isDesktop } from 'react-device-detect'
 import { Toaster } from 'sonner'
 import urlJoin from 'url-join'
 
@@ -144,6 +146,12 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
 
 function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
   const [isExpanded, setIsExpanded] = useState(false)
+
+  useEffect(() => {
+    if (!isTouchDevice() || isDesktop) {
+      setIsExpanded(true)
+    }
+  }, [])
 
   const onLoad = () => {
     const telegram = window.Telegram as any
