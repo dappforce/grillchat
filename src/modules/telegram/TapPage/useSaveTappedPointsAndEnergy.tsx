@@ -187,7 +187,6 @@ const useSaveTappedPointsAndEnergy = () => {
   ])
 
   useEffect(() => {
-    console.log(clickedPointsRef.current, processingPrevData)
     if (!clickedPointsRef.current || processingPrevData) return
 
     const interval = setInterval(updatePointsAndEnergy, 10000)

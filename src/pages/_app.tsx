@@ -25,7 +25,6 @@ import {
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
-import { LocalStorage } from '@/utils/storage'
 import '@rainbow-me/rainbowkit/styles.css'
 import { useQueryClient } from '@tanstack/react-query'
 import { SDKProvider } from '@tma.js/sdk-react'
@@ -155,27 +154,8 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   )
 }
 
-const tmpStore = new LocalStorage(() => 'tmp-store')
-
 function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
   const [isExpanded, setIsExpanded] = useState(false)
-  console.log(tmpStore.get())
-
-  useEffect(() => {
-    window.onbeforeunload = (e) => {
-      tmpStore.set('closed')
-      alert('onbeforeunload')
-
-      e.preventDefault()
-      // For IE and Firefox prior to version 4
-      if (e) {
-        e.returnValue = ''
-      }
-
-      // For Safari
-      return ''
-    }
-  })
 
   const onLoad = () => {
     const telegram = window.Telegram as any
@@ -238,6 +218,7 @@ const TappingHooksWrapper = ({ children }: { children: React.ReactNode }) => {
     }, 2000)
 
     return () => {
+      console.log('Clear energy interval')
       clearInterval(interval)
     }
   }, [isLoading])

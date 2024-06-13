@@ -80,13 +80,14 @@ const useSaveTappedPointsAndEnergyNew = () => {
         }
       }
 
-      if (tappedPointsStore && clickedPointsByDayRef.current?.tapsCount) {
+      if (tappedPointsStore) {
         const tappedPointsDifference =
           parseInt(tappedPointsStore.tappedPoints) -
           parseInt(tappedPointsSavedStore || '0')
 
         const newTappedPoints =
-          clickedPointsByDayRef.current.tapsCount + tappedPointsDifference
+          (clickedPointsByDayRef.current?.tapsCount || 0) +
+          tappedPointsDifference
 
         tappedPointsParams = {
           tapsCount: newTappedPoints,
@@ -160,13 +161,6 @@ const useSaveTappedPointsAndEnergyNew = () => {
       const tappedPointsStore = getTappedPointsStateStore()
       const tappedPointsSavedStore = tappedPointsSavedStorage.get()
 
-      console.log(
-        'Stores',
-        energyStore,
-        tappedPointsStore,
-        tappedPointsSavedStore
-      )
-
       if (!tappedPointsStore && !energyStore) return
 
       let energyParams: GamificationTapEnergyState | undefined
@@ -180,26 +174,20 @@ const useSaveTappedPointsAndEnergyNew = () => {
 
       let tappedPointsParams: GamificationTapsState | undefined
 
-      if (tappedPointsStore && clickedPointsByDayRef.current?.tapsCount) {
+      if (tappedPointsStore) {
         const tappedPointsDifference =
           parseInt(tappedPointsStore.tappedPoints) -
           parseInt(tappedPointsSavedStore || '0')
 
-        console.log(
-          tappedPointsStore.tappedPoints,
-          tappedPointsSavedStore,
-          tappedPointsDifference
-        )
-
         const newTappedPoints =
-          clickedPointsByDayRef.current.tapsCount + tappedPointsDifference
+          (clickedPointsByDayRef.current?.tapsCount || 0) +
+          tappedPointsDifference
 
         tappedPointsParams = {
           tapsCount: newTappedPoints,
         }
       }
 
-      console.log('Params', tappedPointsParams, energyParams)
       if (!tappedPointsParams && !energyParams) return
 
       const params: SynthGamificationAddTappingActivityStatesCallParsedArgs = {
@@ -258,6 +246,9 @@ const updatePointsAndEnergy = async ({
   try {
     await saveData(params)
 
+    console.info(
+      `Tapped points - ${params.tapsState?.tapsCount} and energy - ${params.energyState?.value} saved`
+    )
     onSuccess?.()
     return { sendStatus: 'success' }
   } catch (e) {
