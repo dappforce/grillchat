@@ -21,7 +21,7 @@ export async function savePointsAndEnergy(
 ) {
   params.isOffchain = true
 
-  const input = createSignedSocialDataEvent(
+  const input = await createSignedSocialDataEvent(
     socialCallName.synth_gamification_add_tapping_activity_states,
     params,
     params.args
