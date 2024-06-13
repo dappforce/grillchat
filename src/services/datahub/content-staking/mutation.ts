@@ -7,6 +7,7 @@ import { getMyMainAddress } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
+import { subscribeBalance } from '../balances/subscription'
 import {
   DatahubParams,
   createSignedSocialDataEvent,
@@ -127,9 +128,20 @@ async function claimDailyReward(params: DatahubParams<ClaimDailyRewardArgs>) {
   )
 }
 
-export const useClaimDailyReward = mutationWrapper(async () => {
-  await claimDailyReward({
-    ...getCurrentWallet(),
-    args: undefined as any,
-  })
-})
+export const useClaimDailyReward = mutationWrapper(
+  async () => {
+    await claimDailyReward({
+      ...getCurrentWallet(),
+      args: undefined as any,
+    })
+  },
+  {
+    onSuccess: () => {
+      const mainAddress = getMyMainAddress()
+      if (!mainAddress) return
+      if (queryClient) {
+        subscribeBalance(queryClient, mainAddress, true)
+      }
+    },
+  }
+)

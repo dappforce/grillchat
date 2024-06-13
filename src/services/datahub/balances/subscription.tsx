@@ -39,29 +39,40 @@ const SUBSCRIBE_BALANCES = gql`
   }
 `
 
+export function subscribeBalance(
+  queryClient: QueryClient,
+  myAddress: string,
+  once?: boolean
+) {
+  const client = datahubSubscription()
+  let unsub = client.subscribe<SubscribeBalancesSubscription>(
+    { query: SUBSCRIBE_BALANCES, variables: { address: myAddress } },
+    {
+      complete: () => undefined,
+      next: async (data) => {
+        const eventData = data.data?.socialProfileBalancesSubscription
+        if (!eventData) return
+
+        await processSubscriptionEvent(queryClient, eventData)
+        if (once) {
+          unsub()
+        }
+      },
+      error: () => {
+        console.error('error subscription')
+      },
+    }
+  )
+  return unsub
+}
+
 let isSubscribed = false
-function subscription(queryClient: QueryClient, myAddress: string) {
+export function subscription(queryClient: QueryClient, myAddress: string) {
   if (isSubscribed) return
   isSubscribed = true
 
-  const client = datahubSubscription()
   async function subscribe() {
-    let unsub = client.subscribe<SubscribeBalancesSubscription>(
-      { query: SUBSCRIBE_BALANCES, variables: { address: myAddress } },
-      {
-        complete: () => undefined,
-        next: async (data) => {
-          const eventData = data.data?.socialProfileBalancesSubscription
-          if (!eventData) return
-
-          await processSubscriptionEvent(queryClient, eventData)
-        },
-        error: () => {
-          console.error('error subscription')
-        },
-      }
-    )
-    return unsub
+    return subscribeBalance(queryClient, myAddress)
   }
 
   const unsub = subscribe()
