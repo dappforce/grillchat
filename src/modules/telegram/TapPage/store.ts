@@ -6,10 +6,11 @@ export const energyStorage = new LocalStorage(() => 'tapping-energy')
 
 type TappedPoints = {
   tappedPoints: string
+  currentBalance: string
   sendStatus: 'pending' | 'success' | 'error'
 }
 
-export const getTappedPointsState = () => {
+export const getTappedPointsStateStore = () => {
   const data = tappedPointsStorage.get()
 
   const parsedData = data ? JSON.parse(data) : undefined
@@ -17,8 +18,8 @@ export const getTappedPointsState = () => {
   return parsedData as TappedPoints | undefined
 }
 
-export const setTappedPointsState = (value: Partial<TappedPoints>) => {
-  const storedTappedPoints = getTappedPointsState()
+export const setTappedPointsStateToStore = (value: Partial<TappedPoints>) => {
+  const storedTappedPoints = getTappedPointsStateStore()
 
   const newTappedPoints = {
     ...storedTappedPoints,
@@ -34,7 +35,7 @@ type Energy = {
   sendStatus: 'pending' | 'success' | 'error'
 }
 
-export const getEnergyState = () => {
+export const getEnergyStateStore = () => {
   const data = energyStorage.get()
 
   const parsedData = data ? JSON.parse(data) : undefined
@@ -42,8 +43,8 @@ export const getEnergyState = () => {
   return parsedData as Energy | undefined
 }
 
-export const setEnergyState = (value: Partial<Energy>) => {
-  const storedEnergy = getEnergyState()
+export const setEnergyStateToStore = (value: Partial<Energy>) => {
+  const storedEnergy = getEnergyStateStore()
 
   const newEnergy = {
     ...storedEnergy,

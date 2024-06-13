@@ -15,10 +15,10 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { TouchEvent, TouchList, useEffect, useRef, useState } from 'react'
 import {
-  getEnergyState,
-  getTappedPointsState,
-  setEnergyState,
-  setTappedPointsState,
+  getEnergyStateStore,
+  getTappedPointsStateStore,
+  setEnergyStateToStore,
+  setTappedPointsStateToStore,
 } from './store'
 
 dayjs.extend(utc)
@@ -116,7 +116,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
         ref.current.appendChild(word)
 
         if (myAddress && !isEmptyEnergy) {
-          increasePointsBalance({
+          const balance = increasePointsBalance({
             client,
             address: myAddress,
             pointsByClick: 1,
@@ -127,24 +127,25 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
             address: myAddress,
             energyValuePerClick: 1,
           })
-          const storedTappedPoints = getTappedPointsState()
+          const storedTappedPoints = getTappedPointsStateStore()
 
           const newTappedPoints = storedTappedPoints?.tappedPoints
             ? parseInt(storedTappedPoints.tappedPoints) + 1
             : 1
 
-          setTappedPointsState({
+          setTappedPointsStateToStore({
             tappedPoints: newTappedPoints.toString(),
+            currentBalance: balance,
             sendStatus: 'pending',
           })
 
-          const storedEnergy = getEnergyState()
+          const storedEnergy = getEnergyStateStore()
 
           const newEnergyValue = storedEnergy?.energyValue
             ? parseInt(storedEnergy.energyValue) - 1
             : FULL_ENERGY_VALUE - 1
 
-          setEnergyState({
+          setEnergyStateToStore({
             energyValue: newEnergyValue.toString(),
             timestamp: dayjs().utc().unix().toString(),
             sendStatus: 'pending',

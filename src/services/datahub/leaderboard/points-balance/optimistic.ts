@@ -1,10 +1,14 @@
-import { setEnergyState } from '@/modules/telegram/TapPage/store'
+import { setEnergyStateToStore } from '@/modules/telegram/TapPage/store'
 import { QueryClient } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import {
   FULL_ENERGY_VALUE,
   getBalanceQuery,
   getEnergyStateQuery,
 } from './query'
+
+dayjs.extend(utc)
 
 type OptimisticPointsBalanceParams = {
   client: QueryClient
@@ -17,10 +21,17 @@ export const increasePointsBalance = ({
   address,
   pointsByClick,
 }: OptimisticPointsBalanceParams) => {
+  let data
   getBalanceQuery.setQueryData(client, address, (oldData) => {
+    data = oldData
+
     if (!oldData) return oldData
+
+    data = oldData + pointsByClick
     return oldData + pointsByClick
   })
+
+  return data
 }
 
 type OptimisticEnergyParams = {
@@ -52,8 +63,10 @@ export const increaseEnergyValue = ({
     if (!oldData || (oldData && oldData.energyValue === FULL_ENERGY_VALUE))
       return oldData
 
-    setEnergyState({
+    setEnergyStateToStore({
       energyValue: (oldData.energyValue + energyValuePerClick).toString(),
+      timestamp: dayjs.utc().unix().toString(),
+      sendStatus: 'pending',
     })
 
     return {

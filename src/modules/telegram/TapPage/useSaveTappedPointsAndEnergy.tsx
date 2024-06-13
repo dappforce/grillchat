@@ -13,10 +13,10 @@ import utc from 'dayjs/plugin/utc'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   energyStorage,
-  getEnergyState,
-  getTappedPointsState,
-  setEnergyState,
-  setTappedPointsState,
+  getEnergyStateStore,
+  getTappedPointsStateStore,
+  setEnergyStateToStore,
+  setTappedPointsStateToStore,
   tappedPointsStorage,
 } from './store'
 
@@ -55,8 +55,8 @@ const useSaveTappedPointsAndEnergy = () => {
   const updatePointsAndEnergy = useMemo(
     () => async (newEnergyValue?: number) => {
       const tapsCountByDay = clickedPointsRef.current?.tapsCount || 0
-      const tappedPoints = getTappedPointsState()
-      const energyState = getEnergyState()
+      const tappedPoints = getTappedPointsStateStore()
+      const energyState = getEnergyStateStore()
 
       if (!tappedPoints && !energyState) return {}
 
@@ -91,7 +91,7 @@ const useSaveTappedPointsAndEnergy = () => {
 
         tappedPointsStorage.remove()
 
-        setEnergyState({
+        setEnergyStateToStore({
           sendStatus: 'success',
         })
         console.info(
@@ -102,11 +102,11 @@ const useSaveTappedPointsAndEnergy = () => {
       } catch (e) {
         console.error('Error saving tapped points and energy', e)
 
-        setTappedPointsState({
+        setTappedPointsStateToStore({
           sendStatus: 'error',
         })
 
-        setEnergyState({
+        setEnergyStateToStore({
           sendStatus: 'error',
         })
 
@@ -124,7 +124,7 @@ const useSaveTappedPointsAndEnergy = () => {
         myAddress &&
         processingPrevData
       ) {
-        const tappedPoints = getTappedPointsState()
+        const tappedPoints = getTappedPointsStateStore()
 
         const timestamp = energyStateRef.current.timestamp
 
