@@ -20,7 +20,9 @@ const subsocialConfig: ConstantsConfig = {
   hubsWithoutJoinButton: ['12659', '12660'],
   chatsWithJoinButton: [],
 
-  pinnedMessageInChatId: {},
+  pinnedMessageInChatId: {
+    '0x22379846e332920ee808735a978c7008': '0x9ebf642064df0ffa3db2a16433f7cd12',
+  },
   annChatId: '54460',
   whitelistedAddressesInChatId: {
     '54460': [
