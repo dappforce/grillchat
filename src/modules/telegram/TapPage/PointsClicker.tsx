@@ -105,8 +105,13 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
         word.classList.add('floating-word')
         word.textContent = '+1'
 
-        word.style.left = touch.clientX - 70 + 'px'
-        word.style.top = touch.clientY - 190 + 'px'
+        const rect = ref.current.getBoundingClientRect()
+
+        const x = touch.clientX - rect.left
+        const y = touch.clientY - rect.top
+
+        word.style.left = x - 25 + 'px'
+        word.style.top = y - 25 + 'px'
 
         ref.current.appendChild(word)
 
@@ -160,7 +165,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
     <>
       <div
         ref={ref}
-        className={cx('relative max-h-[300px] max-w-[300px]', className)}
+        className={cx('relative', className)}
         onTouchStart={isEmptyEnergy ? undefined : onMouseDown}
         onTouchEnd={isEmptyEnergy ? undefined : onMouseUp}
       >

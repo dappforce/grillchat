@@ -40,8 +40,8 @@ const TapPageContent = () => {
   }
 
   return (
-    <div className='flex flex-1 flex-col items-center justify-center gap-14'>
-      <PointsClicker className='justify-self-center' />
+    <div className='grid flex-1 grid-rows-[2fr,0.5fr] items-center justify-items-center'>
+      <PointsClicker className='h-full justify-self-center' />
       <EnergyState />
     </div>
   )
@@ -55,12 +55,12 @@ const EnergyState = () => {
   const { energyValue } = data || {}
 
   return (
-    <span className='text-base font-bold leading-[22px]'>
+    <span className='flex h-full items-center gap-1 text-base font-bold leading-[22px]'>
       🔋{' '}
-      <SkeletonFallback className='w-fit' isLoading={isLoading}>
+      <SkeletonFallback className='w-fit min-w-10' isLoading={isLoading}>
         {energyValue}
       </SkeletonFallback>{' '}
-      / {FULL_ENERGY_VALUE}
+      <span>/</span> {FULL_ENERGY_VALUE}
     </span>
   )
 }

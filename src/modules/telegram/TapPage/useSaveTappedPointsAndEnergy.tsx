@@ -6,7 +6,6 @@ import {
   getClickedPointsByDayQuery,
   getEnergyStateQuery,
 } from '@/services/datahub/leaderboard/points-balance/query'
-import { getDayAndWeekTimestamp } from '@/services/datahub/utils'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
@@ -119,7 +118,6 @@ const useSaveTappedPointsAndEnergy = () => {
 
   useEffect(() => {
     const updateData = async () => {
-      const {} = getDayAndWeekTimestamp()
       if (
         clickedPointsRef.current &&
         energyStateRef?.current &&

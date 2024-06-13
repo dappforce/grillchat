@@ -143,7 +143,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>
-              <Component {...props} />
+              <TappingHooksWrapper>
+                <Component {...props} />
+              </TappingHooksWrapper>
             </EvmProvider>
           </ErrorBoundary>
         </div>
