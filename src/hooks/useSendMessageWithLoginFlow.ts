@@ -40,7 +40,8 @@ export default function useSendMessageWithLoginFlow(
       return null
     }
 
-    return await sendMessage(augmentDatahubParams(params))
+    const augmented = await augmentDatahubParams(params)
+    return await sendMessage(augmented)
   }
 
   return useMutation(handler, options)

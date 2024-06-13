@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
-import { getBalanceQuery } from '@/services/datahub/balances/query'
+import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { IoWarning } from 'react-icons/io5'

@@ -9,8 +9,8 @@ import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import { Skeleton } from '@/components/SkeletonFallback'
 import useIsMounted from '@/hooks/useIsMounted'
-import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { getTodaySuperLikeCountQuery } from '@/services/datahub/content-staking/query'
+import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -70,7 +70,7 @@ export default function PointsWidget(
         <div className='flex items-center gap-2'>
           <Image className='h-7 w-7' src={Diamond} alt='' />
           <span className='flex items-center text-xl font-bold'>
-            <Points shorten />
+            <Points />
           </span>
           <FaChevronDown className='relative' />
         </div>
@@ -109,7 +109,7 @@ function PointsDrawerContent({
         leaveFrom='h-auto'
         leaveTo='opacity-0 -translate-y-24 !duration-150'
       >
-        <div className='flex max-w-screen-md flex-1 flex-col overflow-auto'>
+        <div className='mx-auto flex w-full max-w-screen-md flex-1 flex-col overflow-auto'>
           <Image
             src={BlueGradient}
             alt=''

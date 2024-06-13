@@ -72,7 +72,7 @@ export async function createSpaceData(
     },
   }
 
-  const input = createSignedSocialDataEvent(
+  const input = await createSignedSocialDataEvent(
     socialCallName.create_space,
     params,
     eventArgs,
@@ -102,7 +102,7 @@ export async function updateSpaceData(
     ipfsSrc: cid,
   }
 
-  const input = createSignedSocialDataEvent(
+  const input = await createSignedSocialDataEvent(
     socialCallName.update_space,
     params,
     eventArgs,

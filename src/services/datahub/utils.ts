@@ -15,6 +15,7 @@ import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { Client, createClient } from 'graphql-ws'
 import ws from 'isomorphic-ws'
 import sortKeysRecursive from 'sort-keys-recursive'
+import { getServerTime } from '../api/query'
 
 dayjs.extend(utc)
 dayjs.extend(isoWeek)
@@ -88,7 +89,7 @@ export function signDatahubPayload(
   payload.sig = sig
 }
 
-export function createSocialDataEventPayload<
+export async function createSocialDataEventPayload<
   T extends keyof typeof socialCallName
 >(
   callName: T,
@@ -112,7 +113,7 @@ export function createSocialDataEventPayload<
       name: callName,
       signer: owner || '',
       args: JSON.stringify(eventArgs),
-      timestamp: timestamp || Date.now(),
+      timestamp: timestamp || (await getServerTime()),
       uuid: uuid || crypto.randomUUID(),
       proxy: proxyToAddress ? address : undefined,
     },
@@ -123,7 +124,7 @@ export function createSocialDataEventPayload<
   return payload
 }
 
-export function createSignedSocialDataEvent<
+export async function createSignedSocialDataEvent<
   T extends keyof typeof socialCallName
 >(
   callName: T,
@@ -131,7 +132,7 @@ export function createSignedSocialDataEvent<
   eventArgs: SocialCallDataArgs<T>,
   content?: any
 ) {
-  const payload = createSocialDataEventPayload(
+  const payload = await createSocialDataEventPayload(
     callName,
     params,
     eventArgs,
@@ -142,12 +143,13 @@ export function createSignedSocialDataEvent<
   return payload
 }
 
-export function augmentDatahubParams<T>(
+export async function augmentDatahubParams<T>(
   params: T
-): { uuid: string; timestamp: number } & T {
+): Promise<{ uuid: string; timestamp: number } & T> {
+  const timestamp = await getServerTime()
   return {
     ...params,
     uuid: crypto.randomUUID(),
-    timestamp: Date.now(),
+    timestamp,
   }
 }

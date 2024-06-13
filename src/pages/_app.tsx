@@ -6,9 +6,15 @@ import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import useSaveTappedPointsAndEnergyNew from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergyNew'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { increaseEnergyValue } from '@/services/datahub/leaderboard/points-balance/optimistic'
+import {
+  FULL_ENERGY_VALUE,
+  getEnergyStateQuery,
+} from '@/services/datahub/leaderboard/points-balance/query'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
 import {
@@ -19,12 +25,13 @@ import {
 import { initAllStores } from '@/stores/registry'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
+import { LocalStorage } from '@/utils/storage'
 import '@rainbow-me/rainbowkit/styles.css'
+import { useQueryClient } from '@tanstack/react-query'
 import { SDKProvider } from '@tma.js/sdk-react'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
-// import { GoogleAnalytics } from 'nextjs-google-analytics'
 import Script from 'next/script'
 import React, { useEffect, useRef, useState } from 'react'
 import { Toaster } from 'sonner'
@@ -38,6 +45,10 @@ export type AppCommonProps = {
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
+  useEffect(() => {
+    import('eruda').then((lib) => lib.default.init())
+  }, [])
+
   return (
     <SessionProvider
       basePath={
@@ -133,7 +144,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>
-              <Component {...props} />
+              <TappingHooksWrapper>
+                <Component {...props} />
+              </TappingHooksWrapper>
             </EvmProvider>
           </ErrorBoundary>
         </div>
@@ -142,8 +155,27 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
   )
 }
 
+const tmpStore = new LocalStorage(() => 'tmp-store')
+
 function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
   const [isExpanded, setIsExpanded] = useState(false)
+  console.log(tmpStore.get())
+
+  useEffect(() => {
+    window.onbeforeunload = (e) => {
+      tmpStore.set('closed')
+      alert('onbeforeunload')
+
+      e.preventDefault()
+      // For IE and Firefox prior to version 4
+      if (e) {
+        e.returnValue = ''
+      }
+
+      // For Safari
+      return ''
+    }
+  })
 
   const onLoad = () => {
     const telegram = window.Telegram as any
@@ -183,6 +215,36 @@ function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
       {children}
     </>
   )
+}
+
+const TappingHooksWrapper = ({ children }: { children: React.ReactNode }) => {
+  const myAddress = useMyMainAddress()
+  const client = useQueryClient()
+
+  const { data, isLoading } = getEnergyStateQuery.useQuery(myAddress || '')
+
+  const { energyValue } = data || {}
+
+  useEffect(() => {
+    if (isLoading) return
+    const interval = setInterval(() => {
+      if (energyValue === FULL_ENERGY_VALUE) return
+
+      increaseEnergyValue({
+        client,
+        address: myAddress || '',
+        energyValuePerClick: 1,
+      })
+    }, 2000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [isLoading])
+
+  useSaveTappedPointsAndEnergyNew()
+
+  return <>{children}</>
 }
 
 function DatahubSubscriber() {
