@@ -207,17 +207,16 @@ function useOauthLogin({ onSuccess }: { onSuccess: () => void }) {
       upsertedProfile.current = true
       getProfileQuery
         .fetchQuery(client, linkedIdentity.mainAddress)
-        .then((profile) => {
-          if (!profile)
-            upsertProfile(
-              augmentDatahubParams({
-                content: {
-                  image: session?.user?.image ?? '',
-                  name: session?.user.name ?? '',
-                },
-              })
-            )
-          else onFinishFlow()
+        .then(async (profile) => {
+          if (!profile) {
+            const augmented = await augmentDatahubParams({
+              content: {
+                image: session?.user?.image ?? '',
+                name: session?.user.name ?? '',
+              },
+            })
+            upsertProfile(augmented)
+          } else onFinishFlow()
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

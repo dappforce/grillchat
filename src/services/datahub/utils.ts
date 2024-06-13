@@ -15,6 +15,7 @@ import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { Client, createClient } from 'graphql-ws'
 import ws from 'isomorphic-ws'
 import sortKeysRecursive from 'sort-keys-recursive'
+import { getServerTime } from '../api/query'
 
 dayjs.extend(utc)
 dayjs.extend(isoWeek)
@@ -142,12 +143,19 @@ export function createSignedSocialDataEvent<
   return payload
 }
 
-export function augmentDatahubParams<T>(
+export async function augmentDatahubParams<T>(
   params: T
-): { uuid: string; timestamp: number } & T {
+): Promise<{ uuid: string; timestamp: number } & T> {
+  let timestamp = Date.now()
+  try {
+    const serverTime = await getServerTime()
+    timestamp = serverTime
+  } catch (err) {
+    console.error('Failed to get server time', err)
+  }
   return {
     ...params,
     uuid: crypto.randomUUID(),
-    timestamp: Date.now(),
+    timestamp,
   }
 }

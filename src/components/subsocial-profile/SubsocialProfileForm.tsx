@@ -71,17 +71,16 @@ export default function SubsocialProfileForm({
   const isLoading = isUpserting
 
   const onSubmit = handleSubmit(async (data) => {
-    await mutateAsync(
-      augmentDatahubParams({
-        spaceId: profile?.profileSpace?.id,
-        content: {
-          ...profile?.profileSpace?.content,
-          name: data.name,
-          image: data.image,
-          about: data.about,
-        },
-      })
-    )
+    const augmented = await augmentDatahubParams({
+      spaceId: profile?.profileSpace?.id,
+      content: {
+        ...profile?.profileSpace?.content,
+        name: data.name,
+        image: data.image,
+        about: data.about,
+      },
+    })
+    await mutateAsync(augmented)
     sendEvent('account_settings_changed', { profileSource: 'custom' })
     onSuccess?.()
   })
