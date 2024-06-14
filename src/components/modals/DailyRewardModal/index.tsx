@@ -1,5 +1,5 @@
 import Diamond from '@/assets/emojis/diamond.png'
-import Present from '@/assets/emojis/present.png'
+import Present from '@/assets/graphics/present.svg'
 import useToastError from '@/hooks/useToastError'
 import { getServerDayQuery } from '@/services/api/query'
 import { useClaimDailyReward } from '@/services/datahub/content-staking/mutation'
@@ -95,7 +95,7 @@ export default function DailyRewardModal({
                 >
                   {isMysteryBox ? (
                     <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
-                      <Image src={Present} alt='' className='h-12 w-12' />
+                      <Present />
                     </div>
                   ) : (
                     <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
