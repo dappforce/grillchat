@@ -66,7 +66,6 @@ export const increaseEnergyValue = ({
     setEnergyStateToStore({
       energyValue: (oldData.energyValue + energyValuePerClick).toString(),
       timestamp: dayjs.utc().unix().toString(),
-      sendStatus: 'pending',
     })
 
     return {

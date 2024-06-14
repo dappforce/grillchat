@@ -33,7 +33,6 @@ export const setTappedPointsStateToStore = (value: Partial<TappedPoints>) => {
 type Energy = {
   energyValue: string
   timestamp: string
-  sendStatus: 'pending' | 'success' | 'error'
 }
 
 export const getEnergyStateStore = () => {
