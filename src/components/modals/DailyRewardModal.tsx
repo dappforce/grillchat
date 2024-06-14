@@ -1,4 +1,5 @@
 import Diamond from '@/assets/emojis/diamond.png'
+import Present from '@/assets/emojis/present.png'
 import { getServerDayQuery } from '@/services/api/query'
 import { useClaimDailyReward } from '@/services/datahub/content-staking/mutation'
 import { getDailyRewardQuery } from '@/services/datahub/content-staking/query'
@@ -25,6 +26,12 @@ export default function DailyRewardModal({
   const { mutate: claim, isLoading } = useClaimDailyReward({
     onSuccess: () => close(),
   })
+
+  const claimable = data?.claims.find(
+    (claim) =>
+      Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
+  )
+  const isMysteryBoxClaimable = claimable?.claimRewardPointsRange
 
   return createPortal(
     <>
@@ -61,6 +68,8 @@ export default function DailyRewardModal({
               const isClaimable =
                 Number(claim.claimValidDay) === serverDay?.day &&
                 claim.openToClaim
+
+              const isMysteryBox = !!claim.claimRewardPointsRange
               return (
                 <div
                   key={claim.index}
@@ -72,15 +81,23 @@ export default function DailyRewardModal({
                       'border-background-primary bg-background-primary/30'
                   )}
                 >
-                  <div className='flex flex-col items-center justify-center gap-1 px-4 py-3'>
-                    <Image src={Diamond} alt='' className='h-8 w-8' />
-                    <span className='text-xl font-bold'>
-                      {formatNumber(claim.claimRewardPoints, { shorten: true })}
-                    </span>
-                  </div>
+                  {isMysteryBox ? (
+                    <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
+                      <Image src={Present} alt='' className='h-12 w-12' />
+                    </div>
+                  ) : (
+                    <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
+                      <Image src={Diamond} alt='' className='h-8 w-8' />
+                      <span className='text-xl font-bold'>
+                        {formatNumber(claim.claimRewardPoints, {
+                          shorten: true,
+                        })}
+                      </span>
+                    </div>
+                  )}
                   <div
                     className={cx(
-                      'bg-background-lighter pb-1 pt-0.5 text-center',
+                      'mt-auto bg-background-lighter pb-1 pt-0.5 text-center',
                       isClaimable && 'bg-background-primary',
                       isClaimed && 'bg-transparent'
                     )}
@@ -100,7 +117,7 @@ export default function DailyRewardModal({
                 claim(undefined)
               }}
             >
-              Claim
+              {isMysteryBoxClaimable ? 'Open Mystery Box' : 'Claim'}
             </Button>
           </div>
         </div>
