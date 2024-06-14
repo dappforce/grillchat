@@ -5,8 +5,10 @@ import {
 } from '@/services/datahub/leaderboard/points-balance/optimistic'
 import {
   FULL_ENERGY_VALUE,
+  getClickedPointsByDayQuery,
   getEnergyStateQuery,
 } from '@/services/datahub/leaderboard/points-balance/query'
+import { getActiveStakingTokenomicMetadataQuery } from '@/services/datahub/leaderboard/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useQueryClient } from '@tanstack/react-query'
@@ -34,12 +36,28 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
   const haptic = useHapticFeedbackRaw(true)
   const client = useQueryClient()
   const myAddress = useMyMainAddress()
-  const { data, isLoading } = getEnergyStateQuery.useQuery(myAddress || '')
+  const { data, isLoading: isEnergyLoading } = getEnergyStateQuery.useQuery(
+    myAddress || ''
+  )
+  const { data: tokenomicMetadata, isLoading: isTokenomicMetadataLoading } =
+    getActiveStakingTokenomicMetadataQuery.useQuery({})
+  const { data: clickedPointsByDay, isLoading: isClickedPointsLoading } =
+    getClickedPointsByDayQuery.useQuery(myAddress || '')
+
   const [startAnimation, setStartAnimation] = useState(false)
 
   const { energyValue } = data || {}
 
   const isEmptyEnergy = energyValue === 0
+
+  const disableClicker =
+    isClickedPointsLoading ||
+    isTokenomicMetadataLoading ||
+    !tokenomicMetadata ||
+    isEnergyLoading ||
+    (clickedPointsByDay &&
+      clickedPointsByDay?.tapsCount >= tokenomicMetadata.maxTapsPerDay) ||
+    isEmptyEnergy
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -135,8 +153,6 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
 
           setTappedPointsStateToStore({
             tappedPoints: newTappedPoints.toString(),
-            currentBalance: balance,
-            sendStatus: 'pending',
           })
 
           const storedEnergy = getEnergyStateStore()
@@ -148,7 +164,6 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
           setEnergyStateToStore({
             energyValue: newEnergyValue.toString(),
             timestamp: dayjs().utc().unix().toString(),
-            sendStatus: 'pending',
           })
         }
         setTimeout(() => {
@@ -166,9 +181,9 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
     <>
       <div
         ref={ref}
-        className={cx('relative', className)}
-        onTouchStart={isEmptyEnergy ? undefined : onMouseDown}
-        onTouchEnd={isEmptyEnergy ? undefined : onMouseUp}
+        className={cx('relative pl-3', className)}
+        onTouchStart={disableClicker ? undefined : onMouseDown}
+        onTouchEnd={disableClicker ? undefined : onMouseUp}
       >
         <div
           className={cx(
@@ -178,9 +193,9 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
           style={{ transform: 'translate3d(0, 0, 0)' }}
         ></div>
         <CatClicker
-          isPaused={!startAnimation || isEmptyEnergy}
+          isPaused={!startAnimation || disableClicker}
           style={{
-            filter: isEmptyEnergy ? 'brightness(0.7) grayscale(0.8)' : '',
+            filter: disableClicker ? 'brightness(0.7) grayscale(0.8)' : '',
           }}
         />
       </div>

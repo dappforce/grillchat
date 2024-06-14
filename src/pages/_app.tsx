@@ -215,7 +215,6 @@ const TappingHooksWrapper = ({ children }: { children: React.ReactNode }) => {
     }, 2000)
 
     return () => {
-      console.log('Clear energy interval')
       clearInterval(interval)
     }
   }, [isLoading])
