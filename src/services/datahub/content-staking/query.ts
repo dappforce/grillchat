@@ -11,12 +11,16 @@ import {
   GetAddressLikeCountToPostsQueryVariables,
   GetCanPostsSuperLikedQuery,
   GetCanPostsSuperLikedQueryVariables,
+  GetDailyRewardQuery,
+  GetDailyRewardQueryVariables,
   GetPostRewardsQuery,
   GetPostRewardsQueryVariables,
   GetSuperLikeCountsQuery,
   GetSuperLikeCountsQueryVariables,
   GetTodaySuperLikeCountQuery,
   GetTodaySuperLikeCountQueryVariables,
+  GetTokenomicsMetadataQuery,
+  GetTokenomicsMetadataQueryVariables,
   GetUserYesterdayRewardQuery,
   GetUserYesterdayRewardQueryVariables,
 } from '../generated-query'
@@ -605,5 +609,67 @@ export const getUserYesterdayRewardQuery = createQuery({
   fetcher: getUserYesterdayReward,
   defaultConfigGenerator: (param) => ({
     enabled: !!param?.address,
+  }),
+})
+
+export const GET_DAILY_REWARD = gql`
+  query GetDailyReward($address: String!) {
+    gamificationEntranceDailyRewardSequence(
+      args: { where: { address: $address } }
+    ) {
+      claimsCount
+      claims {
+        index
+        openToClaim
+        claimRewardPoints
+        claimRewardPointsRange
+        claimValidDay
+        hiddenClaimReward
+      }
+    }
+  }
+`
+async function getDailyReward(address: string) {
+  const res = await datahubQueryRequest<
+    GetDailyRewardQuery,
+    GetDailyRewardQueryVariables
+  >({
+    document: GET_DAILY_REWARD,
+    variables: { address },
+  })
+  return res.gamificationEntranceDailyRewardSequence
+}
+export const getDailyRewardQuery = createQuery({
+  key: 'getDailyReward',
+  fetcher: getDailyReward,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+export const GET_TOKENOMICS_METADATA = gql`
+  query GetTokenomicsMetadata {
+    activeStakingTokenomicMetadata {
+      superLikeWeightPoints
+      socialActionPrice {
+        createCommentPoints
+      }
+    }
+  }
+`
+export async function getTokenomicsMetadata() {
+  const res = await datahubQueryRequest<
+    GetTokenomicsMetadataQuery,
+    GetTokenomicsMetadataQueryVariables
+  >({
+    document: GET_TOKENOMICS_METADATA,
+  })
+  return res.activeStakingTokenomicMetadata
+}
+export const getTokenomicsMetadataQuery = createQuery({
+  key: 'getTokenomicsMetadata',
+  fetcher: getTokenomicsMetadata,
+  defaultConfigGenerator: () => ({
+    enabled: true,
   }),
 })

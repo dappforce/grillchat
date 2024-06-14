@@ -12,6 +12,7 @@ import {
   getAddressLikeCountToPostQuery,
   getSuperLikeCountQuery,
   getTodaySuperLikeCountQuery,
+  getTokenomicsMetadataQuery,
 } from './query'
 
 export function useDatahubContentStakingSubscriber() {
@@ -141,9 +142,16 @@ async function processSubscriptionEvent(
       </span>
     )
     if (remaining > 0) {
+      const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
+        queryClient,
+        null
+      )
       desc = (
         <div>
-          <p>You earned 💎 2000 Points for liking the meme.</p>
+          <p>
+            You earned 💎 {tokenomics.superLikeWeightPoints} Points for liking
+            the meme.
+          </p>
           <p className='text-text-muted'>
             {remaining} more likes left for today
           </p>

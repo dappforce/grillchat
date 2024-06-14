@@ -6,11 +6,13 @@ import Check1Image from '@/assets/graphics/memes/check-1.jpeg'
 import Check2Image from '@/assets/graphics/memes/check-2.jpeg'
 import Forbidden1Image from '@/assets/graphics/memes/forbidden-1.png'
 import Forbidden2Image from '@/assets/graphics/memes/forbidden-2.png'
+import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Button from '../Button'
 import LinkText from '../LinkText'
+import SkeletonFallback from '../SkeletonFallback'
 import Modal from './Modal'
 
 const hasVisitedStorage = new LocalStorage(() => 'has-visited')
@@ -86,11 +88,18 @@ export default function Meme2EarnIntroModal() {
 }
 
 function HowItWorks() {
+  const { data, isLoading } = getTokenomicsMetadataQuery.useQuery(null)
   return (
     <>
       <div className='flex flex-col gap-3.5 text-text-muted'>
         <span>👍 Post and like memes to earn Points</span>
-        <span>💎 Creating a meme costs 2500 Points</span>
+        <span>
+          💎 Creating a meme costs{' '}
+          <SkeletonFallback isLoading={isLoading}>
+            <span>{data?.socialActionPrice.createCommentPoints}</span>
+          </SkeletonFallback>{' '}
+          Points
+        </span>
         <span>📅 Your meme can earn unlimited points for the first 7 days</span>
       </div>
       <Image src={IntroImage} alt='' className='h-auto w-full px-3' />
