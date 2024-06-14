@@ -279,7 +279,7 @@ const useGetClickedPointsByDayRef = () => {
   return { data: clickedPointsRef, isLoading: isLoading || loading }
 }
 
-const useGetEnergyStateRef = () => {
+export const useGetEnergyStateRef = () => {
   const [loading, setLoading] = useState(true)
   const myAddress = useMyMainAddress()
 

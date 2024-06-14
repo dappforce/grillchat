@@ -6,15 +6,14 @@ import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useSaveTappedPointsAndEnergyNew from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergyNew'
+import useSaveTappedPointsAndEnergyNew, {
+  useGetEnergyStateRef,
+} from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergyNew'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { increaseEnergyValue } from '@/services/datahub/leaderboard/points-balance/optimistic'
-import {
-  FULL_ENERGY_VALUE,
-  getEnergyStateQuery,
-} from '@/services/datahub/leaderboard/points-balance/query'
+import { FULL_ENERGY_VALUE } from '@/services/datahub/leaderboard/points-balance/query'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
 import {
@@ -201,14 +200,12 @@ const TappingHooksWrapper = ({ children }: { children: React.ReactNode }) => {
   const myAddress = useMyMainAddress()
   const client = useQueryClient()
 
-  const { data, isLoading } = getEnergyStateQuery.useQuery(myAddress || '')
-
-  const { energyValue } = data || {}
+  const { data: energyStateRef, isLoading } = useGetEnergyStateRef()
 
   useEffect(() => {
     if (isLoading) return
     const interval = setInterval(() => {
-      if (energyValue === FULL_ENERGY_VALUE) return
+      if (energyStateRef.current?.energyValue === FULL_ENERGY_VALUE) return
 
       increaseEnergyValue({
         client,
