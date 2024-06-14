@@ -134,7 +134,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
         ref.current.appendChild(word)
 
         if (myAddress && !isEmptyEnergy) {
-          const balance = increasePointsBalance({
+          increasePointsBalance({
             client,
             address: myAddress,
             pointsByClick: 1,

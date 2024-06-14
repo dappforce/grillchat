@@ -21,17 +21,11 @@ export const increasePointsBalance = ({
   address,
   pointsByClick,
 }: OptimisticPointsBalanceParams) => {
-  let data
   getBalanceQuery.setQueryData(client, address, (oldData) => {
-    data = oldData
-
     if (!oldData) return oldData
 
-    data = oldData + pointsByClick
     return oldData + pointsByClick
   })
-
-  return data
 }
 
 type OptimisticEnergyParams = {
