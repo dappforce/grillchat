@@ -9,6 +9,7 @@ import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import Image from 'next/image'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import Button from '../Button'
 
@@ -23,6 +24,7 @@ export default function DailyRewardModal({
   const myAddress = useMyMainAddress()
   const { data } = getDailyRewardQuery.useQuery(myAddress ?? '')
   const { data: serverDay } = getServerDayQuery.useQuery(null)
+  const [haveOpenedMysteryBox, setHaveOpenedMysteryBox] = useState(false)
   const { mutate: claim, isLoading } = useClaimDailyReward({
     onSuccess: () => close(),
   })
@@ -31,7 +33,8 @@ export default function DailyRewardModal({
     (claim) =>
       Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
   )
-  const isMysteryBoxClaimable = claimable?.claimRewardPointsRange
+  const isMysteryBoxClaimable =
+    claimable?.claimRewardPointsRange && !haveOpenedMysteryBox
 
   return createPortal(
     <>
@@ -69,7 +72,8 @@ export default function DailyRewardModal({
                 Number(claim.claimValidDay) === serverDay?.day &&
                 claim.openToClaim
 
-              const isMysteryBox = !!claim.claimRewardPointsRange
+              const isMysteryBox =
+                !!claim.claimRewardPointsRange && !haveOpenedMysteryBox
               return (
                 <div
                   key={claim.index}
@@ -113,8 +117,13 @@ export default function DailyRewardModal({
               size='lg'
               isLoading={isLoading}
               onClick={() => {
-                sendEvent('daily_reward_claimed')
-                claim(undefined)
+                if (isMysteryBoxClaimable) {
+                  sendEvent('daily_reward_claimed_mystery_box')
+                  setHaveOpenedMysteryBox(true)
+                } else {
+                  sendEvent('daily_reward_claimed')
+                  claim(undefined)
+                }
               }}
             >
               {isMysteryBoxClaimable ? 'Open Mystery Box' : 'Claim'}
