@@ -50,16 +50,6 @@ const SUBSCRIBE_IDENTITY = gql`
     linkedIdentitySubscription {
       event
       entity {
-        linkedIdentity {
-          id
-          externalProviders {
-            id
-            username
-            externalId
-            provider
-            enabled
-          }
-        }
         session {
           id
           linkedIdentity {
