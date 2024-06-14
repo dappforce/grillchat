@@ -3,8 +3,8 @@ import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
-import { getBalanceQuery } from '../balances/query'
 import { SubscribeBalancesSubscription } from '../generated-query'
+import { getBalanceQuery } from '../leaderboard/points-balance/query'
 import { datahubSubscription } from '../utils'
 
 export function useDatahubBalancesSubscriber() {

@@ -9,8 +9,8 @@ import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import { Skeleton } from '@/components/SkeletonFallback'
 import useIsMounted from '@/hooks/useIsMounted'
-import { getBalanceQuery } from '@/services/datahub/balances/query'
 import { getTodaySuperLikeCountQuery } from '@/services/datahub/content-staking/query'
+import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -27,9 +27,13 @@ import { FaChevronDown } from 'react-icons/fa'
 import { HiChevronRight, HiXMark } from 'react-icons/hi2'
 import SlotCounter from 'react-slot-counter'
 
-export default function PointsWidget(
-  props: ComponentProps<'div'> & { isNoTgScroll?: boolean }
-) {
+export default function PointsWidget({
+  withPointsAnimation = true,
+  ...props
+}: ComponentProps<'div'> & {
+  isNoTgScroll?: boolean
+  withPointsAnimation?: boolean
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const isMounted = useIsMounted()
   const sendEvent = useSendEvent()
@@ -70,7 +74,7 @@ export default function PointsWidget(
         <div className='flex items-center gap-2'>
           <Image className='h-7 w-7' src={Diamond} alt='' />
           <span className='flex items-center text-xl font-bold'>
-            <Points shorten />
+            <Points withPointsAnimation={withPointsAnimation} />
           </span>
           <FaChevronDown className='relative' />
         </div>
@@ -292,7 +296,13 @@ function LikeCount({ shorten }: { shorten?: boolean }) {
   return <span>{formatNumber(data?.count ?? '0', { shorten })}</span>
 }
 
-function Points({ shorten }: { shorten?: boolean }) {
+function Points({
+  shorten,
+  withPointsAnimation = true,
+}: {
+  shorten?: boolean
+  withPointsAnimation?: boolean
+}) {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
@@ -305,6 +315,8 @@ function Points({ shorten }: { shorten?: boolean }) {
   if ((isLoading && myAddress) || !isInitializedProxy) {
     return <Skeleton className='inline-block w-12' />
   }
+
+  if (!withPointsAnimation) return <span>{splitValues}</span>
 
   return (
     <SlotCounter
