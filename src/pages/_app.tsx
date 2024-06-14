@@ -6,9 +6,9 @@ import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useSaveTappedPointsAndEnergyNew, {
+import useSaveTappedPointsAndEnergy, {
   useGetEnergyStateRef,
-} from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergyNew'
+} from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergy'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
