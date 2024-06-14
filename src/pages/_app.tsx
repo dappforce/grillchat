@@ -219,7 +219,7 @@ const TappingHooksWrapper = ({ children }: { children: React.ReactNode }) => {
     }
   }, [isLoading])
 
-  useSaveTappedPointsAndEnergyNew()
+  useSaveTappedPointsAndEnergy()
 
   return <>{children}</>
 }
