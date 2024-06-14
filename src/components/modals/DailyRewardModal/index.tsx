@@ -1,5 +1,6 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import Present from '@/assets/emojis/present.png'
+import useToastError from '@/hooks/useToastError'
 import { getServerDayQuery } from '@/services/api/query'
 import { useClaimDailyReward } from '@/services/datahub/content-staking/mutation'
 import { getDailyRewardQuery } from '@/services/datahub/content-staking/query'
@@ -11,7 +12,8 @@ import { Transition } from '@headlessui/react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import Button from '../Button'
+import Button from '../../Button'
+import RewardAnimation from './RewardAnimation'
 
 export default function DailyRewardModal({
   close,
@@ -20,21 +22,25 @@ export default function DailyRewardModal({
   isOpen: boolean
   close: () => void
 }) {
+  const [isOpenAnimation, setIsOpenAnimation] = useState(false)
+  const closeModal = () => {
+    setIsOpenAnimation(true)
+    close()
+  }
+
   const sendEvent = useSendEvent()
   const myAddress = useMyMainAddress()
   const { data } = getDailyRewardQuery.useQuery(myAddress ?? '')
   const { data: serverDay } = getServerDayQuery.useQuery(null)
-  const [haveOpenedMysteryBox, setHaveOpenedMysteryBox] = useState(false)
-  const { mutate: claim, isLoading } = useClaimDailyReward({
-    onSuccess: () => close(),
-  })
+  const { mutate: claim, isLoading, error } = useClaimDailyReward()
+  useToastError(error, 'Failed to claim daily reward')
 
-  const claimable = data?.claims.find(
-    (claim) =>
-      Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
-  )
-  const isMysteryBoxClaimable =
-    claimable?.claimRewardPointsRange && !haveOpenedMysteryBox
+  const claimable =
+    data?.claims.find(
+      (claim) =>
+        Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
+    ) || data?.claims?.[0]
+  const isMysteryBoxClaimable = claimable?.claimRewardPointsRange
 
   return createPortal(
     <>
@@ -47,8 +53,11 @@ export default function DailyRewardModal({
         leaveFrom='h-auto'
         leaveTo='opacity-0 !duration-150'
       />
+      {isOpenAnimation && isOpen && (
+        <RewardAnimation claim={claimable!} close={closeModal} />
+      )}
       <Transition
-        show={isOpen}
+        show={isOpen && !isOpenAnimation}
         appear
         className='fixed bottom-0 left-1/2 z-40 mx-auto flex h-auto w-full max-w-screen-md -translate-x-1/2 rounded-t-[10px] bg-background-light outline-none transition duration-300'
         enterFrom={cx('opacity-0 translate-y-48')}
@@ -72,8 +81,7 @@ export default function DailyRewardModal({
                 Number(claim.claimValidDay) === serverDay?.day &&
                 claim.openToClaim
 
-              const isMysteryBox =
-                !!claim.claimRewardPointsRange && !haveOpenedMysteryBox
+              const isMysteryBox = !!claim.claimRewardPointsRange
               return (
                 <div
                   key={claim.index}
@@ -117,13 +125,9 @@ export default function DailyRewardModal({
               size='lg'
               isLoading={isLoading}
               onClick={() => {
-                if (isMysteryBoxClaimable) {
-                  sendEvent('daily_reward_claimed_mystery_box')
-                  setHaveOpenedMysteryBox(true)
-                } else {
-                  sendEvent('daily_reward_claimed')
-                  claim(undefined)
-                }
+                sendEvent('daily_reward_claimed')
+                claim(undefined)
+                setIsOpenAnimation(true)
               }}
             >
               {isMysteryBoxClaimable ? 'Open Mystery Box' : 'Claim'}
