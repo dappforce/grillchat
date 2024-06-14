@@ -23,7 +23,11 @@ const TapPage = () => {
       className='relative'
       style={{ minHeight: '100dvh' }}
     >
-      <PointsWidget isNoTgScroll className='sticky top-0' />
+      <PointsWidget
+        isNoTgScroll
+        withPointsAnimation={false}
+        className='sticky top-0'
+      />
       <TapPageContent />
       <WelcomeModal />
       <RewardPerDayModal />

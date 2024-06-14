@@ -67,7 +67,9 @@ const getPhotoPath = async (userId: string) => {
   const photos = await getUserProfilePhotos(userId)
   if (!photos?.result?.photos) return
 
-  const fileId = photos.result.photos[0][0].file_id
+  const fileId = photos.result.photos[0]?.[0].file_id
+
+  if (!fileId) return
 
   try {
     const res = await axios.get(`${telegramApiUrl}/getFile?file_id=${fileId}`)
