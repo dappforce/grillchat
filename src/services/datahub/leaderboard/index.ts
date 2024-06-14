@@ -146,3 +146,31 @@ export async function getUserReferrals(
     ),
   }
 }
+
+const GET_ACTIVE_STAKING_TOKENOMIC_METADATA = gql`
+  query GetTokenomicMetadata {
+    activeStakingTokenomicMetadata {
+      maxTapsPerDay
+      superLikeWeightPoints
+      socialActionPrice {
+        createCommentPoints
+      }
+    }
+  }
+`
+
+export async function getActiveStakingTokenomicMetadata() {
+  const res = await datahubQueryRequest<{
+    activeStakingTokenomicMetadata: {
+      maxTapsPerDay: number
+      superLikeWeightPoints: string
+      socialActionPrice: {
+        createCommentPoints: string
+      }
+    }
+  }>({
+    document: GET_ACTIVE_STAKING_TOKENOMIC_METADATA,
+  })
+
+  return res.activeStakingTokenomicMetadata
+}

@@ -2,6 +2,7 @@ import ImageAdd from '@/assets/icons/image-add.svg'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import MediaLoader, { MediaLoaderProps } from '@/components/MediaLoader'
+import SkeletonFallback from '@/components/SkeletonFallback'
 import Spinner from '@/components/Spinner'
 import { SUPPORTED_IMAGE_EXTENSIONS } from '@/components/inputs/ImageInput'
 import {
@@ -10,6 +11,7 @@ import {
 } from '@/constants/image'
 import useDebounce from '@/hooks/useDebounce'
 import { useSaveImage } from '@/services/api/mutation'
+import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
@@ -31,6 +33,8 @@ export default function ImageModal({
   chatId,
   onSubmit,
 }: ExtensionModalsProps) {
+  const { data: tokenomics, isLoading: loadingTokenomics } =
+    getTokenomicsMetadataQuery.useQuery(null)
   const { closeModal, initialData, isOpen } =
     useExtensionModalState('subsocial-image')
 
@@ -75,7 +79,15 @@ export default function ImageModal({
       hubId={hubId}
       onSubmit={onSubmit}
       extensionType='subsocial-image'
-      description='Posting a meme costs 2500 points.'
+      description={
+        <span>
+          Posting a meme costs{' '}
+          <SkeletonFallback isLoading={loadingTokenomics} className='w-8'>
+            <span>{tokenomics?.socialActionPrice.createCommentPoints}</span>
+          </SkeletonFallback>{' '}
+          points.
+        </span>
+      }
       isOpen={isOpen}
       closeModal={closeModal}
       size='md'

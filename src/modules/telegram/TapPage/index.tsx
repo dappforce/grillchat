@@ -1,22 +1,32 @@
 import TapFromMobileImage from '@/assets/graphics/tap-from-mobile.png'
-import Button from '@/components/Button'
+import SkeletonFallback from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import HomePageModals from '@/components/modals/HomePageModals'
+import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
-import { cx, mutedTextColorStyles } from '@/utils/class-names'
+import {
+  FULL_ENERGY_VALUE,
+  getEnergyStateQuery,
+} from '@/services/datahub/leaderboard/points-balance/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { useMiniAppRaw } from '@tma.js/sdk-react'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import PointsClicker from './PointsClicker'
 
 const TapPage = () => {
+  useTgNoScroll()
+
   return (
     <LayoutWithBottomNavigation
       className='relative'
       style={{ minHeight: '100dvh' }}
     >
-      <PointsWidget className='sticky top-0' />
+      <PointsWidget
+        isNoTgScroll
+        withPointsAnimation={false}
+        className='sticky top-0'
+      />
       <TapPageContent />
       <HomePageModals />
     </LayoutWithBottomNavigation>
@@ -26,31 +36,34 @@ const TapPage = () => {
 const TapPageContent = () => {
   const app = useMiniAppRaw(true)
   const isMobile = isTouchDevice()
-  const router = useRouter()
 
   if (app?.result && !isMobile) {
     return <MobileDeviceForBetterExp />
   }
 
   return (
-    <div className='grid flex-1 grid-rows-[70%,30%] items-center'>
-      <PointsClicker className='justify-self-center' />
-      <div className='flex flex-col items-center gap-[22px] px-4'>
-        <span className={cx('text-center', mutedTextColorStyles)}>
-          Tap2Earn is coming soon! While you wait, start earning points today by
-          creating and liking memes.
-        </span>
-
-        <Button
-          variant='primary'
-          size={'md'}
-          className='w-fit'
-          onClick={() => router.replace('/tg/memes')}
-        >
-          Try Meme to Earn
-        </Button>
-      </div>
+    <div className='grid flex-1 grid-rows-[2fr,0.5fr] items-center justify-items-center'>
+      <PointsClicker className='h-full justify-self-center' />
+      <EnergyState />
     </div>
+  )
+}
+
+const EnergyState = () => {
+  const myAddress = useMyMainAddress()
+
+  const { data, isLoading } = getEnergyStateQuery.useQuery(myAddress || '')
+
+  const { energyValue } = data || {}
+
+  return (
+    <span className='flex h-full items-center gap-1 text-base font-bold leading-[22px]'>
+      🔋{' '}
+      <SkeletonFallback className='w-fit min-w-10' isLoading={isLoading}>
+        {energyValue}
+      </SkeletonFallback>{' '}
+      <span>/</span> {FULL_ENERGY_VALUE}
+    </span>
   )
 }
 

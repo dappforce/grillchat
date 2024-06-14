@@ -1,18 +1,14 @@
-import Toast from '@/components/Toast'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
-import { cx } from '@/utils/class-names'
-import { DataHubSubscriptionEventEnum } from '@subsocial/data-hub-sdk'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import { ReactNode, useEffect, useRef } from 'react'
-import { toast } from 'sonner'
-import { datahubSubscription, isDatahubAvailable } from '../utils'
+import { useEffect, useRef } from 'react'
 import {
-  getAddressLikeCountToPostQuery,
-  getSuperLikeCountQuery,
-  getTodaySuperLikeCountQuery,
-} from './query'
+  DataHubSubscriptionEventEnum,
+  SubscribeSuperLikeSubscription,
+} from '../generated-query'
+import { datahubSubscription, isDatahubAvailable } from '../utils'
+import { toastSuperLikeNotification } from './utils'
 
 export function useDatahubContentStakingSubscriber() {
   const queryClient = useQueryClient()
@@ -57,6 +53,9 @@ const SUBSCRIBE_SUPER_LIKE = gql`
   subscription SubscribeSuperLike {
     activeStakingSuperLike {
       event
+      meta {
+        stakerDistributedRewardPoints
+      }
       entity {
         staker {
           id
@@ -78,7 +77,7 @@ export function subscription(
   isSubscribed = true
 
   const client = datahubSubscription()
-  let unsub = client.subscribe(
+  let unsub = client.subscribe<SubscribeSuperLikeSubscription>(
     {
       query: SUBSCRIBE_SUPER_LIKE,
     },
@@ -104,62 +103,16 @@ export function subscription(
 
 async function processSubscriptionEvent(
   queryClient: QueryClient,
-  eventData: {
-    event: DataHubSubscriptionEventEnum
-    entity: { staker: { id: string }; post: { persistentId: string } }
-  },
+  eventData: SubscribeSuperLikeSubscription['activeStakingSuperLike'],
   myAddress: string | undefined
 ) {
   if (
     eventData.event !==
-      DataHubSubscriptionEventEnum.ACTIVE_STAKING_SUPER_LIKE_CREATED &&
+      DataHubSubscriptionEventEnum.ActiveStakingSuperLikeCreated &&
     eventData.event !==
-      DataHubSubscriptionEventEnum.ACTIVE_STAKING_SUPER_LIKE_STATE_UPDATED
+      DataHubSubscriptionEventEnum.ActiveStakingSuperLikeStateUpdated
   )
     return
 
-  const { post, staker } = eventData.entity
-
-  getSuperLikeCountQuery.invalidate(queryClient, post.persistentId)
-  if (staker.id === myAddress) {
-    getAddressLikeCountToPostQuery.invalidate(queryClient, {
-      address: myAddress,
-      postId: post.persistentId,
-    })
-    const todayLike = getTodaySuperLikeCountQuery.getQueryData(
-      queryClient,
-      myAddress
-    )
-    const remaining = 10 - todayLike.count
-    let desc: ReactNode =
-      'Great progress today! You used all the available likes. Come back tomorrow 😉'
-    let icon: ((className: string) => ReactNode) | undefined = (className) => (
-      <span
-        className={cx(className, 'relative top-px mr-1.5 self-start text-base')}
-      >
-        ✅
-      </span>
-    )
-    if (remaining > 0) {
-      desc = (
-        <div>
-          <p>You earned 💎 2000 Points for liking the meme.</p>
-          <p className='text-text-muted'>
-            {remaining} more likes left for today
-          </p>
-        </div>
-      )
-      icon = (className) => (
-        <span
-          className={cx(
-            className,
-            'relative top-px mr-1.5 self-start text-base'
-          )}
-        >
-          ℹ️
-        </span>
-      )
-    }
-    toast.custom((t) => <Toast t={t} title={desc} icon={icon} />)
-  }
+  toastSuperLikeNotification(queryClient, eventData, myAddress)
 }

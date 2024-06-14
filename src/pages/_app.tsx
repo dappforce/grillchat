@@ -6,9 +6,14 @@ import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
+import useSaveTappedPointsAndEnergy, {
+  useGetEnergyStateRef,
+} from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergy'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { increaseEnergyValue } from '@/services/datahub/leaderboard/points-balance/optimistic'
+import { FULL_ENERGY_VALUE } from '@/services/datahub/leaderboard/points-balance/query'
 import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/services/provider'
 import {
@@ -21,11 +26,11 @@ import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import '@rainbow-me/rainbowkit/styles.css'
+import { useQueryClient } from '@tanstack/react-query'
 import { SDKProvider } from '@tma.js/sdk-react'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import type { AppProps } from 'next/app'
-// import { GoogleAnalytics } from 'nextjs-google-analytics'
 import Script from 'next/script'
 import React, { useEffect, useRef, useState } from 'react'
 import { isDesktop } from 'react-device-detect'
@@ -135,7 +140,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <div className={cx('font-sans')}>
           <ErrorBoundary>
             <EvmProvider>
-              <Component {...props} />
+              <TappingHooksWrapper>
+                <Component {...props} />
+              </TappingHooksWrapper>
             </EvmProvider>
           </ErrorBoundary>
         </div>
@@ -191,6 +198,34 @@ function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
       {children}
     </>
   )
+}
+
+const TappingHooksWrapper = ({ children }: { children: React.ReactNode }) => {
+  const myAddress = useMyMainAddress()
+  const client = useQueryClient()
+
+  const { data: energyStateRef, isLoading } = useGetEnergyStateRef()
+
+  useEffect(() => {
+    if (isLoading) return
+    const interval = setInterval(() => {
+      if (energyStateRef.current?.energyValue === FULL_ENERGY_VALUE) return
+
+      increaseEnergyValue({
+        client,
+        address: myAddress || '',
+        energyValuePerClick: 1,
+      })
+    }, 2000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [isLoading])
+
+  useSaveTappedPointsAndEnergy()
+
+  return <>{children}</>
 }
 
 function DatahubSubscriber() {

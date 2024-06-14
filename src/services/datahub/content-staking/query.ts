@@ -19,6 +19,8 @@ import {
   GetSuperLikeCountsQueryVariables,
   GetTodaySuperLikeCountQuery,
   GetTodaySuperLikeCountQueryVariables,
+  GetTokenomicsMetadataQuery,
+  GetTokenomicsMetadataQueryVariables,
   GetUserYesterdayRewardQuery,
   GetUserYesterdayRewardQueryVariables,
 } from '../generated-query'
@@ -642,5 +644,32 @@ export const getDailyRewardQuery = createQuery({
   fetcher: getDailyReward,
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
+  }),
+})
+
+export const GET_TOKENOMICS_METADATA = gql`
+  query GetTokenomicsMetadata {
+    activeStakingTokenomicMetadata {
+      superLikeWeightPoints
+      socialActionPrice {
+        createCommentPoints
+      }
+    }
+  }
+`
+export async function getTokenomicsMetadata() {
+  const res = await datahubQueryRequest<
+    GetTokenomicsMetadataQuery,
+    GetTokenomicsMetadataQueryVariables
+  >({
+    document: GET_TOKENOMICS_METADATA,
+  })
+  return res.activeStakingTokenomicMetadata
+}
+export const getTokenomicsMetadataQuery = createQuery({
+  key: 'getTokenomicsMetadata',
+  fetcher: getTokenomicsMetadata,
+  defaultConfigGenerator: () => ({
+    enabled: true,
   }),
 })

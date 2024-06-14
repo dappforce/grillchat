@@ -1771,6 +1771,7 @@ export type TappingEnergyWhereArgs = {
 
 export type TokenomicMetadataResponse = {
   __typename?: 'TokenomicMetadataResponse'
+  maxTapsPerDay: Scalars['Int']['output']
   maxTotalDailyRewardPoints: Scalars['String']['output']
   socialActionPrice: SocialActionPriceResponse
   superLikeWeightPoints: Scalars['String']['output']
@@ -1878,18 +1879,6 @@ export type GetIsBalanceSufficientQuery = {
     __typename?: 'IsBalanceSufficientForSocialActionResponse'
     sufficient: boolean
   }
-}
-
-export type GetBalanceQueryVariables = Exact<{
-  address: Scalars['String']['input']
-}>
-
-export type GetBalanceQuery = {
-  __typename?: 'Query'
-  socialProfileBalances?: {
-    __typename?: 'SocialProfileBalances'
-    activeStakingPoints: string
-  } | null
 }
 
 export type GetIsActiveStakerQueryVariables = Exact<{
@@ -2087,6 +2076,22 @@ export type GetDailyRewardQuery = {
   } | null
 }
 
+export type GetTokenomicsMetadataQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type GetTokenomicsMetadataQuery = {
+  __typename?: 'Query'
+  activeStakingTokenomicMetadata: {
+    __typename?: 'TokenomicMetadataResponse'
+    superLikeWeightPoints: string
+    socialActionPrice: {
+      __typename?: 'SocialActionPriceResponse'
+      createCommentPoints: string
+    }
+  }
+}
+
 export type SubscribeSuperLikeSubscriptionVariables = Exact<{
   [key: string]: never
 }>
@@ -2096,6 +2101,10 @@ export type SubscribeSuperLikeSubscription = {
   activeStakingSuperLike: {
     __typename?: 'SuperLikeSubscriptionPayload'
     event: DataHubSubscriptionEventEnum
+    meta: {
+      __typename?: 'SubscriptionPayloadMeta'
+      stakerDistributedRewardPoints: string
+    }
     entity: {
       __typename?: 'ActiveStakingSuperLike'
       staker: { __typename?: 'Account'; id: string }
@@ -2301,6 +2310,63 @@ export type GetUserReferralsQuery = {
         __typename?: 'UserReferralsDistributedRewards'
         totalPoints?: string | null
       } | null
+    }>
+  }
+}
+
+export type GetTokenomicMetadataQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetTokenomicMetadataQuery = {
+  __typename?: 'Query'
+  activeStakingTokenomicMetadata: {
+    __typename?: 'TokenomicMetadataResponse'
+    maxTapsPerDay: number
+    superLikeWeightPoints: string
+    socialActionPrice: {
+      __typename?: 'SocialActionPriceResponse'
+      createCommentPoints: string
+    }
+  }
+}
+
+export type GetBalanceQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetBalanceQuery = {
+  __typename?: 'Query'
+  socialProfileBalances?: {
+    __typename?: 'SocialProfileBalances'
+    activeStakingPoints: string
+  } | null
+}
+
+export type GetEnergyStateQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetEnergyStateQuery = {
+  __typename?: 'Query'
+  gamificationTappingEnergyState?: {
+    __typename?: 'TappingEnergyStateResponseDto'
+    energyValue: number
+    timestamp: string
+  } | null
+}
+
+export type GetClickedPointsByDaySQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  dates: Array<Scalars['Int']['input']> | Scalars['Int']['input']
+}>
+
+export type GetClickedPointsByDaySQuery = {
+  __typename?: 'Query'
+  gamificationTappingActivityStatsByDate: {
+    __typename?: 'TappingActivityStatsByDateResponseDto'
+    data: Array<{
+      __typename?: 'TappingActivityStatsForDate'
+      tapsCount: number
+      date: number
     }>
   }
 }
@@ -3166,13 +3232,6 @@ export const GetIsBalanceSufficient = gql`
     }
   }
 `
-export const GetBalance = gql`
-  query GetBalance($address: String!) {
-    socialProfileBalances(args: { where: { address: $address } }) {
-      activeStakingPoints
-    }
-  }
-`
 export const GetIsActiveStaker = gql`
   query GetIsActiveStaker($address: String!) {
     activeStakingIsActiveStaker(address: $address)
@@ -3319,10 +3378,23 @@ export const GetDailyReward = gql`
     }
   }
 `
+export const GetTokenomicsMetadata = gql`
+  query GetTokenomicsMetadata {
+    activeStakingTokenomicMetadata {
+      superLikeWeightPoints
+      socialActionPrice {
+        createCommentPoints
+      }
+    }
+  }
+`
 export const SubscribeSuperLike = gql`
   subscription SubscribeSuperLike {
     activeStakingSuperLike {
       event
+      meta {
+        stakerDistributedRewardPoints
+      }
       entity {
         staker {
           id
@@ -3502,6 +3574,44 @@ export const GetUserReferrals = gql`
         distributedRewards {
           totalPoints
         }
+      }
+    }
+  }
+`
+export const GetTokenomicMetadata = gql`
+  query GetTokenomicMetadata {
+    activeStakingTokenomicMetadata {
+      maxTapsPerDay
+      superLikeWeightPoints
+      socialActionPrice {
+        createCommentPoints
+      }
+    }
+  }
+`
+export const GetBalance = gql`
+  query GetBalance($address: String!) {
+    socialProfileBalances(args: { where: { address: $address } }) {
+      activeStakingPoints
+    }
+  }
+`
+export const GetEnergyState = gql`
+  query GetEnergyState($address: String!) {
+    gamificationTappingEnergyState(args: { where: { address: $address } }) {
+      energyValue
+      timestamp
+    }
+  }
+`
+export const GetClickedPointsByDayS = gql`
+  query GetClickedPointsByDayS($address: String!, $dates: [Int!]!) {
+    gamificationTappingActivityStatsByDate(
+      args: { where: { dates: $dates, address: $address } }
+    ) {
+      data {
+        tapsCount
+        date
       }
     }
   }

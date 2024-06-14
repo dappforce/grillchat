@@ -7,7 +7,10 @@ import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
-import { getCanPostSuperLikedQuery } from '../content-staking/query'
+import {
+  getCanPostSuperLikedQuery,
+  getTokenomicsMetadataQuery,
+} from '../content-staking/query'
 import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
@@ -159,12 +162,16 @@ async function processMessage(
     getCanPostSuperLikedQuery.fetchQuery(queryClient, newestId, true)
 
     const newPost = getPostQuery.getQueryData(queryClient, newestId)
+    const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
+      queryClient,
+      null
+    )
     if (newPost?.struct.ownerId === getMyMainAddress() && isCreationEvent) {
       toast.custom((t) => (
         <Toast
           t={t}
           title='✨ Meme Sent!'
-          description='2500 points have been used. More memes, more fun!'
+          description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. More memes, more fun!`}
         />
       ))
     }
