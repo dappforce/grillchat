@@ -17,6 +17,7 @@ import { GraphQLClient, RequestOptions, Variables } from 'graphql-request'
 import { Client, createClient } from 'graphql-ws'
 import ws from 'isomorphic-ws'
 import sortKeysRecursive from 'sort-keys-recursive'
+import { getServerTime } from '../api/query'
 
 dayjs.extend(utc)
 dayjs.extend(isoWeek)
@@ -91,7 +92,7 @@ export function signDatahubPayload(
   payload.sig = hexSig
 }
 
-export function createSocialDataEventPayload<
+export async function createSocialDataEventPayload<
   T extends keyof typeof socialCallName
 >(
   callName: T,
@@ -109,6 +110,7 @@ export function createSocialDataEventPayload<
   content?: PostContent
 ) {
   const owner = proxyToAddress || address
+  const serverTime = await getServerTime()
   const payload: SocialEventDataApiInput = {
     protVersion: socialEventProtVersion['0.1'],
     dataType: isOffchain
@@ -118,7 +120,7 @@ export function createSocialDataEventPayload<
       name: callName,
       signer: owner || '',
       args: JSON.stringify(eventArgs),
-      timestamp: timestamp || Date.now(),
+      timestamp: timestamp || serverTime,
       uuid: uuid || crypto.randomUUID(),
       proxy: proxyToAddress ? address : undefined,
     },
@@ -129,7 +131,7 @@ export function createSocialDataEventPayload<
   return payload
 }
 
-export function createSignedSocialDataEvent<
+export async function createSignedSocialDataEvent<
   T extends keyof typeof socialCallName
 >(
   callName: T,
@@ -137,7 +139,7 @@ export function createSignedSocialDataEvent<
   eventArgs: SocialCallDataArgs<T>,
   content?: PostContent
 ) {
-  const payload = createSocialDataEventPayload(
+  const payload = await createSocialDataEventPayload(
     callName,
     params,
     eventArgs,

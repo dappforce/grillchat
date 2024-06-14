@@ -12,7 +12,7 @@ import { DatahubParams, createSocialDataEventPayload } from '../utils'
 type SetReferrerIdArgs =
   SocialCallDataArgs<'synth_social_profile_add_referrer_id'>
 async function setReferrerId(params: DatahubParams<SetReferrerIdArgs>) {
-  const input = createSocialDataEventPayload(
+  const input = await createSocialDataEventPayload(
     socialCallName.synth_social_profile_add_referrer_id,
     params,
     params.args

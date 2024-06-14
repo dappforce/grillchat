@@ -23,7 +23,7 @@ export async function linkIdentity(
     id,
     provider,
   }
-  const input = createSocialDataEventPayload(
+  const input = await createSocialDataEventPayload(
     socialCallName.synth_create_linked_identity,
     params,
     eventArgs
