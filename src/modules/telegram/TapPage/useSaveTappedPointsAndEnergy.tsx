@@ -5,6 +5,7 @@ import {
   getClickedPointsByDayQuery,
   getEnergyStateQuery,
 } from '@/services/datahub/leaderboard/points-balance/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import {
   GamificationTapEnergyState,
@@ -32,6 +33,7 @@ const useSaveTappedPointsAndEnergy = () => {
     useGetClickedPointsByDayRef()
   const { data: energyStateRef, isLoading: isEnergyStateLoading } =
     useGetEnergyStateRef()
+  const sendEvent = useSendEvent()
 
   const [processingPrevData, setProcessingPrevData] = useState(true)
 
@@ -118,6 +120,8 @@ const useSaveTappedPointsAndEnergy = () => {
             const tappedPointsDifference =
               parseInt(tappedPointsStore.tappedPoints) -
               parseInt(tappedPointsSavedStore || '0')
+
+            sendEvent('tapped_points_saved')
 
             increasePointsBalance({
               pointsByClick: tappedPointsDifference,
@@ -209,6 +213,7 @@ const useSaveTappedPointsAndEnergy = () => {
           }
 
           if (tappedPointsStore && tappedPointsParams) {
+            sendEvent('tapped_points_saved')
             tappedPointsSavedStorage.set(
               tappedPointsStore.tappedPoints.toString()
             )
