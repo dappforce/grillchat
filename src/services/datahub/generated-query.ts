@@ -2113,6 +2113,10 @@ export type SubscribeSuperLikeSubscription = {
   activeStakingSuperLike: {
     __typename?: 'SuperLikeSubscriptionPayload'
     event: DataHubSubscriptionEventEnum
+    meta: {
+      __typename?: 'SubscriptionPayloadMeta'
+      stakerDistributedRewardPoints: string
+    }
     entity: {
       __typename?: 'ActiveStakingSuperLike'
       staker: { __typename?: 'Account'; id: string }
@@ -3350,6 +3354,9 @@ export const SubscribeSuperLike = gql`
   subscription SubscribeSuperLike {
     activeStakingSuperLike {
       event
+      meta {
+        stakerDistributedRewardPoints
+      }
       entity {
         staker {
           id
