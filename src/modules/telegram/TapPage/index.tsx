@@ -61,7 +61,10 @@ const EnergyState = () => {
   return (
     <span className='flex h-full items-center gap-1 text-base font-bold leading-[22px]'>
       🔋{' '}
-      <SkeletonFallback className='w-fit min-w-10' isLoading={isLoading}>
+      <SkeletonFallback
+        className='inline-block w-fit min-w-10'
+        isLoading={isLoading}
+      >
         {energyValue}
       </SkeletonFallback>{' '}
       <span>/</span> {FULL_ENERGY_VALUE}

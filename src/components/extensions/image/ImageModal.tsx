@@ -82,7 +82,10 @@ export default function ImageModal({
       description={
         <span>
           Posting a meme costs{' '}
-          <SkeletonFallback isLoading={loadingTokenomics} className='w-8'>
+          <SkeletonFallback
+            isLoading={loadingTokenomics}
+            className='inline-block w-8'
+          >
             <span>{tokenomics?.socialActionPrice.createCommentPoints}</span>
           </SkeletonFallback>{' '}
           points.

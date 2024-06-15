@@ -133,7 +133,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <DatahubSubscriber />
         <ToasterConfig />
         <ReferralUrlChanger />
-
         <GlobalModals />
         <SessionAccountChecker />
         <OauthLoadingModal />
