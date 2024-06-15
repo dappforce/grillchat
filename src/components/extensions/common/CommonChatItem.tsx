@@ -252,8 +252,8 @@ export default function CommonChatItem({
           </p>
         )}
 
-        {
-          /* isAuthorized && */ <div className='px-2 pb-1 pt-2'>
+        {isAuthorized && (
+          <div className='px-2 pb-1 pt-2'>
             <Button
               variant='redOutline'
               isLoading={loadingModeration}
@@ -276,7 +276,7 @@ export default function CommonChatItem({
               Block message
             </Button>
           </div>
-        }
+        )}
         {!isMyMessage && othersMessage.children === 'bottom' && childrenElement}
 
         {isMyMessage &&
