@@ -252,11 +252,12 @@ export default function CommonChatItem({
           </p>
         )}
 
-        {isAuthorized && (
-          <div className='px-2 pb-1 pt-2'>
+        {
+          /* isAuthorized && */ <div className='px-2 pb-1 pt-2'>
             <Button
               variant='redOutline'
               isLoading={loadingModeration}
+              loadingText='Blocking...'
               onClick={(e) => {
                 e.stopPropagation()
                 moderate({
@@ -270,12 +271,12 @@ export default function CommonChatItem({
                 })
               }}
               size='sm'
-              className='w-full'
+              className='w-full !text-text-red disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
             >
               Block message
             </Button>
           </div>
-        )}
+        }
         {!isMyMessage && othersMessage.children === 'bottom' && childrenElement}
 
         {isMyMessage &&
