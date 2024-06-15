@@ -4,7 +4,7 @@ import {
   saveFile,
   useRevalidateChatPage,
 } from '@/services/api/mutation'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery, getServerTime } from '@/services/api/query'
 import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
@@ -270,14 +270,15 @@ export function useUpsertPost(
             })
           }
         },
-        onError: ({ data, context }, error, isAfterTxGenerated) => {
+        onError: async ({ data, context }, error, isAfterTxGenerated) => {
           const { action, payload } = checkAction(data)
           if (!isAfterTxGenerated) return
 
+          const serverTime = await getServerTime()
           if (action === 'create' && context.content.optimisticId) {
             datahubMutation.notifyCreatePostFailedOrRetryStatus({
               ...getCurrentWallet(),
-              timestamp: Date.now(),
+              timestamp: serverTime,
               args: {
                 optimisticId: context.content.optimisticId,
                 reason: error,
@@ -290,7 +291,7 @@ export function useUpsertPost(
                 postId: payload.postId,
                 reason: error,
               },
-              timestamp: Date.now(),
+              timestamp: serverTime,
             })
           }
         },

@@ -8,7 +8,7 @@ import useLoginOption from '@/hooks/useLoginOption'
 import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery, getServerTime } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
 import { useSendOffchainMessage } from '@/services/datahub/posts/mutation'
 import {
@@ -237,11 +237,24 @@ export default function ChatForm({
     const isOffchainPosting =
       env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(hubId)
     if (isOffchainPosting) {
-      sendOffchainMessage({
-        ...messageParams,
-        uuid: crypto.randomUUID(),
-        timestamp: Date.now(),
-      })
+      try {
+        const serverTime = await getServerTime()
+        sendOffchainMessage({
+          ...messageParams,
+          uuid: crypto.randomUUID(),
+          timestamp: serverTime,
+        })
+      } catch (err) {
+        showErrorSendingMessageToast(
+          err,
+          'Failed to get server time',
+          messageParams,
+          {
+            reloadUnsentMessage,
+            setIsDisabledInput,
+          }
+        )
+      }
     } else if (shouldSendMessage) {
       sendMessage(messageParams)
     } else {

@@ -1,7 +1,7 @@
 import { getMaxMessageLength } from '@/constants/chat'
 import useWaitHasEnergy from '@/hooks/useWaitHasEnergy'
 import { useRevalidateChatPage, useSaveFile } from '@/services/api/mutation'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery, getServerTime } from '@/services/api/query'
 import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import { isDatahubAvailable } from '@/services/datahub/utils'
@@ -163,7 +163,11 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
           }
         },
         onSend: allowWindowUnload,
-        onError: ({ data, context, address }, error, isAfterTxGenerated) => {
+        onError: async (
+          { data, context, address },
+          error,
+          isAfterTxGenerated
+        ) => {
           allowWindowUnload()
           const content = context.content
           const optimisticId = content.optimisticId
@@ -182,6 +186,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
               getPostQuery.invalidate(client, data.messageIdToEdit)
             }
           } else {
+            const serverTime = await getServerTime()
             if (isCreating) {
               datahubMutation.notifyCreatePostFailedOrRetryStatus({
                 ...getCurrentWallet(),
@@ -189,7 +194,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                   optimisticId,
                   reason: error,
                 },
-                timestamp: Date.now(),
+                timestamp: serverTime,
               })
             } else if (isUpdating) {
               datahubMutation.notifyUpdatePostFailedOrRetryStatus({
@@ -198,7 +203,7 @@ export function useSendMessage(config?: MutationConfig<SendMessageParams>) {
                   postId: messageIdToEdit,
                   reason: error,
                 },
-                timestamp: Date.now(),
+                timestamp: serverTime,
               })
             }
           }

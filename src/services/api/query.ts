@@ -5,6 +5,7 @@ import {
 import { Identities } from '@/pages/api/identities'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
+import { ApiTimeResponse } from '@/pages/api/time'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
@@ -165,3 +166,8 @@ export const getHasUserStakedQuery = createQuery({
     enabled: !!data?.address,
   }),
 })
+
+export async function getServerTime() {
+  const res = await apiInstance.get('/api/time')
+  return (res.data as ApiTimeResponse).time
+}

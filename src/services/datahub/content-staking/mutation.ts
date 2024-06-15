@@ -12,7 +12,7 @@ import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
 type CreateSuperLikeArgs =
   SocialCallDataArgs<'synth_active_staking_create_super_like'>
 async function createSuperLike(params: DatahubParams<CreateSuperLikeArgs>) {
-  const input = createSocialDataEventPayload(
+  const input = await createSocialDataEventPayload(
     socialCallName.synth_active_staking_create_super_like,
     params,
     params.args

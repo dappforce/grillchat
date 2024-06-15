@@ -26,7 +26,11 @@ async function moderationActions<T extends ModerationCallNames>(
 ) {
   if (!data) return null
 
-  const input = createSignedSocialDataEvent(data.callName, data, data.args)
+  const input = await createSignedSocialDataEvent(
+    data.callName,
+    data,
+    data.args
+  )
   const actionRes = await apiInstance.post<
     any,
     AxiosResponse<ApiDatahubModerationResponse>,
