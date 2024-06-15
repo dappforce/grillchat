@@ -67,7 +67,8 @@ export default function CommonChatItem({
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
   const { isAuthorized } = useAuthorizedForModeration(myAddress ?? '')
-  const { mutate: moderate } = useModerateWithSuccessToast(message.id)
+  const { mutate: moderate, isLoading: loadingModeration } =
+    useModerateWithSuccessToast(message.id)
   const { data: reasons } = getModerationReasonsQuery.useQuery(null)
   const firstReasonId = reasons?.[0].id
 
@@ -255,6 +256,7 @@ export default function CommonChatItem({
           <div className='px-2 pb-1 pt-2'>
             <Button
               variant='redOutline'
+              isLoading={loadingModeration}
               onClick={(e) => {
                 e.stopPropagation()
                 moderate({
