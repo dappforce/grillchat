@@ -91,7 +91,7 @@ function PostMemeButton() {
         type='button'
         className='flex items-center justify-center gap-2'
         size='lg'
-        variant='primaryOutline'
+        variant={hasThreshold ? 'primary' : 'primaryOutline'}
         onClick={() => {
           hasThreshold
             ? openExtensionModal('subsocial-image', null)
