@@ -5,6 +5,7 @@ import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
 import usePinnedMessage from '@/components/chats/hooks/usePinnedMessage'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import PostMemeThresholdModal from '@/components/modals/PostMemeThresholdModal'
 import { POINTS_THRESHOLD } from '@/constants/chat-rules'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getPostQuery } from '@/services/api/query'
@@ -12,7 +13,6 @@ import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/q
 import { useExtensionData } from '@/stores/extension'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { formatNumber } from '@/utils/strings'
 import { useState } from 'react'
 import { LuPlusCircle } from 'react-icons/lu'
 
@@ -72,32 +72,35 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
 }
 function PostMemeButton() {
   const openExtensionModal = useExtensionData.use.openExtensionModal()
+  const [isPostMemeThresholdModalOpen, setPostMemeThresholdModalOpen] =
+    useState(false)
 
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
 
   const hasThreshold = !isLoading && data && data >= POINTS_THRESHOLD
 
-  let content = 'Loading...'
-  if (!isLoading) {
-    content = hasThreshold
-      ? 'Post Meme'
-      : `Hold ${formatNumber(POINTS_THRESHOLD)} points to post`
-  }
-
   return (
-    <Button
-      disabled={isLoading || !hasThreshold}
-      type='button'
-      className='flex items-center justify-center gap-2'
-      size='lg'
-      onClick={() => {
-        openExtensionModal('subsocial-image', null)
-      }}
-    >
-      <LuPlusCircle className='relative top-px text-lg' />
-      <span className='text-text'>{content}</span>
-    </Button>
+    <>
+      <PostMemeThresholdModal
+        isOpen={isPostMemeThresholdModalOpen}
+        closeModal={() => setPostMemeThresholdModalOpen(false)}
+      />
+      <Button
+        disabled={isLoading || !hasThreshold}
+        type='button'
+        className='flex items-center justify-center gap-2'
+        size='lg'
+        onClick={() => {
+          hasThreshold
+            ? openExtensionModal('subsocial-image', null)
+            : setPostMemeThresholdModalOpen(true)
+        }}
+      >
+        <LuPlusCircle className='relative top-px text-lg' />
+        <span className='text-text'>Post Meme</span>
+      </Button>
+    </>
   )
 }
 
