@@ -5,10 +5,14 @@ import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
 import usePinnedMessage from '@/components/chats/hooks/usePinnedMessage'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { POINTS_THRESHOLD } from '@/constants/chat-rules'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getPostQuery } from '@/services/api/query'
+import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { useExtensionData } from '@/stores/extension'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { formatNumber } from '@/utils/strings'
 import { useState } from 'react'
 import { LuPlusCircle } from 'react-icons/lu'
 
@@ -20,7 +24,6 @@ type Props = {
 
 export default function ChatContent({ chatId, hubId, className }: Props) {
   const [isOpenModal, setIsOpenModal] = useState(false)
-  const openExtensionModal = useExtensionData.use.openExtensionModal()
   const pinnedMessageId = usePinnedMessage(chatId)
   const { data: message } = getPostQuery.useQuery(pinnedMessageId ?? '', {
     enabled: !!pinnedMessageId,
@@ -60,21 +63,41 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
               <Shield className='relative top-px text-text-muted' />
               <span className='text-text'>Rules</span>
             </Button>
-            <Button
-              type='button'
-              className='flex items-center justify-center gap-2'
-              size='lg'
-              onClick={() => {
-                openExtensionModal('subsocial-image', null)
-              }}
-            >
-              <LuPlusCircle className='relative top-px text-lg' />
-              <span>Post meme</span>
-            </Button>
+            <PostMemeButton />
           </div>
         }
       />
     </>
+  )
+}
+function PostMemeButton() {
+  const openExtensionModal = useExtensionData.use.openExtensionModal()
+
+  const myAddress = useMyMainAddress()
+  const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
+
+  const hasThreshold = !isLoading && data && data >= POINTS_THRESHOLD
+
+  let content = 'Loading...'
+  if (!isLoading) {
+    content = hasThreshold
+      ? 'Post Meme'
+      : `Hold ${formatNumber(POINTS_THRESHOLD)} points to post`
+  }
+
+  return (
+    <Button
+      disabled={isLoading || !hasThreshold}
+      type='button'
+      className='flex items-center justify-center gap-2'
+      size='lg'
+      onClick={() => {
+        openExtensionModal('subsocial-image', null)
+      }}
+    >
+      <LuPlusCircle className='relative top-px text-lg' />
+      <span className='text-text'>{content}</span>
+    </Button>
   )
 }
 
