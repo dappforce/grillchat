@@ -72,7 +72,7 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
 }
 function PostMemeButton() {
   const openExtensionModal = useExtensionData.use.openExtensionModal()
-  const [isPostMemeThresholdModalOpen, setPostMemeThresholdModalOpen] =
+  const [isPostMemeThresholdModalOpen, setIsPostMemeThresholdModalOpen] =
     useState(false)
 
   const myAddress = useMyMainAddress()
@@ -84,17 +84,18 @@ function PostMemeButton() {
     <>
       <PostMemeThresholdModal
         isOpen={isPostMemeThresholdModalOpen}
-        closeModal={() => setPostMemeThresholdModalOpen(false)}
+        closeModal={() => setIsPostMemeThresholdModalOpen(false)}
       />
       <Button
-        disabled={isLoading || !hasThreshold}
+        disabled={isLoading}
         type='button'
         className='flex items-center justify-center gap-2'
         size='lg'
+        variant='primaryOutline'
         onClick={() => {
           hasThreshold
             ? openExtensionModal('subsocial-image', null)
-            : setPostMemeThresholdModalOpen(true)
+            : setIsPostMemeThresholdModalOpen(true)
         }}
       >
         <LuPlusCircle className='relative top-px text-lg' />
