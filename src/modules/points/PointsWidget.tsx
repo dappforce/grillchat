@@ -228,9 +228,6 @@ function PointsDrawerContent({
                   <div className='flex flex-col gap-1'>
                     <div className='flex items-center gap-2'>
                       <span className='text-lg font-bold'>Tap2Earn</span>
-                      <div className='rounded-full bg-background px-2 py-0.5 text-sm text-text-muted'>
-                        Soon
-                      </div>
                     </div>
                     <p className='text-sm text-text-muted'>
                       Tap on the laughing emoji and earn Points.
