@@ -277,7 +277,9 @@ function LinkWrapper({
   return link
 }
 
-function LikeCount({ shorten }: { shorten?: boolean }) {
+const MAX_LIKES_PER_DAY = 10
+
+function LikeCount() {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getTodaySuperLikeCountQuery.useQuery(
@@ -290,7 +292,7 @@ function LikeCount({ shorten }: { shorten?: boolean }) {
     )
   }
 
-  return <span>{formatNumber(data?.count ?? '0', { shorten })}</span>
+  return <span>{MAX_LIKES_PER_DAY - (data?.count ?? 0)}</span>
 }
 
 function Points({
