@@ -481,7 +481,7 @@ async function getTimeLeftUntilCanPost(address: string) {
 
   const lastPosted = new Date(lastPost.posts.data[0].createdAtTime).getTime()
   const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
-  return timeLeft
+  return Math.max(timeLeft, 0)
 }
 export const getTimeLeftUntilCanPostQuery = createQuery({
   key: 'lastPostedMeme',

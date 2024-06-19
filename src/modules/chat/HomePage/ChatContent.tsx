@@ -14,8 +14,13 @@ import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { useState } from 'react'
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
+import { useEffect, useState } from 'react'
+import { FaRegClock } from 'react-icons/fa6'
 import { LuPlusCircle } from 'react-icons/lu'
+
+dayjs.extend(duration)
 
 type Props = {
   hubId: string
@@ -71,32 +76,68 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
     </>
   )
 }
+
+function countdownText(timeLeft: number) {
+  const timeDuration = dayjs.duration({ milliseconds: timeLeft })
+  const hours = Math.floor(timeDuration.asHours())
+  const minutes = Math.floor(timeDuration.asMinutes()) - hours * 60
+  const seconds =
+    Math.floor(timeDuration.asSeconds()) - minutes * 60 - hours * 60 * 60
+  return `${hours.toString().padStart(2, '0')}:${minutes
+    .toString()
+    .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
 function PostMemeButton() {
   const openExtensionModal = useExtensionData.use.openExtensionModal()
 
   const myAddress = useMyMainAddress() ?? ''
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress)
-  const { data: timeLeft, isLoading: loadingTimeLeft } =
+  const { data: timeLeftFromApi, isLoading: loadingTimeLeft } =
     getTimeLeftUntilCanPostQuery.useQuery(myAddress)
 
-  const hasThreshold = !isLoading && data && data >= POINTS_THRESHOLD
-  const canPost = !loadingTimeLeft && (timeLeft ?? 0) <= 0
+  const [timeLeft, setTimeLeft] = useState<number>(Infinity)
+  useEffect(() => {
+    if (typeof timeLeftFromApi === 'number') {
+      setTimeLeft(Math.max(timeLeftFromApi, 0))
+      const interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          const next = Math.max(prev - 1000, 0)
+          if (next === 0) clearInterval(interval)
+          return next
+        })
+      }, 1000)
+      return () => clearInterval(interval)
+    }
+  }, [timeLeftFromApi])
+
+  const isMoreThanThreshold = !isLoading && data && data >= POINTS_THRESHOLD
+  const isTimeConstrained =
+    !loadingTimeLeft && timeLeft !== Infinity && (timeLeft ?? 0) > 0
 
   return (
     <Button
-      disabled={isLoading || loadingTimeLeft || !canPost}
+      disabled={isLoading || loadingTimeLeft || isTimeConstrained}
       type='button'
-      className='flex items-center justify-center gap-2'
+      className='flex items-center justify-center gap-2 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
       size='lg'
-      variant={hasThreshold ? 'primary' : 'primaryOutline'}
+      variant={isMoreThanThreshold ? 'primary' : 'primaryOutline'}
       onClick={() => {
-        hasThreshold
+        isMoreThanThreshold
           ? openExtensionModal('subsocial-image', null)
           : useMessageData.getState().setOpenMessageModal('not-enough-balance')
       }}
     >
-      <LuPlusCircle className='relative top-px text-lg' />
-      <span className='text-text'>Post Meme</span>
+      {!isTimeConstrained ? (
+        <>
+          <LuPlusCircle className='relative top-px text-lg' />
+          <span>Post Meme</span>
+        </>
+      ) : (
+        <>
+          <FaRegClock className='relative top-px text-lg' />
+          <span>{countdownText(timeLeft)}</span>
+        </>
+      )}
     </Button>
   )
 }
