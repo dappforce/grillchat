@@ -94,7 +94,7 @@ export default function ChatItem({
                   e.preventDefault()
                   toggleDisplay?.(e)
                 }}
-                onDoubleClick={() => setMessageAsReply()}
+                // onDoubleClick={() => setMessageAsReply()}
                 {...referenceProps}
                 id={messageBubbleId}
               >
