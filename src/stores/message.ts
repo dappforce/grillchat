@@ -22,7 +22,7 @@ type State = {
 
   unreadMessage: UnreadMessage
 
-  isOpenMessageModal: 'should-stake' | 'blocked' | ''
+  isOpenMessageModal: 'not-enough-balance' | 'blocked' | ''
 }
 
 let savedStateBeforeEditing: State | null = null

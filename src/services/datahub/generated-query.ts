@@ -829,11 +829,16 @@ export type ModeratorsWhereArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation'
+  linkedIdentityTerminateLinkedIdentitySession: TerminateLinkedIdentitySessionResponseDto
   moderationCreateOrganization: ModerationOrganization
   moderationCreateOrganizationModerator?: Maybe<ModerationOrganizationModerator>
   moderationInitModerator?: Maybe<Moderator>
   moderationUpdateOrganization: ModerationOrganization
   moderationUpdateOrganizationModerator?: Maybe<ModerationOrganizationModerator>
+}
+
+export type MutationLinkedIdentityTerminateLinkedIdentitySessionArgs = {
+  linkedIdentityId: Scalars['String']['input']
 }
 
 export type MutationModerationCreateOrganizationArgs = {
@@ -1767,6 +1772,12 @@ export type TappingEnergyStateResponseDto = {
 
 export type TappingEnergyWhereArgs = {
   address: Scalars['String']['input']
+}
+
+export type TerminateLinkedIdentitySessionResponseDto = {
+  __typename?: 'TerminateLinkedIdentitySessionResponseDto'
+  removedExternalProvidersCount: Scalars['Int']['output']
+  removedSessionsCount: Scalars['Int']['output']
 }
 
 export type TokenomicMetadataResponse = {
@@ -3006,6 +3017,18 @@ export type GetPostsBySpaceIdQuery = {
   }
 }
 
+export type GetLastPostedMemeQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetLastPostedMemeQuery = {
+  __typename?: 'Query'
+  posts: {
+    __typename?: 'FindPostsResponseDto'
+    data: Array<{ __typename?: 'Post'; createdAtTime?: any | null }>
+  }
+}
+
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
 
 export type SubscribePostSubscription = {
@@ -3780,6 +3803,15 @@ export const GetPostsBySpaceId = gql`
     }
   }
   ${DatahubPostFragment}
+`
+export const GetLastPostedMeme = gql`
+  query GetLastPostedMeme($address: String!) {
+    posts(args: { filter: { createdByAccountAddress: "" }, pageSize: 1 }) {
+      data {
+        createdAtTime
+      }
+    }
+  }
 `
 export const SubscribePost = gql`
   subscription SubscribePost {
