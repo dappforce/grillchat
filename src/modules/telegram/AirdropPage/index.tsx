@@ -7,7 +7,7 @@ import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmMod
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
-import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
+import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
@@ -15,13 +15,17 @@ import { useMyMainAddress } from '@/stores/my-account'
 import Image from 'next/image'
 import { useState } from 'react'
 import { RiPencilFill } from 'react-icons/ri'
+import RemoveLinkedIdentityModal from './RemoveLinkedIdentityModal'
 
 export default function AirdropPage() {
   useTgNoScroll()
+
+  const isAdmin = useIsModerationAdmin() || true
+  const [isOpenRemoveAccountModal, setIsOpenRemoveAccountModal] =
+    useState(false)
   const [openProfileModal, setOpenProfileModal] = useState(false)
   const [openAddEvmModal, setOpenAddEvmModal] = useState(false)
   const myAddress = useMyMainAddress()
-  const { evmAddress, isLoading } = useLinkedEvmAddress()
   const sendEvent = useSendEvent()
 
   return (
@@ -55,6 +59,17 @@ export default function AirdropPage() {
                 <RiPencilFill />
               </Button>
             </div>
+            {isAdmin && (
+              <Button
+                variant='redOutline'
+                onClick={() => {
+                  sendEvent('remove_account_click')
+                  setIsOpenRemoveAccountModal(true)
+                }}
+              >
+                Remove Account
+              </Button>
+            )}
             {/* {isLoading ? (
               <Skeleton className='w-12' />
             ) : evmAddress ? (
@@ -91,6 +106,10 @@ export default function AirdropPage() {
         setCurrentState={() => undefined}
         address={myAddress ?? ''}
       /> */}
+      <RemoveLinkedIdentityModal
+        isOpen={isOpenRemoveAccountModal}
+        closeModal={() => setIsOpenRemoveAccountModal(false)}
+      />
       <SubsocialProfileModal
         title='✏️ Edit Profile'
         closeModal={() => setOpenProfileModal(false)}
