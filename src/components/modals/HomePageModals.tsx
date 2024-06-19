@@ -1,8 +1,4 @@
-import { getServerDayQuery } from '@/services/api/query'
-import {
-  getDailyRewardQuery,
-  getUserYesterdayRewardQuery,
-} from '@/services/datahub/content-staking/query'
+import { getUserYesterdayRewardQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { LocalStorage } from '@/utils/storage'
@@ -33,11 +29,10 @@ const progressModalStorage = {
 export default function HomePageModals() {
   const sendEvent = useSendEvent()
   const [canModalBeOpened, setCanModalBeOpened] = useState<
-    'welcome' | 'daily' | 'yesterday-reward'
+    'welcome' | 'yesterday-reward'
   >('welcome')
 
   const [isOpenWelcomeModal, setIsOpenWelcomeModal] = useState(false)
-  const [isOpenDailyRewardModal, setIsOpenDailyRewardModal] = useState(false)
   const [isOpenRewardDayModal, setIsOpenRewardDayModal] = useState(false)
 
   useEffect(() => {
@@ -47,28 +42,11 @@ export default function HomePageModals() {
       hasVisitedHomeStorage.set('true')
       setIsOpenWelcomeModal(true)
     } else {
-      setCanModalBeOpened('daily')
+      setCanModalBeOpened('yesterday-reward')
     }
   }, [sendEvent])
 
   const myAddress = useMyMainAddress() ?? ''
-  const { data: dailyReward } = getDailyRewardQuery.useQuery(myAddress)
-  const { data: serverDay } = getServerDayQuery.useQuery(null)
-  useEffect(() => {
-    if (canModalBeOpened !== 'daily') return
-    if (!dailyReward || !serverDay?.day) return
-
-    const isClaimableToday = dailyReward.claims.find(
-      (claim) =>
-        Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
-    )
-    if (isClaimableToday) {
-      sendEvent('open_daily_reward_modal')
-      setIsOpenDailyRewardModal(true)
-    } else {
-      setCanModalBeOpened('yesterday-reward')
-    }
-  }, [canModalBeOpened, serverDay, dailyReward, sendEvent])
 
   const { data: yesterdayReward } = getUserYesterdayRewardQuery.useQuery({
     address: myAddress ?? '',
@@ -91,13 +69,6 @@ export default function HomePageModals() {
         isOpen={isOpenWelcomeModal}
         closeModal={() => {
           setIsOpenWelcomeModal(false)
-          setCanModalBeOpened('daily')
-        }}
-      />
-      <DailyRewardModal
-        isOpen={isOpenDailyRewardModal}
-        close={() => {
-          setIsOpenDailyRewardModal(false)
           setCanModalBeOpened('yesterday-reward')
         }}
       />
