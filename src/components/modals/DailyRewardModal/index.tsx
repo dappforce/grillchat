@@ -35,11 +35,10 @@ export default function DailyRewardModal({
   const { mutate: claim, isLoading, error } = useClaimDailyReward()
   useToastError(error, 'Failed to claim daily reward')
 
-  const claimable =
-    data?.claims.find(
-      (claim) =>
-        Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
-    ) || data?.claims?.[0]
+  const claimable = data?.claims.find(
+    (claim) =>
+      Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
+  )
   const isMysteryBoxClaimable = claimable?.claimRewardPointsRange
 
   return createPortal(
