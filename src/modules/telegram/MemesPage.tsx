@@ -1,5 +1,4 @@
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
-import Meme2EarnIntroModal from '@/components/modals/Meme2EarnIntroModal'
 import { env } from '@/env.mjs'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import ChatContent from '../chat/HomePage/ChatContent'
@@ -11,7 +10,6 @@ const MemesPage = () => {
   useTgNoScroll()
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
-      <Meme2EarnIntroModal />
       <ChatsContent />
     </LayoutWithBottomNavigation>
   )

@@ -4,6 +4,9 @@ import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
 import usePinnedMessage from '@/components/chats/hooks/usePinnedMessage'
+import Meme2EarnIntroModal, {
+  hasOpenedMeme2EarnIntroStorage,
+} from '@/components/modals/Meme2EarnIntroModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { POINTS_THRESHOLD } from '@/constants/chat-rules'
 import PointsWidget from '@/modules/points/PointsWidget'
@@ -88,6 +91,7 @@ function countdownText(timeLeft: number) {
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 function PostMemeButton() {
+  const [isOpenIntroModal, setIsOpenIntroModal] = useState(false)
   const openExtensionModal = useExtensionData.use.openExtensionModal()
 
   const myAddress = useMyMainAddress() ?? ''
@@ -115,30 +119,43 @@ function PostMemeButton() {
     !loadingTimeLeft && timeLeft !== Infinity && (timeLeft ?? 0) > 0
 
   return (
-    <Button
-      disabled={isLoading || loadingTimeLeft || isTimeConstrained}
-      type='button'
-      className='flex items-center justify-center gap-2 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
-      size='lg'
-      variant={isMoreThanThreshold ? 'primary' : 'primaryOutline'}
-      onClick={() => {
-        isMoreThanThreshold
-          ? openExtensionModal('subsocial-image', null)
-          : useMessageData.getState().setOpenMessageModal('not-enough-balance')
-      }}
-    >
-      {!isTimeConstrained ? (
-        <>
-          <LuPlusCircle className='relative top-px text-lg' />
-          <span>Post Meme</span>
-        </>
-      ) : (
-        <>
-          <FaRegClock className='relative top-px text-lg' />
-          <span>{countdownText(timeLeft)}</span>
-        </>
-      )}
-    </Button>
+    <>
+      <Button
+        disabled={isLoading || loadingTimeLeft || isTimeConstrained}
+        type='button'
+        className='flex items-center justify-center gap-2 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
+        size='lg'
+        variant={isMoreThanThreshold ? 'primary' : 'primaryOutline'}
+        onClick={() => {
+          if (isMoreThanThreshold) {
+            if (hasOpenedMeme2EarnIntroStorage.get() !== 'true') {
+              setIsOpenIntroModal(true)
+              hasOpenedMeme2EarnIntroStorage.set('true')
+              return
+            }
+            openExtensionModal('subsocial-image', null)
+          } else {
+            useMessageData.getState().setOpenMessageModal('not-enough-balance')
+          }
+        }}
+      >
+        {!isTimeConstrained ? (
+          <>
+            <LuPlusCircle className='relative top-px text-lg' />
+            <span>Post Meme</span>
+          </>
+        ) : (
+          <>
+            <FaRegClock className='relative top-px text-lg' />
+            <span>{countdownText(timeLeft)}</span>
+          </>
+        )}
+      </Button>
+      <Meme2EarnIntroModal
+        isOpen={isOpenIntroModal}
+        closeModal={() => setIsOpenIntroModal(false)}
+      />
+    </>
   )
 }
 
