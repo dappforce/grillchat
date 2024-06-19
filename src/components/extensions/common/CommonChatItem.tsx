@@ -1,12 +1,16 @@
+import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
+import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatItemMenus'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import SubTeamLabel from '@/components/chats/ChatItem/SubTeamLabel'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
+import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
+import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -62,6 +66,12 @@ export default function CommonChatItem({
   bg = 'background',
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
+  const { isAuthorized } = useAuthorizedForModeration(myAddress ?? '')
+  const { mutate: moderate, isLoading: loadingModeration } =
+    useModerateWithSuccessToast(message.id)
+  const { data: reasons } = getModerationReasonsQuery.useQuery(null)
+  const firstReasonId = reasons?.[0].id
+
   const { struct, content } = message
   const { ownerId, createdAtTime, dataType, isUpdated } = struct
   const { body } = content || {}
@@ -242,6 +252,31 @@ export default function CommonChatItem({
           </p>
         )}
 
+        {isAuthorized && (
+          <div className='px-2 pb-1 pt-2'>
+            <Button
+              variant='redOutline'
+              isLoading={loadingModeration}
+              loadingText='Blocking...'
+              onClick={(e) => {
+                e.stopPropagation()
+                moderate({
+                  callName: 'synth_moderation_block_resource',
+                  args: {
+                    reasonId: firstReasonId,
+                    resourceId: message.id,
+                    ctxPostIds: ['*'],
+                    ctxAppIds: ['*'],
+                  },
+                })
+              }}
+              size='sm'
+              className='w-full !text-text-red disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+            >
+              Block message
+            </Button>
+          </div>
+        )}
         {!isMyMessage && othersMessage.children === 'bottom' && childrenElement}
 
         {isMyMessage &&

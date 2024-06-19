@@ -1,5 +1,8 @@
 import Button from '@/components/Button'
+import LinkText from '@/components/LinkText'
 import MenuList from '@/components/MenuList'
+import { useName } from '@/components/Name'
+import Toast from '@/components/Toast'
 import { SuperLikeWrapper } from '@/components/content-staking/SuperLike'
 import FloatingMenus, {
   FloatingMenusProps,
@@ -14,6 +17,8 @@ import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
+import { useModerationActions } from '@/services/datahub/moderation/mutation'
+import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
@@ -22,12 +27,19 @@ import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
+import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { useEffect, useState } from 'react'
 import { BsFillPinAngleFill } from 'react-icons/bs'
-import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
+import {
+  HiChevronRight,
+  HiMiniArrowUturnLeft,
+  HiOutlineEyeSlash,
+  HiOutlineInformationCircle,
+} from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
 import { LuShield } from 'react-icons/lu'
 import { useInView } from 'react-intersection-observer'
+import { toast } from 'sonner'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 
 export type ChatItemMenusProps = {
@@ -66,6 +78,8 @@ export default function ChatItemMenus({
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 
+  const { mutate: moderate } = useModerateWithSuccessToast(messageId)
+
   const sendEvent = useSendEvent()
   // const openDonateExtension = useOpenDonateExtension(
   //   message?.id,
@@ -76,6 +90,9 @@ export default function ChatItemMenus({
   // const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
   const { isAuthorized } = useAuthorizedForModeration(chatId)
+  const { data: reasons } = getModerationReasonsQuery.useQuery(null)
+  const firstReasonId = reasons?.[0].id
+
   const { dataType } = message?.struct || {}
 
   const isOptimisticMessage = !dataType
@@ -127,10 +144,42 @@ export default function ChatItemMenus({
     if (isAuthorized) {
       menus.unshift({
         icon: LuShield,
-        text: 'Moderate',
+        text: 'Moderate ...',
         onClick: () => {
           sendEvent('open_moderate_action_modal', { hubId, chatId })
           setModalState('moderate')
+        },
+      })
+      menus.unshift({
+        icon: LuShield,
+        text: 'Block message',
+        onClick: () => {
+          sendEvent('block_message', { hubId, chatId })
+          moderate({
+            callName: 'synth_moderation_block_resource',
+            args: {
+              reasonId: firstReasonId,
+              resourceId: messageId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+          })
+        },
+      })
+      menus.unshift({
+        icon: LuShield,
+        text: 'Block user',
+        onClick: () => {
+          sendEvent('block_user', { hubId, chatId })
+          moderate({
+            callName: 'synth_moderation_block_resource',
+            args: {
+              reasonId: firstReasonId,
+              resourceId: ownerId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+          })
         },
       })
     }
@@ -388,4 +437,69 @@ function MintingMessageNotice({ message }: { message: PostData }) {
       </Transition>
     </div>
   )
+}
+
+export function useModerateWithSuccessToast(messageId: string) {
+  const { data: message } = getPostQuery.useQuery(messageId)
+  const ownerId = message?.struct.ownerId ?? ''
+  const { name } = useName(ownerId)
+
+  const moderationMutation = useModerationActions({
+    onSuccess: (_, variables) => {
+      if (variables.callName === 'synth_moderation_block_resource') {
+        const args =
+          variables.args as SocialCallDataArgs<'synth_moderation_block_resource'>
+        const isBlockingOwner = args.resourceId === ownerId
+        const undo = () =>
+          moderationMutation.mutate({
+            callName: 'synth_moderation_unblock_resource',
+            args: {
+              resourceId: args.resourceId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+          })
+
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
+            title={
+              <span>
+                You have blocked the {!isBlockingOwner ? 'message from ' : ''}
+                user {name}
+              </span>
+            }
+            action={
+              <LinkText
+                onClick={() => {
+                  undo()
+                  toast.dismiss(t)
+                }}
+                variant='primary'
+                className='flex items-center gap-1 text-sm'
+              >
+                <HiMiniArrowUturnLeft /> Undo
+              </LinkText>
+            }
+          />
+        ))
+      } else if (variables.callName === 'synth_moderation_unblock_resource') {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            icon={(classNames) => (
+              <HiOutlineInformationCircle className={classNames} />
+            )}
+            title='Undo moderation success'
+          />
+        ))
+      }
+    },
+  })
+  useToastError(moderationMutation.error, 'Failed to moderate message')
+
+  return moderationMutation
 }

@@ -1,0 +1,1 @@
+export const POINTS_THRESHOLD = 200_000

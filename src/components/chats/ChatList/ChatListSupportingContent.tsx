@@ -95,8 +95,6 @@ export default function ChatListSupportingContent({
         const newMessageCount =
           nearestMessageIndex === -1 ? 0 : nearestMessageIndex
 
-        console.log(nearestMessageIndex)
-
         sendMessageToParentWindow('unread', newMessageCount.toString())
         setUnreadMessage({
           count: newMessageCount,
@@ -106,7 +104,6 @@ export default function ChatListSupportingContent({
 
       setLoadingToUnread(true)
 
-      console.log(!lastMessageTime || lastReadTime >= lastMessageTime)
       if (!lastMessageTime || lastReadTime >= lastMessageTime) afterScroll()
       else {
         scrollToMessage(lastReadTime, {

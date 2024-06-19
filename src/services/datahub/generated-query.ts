@@ -2193,18 +2193,6 @@ export type SubscribeIdentitySubscription = {
     event: DataHubSubscriptionEventEnum
     entity: {
       __typename?: 'LinkedIdentitySubscriptionGenericEntityPayload'
-      linkedIdentity?: {
-        __typename?: 'LinkedIdentity'
-        id: string
-        externalProviders?: Array<{
-          __typename?: 'LinkedIdentityExternalProvider'
-          id: string
-          username?: string | null
-          externalId: string
-          provider: IdentityProvider
-          enabled: boolean
-        }> | null
-      } | null
       session?: {
         __typename?: 'LinkedIdentitySession'
         id: string
@@ -3473,16 +3461,6 @@ export const SubscribeIdentity = gql`
     linkedIdentitySubscription {
       event
       entity {
-        linkedIdentity {
-          id
-          externalProviders {
-            id
-            username
-            externalId
-            provider
-            enabled
-          }
-        }
         session {
           id
           linkedIdentity {
