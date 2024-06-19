@@ -829,11 +829,16 @@ export type ModeratorsWhereArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation'
+  linkedIdentityTerminateLinkedIdentitySession: TerminateLinkedIdentitySessionResponseDto
   moderationCreateOrganization: ModerationOrganization
   moderationCreateOrganizationModerator?: Maybe<ModerationOrganizationModerator>
   moderationInitModerator?: Maybe<Moderator>
   moderationUpdateOrganization: ModerationOrganization
   moderationUpdateOrganizationModerator?: Maybe<ModerationOrganizationModerator>
+}
+
+export type MutationLinkedIdentityTerminateLinkedIdentitySessionArgs = {
+  linkedIdentityId: Scalars['String']['input']
 }
 
 export type MutationModerationCreateOrganizationArgs = {
@@ -1769,6 +1774,12 @@ export type TappingEnergyWhereArgs = {
   address: Scalars['String']['input']
 }
 
+export type TerminateLinkedIdentitySessionResponseDto = {
+  __typename?: 'TerminateLinkedIdentitySessionResponseDto'
+  removedExternalProvidersCount: Scalars['Int']['output']
+  removedSessionsCount: Scalars['Int']['output']
+}
+
 export type TokenomicMetadataResponse = {
   __typename?: 'TokenomicMetadataResponse'
   maxTapsPerDay: Scalars['Int']['output']
@@ -1879,18 +1890,6 @@ export type GetIsBalanceSufficientQuery = {
     __typename?: 'IsBalanceSufficientForSocialActionResponse'
     sufficient: boolean
   }
-}
-
-export type GetBalanceQueryVariables = Exact<{
-  address: Scalars['String']['input']
-}>
-
-export type GetBalanceQuery = {
-  __typename?: 'Query'
-  socialProfileBalances?: {
-    __typename?: 'SocialProfileBalances'
-    activeStakingPoints: string
-  } | null
 }
 
 export type GetIsActiveStakerQueryVariables = Exact<{
@@ -2310,6 +2309,63 @@ export type GetUserReferralsQuery = {
         __typename?: 'UserReferralsDistributedRewards'
         totalPoints?: string | null
       } | null
+    }>
+  }
+}
+
+export type GetTokenomicMetadataQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetTokenomicMetadataQuery = {
+  __typename?: 'Query'
+  activeStakingTokenomicMetadata: {
+    __typename?: 'TokenomicMetadataResponse'
+    maxTapsPerDay: number
+    superLikeWeightPoints: string
+    socialActionPrice: {
+      __typename?: 'SocialActionPriceResponse'
+      createCommentPoints: string
+    }
+  }
+}
+
+export type GetBalanceQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetBalanceQuery = {
+  __typename?: 'Query'
+  socialProfileBalances?: {
+    __typename?: 'SocialProfileBalances'
+    activeStakingPoints: string
+  } | null
+}
+
+export type GetEnergyStateQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetEnergyStateQuery = {
+  __typename?: 'Query'
+  gamificationTappingEnergyState?: {
+    __typename?: 'TappingEnergyStateResponseDto'
+    energyValue: number
+    timestamp: string
+  } | null
+}
+
+export type GetClickedPointsByDaySQueryVariables = Exact<{
+  address: Scalars['String']['input']
+  dates: Array<Scalars['Int']['input']> | Scalars['Int']['input']
+}>
+
+export type GetClickedPointsByDaySQuery = {
+  __typename?: 'Query'
+  gamificationTappingActivityStatsByDate: {
+    __typename?: 'TappingActivityStatsByDateResponseDto'
+    data: Array<{
+      __typename?: 'TappingActivityStatsForDate'
+      tapsCount: number
+      date: number
     }>
   }
 }
@@ -2961,6 +3017,18 @@ export type GetPostsBySpaceIdQuery = {
   }
 }
 
+export type GetLastPostedMemeQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetLastPostedMemeQuery = {
+  __typename?: 'Query'
+  posts: {
+    __typename?: 'FindPostsResponseDto'
+    data: Array<{ __typename?: 'Post'; createdAtTime?: any | null }>
+  }
+}
+
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
 
 export type SubscribePostSubscription = {
@@ -3172,13 +3240,6 @@ export const GetIsBalanceSufficient = gql`
       args: { address: $address, socialAction: $socialAction }
     ) {
       sufficient
-    }
-  }
-`
-export const GetBalance = gql`
-  query GetBalance($address: String!) {
-    socialProfileBalances(args: { where: { address: $address } }) {
-      activeStakingPoints
     }
   }
 `
@@ -3518,6 +3579,44 @@ export const GetUserReferrals = gql`
     }
   }
 `
+export const GetTokenomicMetadata = gql`
+  query GetTokenomicMetadata {
+    activeStakingTokenomicMetadata {
+      maxTapsPerDay
+      superLikeWeightPoints
+      socialActionPrice {
+        createCommentPoints
+      }
+    }
+  }
+`
+export const GetBalance = gql`
+  query GetBalance($address: String!) {
+    socialProfileBalances(args: { where: { address: $address } }) {
+      activeStakingPoints
+    }
+  }
+`
+export const GetEnergyState = gql`
+  query GetEnergyState($address: String!) {
+    gamificationTappingEnergyState(args: { where: { address: $address } }) {
+      energyValue
+      timestamp
+    }
+  }
+`
+export const GetClickedPointsByDayS = gql`
+  query GetClickedPointsByDayS($address: String!, $dates: [Int!]!) {
+    gamificationTappingActivityStatsByDate(
+      args: { where: { dates: $dates, address: $address } }
+    ) {
+      data {
+        tapsCount
+        date
+      }
+    }
+  }
+`
 export const GetBlockedResources = gql`
   query GetBlockedResources(
     $spaceIds: [String!]!
@@ -3704,6 +3803,15 @@ export const GetPostsBySpaceId = gql`
     }
   }
   ${DatahubPostFragment}
+`
+export const GetLastPostedMeme = gql`
+  query GetLastPostedMeme($address: String!) {
+    posts(args: { filter: { createdByAccountAddress: "" }, pageSize: 1 }) {
+      data {
+        createdAtTime
+      }
+    }
+  }
 `
 export const SubscribePost = gql`
   subscription SubscribePost {

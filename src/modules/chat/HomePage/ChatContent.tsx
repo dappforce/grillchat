@@ -5,12 +5,13 @@ import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
 import usePinnedMessage from '@/components/chats/hooks/usePinnedMessage'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import PostMemeThresholdModal from '@/components/modals/PostMemeThresholdModal'
 import { POINTS_THRESHOLD } from '@/constants/chat-rules'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getPostQuery } from '@/services/api/query'
 import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
+import { getTimeLeftUntilCanPostQuery } from '@/services/datahub/posts/query'
 import { useExtensionData } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
@@ -72,36 +73,31 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
 }
 function PostMemeButton() {
   const openExtensionModal = useExtensionData.use.openExtensionModal()
-  const [isPostMemeThresholdModalOpen, setIsPostMemeThresholdModalOpen] =
-    useState(false)
 
-  const myAddress = useMyMainAddress()
-  const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
+  const myAddress = useMyMainAddress() ?? ''
+  const { data, isLoading } = getBalanceQuery.useQuery(myAddress)
+  const { data: timeLeft, isLoading: loadingTimeLeft } =
+    getTimeLeftUntilCanPostQuery.useQuery(myAddress)
 
   const hasThreshold = !isLoading && data && data >= POINTS_THRESHOLD
+  const canPost = !loadingTimeLeft && (timeLeft ?? 0) <= 0
 
   return (
-    <>
-      <PostMemeThresholdModal
-        isOpen={isPostMemeThresholdModalOpen}
-        closeModal={() => setIsPostMemeThresholdModalOpen(false)}
-      />
-      <Button
-        disabled={isLoading}
-        type='button'
-        className='flex items-center justify-center gap-2'
-        size='lg'
-        variant={hasThreshold ? 'primary' : 'primaryOutline'}
-        onClick={() => {
-          hasThreshold
-            ? openExtensionModal('subsocial-image', null)
-            : setIsPostMemeThresholdModalOpen(true)
-        }}
-      >
-        <LuPlusCircle className='relative top-px text-lg' />
-        <span className='text-text'>Post Meme</span>
-      </Button>
-    </>
+    <Button
+      disabled={isLoading || loadingTimeLeft || !canPost}
+      type='button'
+      className='flex items-center justify-center gap-2'
+      size='lg'
+      variant={hasThreshold ? 'primary' : 'primaryOutline'}
+      onClick={() => {
+        hasThreshold
+          ? openExtensionModal('subsocial-image', null)
+          : useMessageData.getState().setOpenMessageModal('not-enough-balance')
+      }}
+    >
+      <LuPlusCircle className='relative top-px text-lg' />
+      <span className='text-text'>Post Meme</span>
+    </Button>
   )
 }
 

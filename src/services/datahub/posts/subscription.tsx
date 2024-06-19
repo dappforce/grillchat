@@ -166,7 +166,8 @@ async function processMessage(
       queryClient,
       null
     )
-    if (newPost?.struct.ownerId === getMyMainAddress() && isCreationEvent) {
+    const myAddress = getMyMainAddress()
+    if (newPost?.struct.ownerId === myAddress && isCreationEvent) {
       toast.custom((t) => (
         <Toast
           t={t}
