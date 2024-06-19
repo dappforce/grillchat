@@ -1,4 +1,5 @@
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
+import LikeIntroModal from '@/components/modals/LikeIntroModal'
 import { env } from '@/env.mjs'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import ChatContent from '../chat/HomePage/ChatContent'
@@ -10,6 +11,7 @@ const MemesPage = () => {
   useTgNoScroll()
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
+      <LikeIntroModal />
       <ChatsContent />
     </LayoutWithBottomNavigation>
   )
