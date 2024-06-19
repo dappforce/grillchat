@@ -13,6 +13,7 @@ import PointsWidget from '@/modules/points/PointsWidget'
 import { getPostQuery } from '@/services/api/query'
 import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { getTimeLeftUntilCanPostQuery } from '@/services/datahub/posts/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -91,6 +92,7 @@ function countdownText(timeLeft: number) {
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 function PostMemeButton() {
+  const sendEvent = useSendEvent()
   const [isOpenIntroModal, setIsOpenIntroModal] = useState(false)
   const openExtensionModal = useExtensionData.use.openExtensionModal()
 
@@ -129,6 +131,7 @@ function PostMemeButton() {
         onClick={() => {
           if (isMoreThanThreshold) {
             if (hasOpenedMeme2EarnIntroStorage.get() !== 'true') {
+              sendEvent('meme2earn_intro_modal_opened')
               setIsOpenIntroModal(true)
               hasOpenedMeme2EarnIntroStorage.set('true')
               return
@@ -153,7 +156,10 @@ function PostMemeButton() {
       </Button>
       <Meme2EarnIntroModal
         isOpen={isOpenIntroModal}
-        closeModal={() => setIsOpenIntroModal(false)}
+        closeModal={() => {
+          sendEvent('meme2earn_intro_modal_closed')
+          setIsOpenIntroModal(false)
+        }}
       />
     </>
   )

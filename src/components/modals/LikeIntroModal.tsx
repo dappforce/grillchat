@@ -1,5 +1,6 @@
 import LikeButtonImage from '@/assets/graphics/like-button.png'
 import LikeDemoImage from '@/assets/graphics/like-message.png'
+import { useSendEvent } from '@/stores/analytics'
 import { LocalStorage } from '@/utils/storage'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
@@ -9,13 +10,15 @@ import Modal from './Modal'
 const hasOpenedModal = new LocalStorage(() => 'has-opened-like-intro-modal')
 
 export default function LikeIntroModal() {
+  const sendEvent = useSendEvent()
   const [isOpenModal, setIsOpenModal] = useState(false)
   useEffect(() => {
     const hasVisited = hasOpenedModal.get() === 'true'
     if (!hasVisited) {
+      sendEvent('like_intro_modal_opened')
       setIsOpenModal(true)
     }
-  }, [])
+  }, [sendEvent])
 
   return (
     <Modal
@@ -41,6 +44,7 @@ export default function LikeIntroModal() {
         onClick={() => {
           hasOpenedModal.set('true')
           setIsOpenModal(false)
+          sendEvent('like_intro_modal_closed')
         }}
       >
         Got it!
