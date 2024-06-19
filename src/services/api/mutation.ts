@@ -1,8 +1,11 @@
 import { CreateUserIdResponse } from '@/pages/api/create-user-id'
+import { ApiDatahubRemoveIdentityBody } from '@/pages/api/datahub/remove-identity'
 import { RevalidateChatInput } from '@/pages/api/revalidation/chat'
 import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import { SaveImageResponse } from '@/pages/api/save-image'
+import { useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
+import { signMessage } from '@/utils/account'
 import { apiInstance } from './utils'
 
 export async function saveFile(content: SaveFileRequest) {
@@ -40,3 +43,17 @@ export function revalidateChatPage(input: RevalidateChatInput) {
   return apiInstance.post('/api/revalidation/chat', input)
 }
 export const useRevalidateChatPage = mutationWrapper(revalidateChatPage)
+
+async function removeMyLinkedIdentity() {
+  const { address, parentProxyAddress, signer } = useMyAccount.getState()
+  if (!address || !parentProxyAddress || !signer)
+    throw new Error('No address or parentProxyAddress')
+
+  const data: ApiDatahubRemoveIdentityBody = {
+    id: parentProxyAddress,
+    sessionAddress: address,
+    sig: await signMessage(parentProxyAddress),
+  }
+  return apiInstance.post('/api/datahub/remove-identity', data)
+}
+export const useRemoveMyLinkedIdentity = mutationWrapper(removeMyLinkedIdentity)
