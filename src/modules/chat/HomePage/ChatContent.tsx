@@ -8,9 +8,9 @@ import Meme2EarnIntroModal, {
   hasOpenedMeme2EarnIntroStorage,
 } from '@/components/modals/Meme2EarnIntroModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { POINTS_THRESHOLD } from '@/constants/chat-rules'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getPostQuery } from '@/services/api/query'
+import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { getTimeLeftUntilCanPostQuery } from '@/services/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -100,6 +100,8 @@ function PostMemeButton() {
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress)
   const { data: timeLeftFromApi, isLoading: loadingTimeLeft } =
     getTimeLeftUntilCanPostQuery.useQuery(myAddress)
+  const { data: tokenomics, isLoading: loadingTokenomics } =
+    getTokenomicsMetadataQuery.useQuery(null)
 
   const [timeLeft, setTimeLeft] = useState<number>(Infinity)
   useEffect(() => {
@@ -116,14 +118,23 @@ function PostMemeButton() {
     }
   }, [timeLeftFromApi])
 
-  const isMoreThanThreshold = !isLoading && data && data >= POINTS_THRESHOLD
+  const isMoreThanThreshold =
+    !isLoading &&
+    !loadingTokenomics &&
+    data &&
+    data >=
+      parseInt(
+        tokenomics?.socialActionBalanceThreshold.createCommentPoints ?? '0'
+      )
   const isTimeConstrained =
     !loadingTimeLeft && timeLeft !== Infinity && (timeLeft ?? 0) > 0
 
   return (
     <>
       <Button
-        disabled={isLoading || loadingTimeLeft || isTimeConstrained}
+        disabled={
+          isLoading || loadingTokenomics || loadingTimeLeft || isTimeConstrained
+        }
         type='button'
         className='flex items-center justify-center gap-2 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
         size='lg'

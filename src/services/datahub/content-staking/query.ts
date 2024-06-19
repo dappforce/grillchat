@@ -654,6 +654,9 @@ export const GET_TOKENOMICS_METADATA = gql`
       socialActionPrice {
         createCommentPoints
       }
+      socialActionBalanceThreshold {
+        createCommentPoints
+      }
     }
   }
 `

@@ -1426,6 +1426,11 @@ export enum SocialAction {
   UpdateSpace = 'UPDATE_SPACE',
 }
 
+export type SocialActionBalanceThresholdResponse = {
+  __typename?: 'SocialActionBalanceThresholdResponse'
+  createCommentPoints: Scalars['String']['output']
+}
+
 export type SocialActionPriceResponse = {
   __typename?: 'SocialActionPriceResponse'
   createCommentPoints: Scalars['String']['output']
@@ -1784,6 +1789,7 @@ export type TokenomicMetadataResponse = {
   __typename?: 'TokenomicMetadataResponse'
   maxTapsPerDay: Scalars['Int']['output']
   maxTotalDailyRewardPoints: Scalars['String']['output']
+  socialActionBalanceThreshold: SocialActionBalanceThresholdResponse
   socialActionPrice: SocialActionPriceResponse
   superLikeWeightPoints: Scalars['String']['output']
 }
@@ -2098,6 +2104,10 @@ export type GetTokenomicsMetadataQuery = {
     superLikeWeightPoints: string
     socialActionPrice: {
       __typename?: 'SocialActionPriceResponse'
+      createCommentPoints: string
+    }
+    socialActionBalanceThreshold: {
+      __typename?: 'SocialActionBalanceThresholdResponse'
       createCommentPoints: string
     }
   }
@@ -3396,6 +3406,9 @@ export const GetTokenomicsMetadata = gql`
       socialActionPrice {
         createCommentPoints
       }
+      socialActionBalanceThreshold {
+        createCommentPoints
+      }
     }
   }
 `
@@ -3806,7 +3819,14 @@ export const GetPostsBySpaceId = gql`
 `
 export const GetLastPostedMeme = gql`
   query GetLastPostedMeme($address: String!) {
-    posts(args: { filter: { createdByAccountAddress: "" }, pageSize: 1 }) {
+    posts(
+      args: {
+        filter: { createdByAccountAddress: $address }
+        pageSize: 1
+        orderBy: "createdAtTime"
+        orderDirection: DESC
+      }
+    ) {
       data {
         createdAtTime
       }

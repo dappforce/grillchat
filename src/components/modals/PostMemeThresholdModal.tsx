@@ -1,14 +1,18 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import Pointup from '@/assets/emojis/pointup.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
-import { POINTS_THRESHOLD } from '@/constants/chat-rules'
+import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
 import Button from '../Button'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
 export default function PostMemeThresholdModal(props: ModalFunctionalityProps) {
-  const thresholdPoints = formatNumber(POINTS_THRESHOLD, { shorten: true })
+  const { data: tokenomics } = getTokenomicsMetadataQuery.useQuery(null)
+  const thresholdPoints = formatNumber(
+    tokenomics?.socialActionBalanceThreshold.createCommentPoints ?? '0',
+    { shorten: true }
+  )
   return (
     <Modal
       {...props}
