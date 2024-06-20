@@ -1,4 +1,3 @@
-import ClickableMedia from '@/components/ClickableMedia'
 import MediaLoader from '@/components/MediaLoader'
 import { cx } from '@/utils/class-names'
 import CommonChatItem from '../common/CommonChatItem'
@@ -26,21 +25,11 @@ export default function ImageChatItem(props: ExtensionChatItemProps) {
     >
       {({ isMyMessage }) => (
         <div className={cx('flex flex-col', !isMyMessage && 'mt-1')}>
-          <ClickableMedia
+          <MediaLoader
+            containerClassName='rounded-[4px] overflow-hidden w-full cursor-pointer'
+            placeholderClassName={cx('w-[320px] aspect-square')}
+            className='w-[320px] object-contain'
             src={imageProperties.image}
-            alt=''
-            trigger={(onClick) => (
-              <MediaLoader
-                containerClassName='rounded-[4px] overflow-hidden w-full cursor-pointer'
-                placeholderClassName={cx('w-[320px] aspect-square')}
-                className='w-[320px] object-contain'
-                src={imageProperties.image}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onClick()
-                }}
-              />
-            )}
           />
         </div>
       )}
