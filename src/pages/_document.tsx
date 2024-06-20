@@ -1,5 +1,6 @@
 import { env } from '@/env.mjs'
 import { Head, Html, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 import urlJoin from 'url-join'
 export default function Document() {
   return (
@@ -66,6 +67,45 @@ export default function Document() {
             __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MQZ9PG2W" height="0" width="0" style="display: none; visibility: hidden;" />`,
           }}
         />
+        <Script id='app_launched_start' strategy='beforeInteractive'>
+          {`
+            let deviceId = null
+            if (typeof window !== 'undefined') {
+              const keys = Object.keys(localStorage)
+              for (let i = 0; i < keys.length; i++) {
+                if (keys[i].startsWith('AMP_')) {
+                  const value = window.localStorage.getItem(keys[i])
+                  try {
+                    const parsed = JSON.parse(value)
+                    if (parsed && parsed.deviceId) {
+                      deviceId = parsed.deviceId
+                      break
+                    }
+                  } catch {}
+                }
+              }
+            }
+            fetch('https://api2.amplitude.com/2/httpapi', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: '*/*',
+              },
+              body: JSON.stringify({
+                api_key: '${env.NEXT_PUBLIC_AMP_ID}',
+                events: [
+                  {
+                    event_type: 'app_launch_started',
+                    device_id: deviceId
+                  },
+                ],
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => console.log('APP_LAUNCHED_START', deviceId))
+              .catch((error) => console.error('ERROR_APP_LAUNCHED_START', error))
+          `}
+        </Script>
       </body>
     </Html>
   )
