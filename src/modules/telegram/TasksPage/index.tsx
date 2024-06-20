@@ -15,6 +15,7 @@ import {
   getDailyRewardQuery,
   getTodaySuperLikeCountQuery,
 } from '@/services/datahub/content-staking/query'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { formatNumber } from '@/utils/strings'
 import Image, { ImageProps } from 'next/image'
@@ -42,6 +43,7 @@ export default function TasksPage() {
 }
 
 function DailyTasks() {
+  const sendEvent = useSendEvent()
   const [isOpen, setIsOpen] = useState(false)
   const myAddress = useMyMainAddress() ?? ''
   const { data: superLikeCount, isLoading } =
@@ -63,7 +65,10 @@ function DailyTasks() {
         </span>
         <div className='flex flex-col gap-2'>
           <TaskCard
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              sendEvent('tasks_daily_reward_open')
+              setIsOpen(true)
+            }}
             image={Calendar}
             title='Check in'
             reward={5000}
@@ -71,6 +76,9 @@ function DailyTasks() {
           />
           <TaskCard
             image={Like}
+            onClick={() => {
+              sendEvent('tasks_like_open')
+            }}
             title='Like 10 memes'
             href='/tg/memes'
             reward={5000}
@@ -94,6 +102,7 @@ function DailyTasks() {
 }
 
 function BasicTasks() {
+  const sendEvent = useSendEvent()
   return (
     <div className='flex flex-col gap-5'>
       <span className='self-center text-lg font-bold text-text-muted'>
@@ -102,6 +111,9 @@ function BasicTasks() {
       <div className='flex flex-col gap-2'>
         <TaskCard
           image={Telegram}
+          onClick={() => {
+            sendEvent('tasks_telegram_open')
+          }}
           title='Join Our Telegram Channel'
           href='https://t.me/EpicAppNet'
           openInNewTab
@@ -110,6 +122,9 @@ function BasicTasks() {
         />
         <TaskCard
           image={TwitterX}
+          onClick={() => {
+            sendEvent('tasks_x_open')
+          }}
           href='https://x.com/EpicAppNet'
           openInNewTab
           title='Join Our Twitter'
