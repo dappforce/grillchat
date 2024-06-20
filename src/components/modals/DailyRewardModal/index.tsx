@@ -10,8 +10,9 @@ import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { HiXMark } from 'react-icons/hi2'
 import Button from '../../Button'
 import RewardAnimation from './RewardAnimation'
 
@@ -27,6 +28,12 @@ export default function DailyRewardModal({
     setIsOpenAnimation(true)
     close()
   }
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsOpenAnimation(false)
+    }
+  }, [isOpen])
 
   const sendEvent = useSendEvent()
   const myAddress = useMyMainAddress()
@@ -51,6 +58,7 @@ export default function DailyRewardModal({
         enterTo='opacity-100'
         leaveFrom='h-auto'
         leaveTo='opacity-0 !duration-150'
+        onClick={close}
       />
       {isOpenAnimation && isOpen && (
         <RewardAnimation claim={claimable!} close={closeModal} />
@@ -64,6 +72,14 @@ export default function DailyRewardModal({
         leaveFrom='h-auto'
         leaveTo='opacity-0 translate-y-24 !duration-150'
       >
+        <Button
+          size='circleSm'
+          variant='transparent'
+          className='absolute right-4 top-4'
+          onClick={close}
+        >
+          <HiXMark className='text-lg' />
+        </Button>
         <div className='mx-auto flex w-full max-w-screen-md flex-col gap-6 overflow-auto px-5 py-6 pb-12'>
           <div className='flex flex-col gap-2'>
             <span className='text-2xl font-medium'>Your daily rewards</span>
@@ -75,7 +91,8 @@ export default function DailyRewardModal({
             {data?.claims.map((claim) => {
               const isClaimed =
                 claim.claimValidDay &&
-                Number(claim.claimValidDay) < (serverDay?.day ?? 0)
+                !claim.openToClaim &&
+                Number(claim.claimValidDay) <= (serverDay?.day ?? 0)
               const isClaimable =
                 Number(claim.claimValidDay) === serverDay?.day &&
                 claim.openToClaim
@@ -122,6 +139,7 @@ export default function DailyRewardModal({
           <div className='grid w-full grid-cols-1 gap-4'>
             <Button
               size='lg'
+              disabled={!claimable}
               isLoading={isLoading}
               onClick={() => {
                 sendEvent('daily_reward_claimed')
@@ -129,7 +147,11 @@ export default function DailyRewardModal({
                 setIsOpenAnimation(true)
               }}
             >
-              {isMysteryBoxClaimable ? 'Open Mystery Box' : 'Claim'}
+              {!claimable
+                ? 'You have claimed your daily reward'
+                : isMysteryBoxClaimable
+                ? 'Open Mystery Box'
+                : 'Claim'}
             </Button>
           </div>
         </div>
