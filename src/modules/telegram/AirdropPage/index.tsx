@@ -60,15 +60,29 @@ export default function AirdropPage() {
               </Button>
             </div>
             {isAdmin && (
-              <Button
-                variant='redOutline'
-                onClick={() => {
-                  sendEvent('remove_account_click')
-                  setIsOpenRemoveAccountModal(true)
-                }}
-              >
-                Remove Account
-              </Button>
+              <div className='flex flex-col gap-2'>
+                <Button
+                  variant='redOutline'
+                  onClick={() => {
+                    sendEvent('remove_account_click')
+                    setIsOpenRemoveAccountModal(true)
+                  }}
+                >
+                  Remove Account
+                </Button>
+                <Button
+                  variant='transparent'
+                  onClick={() => {
+                    sendEvent('clear_local_storage_click')
+                    if (confirm('Are you sure to remove all local data?')) {
+                      localStorage.clear()
+                      window.location.reload()
+                    }
+                  }}
+                >
+                  Clear Local Storage
+                </Button>
+              </div>
             )}
             {/* {isLoading ? (
               <Skeleton className='w-12' />
