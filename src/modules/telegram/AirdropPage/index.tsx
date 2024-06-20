@@ -80,7 +80,7 @@ export default function AirdropPage() {
                     }
                   }}
                 >
-                  Clear Local Storage
+                  Clear Local Data
                 </Button>
               </div>
             )}
