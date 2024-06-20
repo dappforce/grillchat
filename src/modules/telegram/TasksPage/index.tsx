@@ -8,7 +8,9 @@ import Card from '@/components/Card'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
-import Image from 'next/image'
+import { formatNumber } from '@/utils/strings'
+import Image, { ImageProps } from 'next/image'
+import { FaChevronRight } from 'react-icons/fa6'
 
 export default function TasksPage() {
   useTgNoScroll()
@@ -36,32 +38,19 @@ function DailyTasks() {
         Daily
       </span>
       <div className='flex flex-col gap-2'>
-        <Card className='flex items-center gap-2.5 bg-background-light p-2.5'>
-          <Image src={Calendar} alt='' className='h-14 w-14' />
-          <div className='flex flex-col gap-1'>
-            <span className='font-bold'>Check in</span>
-            <div className='flex items-center gap-0.5'>
-              <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-              <span className='text-text-muted'>+5,000</span>
-            </div>
-          </div>
-          <div className='ml-auto flex items-center justify-center pr-1'>
-            <Check />
-          </div>
-        </Card>
-        <Card className='flex items-center gap-2.5 bg-background-light p-2.5'>
-          <Image src={Like} alt='' className='h-14 w-14' />
-          <div className='flex flex-col gap-1'>
-            <span className='font-bold'>Like 10 memes</span>
-            <div className='flex items-center gap-0.5'>
-              <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-              <span className='text-text-muted'>+5,000</span>
-            </div>
-          </div>
-          <div className='ml-auto flex items-center justify-center pr-1'>
-            <span className='font-bold'>5/10</span>
-          </div>
-        </Card>
+        <TaskCard
+          image={Calendar}
+          title='Check in'
+          reward={5000}
+          completed={false}
+        />
+        <TaskCard
+          image={Like}
+          title='Like 10 memes'
+          reward={5000}
+          completed={false}
+          customAction={<span className='font-bold'>5/10</span>}
+        />
       </div>
     </div>
   )
@@ -74,34 +63,56 @@ function BasicTasks() {
         Basic Tasks
       </span>
       <div className='flex flex-col gap-2'>
-        <Card className='flex items-center gap-2.5 bg-background-light p-2.5'>
-          <Image src={Telegram} alt='' className='h-14 w-14' />
-          <div className='flex flex-col gap-1'>
-            <span className='font-bold'>Join Our Telegram Channel</span>
-            <div className='flex items-center gap-0.5'>
-              <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-              <span className='text-text-muted'>+30,000</span>
-            </div>
-          </div>
-          <div className='ml-auto flex items-center justify-center pr-1'>
-            <Check />
-          </div>
-        </Card>
-        <Card className='flex items-center gap-2.5 bg-background-light p-2.5'>
-          <Image src={TwitterX} alt='' className='h-14 w-14' />
-          <div className='flex flex-col gap-1'>
-            <span className='font-bold'>Join Our Twitter</span>
-            <div className='flex items-center gap-0.5'>
-              <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-              <span className='text-text-muted'>+30,000</span>
-            </div>
-          </div>
-          <div className='ml-auto flex items-center justify-center pr-1'>
-            <span className='font-bold'>5/10</span>
-          </div>
-        </Card>
+        <TaskCard
+          image={Telegram}
+          title='Join Our Telegram Channel'
+          reward={30000}
+          completed={false}
+        />
+        <TaskCard
+          image={TwitterX}
+          title='Join Our Twitter'
+          reward={30000}
+          completed={false}
+        />
       </div>
     </div>
+  )
+}
+
+function TaskCard({
+  completed,
+  image,
+  reward,
+  title,
+  customAction,
+}: {
+  image: ImageProps['src']
+  title: string
+  reward: number
+  completed: boolean
+  customAction?: React.ReactNode
+}) {
+  return (
+    <Card className='flex items-center gap-2.5 bg-background-light p-2.5'>
+      <Image src={image} alt='' className='h-14 w-14' />
+      <div className='flex flex-col gap-1'>
+        <span className='font-bold'>{title}</span>
+        <div className='flex items-center gap-0.5'>
+          <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
+          <span className='text-text-muted'>+{formatNumber(reward)}</span>
+        </div>
+      </div>
+      <div className='ml-auto flex items-center justify-center pr-1'>
+        {customAction ? (
+          customAction
+        ) : completed ? (
+          <Check />
+        ) : (
+          <FaChevronRight className='text-text-muted' />
+        )}
+      </div>
+    </Card>
   )
 }
 
