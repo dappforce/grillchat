@@ -116,6 +116,7 @@ function PointsDrawerContent({
         <div className='mx-auto flex w-full max-w-screen-md flex-1 flex-col overflow-auto'>
           <Image
             src={BlueGradient}
+            priority
             alt=''
             className='absolute left-1/2 top-0 w-full -translate-x-1/2'
           />
