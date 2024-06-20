@@ -81,7 +81,7 @@ function DailyTasks() {
                   isLoading={isLoading}
                   className='relative -top-0.5 inline-block w-6 align-middle'
                 >
-                  {superLikeCount?.count}
+                  {10 - (superLikeCount?.count ?? 0)}
                 </SkeletonFallback>
                 /10
               </span>
