@@ -105,9 +105,14 @@ function BasicTasks() {
   const sendEvent = useSendEvent()
   return (
     <div className='flex flex-col gap-5'>
-      <span className='self-center text-lg font-bold text-text-muted'>
-        Basic Tasks
-      </span>
+      <div className='flex flex-col gap-1'>
+        <span className='self-center text-lg font-bold text-text-muted'>
+          Basic Tasks
+        </span>
+        <span className='self-center text-center text-sm text-text-muted'>
+          Join our social media and receive rewards later
+        </span>
+      </div>
       <div className='flex flex-col gap-2'>
         <TaskCard
           image={Telegram}
