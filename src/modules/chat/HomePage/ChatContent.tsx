@@ -83,13 +83,11 @@ export default function ChatContent({ chatId, hubId, className }: Props) {
 
 function countdownText(timeLeft: number) {
   const timeDuration = dayjs.duration({ milliseconds: timeLeft })
-  const hours = Math.floor(timeDuration.asHours())
-  const minutes = Math.floor(timeDuration.asMinutes()) - hours * 60
-  const seconds =
-    Math.floor(timeDuration.asSeconds()) - minutes * 60 - hours * 60 * 60
-  return `${hours.toString().padStart(2, '0')}:${minutes
+  const minutes = Math.floor(timeDuration.asMinutes())
+  const seconds = Math.floor(timeDuration.asSeconds()) - minutes * 60
+  return `${minutes.toString().padStart(2, '0')}:${seconds
     .toString()
-    .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    .padStart(2, '0')}`
 }
 function PostMemeButton() {
   const sendEvent = useSendEvent()
@@ -161,7 +159,7 @@ function PostMemeButton() {
         ) : (
           <>
             <FaRegClock className='relative top-px text-lg' />
-            <span>{countdownText(timeLeft)}</span>
+            <span>Posting available in: {countdownText(timeLeft)}</span>
           </>
         )}
       </Button>

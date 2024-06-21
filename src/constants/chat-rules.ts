@@ -1,1 +1,1 @@
-export const TIME_CONSTRAINT = 3 * 60 * 60 * 1000 // 3 hours
+export const TIME_CONSTRAINT = 5 * 60 * 1000 // 5 mins
