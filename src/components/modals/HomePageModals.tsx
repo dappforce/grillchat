@@ -3,14 +3,9 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { LocalStorage } from '@/utils/storage'
 import dayjs from 'dayjs'
-import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import RewardPerDayModal from './RewardPerDayModal'
 import WelcomeModal from './WelcomeModal'
-
-const DailyRewardModal = dynamic(() => import('./DailyRewardModal'), {
-  ssr: false,
-})
 
 const hasVisitedHomeStorage = new LocalStorage(() => 'has-visited-home')
 const progressModalStorage = {
