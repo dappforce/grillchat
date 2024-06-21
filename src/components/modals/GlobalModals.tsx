@@ -1,6 +1,6 @@
 import { useMessageData } from '@/stores/message'
-import ShouldStakeModal from '../content-staking/ShouldStakeModal'
 import BlockedModal from '../moderation/BlockedModal'
+import PostMemeThresholdModal from './PostMemeThresholdModal'
 
 export default function GlobalModals() {
   const isOpenMessageModal = useMessageData.use.isOpenMessageModal()
@@ -8,8 +8,8 @@ export default function GlobalModals() {
 
   return (
     <>
-      <ShouldStakeModal
-        isOpen={isOpenMessageModal === 'should-stake'}
+      <PostMemeThresholdModal
+        isOpen={isOpenMessageModal === 'not-enough-balance'}
         closeModal={() => setOpenMessageModal('')}
       />
       <BlockedModal

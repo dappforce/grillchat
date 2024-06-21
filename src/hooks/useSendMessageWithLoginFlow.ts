@@ -36,7 +36,7 @@ export default function useSendMessageWithLoginFlow(
       socialAction: SocialAction.CreateComment,
     })
     if (!isSufficient) {
-      setOpenMessageModal('should-stake')
+      setOpenMessageModal('not-enough-balance')
       return null
     }
 

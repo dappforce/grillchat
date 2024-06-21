@@ -1,16 +1,19 @@
 import { getMaxMessageLength } from '@/constants/chat'
+import { TIME_CONSTRAINT } from '@/constants/chat-rules'
 import {
   ApiDatahubPostMutationBody,
   ApiDatahubPostResponse,
 } from '@/pages/api/datahub/post'
 import { getPostQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
+import { queryClient } from '@/services/provider'
 import {
   addOptimisticData,
   deleteOptimisticData,
 } from '@/services/subsocial/commentIds/optimistic'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
+import { getMyMainAddress } from '@/stores/my-account'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { TAGS_REGEX } from '@/utils/strings'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
@@ -28,6 +31,7 @@ import {
 } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
 import { DatahubParams, createSignedSocialDataEvent } from '../utils'
+import { getTimeLeftUntilCanPostQuery } from './query'
 
 type GetDeterministicIdInput = {
   uuid: string
@@ -243,6 +247,14 @@ export function useSendMessage(
         })
       }
       config?.onMutate?.(data)
+      const myAddress = getMyMainAddress()
+      if (queryClient && myAddress) {
+        getTimeLeftUntilCanPostQuery.setQueryData(
+          queryClient,
+          myAddress,
+          TIME_CONSTRAINT
+        )
+      }
     },
     onError: async (err, data, context) => {
       config?.onError?.(err, data, context)
@@ -258,6 +270,11 @@ export function useSendMessage(
         idToDelete: newId,
       })
       config?.onError?.(err, data, context)
+
+      const myAddress = getMyMainAddress()
+      if (queryClient && myAddress) {
+        getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
+      }
     },
     onSuccess: async (...params) => {
       config?.onSuccess?.(...params)

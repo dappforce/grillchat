@@ -1,3 +1,4 @@
+import { ApiDatahubContentStakingMutationBody } from '@/pages/api/datahub/content-staking'
 import { ApiDatahubSuperLikeMutationBody } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
 import { queryClient } from '@/services/provider'
@@ -6,9 +7,15 @@ import { getMyMainAddress } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
-import { DatahubParams, createSocialDataEventPayload } from '../utils'
+import { subscribeBalance } from '../balances/subscription'
+import {
+  DatahubParams,
+  createSignedSocialDataEvent,
+  createSocialDataEventPayload,
+} from '../utils'
 import {
   getAddressLikeCountToPostQuery,
+  getDailyRewardQuery,
   getSuperLikeCountQuery,
   getTodaySuperLikeCountQuery,
 } from './query'
@@ -103,6 +110,40 @@ export const useCreateSuperLike = mutationWrapper(
     },
     onSuccess: () => {
       allowWindowUnload()
+    },
+  }
+)
+
+type ClaimDailyRewardArgs =
+  SocialCallDataArgs<'synth_gamification_claim_entrance_daily_reward'>
+async function claimDailyReward(params: DatahubParams<ClaimDailyRewardArgs>) {
+  const input = await createSignedSocialDataEvent(
+    socialCallName.synth_gamification_claim_entrance_daily_reward,
+    params,
+    undefined
+  )
+
+  await apiInstance.post<any, any, ApiDatahubContentStakingMutationBody>(
+    '/api/datahub/content-staking',
+    input as any
+  )
+}
+
+export const useClaimDailyReward = mutationWrapper(
+  async () => {
+    await claimDailyReward({
+      ...getCurrentWallet(),
+      args: undefined as any,
+    })
+  },
+  {
+    onSuccess: () => {
+      const myAddress = getMyMainAddress()
+      if (!myAddress || !queryClient) return
+      subscribeBalance(queryClient, myAddress, true, () => {
+        if (!queryClient) return
+        getDailyRewardQuery.invalidate(queryClient, myAddress)
+      })
     },
   }
 )

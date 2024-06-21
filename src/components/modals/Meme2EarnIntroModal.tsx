@@ -13,9 +13,11 @@ import { useEffect, useState } from 'react'
 import Button from '../Button'
 import LinkText from '../LinkText'
 import SkeletonFallback from '../SkeletonFallback'
-import Modal from './Modal'
+import Modal, { ModalFunctionalityProps } from './Modal'
 
-const hasVisitedStorage = new LocalStorage(() => 'has-visited')
+export const hasOpenedMeme2EarnIntroStorage = new LocalStorage(
+  () => 'has-visited'
+)
 
 const steps = [
   {
@@ -38,21 +40,14 @@ const steps = [
   },
 ]
 
-export default function Meme2EarnIntroModal() {
+export default function Meme2EarnIntroModal(props: ModalFunctionalityProps) {
   const [step, setStep] = useState(0)
-  const [isOpenModal, setIsOpenModal] = useState(false)
-  useEffect(() => {
-    const hasVisited = hasVisitedStorage.get() === 'true'
-    if (!hasVisited) {
-      setIsOpenModal(true)
-    }
-  }, [])
 
   useEffect(() => {
-    if (isOpenModal) {
+    if (props.isOpen) {
       setStep(0)
     }
-  }, [isOpenModal])
+  }, [props.isOpen])
 
   const content = steps[step]
   if (!content) return null
@@ -64,7 +59,7 @@ export default function Meme2EarnIntroModal() {
       title={content.title}
       description={content.description}
       titleClassName='font-medium'
-      isOpen={isOpenModal}
+      {...props}
       closeModal={() => undefined}
     >
       <div className='flex flex-col gap-6'>
@@ -76,8 +71,8 @@ export default function Meme2EarnIntroModal() {
               setStep(step + 1)
               return
             }
-            setIsOpenModal(false)
-            hasVisitedStorage.set('true')
+            props.closeModal()
+            hasOpenedMeme2EarnIntroStorage.set('true')
           }}
         >
           {step === steps.length - 1 ? 'Got it' : 'Next'}
@@ -95,7 +90,7 @@ function HowItWorks() {
         <span>👍 Post and like memes to earn Points</span>
         <span>
           💎 Creating a meme costs{' '}
-          <SkeletonFallback isLoading={isLoading} className='inline-block'>
+          <SkeletonFallback isLoading={isLoading} className='inline-block w-8'>
             <span>{data?.socialActionPrice.createCommentPoints}</span>
           </SkeletonFallback>{' '}
           Points

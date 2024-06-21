@@ -1,5 +1,6 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import { getPostQuery } from '@/services/api/query'
+import { TIME_CONSTRAINT } from '@/constants/chat-rules'
+import { getPostQuery, getServerTime } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
 import { QueryConfig, createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
@@ -17,6 +18,8 @@ import {
 import {
   GetCommentIdsInPostIdQuery,
   GetCommentIdsInPostIdQueryVariables,
+  GetLastPostedMemeQuery,
+  GetLastPostedMemeQueryVariables,
   GetOwnedPostsQuery,
   GetOwnedPostsQueryVariables,
   GetPostMetadataQuery,
@@ -446,4 +449,45 @@ export const getPostsBySpaceIdQuery = createQuery({
   defaultConfigGenerator: (id) => ({
     enabled: !!id,
   }),
+})
+
+const GET_LAST_POSTED_MEME = gql`
+  query GetLastPostedMeme($address: String!) {
+    posts(
+      args: {
+        filter: { createdByAccountAddress: $address }
+        pageSize: 1
+        orderBy: "createdAtTime"
+        orderDirection: DESC
+      }
+    ) {
+      data {
+        createdAtTime
+      }
+    }
+  }
+`
+async function getTimeLeftUntilCanPost(address: string) {
+  const [lastPost, serverTime] = await Promise.all([
+    datahubQueryRequest<
+      GetLastPostedMemeQuery,
+      GetLastPostedMemeQueryVariables
+    >({
+      document: GET_LAST_POSTED_MEME,
+      variables: { address },
+    }),
+    getServerTime(),
+  ] as const)
+  const lastPostedTime = lastPost.posts.data?.[0]?.createdAtTime
+  if (!lastPostedTime) {
+    return Infinity
+  }
+
+  const lastPosted = new Date(lastPost.posts.data?.[0]?.createdAtTime).getTime()
+  const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
+  return Math.max(timeLeft, 0)
+}
+export const getTimeLeftUntilCanPostQuery = createQuery({
+  key: 'lastPostedMeme',
+  fetcher: getTimeLeftUntilCanPost,
 })

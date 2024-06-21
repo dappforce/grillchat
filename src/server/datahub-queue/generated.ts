@@ -50,6 +50,14 @@ export type CreateMutateActiveStakingSuperLikeInput = {
   sig: Scalars['String']['input'];
 };
 
+export type CreateMutateGamificationEntityInput = {
+  callData?: InputMaybe<SocialCallDataInput>;
+  dataType: SocialEventDataType;
+  protVersion?: InputMaybe<Scalars['String']['input']>;
+  providerAddr: Scalars['String']['input'];
+  sig: Scalars['String']['input'];
+};
+
 export type CreateMutateLinkedIdentityInput = {
   callData?: InputMaybe<SocialCallDataInput>;
   dataType: SocialEventDataType;
@@ -167,6 +175,8 @@ export type Mutation = {
   addNewLinkedIdentityExternalProvider: IngestDataResponseDto;
   addPostView: IngestDataResponseDto;
   addPostViewsBatch: IngestDataResponseDto;
+  addTappingActivityStates: IngestDataResponseDto;
+  claimEntranceDailyReward: IngestDataResponseDto;
   createLinkedIdentity: IngestDataResponseDto;
   createPostOffChain: IngestDataResponseDto;
   createPostOptimistic: IngestDataResponseDto;
@@ -205,6 +215,16 @@ export type MutationAddPostViewArgs = {
 
 export type MutationAddPostViewsBatchArgs = {
   args: CreateMutatePostOffChainDataInput;
+};
+
+
+export type MutationAddTappingActivityStatesArgs = {
+  args: CreateMutateGamificationEntityInput;
+};
+
+
+export type MutationClaimEntranceDailyRewardArgs = {
+  args: CreateMutateGamificationEntityInput;
 };
 
 
@@ -389,6 +409,7 @@ export enum SocialCallName {
   SynthFarcasterCreatePostFromCast = 'synth_farcaster_create_post_from_cast',
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
   SynthGamificationAddTappingActivityStates = 'synth_gamification_add_tapping_activity_states',
+  SynthGamificationClaimEntranceDailyReward = 'synth_gamification_claim_entrance_daily_reward',
   SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
@@ -452,6 +473,13 @@ export type UpdatePostOptimisticInput = {
   providerAddr: Scalars['String']['input'];
   sig: Scalars['String']['input'];
 };
+
+export type ClaimDailyRewardMutationVariables = Exact<{
+  args: CreateMutateGamificationEntityInput;
+}>;
+
+
+export type ClaimDailyRewardMutation = { __typename?: 'Mutation', claimEntranceDailyReward: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 export type LinkIdentityMutationVariables = Exact<{
   args: CreateMutateLinkedIdentityInput;
@@ -557,6 +585,14 @@ export type CreateSuperLikeMutationVariables = Exact<{
 export type CreateSuperLikeMutation = { __typename?: 'Mutation', activeStakingCreateSuperLike: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 
+export const ClaimDailyReward = gql`
+    mutation ClaimDailyReward($args: CreateMutateGamificationEntityInput!) {
+  claimEntranceDailyReward(args: $args) {
+    processed
+    message
+  }
+}
+    `;
 export const LinkIdentity = gql`
     mutation LinkIdentity($args: CreateMutateLinkedIdentityInput!) {
   initLinkedIdentity(args: $args) {

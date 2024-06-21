@@ -129,10 +129,19 @@ async function processSubscriptionEvent(
     case SocialCallName.SynthActiveStakingCreateSuperLike:
       action = 'like'
       break
+    case SocialCallName.SynthGamificationClaimEntranceDailyReward:
+      action = 'claiming of daily reward'
+      break
   }
 
   let reason = ''
   switch (eventData.meta.code) {
+    case ServiceMessageStatusCode.ExpiredEntranceDailyRewardClaimForbidden:
+      reason = 'You already claimed the daily reward'
+      break
+    case ServiceMessageStatusCode.FutureEntranceDailyRewardClaimForbidden:
+      reason = 'You can claim the daily reward only for the current day'
+      break
     case ServiceMessageStatusCode.Unauthorized:
       reason = 'You are not authorized to perform this action'
       break

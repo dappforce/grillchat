@@ -116,6 +116,7 @@ function PointsDrawerContent({
         <div className='mx-auto flex w-full max-w-screen-md flex-1 flex-col overflow-auto'>
           <Image
             src={BlueGradient}
+            priority
             alt=''
             className='absolute left-1/2 top-0 w-full -translate-x-1/2'
           />
@@ -154,7 +155,7 @@ function PointsDrawerContent({
                   POINTS EARNED:
                 </span>
                 <div className='mr-1 flex items-center justify-center gap-3'>
-                  <Image src={Diamond} alt='' className='h-8 w-8' />
+                  <Image src={Diamond} alt='' className='-mr-1.5 h-8 w-8' />
                   <span className='flex h-8 items-center text-2xl font-bold'>
                     <Points />
                   </span>
@@ -277,7 +278,9 @@ function LinkWrapper({
   return link
 }
 
-function LikeCount({ shorten }: { shorten?: boolean }) {
+const MAX_LIKES_PER_DAY = 10
+
+function LikeCount() {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getTodaySuperLikeCountQuery.useQuery(
@@ -290,7 +293,7 @@ function LikeCount({ shorten }: { shorten?: boolean }) {
     )
   }
 
-  return <span>{formatNumber(data?.count ?? '0', { shorten })}</span>
+  return <span>{MAX_LIKES_PER_DAY - (data?.count ?? 0)}</span>
 }
 
 function Points({

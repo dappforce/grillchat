@@ -651,7 +651,11 @@ export const GET_TOKENOMICS_METADATA = gql`
   query GetTokenomicsMetadata {
     activeStakingTokenomicMetadata {
       superLikeWeightPoints
+      likerRewardDistributionPercent
       socialActionPrice {
+        createCommentPoints
+      }
+      socialActionBalanceThreshold {
         createCommentPoints
       }
     }

@@ -1,8 +1,7 @@
 import TapFromMobileImage from '@/assets/graphics/tap-from-mobile.png'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
-import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
-import WelcomeModal from '@/components/modals/WelcomeModal'
+import HomePageModals from '@/components/modals/HomePageModals'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
 import {
@@ -29,8 +28,7 @@ const TapPage = () => {
         className='sticky top-0'
       />
       <TapPageContent />
-      <WelcomeModal />
-      <RewardPerDayModal />
+      <HomePageModals />
     </LayoutWithBottomNavigation>
   )
 }

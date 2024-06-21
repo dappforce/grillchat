@@ -2,6 +2,7 @@ import {
   ApiDatahubPostGetResponse,
   DatahubPostQueryInput,
 } from '@/pages/api/datahub/post'
+import { ApiDayResponse } from '@/pages/api/day'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
 import { ApiTimeResponse } from '@/pages/api/time'
@@ -136,3 +137,18 @@ export async function getServerTime() {
     throw new Error('Failed to get server time')
   }
 }
+
+async function getServerDay() {
+  try {
+    const res = await apiInstance.get('/api/day')
+    const data = res.data as ApiDayResponse
+    return { day: data.day, week: data.week }
+  } catch (err) {
+    console.error('Failed to get server day', err)
+    throw new Error('Failed to get server day')
+  }
+}
+export const getServerDayQuery = createQuery({
+  key: 'server-day',
+  fetcher: getServerDay,
+})

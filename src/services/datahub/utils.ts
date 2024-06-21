@@ -102,7 +102,7 @@ export async function createSocialDataEventPayload<
     DatahubParams<{}>,
     'timestamp' | 'address' | 'uuid' | 'proxyToAddress'
   >,
-  eventArgs: SocialCallDataArgs<T>,
+  eventArgs: SocialCallDataArgs<T> | undefined,
   content?: PostContent
 ) {
   const owner = proxyToAddress || address
@@ -112,7 +112,7 @@ export async function createSocialDataEventPayload<
     callData: {
       name: callName,
       signer: owner || '',
-      args: JSON.stringify(eventArgs),
+      args: eventArgs ? JSON.stringify(eventArgs) : undefined,
       timestamp: timestamp || (await getServerTime()),
       uuid: uuid || crypto.randomUUID(),
       proxy: proxyToAddress ? address : undefined,
@@ -129,7 +129,7 @@ export async function createSignedSocialDataEvent<
 >(
   callName: T,
   params: DatahubParams<{}>,
-  eventArgs: SocialCallDataArgs<T>,
+  eventArgs: SocialCallDataArgs<T> | undefined,
   content?: any
 ) {
   const payload = await createSocialDataEventPayload(
