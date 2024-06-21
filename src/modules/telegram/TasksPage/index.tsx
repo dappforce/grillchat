@@ -58,10 +58,22 @@ function DailyTasks() {
 
   const { data: serverDay } = getServerDayQuery.useQuery(null)
   const { data: dailyReward } = getDailyRewardQuery.useQuery(myAddress ?? '')
-  const isTodayRewardClaimed = !!dailyReward?.claims.find(
-    (claim) =>
-      Number(claim.claimValidDay) === serverDay?.day && !claim.openToClaim
+  const todayReward = dailyReward?.claims.find(
+    (claim) => Number(claim.claimValidDay) === serverDay?.day
   )
+  const isTodayRewardClaimed = !!todayReward?.openToClaim
+
+  let todayRewardPoints: string | number = Number(
+    todayReward?.claimRewardPoints ?? 0
+  )
+  if (
+    todayReward?.claimRewardPointsRange &&
+    todayReward?.claimRewardPointsRange?.length > 0
+  ) {
+    todayRewardPoints = `${formatNumber(
+      todayReward.claimRewardPointsRange[0]
+    )} - ${formatNumber(todayReward.claimRewardPointsRange[1])}`
+  }
 
   return (
     <>
@@ -78,7 +90,7 @@ function DailyTasks() {
             }}
             image={Calendar}
             title='Check in'
-            reward={5000}
+            reward={todayRewardPoints}
             completed={isTodayRewardClaimed}
           />
           <TaskCard
@@ -160,7 +172,7 @@ function TaskCard({
 }: {
   image: ImageProps['src']
   title: string
-  reward: number
+  reward: number | string
   completed: boolean
   customAction?: React.ReactNode
   onClick?: () => void
@@ -177,7 +189,9 @@ function TaskCard({
         <span className='font-bold'>{title}</span>
         <div className='flex items-center gap-0.5'>
           <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-          <span className='text-text-muted'>+{formatNumber(reward)}</span>
+          <span className='text-text-muted'>
+            +{typeof reward === 'number' ? formatNumber(reward) : reward}
+          </span>
         </div>
       </div>
       <div className='ml-auto flex items-center justify-center pr-1'>
