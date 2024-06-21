@@ -90,7 +90,7 @@ function HowItWorks() {
         <span>👍 Post and like memes to earn Points</span>
         <span>
           💎 Creating a meme costs{' '}
-          <SkeletonFallback isLoading={isLoading} className='inline-block'>
+          <SkeletonFallback isLoading={isLoading} className='inline-block w-8'>
             <span>{data?.socialActionPrice.createCommentPoints}</span>
           </SkeletonFallback>{' '}
           Points
