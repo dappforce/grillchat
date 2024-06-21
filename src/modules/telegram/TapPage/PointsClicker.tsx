@@ -253,9 +253,17 @@ const LikeMemesInfoMessage = ({
 
   if (!showMemesInfoMessage) return null
 
-  const userLikeWeight = tokenomicMetadata?.superLikeWeightPoints
-    ? new BN(tokenomicMetadata.superLikeWeightPoints).dividedBy(2).toString()
-    : '0'
+  const userLikeWeight =
+    tokenomicMetadata?.superLikeWeightPoints &&
+    tokenomicMetadata?.likerRewardDistributionPercent
+      ? new BN(tokenomicMetadata.superLikeWeightPoints)
+          .multipliedBy(
+            new BN(tokenomicMetadata.likerRewardDistributionPercent).dividedBy(
+              100
+            )
+          )
+          .toString()
+      : '0'
 
   return (
     <div className='absolute bottom-[75px] w-full animate-fade px-2 pb-2'>
