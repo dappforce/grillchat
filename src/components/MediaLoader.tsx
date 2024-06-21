@@ -12,6 +12,7 @@ export type MediaLoaderProps = Omit<ImageProps, 'src' | 'alt'> & {
   loadingClassName?: string
   placeholderClassName?: string
   withSpinner?: boolean
+  eagerLoading?: boolean
 }
 
 export default function MediaLoader({
@@ -21,6 +22,7 @@ export default function MediaLoader({
   loadingClassName,
   placeholderClassName,
   withSpinner,
+  eagerLoading,
   ...props
 }: MediaLoaderProps) {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -95,6 +97,7 @@ export default function MediaLoader({
             width={10}
             height={10}
             alt={props.alt || ''}
+            loading='eager'
             className={cx(
               commonProps.className,
               'absolute inset-0 m-0 h-full w-full p-0'
