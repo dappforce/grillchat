@@ -70,42 +70,9 @@ export default function AirdropPage() {
                 Remove Account
               </Button>
             )}
-            {/* {isLoading ? (
-              <Skeleton className='w-12' />
-            ) : evmAddress ? (
-              <div className='-mt-2 flex flex-col gap-1'>
-                <div className='flex flex-row items-center gap-1.5'>
-                  <SiEthereum className='text-xl text-text-muted' />
-                  <CopyTextInline
-                    text={truncateAddress(evmAddress)}
-                    tooltip='Copy my address'
-                    textToCopy={evmAddress}
-                    textClassName={cx(
-                      'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
-                    )}
-                  />
-                </div>
-              </div>
-            ) : (
-              <Button
-                className='mt-0.5 flex items-center gap-1.5'
-                onClick={() => {
-                  sendEvent('set_rewards_address_click')
-                  setOpenAddEvmModal(true)
-                }}
-              >
-                <TbCoins />
-                <span>Set Rewards Address</span>
-              </Button>
-            )} */}
           </Card>
         </div>
       </div>
-      {/* <CreateChatContent
-        closeModal={() => undefined}
-        setCurrentState={() => undefined}
-        address={myAddress ?? ''}
-      /> */}
       <RemoveLinkedIdentityModal
         isOpen={isOpenRemoveAccountModal}
         closeModal={() => setIsOpenRemoveAccountModal(false)}
@@ -123,7 +90,7 @@ export default function AirdropPage() {
   )
 }
 
-function AddEvmProviderModal(props: ModalFunctionalityProps) {
+export function AddEvmProviderModal(props: ModalFunctionalityProps) {
   const [isError, setIsError] = useState(false)
   const sendEvent = useSendEvent()
 
