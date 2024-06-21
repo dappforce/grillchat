@@ -478,8 +478,12 @@ async function getTimeLeftUntilCanPost(address: string) {
     }),
     getServerTime(),
   ] as const)
+  const lastPostedTime = lastPost.posts.data?.[0]?.createdAtTime
+  if (!lastPostedTime) {
+    return Infinity
+  }
 
-  const lastPosted = new Date(lastPost.posts.data[0].createdAtTime).getTime()
+  const lastPosted = new Date(lastPost.posts.data?.[0]?.createdAtTime).getTime()
   const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
   return Math.max(timeLeft, 0)
 }
