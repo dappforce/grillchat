@@ -21,7 +21,6 @@ import { cx } from '@/utils/class-names'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { useEffect, useState } from 'react'
-import { FaRegClock } from 'react-icons/fa6'
 import { LuPlusCircle } from 'react-icons/lu'
 
 dayjs.extend(duration)
@@ -134,7 +133,7 @@ function PostMemeButton() {
           isLoading || loadingTokenomics || loadingTimeLeft || isTimeConstrained
         }
         type='button'
-        className='flex items-center justify-center gap-2 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
+        className='flex items-center justify-center gap-2 px-0 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
         size='lg'
         variant={isMoreThanThreshold ? 'primary' : 'primaryOutline'}
         onClick={() => {
@@ -158,7 +157,7 @@ function PostMemeButton() {
           </>
         ) : (
           <>
-            <FaRegClock className='relative top-px text-lg' />
+            {/* <FaRegClock className='relative top-px text-lg' /> */}
             <span>Posting available in: {countdownText(timeLeft)}</span>
           </>
         )}
