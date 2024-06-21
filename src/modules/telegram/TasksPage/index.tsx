@@ -14,6 +14,7 @@ import { getServerDayQuery } from '@/services/api/query'
 import {
   getDailyRewardQuery,
   getTodaySuperLikeCountQuery,
+  getTokenomicsMetadataQuery,
 } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -49,6 +50,12 @@ function DailyTasks() {
   const { data: superLikeCount, isLoading } =
     getTodaySuperLikeCountQuery.useQuery(myAddress)
 
+  const { data: tokenomics } = getTokenomicsMetadataQuery.useQuery(null)
+  const pointsPerSuperLike = tokenomics
+    ? (tokenomics.likerRewardDistributionPercent / 100) *
+      Number(tokenomics.superLikeWeightPoints)
+    : 4000
+
   const { data: serverDay } = getServerDayQuery.useQuery(null)
   const { data: dailyReward } = getDailyRewardQuery.useQuery(myAddress ?? '')
   const isTodayRewardClaimed = !!dailyReward?.claims.find(
@@ -81,7 +88,7 @@ function DailyTasks() {
             }}
             title='Like 10 memes'
             href='/tg/memes'
-            reward={5000}
+            reward={pointsPerSuperLike * 10}
             completed={false}
             customAction={
               <span className='font-bold'>

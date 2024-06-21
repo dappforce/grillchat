@@ -1787,6 +1787,7 @@ export type TerminateLinkedIdentitySessionResponseDto = {
 
 export type TokenomicMetadataResponse = {
   __typename?: 'TokenomicMetadataResponse'
+  likerRewardDistributionPercent: Scalars['Int']['output']
   maxTapsPerDay: Scalars['Int']['output']
   maxTotalDailyRewardPoints: Scalars['String']['output']
   socialActionBalanceThreshold: SocialActionBalanceThresholdResponse
@@ -2102,6 +2103,7 @@ export type GetTokenomicsMetadataQuery = {
   activeStakingTokenomicMetadata: {
     __typename?: 'TokenomicMetadataResponse'
     superLikeWeightPoints: string
+    likerRewardDistributionPercent: number
     socialActionPrice: {
       __typename?: 'SocialActionPriceResponse'
       createCommentPoints: string
@@ -3403,6 +3405,7 @@ export const GetTokenomicsMetadata = gql`
   query GetTokenomicsMetadata {
     activeStakingTokenomicMetadata {
       superLikeWeightPoints
+      likerRewardDistributionPercent
       socialActionPrice {
         createCommentPoints
       }
