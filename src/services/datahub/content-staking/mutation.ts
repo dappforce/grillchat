@@ -15,6 +15,7 @@ import {
 } from '../utils'
 import {
   getAddressLikeCountToPostQuery,
+  getDailyRewardQuery,
   getSuperLikeCountQuery,
   getTodaySuperLikeCountQuery,
 } from './query'
@@ -137,11 +138,12 @@ export const useClaimDailyReward = mutationWrapper(
   },
   {
     onSuccess: () => {
-      const mainAddress = getMyMainAddress()
-      if (!mainAddress) return
-      if (queryClient) {
-        subscribeBalance(queryClient, mainAddress, true)
-      }
+      const myAddress = getMyMainAddress()
+      if (!myAddress || !queryClient) return
+      subscribeBalance(queryClient, myAddress, true, () => {
+        if (!queryClient) return
+        getDailyRewardQuery.invalidate(queryClient, myAddress)
+      })
     },
   }
 )

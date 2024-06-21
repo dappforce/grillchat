@@ -42,7 +42,8 @@ const SUBSCRIBE_BALANCES = gql`
 export function subscribeBalance(
   queryClient: QueryClient,
   myAddress: string,
-  once?: boolean
+  once?: boolean,
+  callback?: () => void
 ) {
   const client = datahubSubscription()
   let unsub = client.subscribe<SubscribeBalancesSubscription>(
@@ -54,6 +55,7 @@ export function subscribeBalance(
         if (!eventData) return
 
         await processSubscriptionEvent(queryClient, eventData)
+        callback?.()
         if (once) {
           unsub()
         }
