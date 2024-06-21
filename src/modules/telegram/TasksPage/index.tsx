@@ -181,7 +181,7 @@ function TaskCard({
 }) {
   const card = (
     <Card
-      className='flex items-center gap-2.5 bg-background-light p-2.5 transition hover:bg-background-lighter focus-visible:bg-background-lighter active:bg-background-lighter'
+      className='flex cursor-pointer items-center gap-2.5 bg-background-light p-2.5 transition hover:bg-background-lighter focus-visible:bg-background-lighter active:bg-background-lighter'
       onClick={onClick}
     >
       <Image src={image} alt='' className='h-14 w-14' />
