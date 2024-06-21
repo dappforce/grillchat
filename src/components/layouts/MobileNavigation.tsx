@@ -1,6 +1,5 @@
 import Airdrop from '@/assets/icons/bottomNavbar/airdrop.svg'
 import Friends from '@/assets/icons/bottomNavbar/friends.svg'
-import Stats from '@/assets/icons/bottomNavbar/stats.svg'
 import Tap from '@/assets/icons/bottomNavbar/tap.svg'
 import TopMemes from '@/assets/icons/bottomNavbar/top-memes.svg'
 import { env } from '@/env.mjs'
@@ -52,12 +51,12 @@ const tabs: Tab[] = [
     Icon: Tap,
     href: '/tg',
   },
-  {
-    id: 'stats',
-    text: 'Stats',
-    Icon: Stats,
-    href: '/tg/stats',
-  },
+  // {
+  //   id: 'stats',
+  //   text: 'Stats',
+  //   Icon: Stats,
+  //   href: '/tg/stats',
+  // },
   {
     id: 'airdrop',
     text: `Airdrop`,

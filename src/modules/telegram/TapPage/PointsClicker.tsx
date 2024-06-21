@@ -1,4 +1,6 @@
+import Button from '@/components/Button'
 import CatClicker from '@/components/CatClicker'
+import FormatBalance from '@/components/FormatBalance'
 import {
   decreaseEnergyValue,
   increasePointsBalance,
@@ -9,13 +11,19 @@ import {
   getEnergyStateQuery,
 } from '@/services/datahub/leaderboard/points-balance/query'
 import { getActiveStakingTokenomicMetadataQuery } from '@/services/datahub/leaderboard/query'
+import { getDayAndWeekTimestamp } from '@/services/datahub/utils'
+import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
-import { cx } from '@/utils/class-names'
+import { cx, mutedTextColorStyles } from '@/utils/class-names'
+import { LocalStorage } from '@/utils/storage'
 import { useQueryClient } from '@tanstack/react-query'
 import { useHapticFeedbackRaw } from '@tma.js/sdk-react'
+import BN from 'bignumber.js'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import Link from 'next/link'
 import { TouchEvent, TouchList, useEffect, useRef, useState } from 'react'
+import { HiXMark } from 'react-icons/hi2'
 import {
   getEnergyStateStore,
   getTappedPointsStateStore,
@@ -24,6 +32,10 @@ import {
 } from './store'
 
 dayjs.extend(utc)
+
+const likeMemesInfoMessageStorage = new LocalStorage(
+  () => 'like-memes-info-message'
+)
 
 type PointsClickerProps = {
   className?: string
@@ -36,6 +48,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
   const haptic = useHapticFeedbackRaw(true)
   const client = useQueryClient()
   const myAddress = useMyMainAddress()
+  const sendEvent = useSendEvent()
   const { data, isLoading: isEnergyLoading } = getEnergyStateQuery.useQuery(
     myAddress || ''
   )
@@ -43,6 +56,22 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
     getActiveStakingTokenomicMetadataQuery.useQuery({})
   const { data: clickedPointsByDay, isLoading: isClickedPointsLoading } =
     getClickedPointsByDayQuery.useQuery(myAddress || '')
+
+  const [showMemeMessage, setShowMemeMessage] = useState(false)
+
+  const onShowMemeMessage = () => {
+    const messageInfoTimestamp = likeMemesInfoMessageStorage.get() as string
+    const { day } = getDayAndWeekTimestamp()
+
+    const isShowedToday = messageInfoTimestamp === day.toString()
+
+    if (!showMemeMessage && !isShowedToday) {
+      setTimeout(() => {
+        setShowMemeMessage(true)
+        sendEvent('tooltip_like_memes_showed')
+      }, 5000)
+    }
+  }
 
   const [startAnimation, setStartAnimation] = useState(false)
 
@@ -114,6 +143,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
 
   const onMouseUp = () => {
     setIsTouched(false)
+    onShowMemeMessage()
 
     for (let i = 0; i < (touches?.length || 0); i++) {
       const touch = touches?.item(i)
@@ -199,7 +229,86 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
           }}
         />
       </div>
+      <LikeMemesInfoMessage
+        showMemesInfoMessage={showMemeMessage}
+        setShowMemesInfoMessage={setShowMemeMessage}
+      />
     </>
+  )
+}
+
+type LikeMemesInfoMessageProps = {
+  showMemesInfoMessage: boolean
+  setShowMemesInfoMessage: (show: boolean) => void
+}
+
+const LikeMemesInfoMessage = ({
+  showMemesInfoMessage,
+  setShowMemesInfoMessage,
+}: LikeMemesInfoMessageProps) => {
+  const { data: tokenomicMetadata, isLoading: isTokenomicMetadataLoading } =
+    getActiveStakingTokenomicMetadataQuery.useQuery({})
+
+  const sendEvent = useSendEvent()
+
+  if (!showMemesInfoMessage) return null
+
+  const userLikeWeight = tokenomicMetadata?.superLikeWeightPoints
+    ? new BN(tokenomicMetadata.superLikeWeightPoints).dividedBy(2).toString()
+    : '0'
+
+  return (
+    <div className='absolute bottom-[75px] w-full animate-fade px-2 pb-2'>
+      <Link
+        href='/tg/memes'
+        className='flex items-center gap-[10px] rounded-[20px] bg-slate-800 p-[10px] pr-4'
+        onClick={() => {
+          const { day } = getDayAndWeekTimestamp()
+
+          likeMemesInfoMessageStorage.set(day.toString())
+          sendEvent('tooltip_like_memes_clicked')
+        }}
+      >
+        <span className='text-[40px]'>💡</span>
+        <div className='flex flex-col gap-[10px]'>
+          <span className='text-base font-bold leading-none'>
+            Like memes and earn more
+          </span>
+          <span
+            className={cx(
+              mutedTextColorStyles,
+              'text-sm font-medium leading-none'
+            )}
+          >
+            Each like on a meme brings{' '}
+            {
+              <FormatBalance
+                value={userLikeWeight}
+                loading={isTokenomicMetadataLoading}
+              />
+            }{' '}
+            points
+          </span>
+        </div>
+        <div className='flex min-w-fit flex-1 items-center justify-end'>
+          <Button
+            className='m-0 justify-self-end p-0 text-2xl text-text-muted'
+            variant='transparent'
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              const { day } = getDayAndWeekTimestamp()
+              likeMemesInfoMessageStorage.set(day.toString())
+              sendEvent('tooltip_like_memes_closed')
+              setShowMemesInfoMessage(false)
+            }}
+          >
+            <HiXMark />
+          </Button>
+        </div>
+      </Link>
+    </div>
   )
 }
 

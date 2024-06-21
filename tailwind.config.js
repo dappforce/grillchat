@@ -5,6 +5,17 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      animation: {
+        fade: 'fadeOut .4s ease-in-out',
+      },
+
+      keyframes: () => ({
+        fadeOut: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+      }),
+
       gridTemplateRows: {
         0: 'repeat(1, minmax(0, 0fr))',
       },
