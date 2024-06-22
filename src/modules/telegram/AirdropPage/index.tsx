@@ -20,7 +20,7 @@ import RemoveLinkedIdentityModal from './RemoveLinkedIdentityModal'
 export default function AirdropPage() {
   useTgNoScroll()
 
-  const isAdmin = useIsModerationAdmin() || true
+  const isAdmin = useIsModerationAdmin()
   const [isOpenRemoveAccountModal, setIsOpenRemoveAccountModal] =
     useState(false)
   const [openProfileModal, setOpenProfileModal] = useState(false)
