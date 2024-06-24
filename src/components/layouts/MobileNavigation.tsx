@@ -1,7 +1,7 @@
 import Airdrop from '@/assets/icons/bottomNavbar/airdrop.svg'
 import Friends from '@/assets/icons/bottomNavbar/friends.svg'
-import Stats from '@/assets/icons/bottomNavbar/stats.svg'
 import Tap from '@/assets/icons/bottomNavbar/tap.svg'
+import Tasks from '@/assets/icons/bottomNavbar/tasks.svg'
 import TopMemes from '@/assets/icons/bottomNavbar/top-memes.svg'
 import { env } from '@/env.mjs'
 import useIsMounted from '@/hooks/useIsMounted'
@@ -16,7 +16,7 @@ import { IconType } from 'react-icons'
 import CustomLink from 'src/components/referral/CustomLink'
 import useLastReadTimeFromStorage from '../chats/hooks/useLastReadMessageTimeFromStorage'
 
-export type HomePageView = 'memes' | 'stats' | 'airdrop' | 'friends' | 'tap'
+export type HomePageView = 'memes' | 'tasks' | 'airdrop' | 'friends' | 'tap'
 
 type MobileNavigationProps = {}
 
@@ -53,10 +53,10 @@ const tabs: Tab[] = [
     href: '/tg',
   },
   {
-    id: 'stats',
-    text: 'Stats',
-    Icon: Stats,
-    href: '/tg/stats',
+    id: 'tasks',
+    text: 'Tasks',
+    Icon: Tasks,
+    href: '/tg/tasks',
   },
   {
     id: 'airdrop',
