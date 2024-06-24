@@ -6,7 +6,7 @@ import LeaderboardTable from './LeaderboardTable'
 
 const customColumnsClassNames = [undefined, undefined, 'md:w-[30%]']
 
-const LeaderboardSection = () => {
+export const LeaderboardContent = () => {
   const [refetchedTab, setRefechedTab] = useState<{
     [key in LeaderboardDataPeriod]: boolean
   }>({
@@ -34,14 +34,7 @@ const LeaderboardSection = () => {
   ]
 
   return (
-    <div className='flex flex-col gap-4'>
-      <div className='flex flex-col gap-1'>
-        <span className='text-lg font-semibold'>Leaderboard</span>
-        <span className='text-text-muted'>
-          Compete with other meme lovers to get extra points later
-        </span>
-      </div>
-
+    <div className='flex w-full flex-col gap-4'>
       <Tabs
         className='p-0'
         panelClassName='mt-0 w-full max-w-full px-0 z-0'
@@ -62,5 +55,3 @@ const LeaderboardSection = () => {
     </div>
   )
 }
-
-export default LeaderboardSection

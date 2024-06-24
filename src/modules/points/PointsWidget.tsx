@@ -4,28 +4,31 @@ import Pointup from '@/assets/emojis/pointup.png'
 import Speaker from '@/assets/emojis/speaker.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
 import BlueGradient from '@/assets/graphics/blue-gradient.png'
+import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
-import { Skeleton } from '@/components/SkeletonFallback'
+import Name from '@/components/Name'
+import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsMounted from '@/hooks/useIsMounted'
-import { getTodaySuperLikeCountQuery } from '@/services/datahub/content-staking/query'
-import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
-import { formatNumber } from '@/utils/strings'
 import { allowWindowScroll, preventWindowScroll } from '@/utils/window'
 import { Transition } from '@headlessui/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { ComponentProps, useEffect, useMemo, useState } from 'react'
+import { ComponentProps, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { FaChevronDown } from 'react-icons/fa'
-import { HiChevronRight, HiXMark } from 'react-icons/hi2'
-import SlotCounter from 'react-slot-counter'
+import { HiChevronRight, HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
+import { IoIosArrowForward, IoIosStats } from 'react-icons/io'
+import { RiPencilFill } from 'react-icons/ri'
+import { LeaderboardContent } from '../telegram/StatsPage/LeaderboardSection'
+import LikeCount from './LikePreview'
+import Points from './PointsPreview'
 
 export default function PointsWidget({
   withPointsAnimation = true,
@@ -56,7 +59,8 @@ export default function PointsWidget({
       <div
         {...props}
         className={cx(
-          'z-10 flex w-full cursor-pointer items-center justify-between rounded-b-2xl bg-black/50 px-4.5 py-3 backdrop-blur-xl',
+          'z-10 flex w-full cursor-pointer items-center justify-between rounded-b-2xl',
+          'bg-black/50 px-4.5 py-3 backdrop-blur-xl',
           props.className
         )}
         onClick={() => {
@@ -86,6 +90,8 @@ export default function PointsWidget({
   )
 }
 
+type DrawerContentState = 'leaderboard' | 'stats'
+
 function PointsDrawerContent({
   isOpen,
   setIsOpen,
@@ -93,6 +99,41 @@ function PointsDrawerContent({
   isOpen: boolean
   setIsOpen: (open: boolean) => void
 }) {
+  const [drawerContentState, setDrawerContentState] =
+    useState<DrawerContentState>('stats')
+
+  const drawerContentByState: {
+    [key in DrawerContentState]: {
+      title: string
+      content: () => JSX.Element
+      withBackButton?: boolean
+    }
+  } = {
+    leaderboard: {
+      title: 'Leaderboard',
+      content: () => <LeaderboardContent />,
+      withBackButton: true,
+    },
+    stats: {
+      title: 'My Progress',
+      content: () => (
+        <>
+          <UserStatsSection setDrawerContentState={setDrawerContentState} />
+          <DrawerLinks
+            setIsOpen={setIsOpen}
+            setDrawerContentState={setDrawerContentState}
+          />
+        </>
+      ),
+    },
+  }
+
+  const {
+    content: Content,
+    title,
+    withBackButton,
+  } = drawerContentByState[drawerContentState]
+
   return createPortal(
     <>
       <Transition
@@ -121,134 +162,213 @@ function PointsDrawerContent({
             className='absolute left-1/2 top-0 w-full -translate-x-1/2'
           />
           <div className='relative mx-auto flex w-full items-center justify-between px-4 py-4'>
-            <span className='text-xl font-bold'>My Progress</span>
+            <div className='flex items-center gap-2'>
+              {withBackButton && (
+                <Button
+                  size='circle'
+                  variant='transparent'
+                  className='-ml-2 mr-2 text-lg text-text-muted'
+                  onClick={() => setDrawerContentState('stats')}
+                >
+                  <HiOutlineChevronLeft />
+                </Button>
+              )}
+              <span className='text-xl font-bold'>{title}</span>
+            </div>
+
             <Button
               className='-mr-2'
               variant='transparent'
               size='circleSm'
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setDrawerContentState('stats')
+                setIsOpen(false)
+              }}
             >
               <HiXMark className='text-3xl' />
             </Button>
           </div>
-          <div className='relative mx-auto flex h-full w-full flex-col items-center px-4 pt-12'>
-            <div className='mb-14 grid w-full grid-cols-2 gap-3'>
-              <div className='flex flex-col gap-2'>
-                <span className='text-center text-text-muted'>
-                  LIKES LEFT TODAY:
-                </span>
-                <div className='flex items-center justify-center gap-3'>
-                  <Image src={Thumbsup} alt='' className='h-8 w-8' />
-                  <span className='text-2xl font-bold'>
-                    <LikeCount />
-                    /10
-                  </span>
-                </div>
-                <div className='flex justify-center'>
-                  <LinkText href='/guide' variant='primary'>
-                    How it works?
-                  </LinkText>
-                </div>
-              </div>
-              <div className='flex flex-col gap-2'>
-                <span className='text-center text-text-muted'>
-                  POINTS EARNED:
-                </span>
-                <div className='mr-1 flex items-center justify-center gap-3'>
-                  <Image src={Diamond} alt='' className='-mr-1.5 h-8 w-8' />
-                  <span className='flex h-8 items-center text-2xl font-bold'>
-                    <Points />
-                  </span>
-                </div>
-                <div className='flex justify-center'>
-                  <LinkText href='/guide' variant='primary'>
-                    How it works?
-                  </LinkText>
-                </div>
-              </div>
-            </div>
-            <div className='flex w-full flex-1 flex-col gap-4 pb-8'>
-              <span className='text-center text-lg font-bold text-text-muted'>
-                How to earn Points:
-              </span>
-              <LinkWrapper close={() => setIsOpen(false)} href='/tg/memes'>
-                <Card className='flex w-full items-center gap-4 bg-background-light'>
-                  <Image
-                    src={Laugh}
-                    alt=''
-                    className='h-14 w-14 flex-shrink-0'
-                  />
-                  <div className='flex flex-col gap-1'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-lg font-bold'>Meme2Earn</span>
-                    </div>
-                    <p className='text-sm text-text-muted'>
-                      Post and like memes to earn even more Points.
-                    </p>
-                  </div>
-                  <Button
-                    size='circle'
-                    className='ml-auto flex-shrink-0 text-lg'
-                    variant='transparent'
-                  >
-                    <HiChevronRight />
-                  </Button>
-                </Card>
-              </LinkWrapper>
-              <LinkWrapper close={() => setIsOpen(false)} href='/tg/friends'>
-                <Card className='flex w-full items-center gap-4 bg-background-light'>
-                  <Image
-                    src={Speaker}
-                    alt=''
-                    className='h-14 w-14 flex-shrink-0'
-                  />
-                  <div className='flex flex-col gap-1'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-lg font-bold'>Invite2Earn</span>
-                    </div>
-                    <p className='text-sm text-text-muted'>
-                      Invite your friends and earn 10% from their Points.
-                    </p>
-                  </div>
-                  <Button
-                    size='circle'
-                    className='ml-auto flex-shrink-0 text-lg'
-                    variant='transparent'
-                  >
-                    <HiChevronRight />
-                  </Button>
-                </Card>
-              </LinkWrapper>
-              <LinkWrapper close={() => setIsOpen(false)} href='/tg'>
-                <Card className='flex w-full items-center gap-4 bg-background-light'>
-                  <Image
-                    src={Pointup}
-                    alt=''
-                    className='h-14 w-14 flex-shrink-0'
-                  />
-                  <div className='flex flex-col gap-1'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-lg font-bold'>Tap2Earn</span>
-                    </div>
-                    <p className='text-sm text-text-muted'>
-                      Tap on the laughing emoji and earn Points.
-                    </p>
-                  </div>
-                  <Button
-                    size='circle'
-                    className='ml-auto flex-shrink-0 text-lg'
-                    variant='transparent'
-                  >
-                    <HiChevronRight />
-                  </Button>
-                </Card>
-              </LinkWrapper>
-            </div>
+          <div className='relative mx-auto flex h-full w-full flex-col items-center px-4 pt-6'>
+            <Content />
           </div>
         </div>
       </Transition>
     </>,
     document.body
+  )
+}
+
+const UserStatsSection = ({
+  setDrawerContentState,
+}: {
+  setDrawerContentState: (drawerContentState: DrawerContentState) => void
+}) => {
+  const myAddress = useMyMainAddress()
+  const sendEvent = useSendEvent()
+  const [openProfileModal, setOpenProfileModal] = useState(false)
+
+  return (
+    <>
+      <div className='mb-10 flex w-full flex-col rounded-xl bg-slate-800 hover:cursor-pointer'>
+        <div
+          className='border-b border-slate-700 p-4'
+          onClick={() => {
+            setDrawerContentState('leaderboard')
+          }}
+        >
+          <div className='flex items-center justify-between gap-2'>
+            <div className='flex items-center gap-2'>
+              <AddressAvatar address={myAddress ?? ''} className='h-16 w-16' />
+              <div className='flex flex-col gap-2'>
+                <div className='flex items-center gap-3'>
+                  <Name
+                    address={myAddress ?? ''}
+                    className='text-lg font-medium !text-text'
+                  />
+                  <Button
+                    size='circleSm'
+                    variant='muted'
+                    className='inline'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+
+                      sendEvent('edit_profile_click')
+                      setOpenProfileModal(true)
+                    }}
+                  >
+                    <RiPencilFill />
+                  </Button>
+                </div>
+                <LinkText
+                  variant='primary'
+                  className='flex items-center gap-1 hover:no-underline focus:no-underline'
+                >
+                  <IoIosStats /> See the Leaderboard
+                </LinkText>
+              </div>
+            </div>
+            <IoIosArrowForward className={cx('fill-slate-400 text-2xl')} />
+          </div>
+        </div>
+        <div className='flex w-full items-center gap-4 p-4'>
+          <div className='flex w-full flex-col gap-2'>
+            <span className='text-text-muted'>LIKES LEFT TODAY:</span>
+            <div className='flex items-center gap-3'>
+              <Image src={Thumbsup} alt='' className='h-8 w-8' />
+              <span className='text-2xl font-bold'>
+                <LikeCount />
+                /10
+              </span>
+            </div>
+            <div className='flex'>
+              <LinkText href='/guide' variant='primary'>
+                How it works?
+              </LinkText>
+            </div>
+          </div>
+          <div className='flex w-full flex-col gap-2'>
+            <span className='text-text-muted'>POINTS EARNED:</span>
+            <div className='mr-1 flex items-center gap-3'>
+              <Image src={Diamond} alt='' className='h-8 w-8' />
+              <span className='flex h-8 items-center text-2xl font-bold'>
+                <Points />
+              </span>
+            </div>
+            <div className='flex'>
+              <LinkText href='/guide' variant='primary'>
+                How it works?
+              </LinkText>
+            </div>
+          </div>
+        </div>
+      </div>
+      <SubsocialProfileModal
+        title='✏️ Edit Profile'
+        closeModal={() => setOpenProfileModal(false)}
+        isOpen={openProfileModal}
+      />
+    </>
+  )
+}
+
+const DrawerLinks = ({
+  setIsOpen,
+  setDrawerContentState,
+}: {
+  setIsOpen: (isOpen: boolean) => void
+  setDrawerContentState: (drawerContentState: DrawerContentState) => void
+}) => {
+  const onClose = () => {
+    setDrawerContentState('stats')
+    setIsOpen(false)
+  }
+  return (
+    <div className='flex w-full flex-1 flex-col gap-4 pb-8'>
+      <span className='text-center text-lg font-bold text-text-muted'>
+        How to earn Points:
+      </span>
+      <LinkWrapper close={onClose} href='/tg/memes'>
+        <Card className='flex w-full items-center gap-4 bg-background-light'>
+          <Image src={Laugh} alt='' className='h-14 w-14 flex-shrink-0' />
+          <div className='flex flex-col gap-1'>
+            <div className='flex items-center gap-2'>
+              <span className='text-lg font-bold'>Meme2Earn</span>
+            </div>
+            <p className='text-sm text-text-muted'>
+              Post and like memes to earn even more Points.
+            </p>
+          </div>
+          <Button
+            size='circle'
+            className='ml-auto flex-shrink-0 text-lg'
+            variant='transparent'
+          >
+            <HiChevronRight />
+          </Button>
+        </Card>
+      </LinkWrapper>
+      <LinkWrapper close={onClose} href='/tg/friends'>
+        <Card className='flex w-full items-center gap-4 bg-background-light'>
+          <Image src={Speaker} alt='' className='h-14 w-14 flex-shrink-0' />
+          <div className='flex flex-col gap-1'>
+            <div className='flex items-center gap-2'>
+              <span className='text-lg font-bold'>Invite2Earn</span>
+            </div>
+            <p className='text-sm text-text-muted'>
+              Invite your friends and earn 10% from their Points.
+            </p>
+          </div>
+          <Button
+            size='circle'
+            className='ml-auto flex-shrink-0 text-lg'
+            variant='transparent'
+          >
+            <HiChevronRight />
+          </Button>
+        </Card>
+      </LinkWrapper>
+      <LinkWrapper close={onClose} href='/tg'>
+        <Card className='flex w-full items-center gap-4 bg-background-light'>
+          <Image src={Pointup} alt='' className='h-14 w-14 flex-shrink-0' />
+          <div className='flex flex-col gap-1'>
+            <div className='flex items-center gap-2'>
+              <span className='text-lg font-bold'>Tap2Earn</span>
+            </div>
+            <p className='text-sm text-text-muted'>
+              Tap on the laughing emoji and earn Points.
+            </p>
+          </div>
+          <Button
+            size='circle'
+            className='ml-auto flex-shrink-0 text-lg'
+            variant='transparent'
+          >
+            <HiChevronRight />
+          </Button>
+        </Card>
+      </LinkWrapper>
+    </div>
   )
 }
 
@@ -276,56 +396,4 @@ function LinkWrapper({
     return <span onClick={close}>{link}</span>
   }
   return link
-}
-
-const MAX_LIKES_PER_DAY = 10
-
-function LikeCount() {
-  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
-  const myAddress = useMyMainAddress()
-  const { data, isLoading } = getTodaySuperLikeCountQuery.useQuery(
-    myAddress ?? ''
-  )
-
-  if ((isLoading && myAddress) || !isInitializedProxy) {
-    return (
-      <Skeleton className='relative -top-0.5 inline-block w-12 align-middle' />
-    )
-  }
-
-  return <span>{MAX_LIKES_PER_DAY - (data?.count ?? 0)}</span>
-}
-
-function Points({
-  shorten,
-  withPointsAnimation = true,
-}: {
-  shorten?: boolean
-  withPointsAnimation?: boolean
-}) {
-  const isInitializedProxy = useMyAccount.use.isInitializedProxy()
-  const myAddress = useMyMainAddress()
-  const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
-
-  const formatted = formatNumber(data ?? '0', { shorten })
-  const splitValues = useMemo(() => {
-    return formatted.split('')
-  }, [formatted])
-
-  if ((isLoading && myAddress) || !isInitializedProxy) {
-    return <Skeleton className='inline-block w-12' />
-  }
-
-  if (!withPointsAnimation) return <span>{splitValues}</span>
-
-  return (
-    <SlotCounter
-      containerClassName='relative -top-0.5'
-      value={splitValues}
-      animateOnVisible={false}
-      sequentialAnimationMode
-      startValue={splitValues}
-      startValueOnce
-    />
-  )
 }

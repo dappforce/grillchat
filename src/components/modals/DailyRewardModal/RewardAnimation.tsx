@@ -8,10 +8,12 @@ import Image from 'next/image'
 import { useState } from 'react'
 import Lottie, { LottieProps } from 'react-lottie'
 
+export type DailyRewardClaim = NonNullable<
+  GetDailyRewardQuery['gamificationEntranceDailyRewardSequence']
+>['claims'][number]
+
 export type RewardAnimationProps = Omit<LottieProps, 'options'> & {
-  claim: NonNullable<
-    GetDailyRewardQuery['gamificationEntranceDailyRewardSequence']
-  >['claims'][number]
+  claim: DailyRewardClaim
   close: () => void
 }
 
@@ -20,7 +22,7 @@ export default function RewardAnimation({
   close,
   ...props
 }: RewardAnimationProps) {
-  const isMysteryBox = !!claim.claimRewardPointsRange
+  const isMysteryBox = !!claim.hiddenClaimReward
 
   const [showPointsEarned, setShowPointsEarned] = useState(!isMysteryBox)
   const [isPaused, setIsPaused] = useState(true)
