@@ -117,6 +117,11 @@ function Styles({
 }
 
 function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
+  useEffect(() => {
+    import('eruda').then(({ default: eruda }) => {
+      eruda.init()
+    })
+  }, [])
   const { head, dehydratedState, ...props } = pageProps
 
   const isInitialized = useRef(false)
