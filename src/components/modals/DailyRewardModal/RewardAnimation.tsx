@@ -22,7 +22,7 @@ export default function RewardAnimation({
   close,
   ...props
 }: RewardAnimationProps) {
-  const isMysteryBox = !!claim.claimRewardPointsRange
+  const isMysteryBox = !!claim.hiddenClaimReward
 
   const [showPointsEarned, setShowPointsEarned] = useState(!isMysteryBox)
   const [isPaused, setIsPaused] = useState(true)

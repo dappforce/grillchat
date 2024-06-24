@@ -49,7 +49,7 @@ export default function DailyRewardModal({
     (claim) =>
       Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
   )
-  const isMysteryBoxClaimable = claimable?.claimRewardPointsRange
+  const isMysteryBoxClaimable = claimable?.hiddenClaimReward
 
   return createPortal(
     <>
@@ -100,7 +100,7 @@ export default function DailyRewardModal({
                 Number(claim.claimValidDay) === serverDay?.day &&
                 claim.openToClaim
 
-              const isMysteryBox = !!claim.claimRewardPointsRange
+              const isMysteryBox = !!claim.hiddenClaimReward
               return (
                 <div
                   key={claim.index}
