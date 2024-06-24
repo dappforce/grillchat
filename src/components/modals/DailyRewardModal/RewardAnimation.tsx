@@ -8,10 +8,12 @@ import Image from 'next/image'
 import { useState } from 'react'
 import Lottie, { LottieProps } from 'react-lottie'
 
+export type DailyRewardClaim = NonNullable<
+  GetDailyRewardQuery['gamificationEntranceDailyRewardSequence']
+>['claims'][number]
+
 export type RewardAnimationProps = Omit<LottieProps, 'options'> & {
-  claim: NonNullable<
-    GetDailyRewardQuery['gamificationEntranceDailyRewardSequence']
-  >['claims'][number]
+  claim: DailyRewardClaim
   close: () => void
 }
 
