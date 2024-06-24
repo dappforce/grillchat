@@ -60,8 +60,8 @@ export default function DailyRewardModal({
         leaveTo='opacity-0 !duration-150'
         onClick={close}
       />
-      {isOpenAnimation && isOpen && (
-        <RewardAnimation claim={claimable!} close={closeModal} />
+      {isOpenAnimation && isOpen && claimable && (
+        <RewardAnimation claim={claimable} close={closeModal} />
       )}
       <Transition
         show={isOpen && !isOpenAnimation}
