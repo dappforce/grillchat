@@ -61,7 +61,7 @@ function DailyTasks() {
   const todayReward = dailyReward?.claims.find(
     (claim) => Number(claim.claimValidDay) === serverDay?.day
   )
-  const isTodayRewardClaimed = !!todayReward?.openToClaim
+  const isTodayRewardClaimed = !todayReward?.openToClaim
 
   let todayRewardPoints: string | number = Number(
     todayReward?.claimRewardPoints ?? 0
