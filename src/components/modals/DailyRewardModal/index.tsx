@@ -25,7 +25,7 @@ export default function DailyRewardModal({
 }) {
   const [isOpenAnimation, setIsOpenAnimation] = useState(false)
   const closeModal = () => {
-    setIsOpenAnimation(true)
+    setIsOpenAnimation(false)
     close()
   }
 
@@ -111,7 +111,7 @@ export default function DailyRewardModal({
                 >
                   {isMysteryBox ? (
                     <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
-                      <Present />
+                      <Present className='h-8 w-8' />
                     </div>
                   ) : (
                     <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
