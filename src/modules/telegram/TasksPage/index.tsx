@@ -5,10 +5,10 @@ import Telegram from '@/assets/graphics/tasks/telegram.png'
 import TwitterX from '@/assets/graphics/tasks/twitter-x.png'
 import Check from '@/assets/icons/check.svg'
 import Card from '@/components/Card'
-import SkeletonFallback from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import DailyRewardModal from '@/components/modals/DailyRewardModal'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
+import LikeCount from '@/modules/points/LikePreview'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerDayQuery } from '@/services/api/query'
 import {
@@ -104,12 +104,7 @@ function DailyTasks() {
             completed={false}
             customAction={
               <span className='font-bold'>
-                <SkeletonFallback
-                  isLoading={isLoading}
-                  className='relative -top-0.5 inline-block w-6 align-middle'
-                >
-                  {10 - (superLikeCount?.count ?? 0)}
-                </SkeletonFallback>
+                <LikeCount />
                 /10
               </span>
             }
