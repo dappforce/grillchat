@@ -13,7 +13,6 @@ import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerDayQuery } from '@/services/api/query'
 import {
   getDailyRewardQuery,
-  getTodaySuperLikeCountQuery,
   getTokenomicsMetadataQuery,
 } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -47,8 +46,6 @@ function DailyTasks() {
   const sendEvent = useSendEvent()
   const [isOpen, setIsOpen] = useState(false)
   const myAddress = useMyMainAddress() ?? ''
-  const { data: superLikeCount, isLoading } =
-    getTodaySuperLikeCountQuery.useQuery(myAddress)
 
   const { data: tokenomics } = getTokenomicsMetadataQuery.useQuery(null)
   const pointsPerSuperLike = tokenomics
