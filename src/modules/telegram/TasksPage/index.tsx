@@ -13,6 +13,7 @@ import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerDayQuery } from '@/services/api/query'
 import {
   getDailyRewardQuery,
+  getTodaySuperLikeCountQuery,
   getTokenomicsMetadataQuery,
 } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -58,7 +59,11 @@ function DailyTasks() {
   const todayReward = dailyReward?.claims.find(
     (claim) => Number(claim.claimValidDay) === serverDay?.day
   )
-  const isTodayRewardClaimed = !todayReward?.openToClaim
+  const isTodayRewardClaimed = !!todayReward && !todayReward.openToClaim
+
+  const { data: superLikeCount } = getTodaySuperLikeCountQuery.useQuery(
+    myAddress ?? ''
+  )
 
   let todayRewardPoints: string | number = Number(
     todayReward?.claimRewardPoints ?? 0
@@ -98,7 +103,7 @@ function DailyTasks() {
             title='Like 10 memes'
             href='/tg'
             reward={pointsPerSuperLike * 10}
-            completed={false}
+            completed={(superLikeCount?.count ?? 0) >= 10}
             customAction={
               <span className='font-bold'>
                 <LikeCount />
@@ -187,10 +192,10 @@ function TaskCard({
         </div>
       </div>
       <div className='ml-auto flex items-center justify-center pr-1'>
-        {customAction ? (
-          customAction
-        ) : completed ? (
+        {completed ? (
           <Check />
+        ) : customAction ? (
+          customAction
         ) : (
           <FaChevronRight className='text-text-muted' />
         )}
