@@ -1,4 +1,4 @@
-import StatsPage from '@/modules/telegram/StatsPage'
+import TapPage from '@/modules/telegram/TapPage'
 import { AppCommonProps } from '@/pages/_app'
 import { getCommonStaticProps } from '@/utils/page'
 
@@ -17,4 +17,4 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
   }
 )
 
-export default StatsPage
+export default TapPage

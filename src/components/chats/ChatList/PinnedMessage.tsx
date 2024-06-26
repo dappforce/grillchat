@@ -21,6 +21,7 @@ export default function PinnedMessage({
   if (!message) return null
 
   const Component = asContainer ? Container<'div'> : 'div'
+
   return (
     <div className='sticky top-0 z-10 border-b border-border-gray bg-background-light text-sm'>
       <Component className='flex' onClick={() => scrollToMessage(message.id)}>

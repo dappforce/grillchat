@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { HiXMark } from 'react-icons/hi2'
 import Button from '../../Button'
-import RewardAnimation from './RewardAnimation'
+import RewardAnimation, { DailyRewardClaim } from './RewardAnimation'
 
 export default function DailyRewardModal({
   close,
@@ -25,13 +25,17 @@ export default function DailyRewardModal({
 }) {
   const [isOpenAnimation, setIsOpenAnimation] = useState(false)
   const closeModal = () => {
-    setIsOpenAnimation(true)
+    setIsOpenAnimation(false)
     close()
   }
 
+  const [selectedClaim, setSelectedClaim] = useState<
+    DailyRewardClaim | undefined
+  >()
   useEffect(() => {
     if (isOpen) {
       setIsOpenAnimation(false)
+      setSelectedClaim(undefined)
     }
   }, [isOpen])
 
@@ -46,7 +50,7 @@ export default function DailyRewardModal({
     (claim) =>
       Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
   )
-  const isMysteryBoxClaimable = claimable?.claimRewardPointsRange
+  const isMysteryBoxClaimable = claimable?.hiddenClaimReward
 
   return createPortal(
     <>
@@ -60,8 +64,8 @@ export default function DailyRewardModal({
         leaveTo='opacity-0 !duration-150'
         onClick={close}
       />
-      {isOpenAnimation && isOpen && (
-        <RewardAnimation claim={claimable!} close={closeModal} />
+      {isOpenAnimation && isOpen && selectedClaim && (
+        <RewardAnimation claim={selectedClaim} close={closeModal} />
       )}
       <Transition
         show={isOpen && !isOpenAnimation}
@@ -97,7 +101,7 @@ export default function DailyRewardModal({
                 Number(claim.claimValidDay) === serverDay?.day &&
                 claim.openToClaim
 
-              const isMysteryBox = !!claim.claimRewardPointsRange
+              const isMysteryBox = !!claim.hiddenClaimReward
               return (
                 <div
                   key={claim.index}
@@ -111,7 +115,7 @@ export default function DailyRewardModal({
                 >
                   {isMysteryBox ? (
                     <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
-                      <Present />
+                      <Present className='h-8 w-8' />
                     </div>
                   ) : (
                     <div className='flex flex-1 flex-col items-center justify-center gap-1 px-4 py-3'>
@@ -142,7 +146,10 @@ export default function DailyRewardModal({
               disabled={!claimable}
               isLoading={isLoading}
               onClick={() => {
-                sendEvent('daily_reward_claimed')
+                sendEvent('daily_reward_claimed', {
+                  value: claimable?.claimRewardPoints,
+                })
+                setSelectedClaim(claimable)
                 claim(undefined)
                 setIsOpenAnimation(true)
               }}

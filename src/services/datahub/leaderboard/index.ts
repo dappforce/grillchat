@@ -152,6 +152,7 @@ const GET_ACTIVE_STAKING_TOKENOMIC_METADATA = gql`
     activeStakingTokenomicMetadata {
       maxTapsPerDay
       superLikeWeightPoints
+      likerRewardDistributionPercent
       socialActionPrice {
         createCommentPoints
       }
@@ -163,6 +164,7 @@ export async function getActiveStakingTokenomicMetadata() {
   const res = await datahubQueryRequest<{
     activeStakingTokenomicMetadata: {
       maxTapsPerDay: number
+      likerRewardDistributionPercent: number
       superLikeWeightPoints: string
       socialActionPrice: {
         createCommentPoints: string

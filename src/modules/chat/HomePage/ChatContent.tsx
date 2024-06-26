@@ -31,7 +31,7 @@ type Props = {
   className?: string
 }
 
-export default function ChatContent({ chatId, hubId, className }: Props) {
+export default function ChatContent({ chatId, hubId }: Props) {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const pinnedMessageId = usePinnedMessage(chatId)
   const { data: message } = getPostQuery.useQuery(pinnedMessageId ?? '', {

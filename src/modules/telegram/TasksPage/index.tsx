@@ -5,10 +5,11 @@ import Telegram from '@/assets/graphics/tasks/telegram.png'
 import TwitterX from '@/assets/graphics/tasks/twitter-x.png'
 import Check from '@/assets/icons/check.svg'
 import Card from '@/components/Card'
-import SkeletonFallback from '@/components/SkeletonFallback'
+import { Skeleton } from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import DailyRewardModal from '@/components/modals/DailyRewardModal'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
+import LikeCount from '@/modules/points/LikePreview'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerDayQuery } from '@/services/api/query'
 import {
@@ -47,8 +48,6 @@ function DailyTasks() {
   const sendEvent = useSendEvent()
   const [isOpen, setIsOpen] = useState(false)
   const myAddress = useMyMainAddress() ?? ''
-  const { data: superLikeCount, isLoading } =
-    getTodaySuperLikeCountQuery.useQuery(myAddress)
 
   const { data: tokenomics } = getTokenomicsMetadataQuery.useQuery(null)
   const pointsPerSuperLike = tokenomics
@@ -56,12 +55,18 @@ function DailyTasks() {
       Number(tokenomics.superLikeWeightPoints)
     : 4000
 
-  const { data: serverDay } = getServerDayQuery.useQuery(null)
-  const { data: dailyReward } = getDailyRewardQuery.useQuery(myAddress ?? '')
+  const { data: serverDay, isLoading: loadingServerDay } =
+    getServerDayQuery.useQuery(null)
+  const { data: dailyReward, isLoading: loadingDailyReward } =
+    getDailyRewardQuery.useQuery(myAddress ?? '')
   const todayReward = dailyReward?.claims.find(
     (claim) => Number(claim.claimValidDay) === serverDay?.day
   )
-  const isTodayRewardClaimed = !!todayReward?.openToClaim
+  const isTodayRewardClaimed = !!todayReward && !todayReward.openToClaim
+
+  const { data: superLikeCount } = getTodaySuperLikeCountQuery.useQuery(
+    myAddress ?? ''
+  )
 
   let todayRewardPoints: string | number = Number(
     todayReward?.claimRewardPoints ?? 0
@@ -92,6 +97,7 @@ function DailyTasks() {
             title='Check in'
             reward={todayRewardPoints}
             completed={isTodayRewardClaimed}
+            isLoadingReward={loadingServerDay || loadingDailyReward}
           />
           <TaskCard
             image={Like}
@@ -99,17 +105,12 @@ function DailyTasks() {
               sendEvent('tasks_like_open')
             }}
             title='Like 10 memes'
-            href='/tg/memes'
+            href='/tg'
             reward={pointsPerSuperLike * 10}
-            completed={false}
+            completed={(superLikeCount?.count ?? 0) >= 10}
             customAction={
               <span className='font-bold'>
-                <SkeletonFallback
-                  isLoading={isLoading}
-                  className='relative -top-0.5 inline-block w-6 align-middle'
-                >
-                  {10 - (superLikeCount?.count ?? 0)}
-                </SkeletonFallback>
+                <LikeCount />
                 /10
               </span>
             }
@@ -169,6 +170,7 @@ function TaskCard({
   onClick,
   href,
   openInNewTab,
+  isLoadingReward,
 }: {
   image: ImageProps['src']
   title: string
@@ -178,10 +180,11 @@ function TaskCard({
   onClick?: () => void
   href?: string
   openInNewTab?: boolean
+  isLoadingReward?: boolean
 }) {
   const card = (
     <Card
-      className='flex cursor-pointer items-center gap-2.5 bg-background-light p-2.5 transition hover:bg-background-lighter focus-visible:bg-background-lighter active:bg-background-lighter'
+      className='flex cursor-pointer items-center gap-2.5 bg-background-light p-2.5 transition active:bg-background-lighter'
       onClick={onClick}
     >
       <Image src={image} alt='' className='h-14 w-14' />
@@ -189,16 +192,20 @@ function TaskCard({
         <span className='font-bold'>{title}</span>
         <div className='flex items-center gap-0.5'>
           <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-          <span className='text-text-muted'>
-            +{typeof reward === 'number' ? formatNumber(reward) : reward}
-          </span>
+          {isLoadingReward ? (
+            <Skeleton className='w-12' />
+          ) : (
+            <span className='text-text-muted'>
+              +{typeof reward === 'number' ? formatNumber(reward) : reward}
+            </span>
+          )}
         </div>
       </div>
       <div className='ml-auto flex items-center justify-center pr-1'>
-        {customAction ? (
-          customAction
-        ) : completed ? (
+        {completed ? (
           <Check />
+        ) : customAction ? (
+          customAction
         ) : (
           <FaChevronRight className='text-text-muted' />
         )}
