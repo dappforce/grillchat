@@ -24,6 +24,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
@@ -192,7 +193,9 @@ export default function ChatItemMenus({
           text: 'Copy Image URL',
           icon: MdContentCopy,
           onClick: () => {
-            copyToClipboard((imageExt.properties as ImageProperties).image)
+            copyToClipboard(
+              getIpfsContentUrl((imageExt.properties as ImageProperties).image)
+            )
             toast.custom((t) => (
               <Toast t={t} title='Image URL copied to clipboard!' />
             ))
