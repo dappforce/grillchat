@@ -490,4 +490,7 @@ async function getTimeLeftUntilCanPost(address: string) {
 export const getTimeLeftUntilCanPostQuery = createQuery({
   key: 'lastPostedMeme',
   fetcher: getTimeLeftUntilCanPost,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
 })
