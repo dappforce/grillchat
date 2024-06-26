@@ -5,6 +5,7 @@ import Telegram from '@/assets/graphics/tasks/telegram.png'
 import TwitterX from '@/assets/graphics/tasks/twitter-x.png'
 import Check from '@/assets/icons/check.svg'
 import Card from '@/components/Card'
+import { Skeleton } from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import DailyRewardModal from '@/components/modals/DailyRewardModal'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
@@ -54,8 +55,10 @@ function DailyTasks() {
       Number(tokenomics.superLikeWeightPoints)
     : 4000
 
-  const { data: serverDay } = getServerDayQuery.useQuery(null)
-  const { data: dailyReward } = getDailyRewardQuery.useQuery(myAddress ?? '')
+  const { data: serverDay, isLoading: loadingServerDay } =
+    getServerDayQuery.useQuery(null)
+  const { data: dailyReward, isLoading: loadingDailyReward } =
+    getDailyRewardQuery.useQuery(myAddress ?? '')
   const todayReward = dailyReward?.claims.find(
     (claim) => Number(claim.claimValidDay) === serverDay?.day
   )
@@ -94,6 +97,7 @@ function DailyTasks() {
             title='Check in'
             reward={todayRewardPoints}
             completed={isTodayRewardClaimed}
+            isLoadingReward={loadingServerDay || loadingDailyReward}
           />
           <TaskCard
             image={Like}
@@ -166,6 +170,7 @@ function TaskCard({
   onClick,
   href,
   openInNewTab,
+  isLoadingReward,
 }: {
   image: ImageProps['src']
   title: string
@@ -175,6 +180,7 @@ function TaskCard({
   onClick?: () => void
   href?: string
   openInNewTab?: boolean
+  isLoadingReward?: boolean
 }) {
   const card = (
     <Card
@@ -186,9 +192,13 @@ function TaskCard({
         <span className='font-bold'>{title}</span>
         <div className='flex items-center gap-0.5'>
           <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-          <span className='text-text-muted'>
-            +{typeof reward === 'number' ? formatNumber(reward) : reward}
-          </span>
+          {isLoadingReward ? (
+            <Skeleton className='w-12' />
+          ) : (
+            <span className='text-text-muted'>
+              +{typeof reward === 'number' ? formatNumber(reward) : reward}
+            </span>
+          )}
         </div>
       </div>
       <div className='ml-auto flex items-center justify-center pr-1'>
