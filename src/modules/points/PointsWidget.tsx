@@ -308,7 +308,7 @@ const DrawerLinks = ({
       <span className='text-center text-lg font-bold text-text-muted'>
         How to earn Points:
       </span>
-      <LinkWrapper close={onClose} href='/tg/memes'>
+      <LinkWrapper close={onClose} href='/tg'>
         <Card className='flex w-full items-center gap-4 bg-background-light'>
           <Image src={Laugh} alt='' className='h-14 w-14 flex-shrink-0' />
           <div className='flex flex-col gap-1'>
@@ -348,7 +348,7 @@ const DrawerLinks = ({
           </Button>
         </Card>
       </LinkWrapper>
-      <LinkWrapper close={onClose} href='/tg'>
+      <LinkWrapper close={onClose} href='/tg/tap'>
         <Card className='flex w-full items-center gap-4 bg-background-light'>
           <Image src={Pointup} alt='' className='h-14 w-14 flex-shrink-0' />
           <div className='flex flex-col gap-1'>

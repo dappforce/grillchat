@@ -30,17 +30,6 @@ type Tab = {
 
 const tabs: Tab[] = [
   {
-    id: 'memes',
-    text: 'Memes',
-    Icon: (props: ComponentProps<'div'>) => (
-      <div {...props} className={cx('relative', props.className)}>
-        <TopMemes />
-        <NewMemeNotice />
-      </div>
-    ),
-    href: '/tg/memes',
-  },
-  {
     id: 'friends',
     text: `Friends`,
     Icon: Friends,
@@ -50,6 +39,17 @@ const tabs: Tab[] = [
     id: 'tap',
     text: 'Tap',
     Icon: Tap,
+    href: '/tg/tap',
+  },
+  {
+    id: 'memes',
+    text: 'Memes',
+    Icon: (props: ComponentProps<'div'>) => (
+      <div {...props} className={cx('relative', props.className)}>
+        <TopMemes />
+        <NewMemeNotice />
+      </div>
+    ),
     href: '/tg',
   },
   {
@@ -151,7 +151,7 @@ function NewMemeNotice() {
   const isMounted = useIsMounted()
 
   if (
-    pathname !== '/tg/memes' &&
+    pathname !== '/tg' &&
     isMounted &&
     lastMessage &&
     getLastReadTime() < lastMessage.struct.createdAtTime

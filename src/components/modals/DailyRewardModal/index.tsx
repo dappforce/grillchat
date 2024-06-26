@@ -145,7 +145,9 @@ export default function DailyRewardModal({
               disabled={!claimable}
               isLoading={isLoading}
               onClick={() => {
-                sendEvent('daily_reward_claimed')
+                sendEvent('daily_reward_claimed', {
+                  value: claimable?.claimRewardPoints,
+                })
                 setSelectedClaim(claimable)
                 claim(undefined)
                 setIsOpenAnimation(true)

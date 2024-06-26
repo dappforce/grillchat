@@ -96,7 +96,7 @@ function DailyTasks() {
               sendEvent('tasks_like_open')
             }}
             title='Like 10 memes'
-            href='/tg/memes'
+            href='/tg'
             reward={pointsPerSuperLike * 10}
             completed={false}
             customAction={

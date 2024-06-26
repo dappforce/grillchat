@@ -268,7 +268,7 @@ const LikeMemesInfoMessage = ({
   return (
     <div className='absolute bottom-[75px] w-full animate-fade px-2 pb-2'>
       <Link
-        href='/tg/memes'
+        href='/tg'
         className='flex items-center gap-[10px] rounded-[20px] bg-slate-800 p-[10px] pr-4'
         onClick={() => {
           const { day } = getDayAndWeekTimestamp()
