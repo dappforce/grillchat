@@ -26,7 +26,7 @@ import {
 
 dayjs.extend(utc)
 
-const INTERVAL_TIME = 10 * 1000
+const INTERVAL_TIME = 30 * 1000
 
 const useSaveTappedPointsAndEnergy = () => {
   const { data: clickedPointsByDayRef, isLoading: isTappedPointsLoading } =
