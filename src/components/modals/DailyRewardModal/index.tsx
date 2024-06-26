@@ -29,9 +29,13 @@ export default function DailyRewardModal({
     close()
   }
 
+  const [selectedClaim, setSelectedClaim] = useState<
+    DailyRewardClaim | undefined
+  >()
   useEffect(() => {
     if (isOpen) {
       setIsOpenAnimation(false)
+      setSelectedClaim(undefined)
     }
   }, [isOpen])
 
@@ -40,9 +44,6 @@ export default function DailyRewardModal({
   const { data } = getDailyRewardQuery.useQuery(myAddress ?? '')
   const { data: serverDay } = getServerDayQuery.useQuery(null)
   const { mutate: claim, isLoading, error } = useClaimDailyReward()
-  const [selectedClaim, setSelectedClaim] = useState<
-    DailyRewardClaim | undefined
-  >()
   useToastError(error, 'Failed to claim daily reward')
 
   const claimable = data?.claims.find(
