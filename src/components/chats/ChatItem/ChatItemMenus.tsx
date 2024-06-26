@@ -25,8 +25,9 @@ import { useChatMenu } from '@/stores/chat-menu'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'
+import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
-import { PostData } from '@subsocial/api/types'
+import { ImageProperties, PostData } from '@subsocial/api/types'
 import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { useEffect, useState } from 'react'
 import { BsFillPinAngleFill } from 'react-icons/bs'
@@ -38,6 +39,7 @@ import {
 } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
 import { LuShield } from 'react-icons/lu'
+import { MdContentCopy } from 'react-icons/md'
 import { useInView } from 'react-intersection-observer'
 import { toast } from 'sonner'
 import usePinnedMessage from '../hooks/usePinnedMessage'
@@ -182,6 +184,21 @@ export default function ChatItemMenus({
           })
         },
       })
+      const imageExt = message?.content?.extensions?.find(
+        (ext) => ext.id === 'subsocial-image'
+      )
+      if (imageExt) {
+        menus.unshift({
+          text: 'Copy Image URL',
+          icon: MdContentCopy,
+          onClick: () => {
+            copyToClipboard((imageExt.properties as ImageProperties).image)
+            toast.custom((t) => (
+              <Toast t={t} title='Image URL copied to clipboard!' />
+            ))
+          },
+        })
+      }
     }
 
     if (isOptimisticMessage) return menus
