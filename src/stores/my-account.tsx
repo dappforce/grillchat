@@ -344,6 +344,7 @@ async function validateParentProxyAddress({
 }
 
 async function getParentProxyAddress(grillAddress: string) {
+  if (!grillAddress) return null
   try {
     const linkedIdentity = await getLinkedIdentityQuery.fetchQuery(
       queryClient,
