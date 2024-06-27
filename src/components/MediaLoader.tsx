@@ -102,6 +102,7 @@ export default function MediaLoader({
           />
           <Image
             {...commonProps}
+            loading='eager'
             style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
             width={commonProps.width || 500}
             height={commonProps.height || 500}
