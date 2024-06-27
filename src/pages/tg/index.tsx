@@ -34,7 +34,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     )
 
     return {
-      revalidate: 5,
+      revalidate: 20,
       props: {
         dehydratedState: dehydrate(client),
       },

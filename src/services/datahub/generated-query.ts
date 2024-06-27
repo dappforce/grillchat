@@ -147,6 +147,7 @@ export type ActiveStakingSuperLike = {
   multiplier: Scalars['Int']['output']
   post: Post
   postKind: PostKind
+  revokedByModeration: Scalars['Boolean']['output']
   sharedPost?: Maybe<Post>
   staker: Account
   stakerAddress?: Maybe<Scalars['String']['output']>
@@ -492,28 +493,19 @@ export type ExtensionPinnedResource = {
   space?: Maybe<Space>
 }
 
-export type FindPostsArgs = {
-  activeStaking?: InputMaybe<Scalars['Boolean']['input']>
-  createdByAccountAddress?: InputMaybe<Scalars['String']['input']>
-  dataType?: InputMaybe<SocialEventDataType>
-  ids?: InputMaybe<Array<Scalars['String']['input']>>
-  lowValue?: InputMaybe<Scalars['Boolean']['input']>
-  offset?: InputMaybe<Scalars['Int']['input']>
-  optimisticIds?: InputMaybe<Array<Scalars['String']['input']>>
-  orderBy?: InputMaybe<Scalars['String']['input']>
-  orderDirection?: InputMaybe<QueryOrder>
-  ownedByAccountAddress?: InputMaybe<Scalars['String']['input']>
-  pageSize?: InputMaybe<Scalars['Int']['input']>
-  parentPostId?: InputMaybe<Scalars['String']['input']>
-  parentPostPersistentId?: InputMaybe<Scalars['String']['input']>
-  persistentIds?: InputMaybe<Array<Scalars['String']['input']>>
-  rootPostId?: InputMaybe<Scalars['String']['input']>
-  rootPostPersistentId?: InputMaybe<Scalars['String']['input']>
-  spaceId?: InputMaybe<Scalars['String']['input']>
-}
-
 export type FindPostsFilter = {
+  AND?: InputMaybe<Array<FindPostsFilter>>
+  OR?: InputMaybe<Array<FindPostsFilter>>
   activeStaking?: InputMaybe<Scalars['Boolean']['input']>
+  createdAtTime?: InputMaybe<Scalars['String']['input']>
+  /** Datetime as ISO 8601 string */
+  createdAtTimeGt?: InputMaybe<Scalars['String']['input']>
+  /** Datetime as ISO 8601 string */
+  createdAtTimeGte?: InputMaybe<Scalars['String']['input']>
+  /** Datetime as ISO 8601 string */
+  createdAtTimeLt?: InputMaybe<Scalars['String']['input']>
+  /** Datetime as ISO 8601 string */
+  createdAtTimeLte?: InputMaybe<Scalars['String']['input']>
   createdByAccountAddress?: InputMaybe<Scalars['String']['input']>
   dataType?: InputMaybe<SocialEventDataType>
   ids?: InputMaybe<Array<Scalars['String']['input']>>
@@ -1059,7 +1051,6 @@ export type Query = {
   activeStakingTokenomicMetadata: TokenomicMetadataResponse
   activeStakingTotalActivityMetricsForFixedPeriod: TotalActivityMetricsForFixedPeriodResponseDto
   domains: DomainsResponse
-  findPosts: FindPostsResponseDto
   gamificationEntranceDailyRewardSequence?: Maybe<GamificationEntranceDailyRewardsSequence>
   gamificationTappingActivityStatsByDate: TappingActivityStatsByDateResponseDto
   gamificationTappingEnergyState?: Maybe<TappingEnergyStateResponseDto>
@@ -1162,10 +1153,6 @@ export type QueryActiveStakingTotalActivityMetricsForFixedPeriodArgs = {
 
 export type QueryDomainsArgs = {
   args: DomainsInput
-}
-
-export type QueryFindPostsArgs = {
-  where: FindPostsArgs
 }
 
 export type QueryGamificationEntranceDailyRewardSequenceArgs = {
@@ -1790,6 +1777,7 @@ export type TokenomicMetadataResponse = {
   likerRewardDistributionPercent: Scalars['Int']['output']
   maxTapsPerDay: Scalars['Int']['output']
   maxTotalDailyRewardPoints: Scalars['String']['output']
+  postModerationBlockOneTimePenaltyPointsAmount: Scalars['String']['output']
   socialActionBalanceThreshold: SocialActionBalanceThresholdResponse
   socialActionPrice: SocialActionPriceResponse
   superLikeWeightPoints: Scalars['String']['output']
@@ -2333,6 +2321,7 @@ export type GetTokenomicMetadataQuery = {
     __typename?: 'TokenomicMetadataResponse'
     maxTapsPerDay: number
     superLikeWeightPoints: string
+    likerRewardDistributionPercent: number
     socialActionPrice: {
       __typename?: 'SocialActionPriceResponse'
       createCommentPoints: string
@@ -2538,65 +2527,23 @@ export type SubscribeBlockedResourcesSubscription = {
 export type DatahubPostFragmentFragment = {
   __typename?: 'Post'
   id: string
-  optimisticId?: string | null
-  dataType: DataType
-  content?: string | null
-  createdAtBlock?: number | null
   createdAtTime?: any | null
   title?: string | null
   body?: string | null
   summary?: string | null
   isShowMore: boolean
-  image?: string | null
-  link?: string | null
-  hidden: boolean
-  persistentId?: string | null
-  blockchainSyncFailed: boolean
-  isComment: boolean
-  kind: PostKind
-  updatedAtTime?: any | null
-  canonical?: string | null
-  tagsOriginal?: string | null
-  followersCount?: number | null
-  inReplyToKind?: InReplyToKind | null
   createdByAccount: { __typename?: 'Account'; id: string }
-  ownedByAccount: { __typename?: 'Account'; id: string }
   space?: { __typename?: 'Space'; id: string } | null
+  ownedByAccount: { __typename?: 'Account'; id: string }
   rootPost?: {
     __typename?: 'Post'
     persistentId?: string | null
     space?: { __typename?: 'Space'; id: string } | null
   } | null
-  parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
-  inReplyToPost?: { __typename?: 'Post'; persistentId?: string | null } | null
   extensions: Array<{
     __typename?: 'ContentExtension'
     image?: string | null
-    amount?: string | null
-    chain?: string | null
-    collectionId?: string | null
-    decimals?: number | null
     extensionSchemaId: ContentExtensionSchemaId
-    id: string
-    nftId?: string | null
-    token?: string | null
-    txHash?: string | null
-    message?: string | null
-    nonce?: string | null
-    url?: string | null
-    recipient?: { __typename?: 'Account'; id: string } | null
-    fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
-    toEvm?: { __typename?: 'EvmAccount'; id: string } | null
-    fromSubstrate?: { __typename?: 'Account'; id: string } | null
-    toSubstrate?: { __typename?: 'Account'; id: string } | null
-    pinnedResources?: Array<{
-      __typename?: 'ExtensionPinnedResource'
-      post?: {
-        __typename?: 'Post'
-        id: string
-        persistentId?: string | null
-      } | null
-    }> | null
   }>
 }
 
@@ -2614,68 +2561,23 @@ export type GetPostsQuery = {
     data: Array<{
       __typename?: 'Post'
       id: string
-      optimisticId?: string | null
-      dataType: DataType
-      content?: string | null
-      createdAtBlock?: number | null
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
       summary?: string | null
       isShowMore: boolean
-      image?: string | null
-      link?: string | null
-      hidden: boolean
-      persistentId?: string | null
-      blockchainSyncFailed: boolean
-      isComment: boolean
-      kind: PostKind
-      updatedAtTime?: any | null
-      canonical?: string | null
-      tagsOriginal?: string | null
-      followersCount?: number | null
-      inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
-      ownedByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
+      ownedByAccount: { __typename?: 'Account'; id: string }
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
         space?: { __typename?: 'Space'; id: string } | null
       } | null
-      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
-      inReplyToPost?: {
-        __typename?: 'Post'
-        persistentId?: string | null
-      } | null
       extensions: Array<{
         __typename?: 'ContentExtension'
         image?: string | null
-        amount?: string | null
-        chain?: string | null
-        collectionId?: string | null
-        decimals?: number | null
         extensionSchemaId: ContentExtensionSchemaId
-        id: string
-        nftId?: string | null
-        token?: string | null
-        txHash?: string | null
-        message?: string | null
-        nonce?: string | null
-        url?: string | null
-        recipient?: { __typename?: 'Account'; id: string } | null
-        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        fromSubstrate?: { __typename?: 'Account'; id: string } | null
-        toSubstrate?: { __typename?: 'Account'; id: string } | null
-        pinnedResources?: Array<{
-          __typename?: 'ExtensionPinnedResource'
-          post?: {
-            __typename?: 'Post'
-            id: string
-            persistentId?: string | null
-          } | null
-        }> | null
       }>
     }>
   }
@@ -2694,68 +2596,23 @@ export type GetOptimisticPostsQuery = {
     data: Array<{
       __typename?: 'Post'
       id: string
-      optimisticId?: string | null
-      dataType: DataType
-      content?: string | null
-      createdAtBlock?: number | null
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
       summary?: string | null
       isShowMore: boolean
-      image?: string | null
-      link?: string | null
-      hidden: boolean
-      persistentId?: string | null
-      blockchainSyncFailed: boolean
-      isComment: boolean
-      kind: PostKind
-      updatedAtTime?: any | null
-      canonical?: string | null
-      tagsOriginal?: string | null
-      followersCount?: number | null
-      inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
-      ownedByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
+      ownedByAccount: { __typename?: 'Account'; id: string }
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
         space?: { __typename?: 'Space'; id: string } | null
       } | null
-      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
-      inReplyToPost?: {
-        __typename?: 'Post'
-        persistentId?: string | null
-      } | null
       extensions: Array<{
         __typename?: 'ContentExtension'
         image?: string | null
-        amount?: string | null
-        chain?: string | null
-        collectionId?: string | null
-        decimals?: number | null
         extensionSchemaId: ContentExtensionSchemaId
-        id: string
-        nftId?: string | null
-        token?: string | null
-        txHash?: string | null
-        message?: string | null
-        nonce?: string | null
-        url?: string | null
-        recipient?: { __typename?: 'Account'; id: string } | null
-        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        fromSubstrate?: { __typename?: 'Account'; id: string } | null
-        toSubstrate?: { __typename?: 'Account'; id: string } | null
-        pinnedResources?: Array<{
-          __typename?: 'ExtensionPinnedResource'
-          post?: {
-            __typename?: 'Post'
-            id: string
-            persistentId?: string | null
-          } | null
-        }> | null
       }>
     }>
   }
@@ -2773,68 +2630,23 @@ export type GetCommentIdsInPostIdQuery = {
     data: Array<{
       __typename?: 'Post'
       id: string
-      optimisticId?: string | null
-      dataType: DataType
-      content?: string | null
-      createdAtBlock?: number | null
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
       summary?: string | null
       isShowMore: boolean
-      image?: string | null
-      link?: string | null
-      hidden: boolean
-      persistentId?: string | null
-      blockchainSyncFailed: boolean
-      isComment: boolean
-      kind: PostKind
-      updatedAtTime?: any | null
-      canonical?: string | null
-      tagsOriginal?: string | null
-      followersCount?: number | null
-      inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
-      ownedByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
+      ownedByAccount: { __typename?: 'Account'; id: string }
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
         space?: { __typename?: 'Space'; id: string } | null
       } | null
-      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
-      inReplyToPost?: {
-        __typename?: 'Post'
-        persistentId?: string | null
-      } | null
       extensions: Array<{
         __typename?: 'ContentExtension'
         image?: string | null
-        amount?: string | null
-        chain?: string | null
-        collectionId?: string | null
-        decimals?: number | null
         extensionSchemaId: ContentExtensionSchemaId
-        id: string
-        nftId?: string | null
-        token?: string | null
-        txHash?: string | null
-        message?: string | null
-        nonce?: string | null
-        url?: string | null
-        recipient?: { __typename?: 'Account'; id: string } | null
-        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        fromSubstrate?: { __typename?: 'Account'; id: string } | null
-        toSubstrate?: { __typename?: 'Account'; id: string } | null
-        pinnedResources?: Array<{
-          __typename?: 'ExtensionPinnedResource'
-          post?: {
-            __typename?: 'Post'
-            id: string
-            persistentId?: string | null
-          } | null
-        }> | null
       }>
     }>
   }
@@ -2884,68 +2696,23 @@ export type GetOwnedPostsQuery = {
     data: Array<{
       __typename?: 'Post'
       id: string
-      optimisticId?: string | null
-      dataType: DataType
-      content?: string | null
-      createdAtBlock?: number | null
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
       summary?: string | null
       isShowMore: boolean
-      image?: string | null
-      link?: string | null
-      hidden: boolean
-      persistentId?: string | null
-      blockchainSyncFailed: boolean
-      isComment: boolean
-      kind: PostKind
-      updatedAtTime?: any | null
-      canonical?: string | null
-      tagsOriginal?: string | null
-      followersCount?: number | null
-      inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
-      ownedByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
+      ownedByAccount: { __typename?: 'Account'; id: string }
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
         space?: { __typename?: 'Space'; id: string } | null
       } | null
-      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
-      inReplyToPost?: {
-        __typename?: 'Post'
-        persistentId?: string | null
-      } | null
       extensions: Array<{
         __typename?: 'ContentExtension'
         image?: string | null
-        amount?: string | null
-        chain?: string | null
-        collectionId?: string | null
-        decimals?: number | null
         extensionSchemaId: ContentExtensionSchemaId
-        id: string
-        nftId?: string | null
-        token?: string | null
-        txHash?: string | null
-        message?: string | null
-        nonce?: string | null
-        url?: string | null
-        recipient?: { __typename?: 'Account'; id: string } | null
-        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        fromSubstrate?: { __typename?: 'Account'; id: string } | null
-        toSubstrate?: { __typename?: 'Account'; id: string } | null
-        pinnedResources?: Array<{
-          __typename?: 'ExtensionPinnedResource'
-          post?: {
-            __typename?: 'Post'
-            id: string
-            persistentId?: string | null
-          } | null
-        }> | null
       }>
     }>
   }
@@ -2962,68 +2729,23 @@ export type GetPostsBySpaceIdQuery = {
     data: Array<{
       __typename?: 'Post'
       id: string
-      optimisticId?: string | null
-      dataType: DataType
-      content?: string | null
-      createdAtBlock?: number | null
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
       summary?: string | null
       isShowMore: boolean
-      image?: string | null
-      link?: string | null
-      hidden: boolean
-      persistentId?: string | null
-      blockchainSyncFailed: boolean
-      isComment: boolean
-      kind: PostKind
-      updatedAtTime?: any | null
-      canonical?: string | null
-      tagsOriginal?: string | null
-      followersCount?: number | null
-      inReplyToKind?: InReplyToKind | null
       createdByAccount: { __typename?: 'Account'; id: string }
-      ownedByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
+      ownedByAccount: { __typename?: 'Account'; id: string }
       rootPost?: {
         __typename?: 'Post'
         persistentId?: string | null
         space?: { __typename?: 'Space'; id: string } | null
       } | null
-      parentPost?: { __typename?: 'Post'; persistentId?: string | null } | null
-      inReplyToPost?: {
-        __typename?: 'Post'
-        persistentId?: string | null
-      } | null
       extensions: Array<{
         __typename?: 'ContentExtension'
         image?: string | null
-        amount?: string | null
-        chain?: string | null
-        collectionId?: string | null
-        decimals?: number | null
         extensionSchemaId: ContentExtensionSchemaId
-        id: string
-        nftId?: string | null
-        token?: string | null
-        txHash?: string | null
-        message?: string | null
-        nonce?: string | null
-        url?: string | null
-        recipient?: { __typename?: 'Account'; id: string } | null
-        fromEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        toEvm?: { __typename?: 'EvmAccount'; id: string } | null
-        fromSubstrate?: { __typename?: 'Account'; id: string } | null
-        toSubstrate?: { __typename?: 'Account'; id: string } | null
-        pinnedResources?: Array<{
-          __typename?: 'ExtensionPinnedResource'
-          post?: {
-            __typename?: 'Post'
-            id: string
-            persistentId?: string | null
-          } | null
-        }> | null
       }>
     }>
   }
@@ -3144,33 +2866,18 @@ export type GetSpacesQuery = {
 export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
-    optimisticId
-    dataType
-    content
-    createdAtBlock
     createdAtTime
     createdByAccount {
+      id
+    }
+    space {
       id
     }
     title
     body
     summary
     isShowMore
-    image
-    link
-    hidden
-    persistentId
-    blockchainSyncFailed
-    isComment
-    kind
-    updatedAtTime
-    canonical
-    tagsOriginal
-    followersCount
     ownedByAccount {
-      id
-    }
-    space {
       id
     }
     rootPost {
@@ -3179,48 +2886,9 @@ export const DatahubPostFragment = gql`
         id
       }
     }
-    parentPost {
-      persistentId
-    }
-    inReplyToKind
-    inReplyToPost {
-      persistentId
-    }
     extensions {
       image
-      amount
-      chain
-      collectionId
-      decimals
       extensionSchemaId
-      id
-      nftId
-      token
-      txHash
-      message
-      recipient {
-        id
-      }
-      nonce
-      url
-      fromEvm {
-        id
-      }
-      toEvm {
-        id
-      }
-      fromSubstrate {
-        id
-      }
-      toSubstrate {
-        id
-      }
-      pinnedResources {
-        post {
-          id
-          persistentId
-        }
-      }
     }
   }
 `
@@ -3600,6 +3268,7 @@ export const GetTokenomicMetadata = gql`
     activeStakingTokenomicMetadata {
       maxTapsPerDay
       superLikeWeightPoints
+      likerRewardDistributionPercent
       socialActionPrice {
         createCommentPoints
       }

@@ -1,4 +1,4 @@
-export const CHAT_PER_PAGE = 50
+export const CHAT_PER_PAGE = 25
 
 const DEFAULT_MAX_MESSAGE_LENGTH = 10_000
 const CUSTOM_CHAT_MAX_LENGTH: Record<string, number> = {

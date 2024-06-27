@@ -94,9 +94,9 @@ async function getPaginatedPostIdsByRootPostId({
   const ids: string[] = []
   const messages: PostData[] = []
   res.posts.data.forEach((post) => {
-    optimisticIds.add(post.optimisticId ?? '')
+    optimisticIds.add('')
 
-    const id = post.persistentId || post.id
+    const id = post.id
     ids.push(id)
 
     const mapped = mapDatahubPostFragment(post)

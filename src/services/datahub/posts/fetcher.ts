@@ -12,33 +12,16 @@ import { datahubQueryRequest } from '../utils'
 export const DATAHUB_POST_FRAGMENT = gql`
   fragment DatahubPostFragment on Post {
     id
-    optimisticId
-    dataType
-    content
-    createdAtBlock
     createdAtTime
     createdByAccount {
       id
     }
-    title
-    body
-    summary
-    isShowMore
-    image
-    link
-    hidden
-    persistentId
-    blockchainSyncFailed
-    isComment
-    kind
-    updatedAtTime
-    canonical
-    tagsOriginal
-    followersCount
-    ownedByAccount {
+    space {
       id
     }
-    space {
+    title
+    body
+    ownedByAccount {
       id
     }
     rootPost {
@@ -47,48 +30,9 @@ export const DATAHUB_POST_FRAGMENT = gql`
         id
       }
     }
-    parentPost {
-      persistentId
-    }
-    inReplyToKind
-    inReplyToPost {
-      persistentId
-    }
     extensions {
       image
-      amount
-      chain
-      collectionId
-      decimals
       extensionSchemaId
-      id
-      nftId
-      token
-      txHash
-      message
-      recipient {
-        id
-      }
-      nonce
-      url
-      fromEvm {
-        id
-      }
-      toEvm {
-        id
-      }
-      fromSubstrate {
-        id
-      }
-      toSubstrate {
-        id
-      }
-      pinnedResources {
-        post {
-          id
-          persistentId
-        }
-      }
     }
   }
 `
@@ -145,7 +89,7 @@ export async function getPosts(postIds: string[]) {
     persistentPosts = datahubResPromise.value.posts.data.map((post) => {
       return {
         ...mapDatahubPostFragment(post),
-        requestedId: post.persistentId ?? undefined,
+        requestedId: post.id ?? undefined,
       }
     })
   }
