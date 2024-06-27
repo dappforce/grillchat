@@ -5,7 +5,6 @@ import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatIte
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
-import SubTeamLabel from '@/components/chats/ChatItem/SubTeamLabel'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
@@ -66,7 +65,7 @@ export default function CommonChatItem({
   bg = 'background',
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
-  const { isAuthorized } = useAuthorizedForModeration(myAddress ?? '')
+  const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { mutate: moderate, isLoading: loadingModeration } =
     useModerateWithSuccessToast(message.id)
   const { data: reasons } = getModerationReasonsQuery.useQuery(null)
@@ -189,7 +188,7 @@ export default function CommonChatItem({
               color={textColor}
               className={cx('text-sm font-medium text-text-secondary')}
             />
-            <SubTeamLabel address={ownerId} />
+            {/* <SubTeamLabel address={ownerId} /> */}
             {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
           </div>

@@ -24,9 +24,11 @@ import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getIpfsContentUrl } from '@/utils/ipfs'
 import { estimatedWaitTime } from '@/utils/network'
+import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
-import { PostData } from '@subsocial/api/types'
+import { ImageProperties, PostData } from '@subsocial/api/types'
 import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { useEffect, useState } from 'react'
 import { BsFillPinAngleFill } from 'react-icons/bs'
@@ -38,6 +40,7 @@ import {
 } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
 import { LuShield } from 'react-icons/lu'
+import { MdContentCopy } from 'react-icons/md'
 import { useInView } from 'react-intersection-observer'
 import { toast } from 'sonner'
 import usePinnedMessage from '../hooks/usePinnedMessage'
@@ -252,32 +255,52 @@ export default function ChatItemMenus({
             <SuperLikeWrapper postId={messageId} withPostReward={false}>
               {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
                 if (hasILiked) return null
+                const menus: FloatingMenusProps['menus'] = [
+                  {
+                    icon: IoDiamondOutline,
+                    text: 'Like Message',
+                    disabled: isDisabled,
+                    onClick: () => {
+                      sendEventWithRef(myAddress ?? '', (refId) => {
+                        sendEvent(
+                          'click_superlike',
+                          {
+                            eventSource: 'message_menu',
+                            postId: messageId,
+                          },
+                          { ref: refId }
+                        )
+                      })
+                      handleClick()
+                      setIsOpenChatMenu(null)
+                    },
+                  },
+                ]
+
+                const imageExt = message?.content?.extensions?.find(
+                  (ext) => ext.id === 'subsocial-image'
+                )
+                if (imageExt && isAuthorized) {
+                  menus.push({
+                    text: 'Copy Image URL',
+                    icon: MdContentCopy,
+                    onClick: () => {
+                      copyToClipboard(
+                        getIpfsContentUrl(
+                          (imageExt.properties as ImageProperties).image
+                        )
+                      )
+                      toast.custom((t) => (
+                        <Toast t={t} title='Image URL copied to clipboard!' />
+                      ))
+                      setIsOpenChatMenu(null)
+                    },
+                  })
+                }
+
                 const menuList = (
                   <div className='relative w-full'>
-                    <MenuList
-                      size='sm'
-                      menus={[
-                        {
-                          icon: IoDiamondOutline,
-                          text: 'Like Message',
-                          disabled: isDisabled,
-                          onClick: () => {
-                            sendEventWithRef(myAddress ?? '', (refId) => {
-                              sendEvent(
-                                'click_superlike',
-                                {
-                                  eventSource: 'message_menu',
-                                  postId: messageId,
-                                },
-                                { ref: refId }
-                              )
-                            })
-                            handleClick()
-                            setIsOpenChatMenu(null)
-                          },
-                        },
-                      ]}
-                    />
+                    <MenuList size='sm' menus={menus} />
                     <div className='absolute bottom-0 flex w-full flex-col'>
                       <div className='mx-4 border-b border-border-gray' />
                     </div>

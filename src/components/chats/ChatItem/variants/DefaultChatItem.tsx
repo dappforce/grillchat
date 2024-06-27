@@ -15,7 +15,6 @@ import ChatRelativeTime from '../ChatRelativeTime'
 import LinkPreview from '../LinkPreview'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
-import SubTeamLabel from '../SubTeamLabel'
 import { ChatItemContentProps } from './types'
 
 export type DefaultChatItemProps = ChatItemContentProps
@@ -78,7 +77,7 @@ export default function DefaultChatItem({
               address={ownerId}
               className={cx('text-sm font-medium text-text-secondary')}
             />
-            <SubTeamLabel address={ownerId} />
+            {/* <SubTeamLabel address={ownerId} /> */}
           </div>
         )}
         {repliedMessageId && (

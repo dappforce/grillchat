@@ -6,7 +6,6 @@ import { getRepliedMessageId } from '../../utils'
 import ChatRelativeTime from '../ChatRelativeTime'
 import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
-import SubTeamLabel from '../SubTeamLabel'
 import { ChatItemContentProps } from './types'
 
 export type EmojiChatItemProps = ChatItemContentProps
@@ -72,7 +71,7 @@ export default function EmojiChatItem({
             address={ownerId}
             className={cx('mr-2 text-sm font-medium text-text-secondary')}
           />
-          <SubTeamLabel address={ownerId} className='!bg-background-light/50' />
+          {/* <SubTeamLabel address={ownerId} className='!bg-background-light/50' /> */}
         </div>
       )}
       <div

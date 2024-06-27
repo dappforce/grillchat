@@ -85,11 +85,6 @@ function ChatListContent({
     sendMessageToParentWindow('totalMessage', (totalDataCount ?? 0).toString())
   }, [totalDataCount])
 
-  // useLoadMoreIfNoScroll(loadMore, messageIds?.length ?? 0, {
-  //   scrollContainer: scrollContainerRef,
-  //   innerContainer: innerRef,
-  // })
-
   const pinnedMessageId = usePinnedMessage(chatId)
   const scrollToMessage = useScrollToMessage(
     scrollContainerRef,
