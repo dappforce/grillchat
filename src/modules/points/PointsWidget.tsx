@@ -9,6 +9,7 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
+import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsMounted from '@/hooks/useIsMounted'
 import { useSendEvent } from '@/stores/analytics'
@@ -206,6 +207,7 @@ const UserStatsSection = ({
   const myAddress = useMyMainAddress()
   const sendEvent = useSendEvent()
   const [openProfileModal, setOpenProfileModal] = useState(false)
+  const [openRewardModal, setOpenRewardModal] = useState(false)
 
   return (
     <>
@@ -269,10 +271,14 @@ const UserStatsSection = ({
           </div>
           <div className='flex w-full flex-col gap-2'>
             <span className='text-text-muted'>POINTS EARNED:</span>
-            <div className='mr-1 flex items-center gap-3'>
+            <div
+              className='mr-1 flex items-center gap-3'
+              onClick={() => setOpenRewardModal(true)}
+            >
               <Image src={Diamond} alt='' className='h-8 w-8' />
               <span className='flex h-8 items-center text-2xl font-bold'>
-                <Points />
+                <Points shortWhenValueTooBig />{' '}
+                <span className='ml-1 text-red-400'>*</span>
               </span>
             </div>
             <div className='flex'>
@@ -283,6 +289,12 @@ const UserStatsSection = ({
           </div>
         </div>
       </div>
+      <RewardPerDayModal
+        isOpen={openRewardModal}
+        close={() => {
+          setOpenRewardModal(false)
+        }}
+      />
       <SubsocialProfileModal
         title='✏️ Edit Profile'
         closeModal={() => setOpenProfileModal(false)}
