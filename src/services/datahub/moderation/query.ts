@@ -27,14 +27,6 @@ const GET_BLOCKED_RESOURCES = gql`
       ctxPostIds: $postIds
       ctxAppIds: $appIds
     ) {
-      byCtxSpaceIds {
-        id
-        blockedResourceIds
-      }
-      byCtxPostIds {
-        id
-        blockedResourceIds
-      }
       byCtxAppIds {
         id
         blockedResourceIds
@@ -61,20 +53,14 @@ export async function getBlockedResources(variables: {
     },
   })
 
-  const blockedInSpaceIds =
-    data.moderationBlockedResourceIdsBatch.byCtxSpaceIds.map(
-      ({ blockedResourceIds, id }) => ({
-        id,
-        blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
-      })
-    )
-  const blockedInPostIds =
-    data.moderationBlockedResourceIdsBatch.byCtxPostIds.map(
-      ({ blockedResourceIds, id }) => ({
-        id,
-        blockedResources: mapBlockedResources(blockedResourceIds, (id) => id),
-      })
-    )
+  const blockedInSpaceIds: {
+    id: string
+    blockedResources: Record<ResourceTypes, string[]>
+  }[] = []
+  const blockedInPostIds: {
+    id: string
+    blockedResources: Record<ResourceTypes, string[]>
+  }[] = []
   const blockedInAppIds =
     data.moderationBlockedResourceIdsBatch.byCtxAppIds.map(
       ({ blockedResourceIds, id }) => ({

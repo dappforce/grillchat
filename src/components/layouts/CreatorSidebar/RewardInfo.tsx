@@ -251,10 +251,10 @@ function StakerRewardInfo({
 }
 
 function generateTooltipForCreatorEarned({
-  fromCommentSuperLikes,
+  // fromCommentSuperLikes,
   fromDirectSuperLikes,
-  fromShareSuperLikes,
-}: PostRewards['rewardsBySource']) {
+}: // fromShareSuperLikes,
+PostRewards['rewardsBySource']) {
   return (
     <div>
       <span>
@@ -266,7 +266,7 @@ function generateTooltipForCreatorEarned({
           {formatBalanceWithDecimals(fromDirectSuperLikes)} SUB from direct
           likes on your posts and comments
         </li>
-        {BigInt(fromCommentSuperLikes) > 0 && (
+        {/* {BigInt(fromCommentSuperLikes) > 0 && (
           <li>
             {formatBalanceWithDecimals(fromCommentSuperLikes)} SUB from the
             likes on comments to your posts and comments
@@ -277,7 +277,7 @@ function generateTooltipForCreatorEarned({
             {formatBalanceWithDecimals(fromShareSuperLikes)} SUB from the likes
             on shared posts of your posts and comments
           </li>
-        )}
+        )} */}
       </ul>
     </div>
   )

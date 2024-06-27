@@ -1962,20 +1962,16 @@ export type GetPostRewardsQuery = {
   __typename?: 'Query'
   activeStakingRewardsByPosts: Array<{
     __typename?: 'RewardsByPostsResponseDto'
-    persistentPostId?: string | null
+    postId?: string | null
     draftPointsRewardTotal: string
     pointsRewardTotal: string
     pointsRewardsBySource?: {
       __typename?: 'PostRewardsBySourceResponseDto'
       fromDirectSuperLikes?: string | null
-      fromCommentSuperLikes?: string | null
-      fromShareSuperLikes?: string | null
     } | null
     draftPointsRewardsBySource?: {
       __typename?: 'PostRewardsBySourceResponseDto'
       fromDirectSuperLikes?: string | null
-      fromCommentSuperLikes?: string | null
-      fromShareSuperLikes?: string | null
     } | null
   }>
 }
@@ -2381,16 +2377,6 @@ export type GetBlockedResourcesQuery = {
   __typename?: 'Query'
   moderationBlockedResourceIdsBatch: {
     __typename?: 'BlockedResourceIdsBatchResponse'
-    byCtxSpaceIds: Array<{
-      __typename?: 'BlockedResourceIdsBatchItem'
-      id: string
-      blockedResourceIds: Array<string>
-    }>
-    byCtxPostIds: Array<{
-      __typename?: 'BlockedResourceIdsBatchItem'
-      id: string
-      blockedResourceIds: Array<string>
-    }>
     byCtxAppIds: Array<{
       __typename?: 'BlockedResourceIdsBatchItem'
       id: string
@@ -2530,8 +2516,6 @@ export type DatahubPostFragmentFragment = {
   createdAtTime?: any | null
   title?: string | null
   body?: string | null
-  summary?: string | null
-  isShowMore: boolean
   createdByAccount: { __typename?: 'Account'; id: string }
   space?: { __typename?: 'Space'; id: string } | null
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2564,8 +2548,6 @@ export type GetPostsQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
-      summary?: string | null
-      isShowMore: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2599,8 +2581,6 @@ export type GetOptimisticPostsQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
-      summary?: string | null
-      isShowMore: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2633,8 +2613,6 @@ export type GetCommentIdsInPostIdQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
-      summary?: string | null
-      isShowMore: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2699,8 +2677,6 @@ export type GetOwnedPostsQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
-      summary?: string | null
-      isShowMore: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2732,8 +2708,6 @@ export type GetPostsBySpaceIdQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
-      summary?: string | null
-      isShowMore: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2875,8 +2849,6 @@ export const DatahubPostFragment = gql`
     }
     title
     body
-    summary
-    isShowMore
     ownedByAccount {
       id
     }
@@ -2969,18 +2941,14 @@ export const GetCanPostsSuperLiked = gql`
 export const GetPostRewards = gql`
   query GetPostRewards($postIds: [String!]!) {
     activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
-      persistentPostId
+      postId
       draftPointsRewardTotal
       pointsRewardTotal
       pointsRewardsBySource {
         fromDirectSuperLikes
-        fromCommentSuperLikes
-        fromShareSuperLikes
       }
       draftPointsRewardsBySource {
         fromDirectSuperLikes
-        fromCommentSuperLikes
-        fromShareSuperLikes
       }
     }
   }
@@ -3313,14 +3281,6 @@ export const GetBlockedResources = gql`
       ctxPostIds: $postIds
       ctxAppIds: $appIds
     ) {
-      byCtxSpaceIds {
-        id
-        blockedResourceIds
-      }
-      byCtxPostIds {
-        id
-        blockedResourceIds
-      }
       byCtxAppIds {
         id
         blockedResourceIds
