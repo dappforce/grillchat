@@ -185,23 +185,6 @@ export default function ChatItemMenus({
           })
         },
       })
-      const imageExt = message?.content?.extensions?.find(
-        (ext) => ext.id === 'subsocial-image'
-      )
-      if (imageExt) {
-        menus.unshift({
-          text: 'Copy Image URL',
-          icon: MdContentCopy,
-          onClick: () => {
-            copyToClipboard(
-              getIpfsContentUrl((imageExt.properties as ImageProperties).image)
-            )
-            toast.custom((t) => (
-              <Toast t={t} title='Image URL copied to clipboard!' />
-            ))
-          },
-        })
-      }
     }
 
     if (isOptimisticMessage) return menus
@@ -272,32 +255,51 @@ export default function ChatItemMenus({
             <SuperLikeWrapper postId={messageId} withPostReward={false}>
               {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
                 if (hasILiked) return null
+                const menus: FloatingMenusProps['menus'] = [
+                  {
+                    icon: IoDiamondOutline,
+                    text: 'Like Message',
+                    disabled: isDisabled,
+                    onClick: () => {
+                      sendEventWithRef(myAddress ?? '', (refId) => {
+                        sendEvent(
+                          'click_superlike',
+                          {
+                            eventSource: 'message_menu',
+                            postId: messageId,
+                          },
+                          { ref: refId }
+                        )
+                      })
+                      handleClick()
+                      setIsOpenChatMenu(null)
+                    },
+                  },
+                ]
+
+                const imageExt = message?.content?.extensions?.find(
+                  (ext) => ext.id === 'subsocial-image'
+                )
+                if (imageExt && isAuthorized) {
+                  menus.push({
+                    text: 'Copy Image URL',
+                    icon: MdContentCopy,
+                    onClick: () => {
+                      copyToClipboard(
+                        getIpfsContentUrl(
+                          (imageExt.properties as ImageProperties).image
+                        )
+                      )
+                      toast.custom((t) => (
+                        <Toast t={t} title='Image URL copied to clipboard!' />
+                      ))
+                    },
+                  })
+                }
+
                 const menuList = (
                   <div className='relative w-full'>
-                    <MenuList
-                      size='sm'
-                      menus={[
-                        {
-                          icon: IoDiamondOutline,
-                          text: 'Like Message',
-                          disabled: isDisabled,
-                          onClick: () => {
-                            sendEventWithRef(myAddress ?? '', (refId) => {
-                              sendEvent(
-                                'click_superlike',
-                                {
-                                  eventSource: 'message_menu',
-                                  postId: messageId,
-                                },
-                                { ref: refId }
-                              )
-                            })
-                            handleClick()
-                            setIsOpenChatMenu(null)
-                          },
-                        },
-                      ]}
-                    />
+                    <MenuList size='sm' menus={menus} />
                     <div className='absolute bottom-0 flex w-full flex-col'>
                       <div className='mx-4 border-b border-border-gray' />
                     </div>
