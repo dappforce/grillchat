@@ -293,6 +293,7 @@ export default function ChatItemMenus({
                       toast.custom((t) => (
                         <Toast t={t} title='Image URL copied to clipboard!' />
                       ))
+                      setIsOpenChatMenu(null)
                     },
                   })
                 }
