@@ -78,6 +78,7 @@ function ChatListContent({
     hubId,
     chatId,
   })
+
   const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
 
   useEffect(() => {

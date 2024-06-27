@@ -7,16 +7,22 @@ import SlotCounter from 'react-slot-counter'
 
 function Points({
   shorten,
+  shortWhenValueTooBig,
   withPointsAnimation = true,
 }: {
   shorten?: boolean
+  shortWhenValueTooBig?: boolean
   withPointsAnimation?: boolean
 }) {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   const myAddress = useMyMainAddress()
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress || '')
 
-  const formatted = formatNumber(data ?? '0', { shorten })
+  const value = data ?? 0
+
+  const shortenValue = shortWhenValueTooBig && value > 99999 ? true : shorten
+
+  const formatted = formatNumber(value, { shorten: shortenValue })
   const splitValues = useMemo(() => {
     return formatted.split('')
   }, [formatted])
