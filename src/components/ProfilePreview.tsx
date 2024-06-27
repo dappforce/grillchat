@@ -1,8 +1,5 @@
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
-import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import useTgLink from '@/hooks/useTgLink'
-import { useMyMainAddress } from '@/stores/my-account'
-import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
 import { copyToClipboard } from '@/utils/strings'
@@ -11,13 +8,10 @@ import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiPencilFill } from 'react-icons/ri'
-import { SiEthereum } from 'react-icons/si'
 import { toast } from 'sonner'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
-import { CopyTextInline } from './CopyText'
 import Name, { useName } from './Name'
-import { Skeleton } from './SkeletonFallback'
 import Toast from './Toast'
 import PopOver from './floating/PopOver'
 
@@ -57,13 +51,13 @@ const ProfilePreview = ({
 }: ProfilePreviewProps) => {
   const mdUp = useBreakpointThreshold('md')
   const { isLoading } = useName(address)
-  const myAddress = useMyMainAddress()
-  const { evmAddress: linkedEvmAddress, isLoading: isLoadingEvmAddress } =
-    useLinkedEvmAddress(address)
+  // const myAddress = useMyMainAddress()
+  // const { evmAddress: linkedEvmAddress, isLoading: isLoadingEvmAddress } =
+  //   useLinkedEvmAddress(address)
 
   const { telegramLink, telegramUsername } = useTgLink(address, asLink)
 
-  const isMyAddressPart = myAddress === address ? ' my' : ''
+  // const isMyAddressPart = myAddress === address ? ' my' : ''
 
   const editButton = mdUp ? (
     <Button
@@ -134,7 +128,7 @@ const ProfilePreview = ({
           )}
           {onEditClick && !isLoading && editButton}
         </div>
-        {
+        {/* {
           isLoadingEvmAddress ? (
             <Skeleton className='w-32' />
           ) : showAddress && linkedEvmAddress ? (
@@ -164,7 +158,7 @@ const ProfilePreview = ({
           //     </Button>
           //   </div>
           // )
-        }
+        } */}
       </div>
     </div>
   )
