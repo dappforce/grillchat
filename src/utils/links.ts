@@ -1,5 +1,7 @@
 import { getAliasFromHubId } from '@/constants/config'
 import { env } from '@/env.mjs'
+import { IdentityProvider } from '@/services/datahub/generated-query'
+import { Identity } from '@/services/datahub/identity/fetcher'
 import { isServer } from '@tanstack/react-query'
 import { ParsedUrlQuery } from 'querystring'
 import urlJoin from 'url-join'
@@ -96,4 +98,15 @@ export function getPolkadotJsUrl(pathname?: string) {
 export function getUserProfileLink(profileId?: string) {
   if (!profileId) return undefined
   return `/${profileId}`
+}
+
+export function getUserTelegramLink(
+  linkedIdentity: Identity | undefined | null
+) {
+  if (!linkedIdentity) return undefined
+  const telegram = linkedIdentity.externalProviders.find(
+    (provider) => provider.provider === IdentityProvider.Telegram
+  )
+  if (!telegram?.username) return undefined
+  return `https://t.me/${telegram.username}`
 }

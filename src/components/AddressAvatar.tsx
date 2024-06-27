@@ -1,8 +1,8 @@
 import useRandomColor from '@/hooks/useRandomColor'
+import useTgLink from '@/hooks/useTgLink'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
-import { getUserProfileLink } from '@/utils/links'
 import { decodeProfileSource } from '@/utils/profile'
 import dynamic from 'next/dynamic'
 import Image, { ImageProps } from 'next/image'
@@ -49,6 +49,7 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
 
     const [isAvatarError, setIsAvatarError] = useState(false)
     const onImageError = useCallback(() => setIsAvatarError(true), [])
+    const { telegramLink } = useTgLink(address, asLink)
 
     const { data: profile, isLoading } = getProfileQuery.useQuery(address)
 
@@ -97,14 +98,10 @@ const AddressAvatar = forwardRef<HTMLDivElement, AddressAvatarProps>(
       )
     }
 
-    const profileLink = asLink
-      ? getUserProfileLink(profile?.profileSpace?.id)
-      : undefined
-
     return (
       <LinkOrText
         {...props}
-        href={profileLink}
+        href={telegramLink}
         ref={ref as any}
         className={cx(
           'relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-background-lightest',
@@ -162,7 +159,7 @@ const LinkOrText = forwardRef<
         placement='top'
         yOffset={6}
       >
-        <span>Open profile</span>
+        <span>Message user</span>
       </PopOver>
     )
   }

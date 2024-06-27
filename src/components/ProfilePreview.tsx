@@ -1,19 +1,24 @@
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
+import useTgLink from '@/hooks/useTgLink'
 import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
+import { copyToClipboard } from '@/utils/strings'
 import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
+import { MdContentCopy } from 'react-icons/md'
 import { RiPencilFill } from 'react-icons/ri'
 import { SiEthereum } from 'react-icons/si'
+import { toast } from 'sonner'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import Name, { useName } from './Name'
 import { Skeleton } from './SkeletonFallback'
+import Toast from './Toast'
 import PopOver from './floating/PopOver'
 
 export type ForceProfileSource = {
@@ -55,6 +60,8 @@ const ProfilePreview = ({
   const myAddress = useMyMainAddress()
   const { evmAddress: linkedEvmAddress, isLoading: isLoadingEvmAddress } =
     useLinkedEvmAddress(address)
+
+  const { telegramLink, telegramUsername } = useTgLink(address, asLink)
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
@@ -110,6 +117,21 @@ const ProfilePreview = ({
             address={address}
             className={cx('gap-2 text-lg', nameClassName)}
           />
+          {telegramLink && (
+            <Button
+              size='circleSm'
+              variant='transparent'
+              className='text-text-muted'
+              onClick={() => {
+                copyToClipboard(`@${telegramUsername}`)
+                toast.custom((t) => (
+                  <Toast t={t} title='Telegram username copied!' />
+                ))
+              }}
+            >
+              <MdContentCopy />
+            </Button>
+          )}
           {onEditClick && !isLoading && editButton}
         </div>
         {

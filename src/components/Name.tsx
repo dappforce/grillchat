@@ -1,7 +1,7 @@
 import useRandomColor from '@/hooks/useRandomColor'
+import useTgLink from '@/hooks/useTgLink'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { cx } from '@/utils/class-names'
-import { getUserProfileLink } from '@/utils/links'
 import { generateRandomName } from '@/utils/random-name'
 import { ComponentProps, ComponentPropsWithoutRef, forwardRef } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -37,11 +37,7 @@ export default function Name({
   const { inView, ref } = useInView({ triggerOnce: true })
 
   const { isLoading, name, textColor, profile } = useName(address)
-
-  // const { data: linkedIdentity } =
-  //   getLinkedIdentityFromMainAddressQuery.useQuery(address, {
-  //     enabled: profileSourceIconPosition !== 'none',
-  //   })
+  const { telegramLink, telegramUsername } = useTgLink(address, asLink)
 
   // const identitiesIcons = (linkedIdentity?.externalProviders.length ?? 0) >
   //   0 && (
@@ -102,14 +98,10 @@ export default function Name({
     )
   }
 
-  const profileLink = asLink
-    ? getUserProfileLink(profile?.profileSpace?.id)
-    : undefined
-
   return (
     <LinkOrText
       {...props}
-      href={profileLink}
+      href={telegramLink}
       ref={ref}
       className={cx(
         'flex items-center gap-1',
@@ -153,7 +145,7 @@ const LinkOrText = forwardRef<
         placement='top'
         yOffset={6}
       >
-        <span>Open profile</span>
+        <span>Message user</span>
       </PopOver>
     )
   }
