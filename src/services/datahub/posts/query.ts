@@ -489,17 +489,15 @@ async function getTimeLeftUntilCanPost(address: string) {
   const lastPostedTime = lastPost?.posts.data?.[0]?.createdAtTime
   const lastSentFromStorage = lastSentMessageStorage.get()
 
-  let lastPosted = lastPostedTime
-    ? new Date(lastPostedTime).getTime()
-    : Date.now()
+  let lastPosted = lastPostedTime ? new Date(lastPostedTime).getTime() : null
   if (lastSentFromStorage) {
     const dateFromStorage = new Date(lastSentFromStorage).getTime()
-    if (dateFromStorage > lastPosted) {
+    if (!lastPosted || dateFromStorage > lastPosted) {
       lastPosted = dateFromStorage
     }
   }
 
-  const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
+  const timeLeft = (lastPosted || Date.now()) + TIME_CONSTRAINT - serverTime
   return Math.max(timeLeft, 0)
 }
 export const getTimeLeftUntilCanPostQuery = createQuery({
