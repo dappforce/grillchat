@@ -43,9 +43,19 @@ export default function HomePageModals() {
 
   const myAddress = useMyMainAddress() ?? ''
 
-  const { data: yesterdayReward } = getUserYesterdayRewardQuery.useQuery({
-    address: myAddress ?? '',
-  })
+  const [enableYesterdayReward, setEnableYesterdayReward] = useState(false)
+  const { data: yesterdayReward } = getUserYesterdayRewardQuery.useQuery(
+    {
+      address: myAddress ?? '',
+    },
+    { enabled: enableYesterdayReward }
+  )
+  useEffect(() => {
+    if (!progressModalStorage.getIsClosed()) {
+      setEnableYesterdayReward(true)
+    }
+  }, [])
+
   const hasEarnedAnything = !!(
     Number(yesterdayReward?.earned.creator ?? '0') ||
     Number(yesterdayReward?.earned.staker ?? '0')
