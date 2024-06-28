@@ -15,6 +15,7 @@ import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getMyMainAddress } from '@/stores/my-account'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
+import { LocalStorage } from '@/utils/storage'
 import { TAGS_REGEX } from '@/utils/strings'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PostContent } from '@subsocial/api/types'
@@ -157,6 +158,7 @@ function extractTags(message: string) {
   return Array.from(message.match(TAGS_REGEX) ?? [])
 }
 
+export const lastSentMessageStorage = new LocalStorage(() => 'lastSentMessage')
 function getContent(data: Params) {
   return {
     body: data.message,
@@ -277,6 +279,7 @@ export function useSendMessage(
       }
     },
     onSuccess: async (...params) => {
+      lastSentMessageStorage.set(new Date().toISOString())
       config?.onSuccess?.(...params)
       allowWindowUnload()
 

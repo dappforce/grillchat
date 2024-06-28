@@ -33,6 +33,7 @@ import {
 import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
 import { DATAHUB_POST_FRAGMENT } from './fetcher'
+import { lastSentMessageStorage } from './mutation'
 
 const GET_COMMENT_IDS_IN_POST_ID = gql`
   ${DATAHUB_POST_FRAGMENT}
@@ -468,7 +469,7 @@ const GET_LAST_POSTED_MEME = gql`
   }
 `
 async function getTimeLeftUntilCanPost(address: string) {
-  const [lastPost, serverTime] = await Promise.all([
+  const [lastPostPromise, serverTimePromise] = await Promise.allSettled([
     datahubQueryRequest<
       GetLastPostedMemeQuery,
       GetLastPostedMemeQueryVariables
@@ -478,12 +479,26 @@ async function getTimeLeftUntilCanPost(address: string) {
     }),
     getServerTime(),
   ] as const)
-  const lastPostedTime = lastPost.posts.data?.[0]?.createdAtTime
-  if (!lastPostedTime) {
-    return Infinity
+  const lastPost =
+    lastPostPromise.status === 'fulfilled' ? lastPostPromise.value : null
+  const serverTime =
+    serverTimePromise.status === 'fulfilled'
+      ? serverTimePromise.value
+      : Date.now()
+
+  const lastPostedTime = lastPost?.posts.data?.[0]?.createdAtTime
+  const lastSentFromStorage = lastSentMessageStorage.get()
+
+  let lastPosted = lastPostedTime
+    ? new Date(lastPostedTime).getTime()
+    : Date.now()
+  if (lastSentFromStorage) {
+    const dateFromStorage = new Date(lastSentFromStorage).getTime()
+    if (dateFromStorage > lastPosted) {
+      lastPosted = dateFromStorage
+    }
   }
 
-  const lastPosted = new Date(lastPost.posts.data?.[0]?.createdAtTime).getTime()
   const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
   return Math.max(timeLeft, 0)
 }
