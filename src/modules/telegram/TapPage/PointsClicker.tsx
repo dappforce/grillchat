@@ -211,7 +211,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
     <>
       <div
         ref={ref}
-        className={cx('relative pl-3', className)}
+        className={cx('relative flex pl-3', className)}
         onTouchStart={disableClicker ? undefined : onMouseDown}
         onTouchEnd={disableClicker ? undefined : onMouseUp}
       >
@@ -226,6 +226,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
           isPaused={!startAnimation || disableClicker}
           style={{
             filter: disableClicker ? 'brightness(0.7) grayscale(0.8)' : '',
+            alignSelf: 'center',
           }}
         />
       </div>

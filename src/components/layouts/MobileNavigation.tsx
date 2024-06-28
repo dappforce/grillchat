@@ -7,14 +7,20 @@ import { env } from '@/env.mjs'
 import useIsMounted from '@/hooks/useIsMounted'
 import { getPostQuery } from '@/services/api/query'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
+import { getDayAndWeekTimestamp } from '@/services/datahub/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
+import { LocalStorage } from '@/utils/storage'
 import { useHapticFeedbackRaw } from '@tma.js/sdk-react'
 import { useRouter } from 'next/router'
 import { ComponentProps } from 'react'
 import { IconType } from 'react-icons'
 import CustomLink from 'src/components/referral/CustomLink'
 import useLastReadTimeFromStorage from '../chats/hooks/useLastReadMessageTimeFromStorage'
+
+const tasksPageVisitedDateStore = new LocalStorage(
+  () => 'tasks-page-visited-date'
+)
 
 export type HomePageView = 'memes' | 'tasks' | 'airdrop' | 'friends' | 'tap'
 
@@ -26,6 +32,7 @@ type Tab = {
   Icon: any
   href: string
   customClassName?: string
+  onClick?: () => void
 }
 
 const tabs: Tab[] = [
@@ -55,8 +62,23 @@ const tabs: Tab[] = [
   {
     id: 'tasks',
     text: 'Tasks',
-    Icon: Tasks,
+    Icon: (props: ComponentProps<'div'>) => (
+      <div {...props} className={cx('relative', props.className)}>
+        <Tasks />
+        <TasksPageDot />
+      </div>
+    ),
     href: '/tg/tasks',
+    onClick: () => {
+      const { day } = getDayAndWeekTimestamp()
+      const tasksPageVisitedDate = tasksPageVisitedDateStore.get() as string
+
+      console.log(day, tasksPageVisitedDate)
+
+      if (tasksPageVisitedDate !== day.toString()) {
+        tasksPageVisitedDateStore.set(day.toString())
+      }
+    },
   },
   {
     id: 'airdrop',
@@ -72,7 +94,7 @@ const MobileNavigation = ({}: MobileNavigationProps) => {
   return (
     <div className={cx('sticky bottom-0 z-20 mt-auto w-full p-2')}>
       <div className='flex items-center justify-around rounded-[20px] bg-background-light p-1'>
-        {tabs.map(({ id, text, Icon, href, customClassName }) => (
+        {tabs.map(({ id, text, Icon, href, customClassName, onClick }) => (
           <NavigationItem
             key={id}
             href={href}
@@ -80,6 +102,7 @@ const MobileNavigation = ({}: MobileNavigationProps) => {
             title={text}
             id={id}
             className={customClassName}
+            onClick={onClick}
           />
         ))}
       </div>
@@ -95,6 +118,7 @@ function NavigationItem({
   iconClassName,
   className,
   id,
+  onClick,
 }: {
   icon: IconType
   title: string
@@ -103,6 +127,7 @@ function NavigationItem({
   iconClassName?: string
   className?: string
   id: string
+  onClick?: () => void
 }) {
   const { pathname } = useRouter()
   const sendEvent = useSendEvent()
@@ -111,6 +136,8 @@ function NavigationItem({
   const onButtonClick = () => {
     sendEvent('navbar_clicked', { value: id })
     haptic?.result?.impactOccurred('medium')
+
+    onClick?.()
   }
 
   return (
@@ -131,6 +158,15 @@ function NavigationItem({
       <span className='text-sm font-medium leading-none'>{title}</span>
     </CustomLink>
   )
+}
+
+const TasksPageDot = () => {
+  const tasksPageVisitedDate = tasksPageVisitedDateStore.get() as string
+  const { day } = getDayAndWeekTimestamp()
+
+  if (tasksPageVisitedDate === day.toString()) return null
+
+  return <RedDot />
 }
 
 function NewMemeNotice() {
@@ -156,11 +192,13 @@ function NewMemeNotice() {
     lastMessage &&
     getLastReadTime() < lastMessage.struct.createdAtTime
   ) {
-    return (
-      <div className='absolute right-0 top-0 h-2 w-2 translate-x-[150%] rounded-full bg-red-500' />
-    )
+    return <RedDot />
   }
   return null
 }
+
+const RedDot = () => (
+  <div className='absolute right-0 top-0 h-2 w-2 translate-x-[150%] rounded-full bg-red-500' />
+)
 
 export default MobileNavigation

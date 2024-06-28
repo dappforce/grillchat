@@ -16,5 +16,12 @@ export default function CatClicker({ ...props }: HamsterLoadingProps) {
     },
   }
 
-  return <Lottie {...defaultOptions} isClickToPauseDisabled={true} />
+  return (
+    <Lottie
+      {...defaultOptions}
+      height={450}
+      width={450}
+      isClickToPauseDisabled={true}
+    />
+  )
 }

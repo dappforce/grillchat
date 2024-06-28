@@ -258,7 +258,7 @@ const UserStatsSection = ({
             <span className='text-text-muted'>LIKES LEFT TODAY:</span>
             <div className='flex items-center gap-3'>
               <Image src={Thumbsup} alt='' className='h-8 w-8' />
-              <span className='text-2xl font-bold'>
+              <span className='text-[22px] font-bold'>
                 <LikeCount />
                 /10
               </span>
@@ -276,7 +276,7 @@ const UserStatsSection = ({
               onClick={() => setOpenRewardModal(true)}
             >
               <Image src={Diamond} alt='' className='h-8 w-8' />
-              <span className='flex h-8 items-center text-2xl font-bold'>
+              <span className='flex h-8 items-center text-[22px] font-bold'>
                 <Points shortWhenValueTooBig />{' '}
                 <span className='ml-1 text-red-400'>*</span>
               </span>
