@@ -56,7 +56,7 @@ const ProfilePreview = ({
   const {
     telegramUsername,
     isLoading: loadingTgLink,
-    isAdmin,
+    shouldSeeUsername,
   } = useTgLink(address, asLink)
 
   // const isMyAddressPart = myAddress === address ? ' my' : ''
@@ -115,7 +115,7 @@ const ProfilePreview = ({
           />
           {onEditClick && !isLoading && editButton}
         </div>
-        {isAdmin &&
+        {shouldSeeUsername &&
           (loadingTgLink ? (
             <Skeleton className='w-32' />
           ) : (
