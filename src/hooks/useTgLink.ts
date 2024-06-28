@@ -6,7 +6,7 @@ import useIsModerationAdmin from './useIsModerationAdmin'
 export default function useTgLink(address: string, asLink?: boolean) {
   const isAdmin = useIsModerationAdmin()
   const shouldRedirect = !!(asLink && isAdmin)
-  const { data: linkedIdentity } =
+  const { data: linkedIdentity, isLoading } =
     getLinkedIdentityFromMainAddressQuery.useQuery(address, {
       enabled: shouldRedirect,
     })
@@ -18,5 +18,10 @@ export default function useTgLink(address: string, asLink?: boolean) {
     ? getUserTelegramLink(linkedIdentity)
     : undefined
 
-  return { telegramLink, telegramUsername: telegramProvider?.username }
+  return {
+    telegramLink,
+    telegramUsername: telegramProvider?.username,
+    isLoading: shouldRedirect && isLoading,
+    isAdmin,
+  }
 }

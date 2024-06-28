@@ -2,17 +2,15 @@ import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import useTgLink from '@/hooks/useTgLink'
 import { cx } from '@/utils/class-names'
 import { ProfileSource } from '@/utils/profile'
-import { copyToClipboard } from '@/utils/strings'
 import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
-import { MdContentCopy } from 'react-icons/md'
 import { RiPencilFill } from 'react-icons/ri'
-import { toast } from 'sonner'
 import AddressAvatar from './AddressAvatar'
 import Button from './Button'
+import { CopyTextInline } from './CopyText'
 import Name, { useName } from './Name'
-import Toast from './Toast'
+import { Skeleton } from './SkeletonFallback'
 import PopOver from './floating/PopOver'
 
 export type ForceProfileSource = {
@@ -55,7 +53,11 @@ const ProfilePreview = ({
   // const { evmAddress: linkedEvmAddress, isLoading: isLoadingEvmAddress } =
   //   useLinkedEvmAddress(address)
 
-  const { telegramLink, telegramUsername } = useTgLink(address, asLink)
+  const {
+    telegramUsername,
+    isLoading: loadingTgLink,
+    isAdmin,
+  } = useTgLink(address, asLink)
 
   // const isMyAddressPart = myAddress === address ? ' my' : ''
 
@@ -111,23 +113,30 @@ const ProfilePreview = ({
             address={address}
             className={cx('gap-2 text-lg', nameClassName)}
           />
-          {telegramLink && (
-            <Button
-              size='circleSm'
-              variant='transparent'
-              className='text-text-muted'
-              onClick={() => {
-                copyToClipboard(`@${telegramUsername}`)
-                toast.custom((t) => (
-                  <Toast t={t} title='Telegram username copied!' />
-                ))
-              }}
-            >
-              <MdContentCopy />
-            </Button>
-          )}
           {onEditClick && !isLoading && editButton}
         </div>
+        {isAdmin &&
+          (loadingTgLink ? (
+            <Skeleton className='w-32' />
+          ) : (
+            <div className='flex flex-col gap-1'>
+              <div className='flex flex-row items-center gap-1.5'>
+                {telegramUsername ? (
+                  <CopyTextInline
+                    text={`@${telegramUsername}`}
+                    textToCopy={`@${telegramUsername}`}
+                    textClassName={cx(
+                      'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
+                    )}
+                  />
+                ) : (
+                  <span className='text-text-muted'>
+                    Telegram username not found
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
         {/* {
           isLoadingEvmAddress ? (
             <Skeleton className='w-32' />
