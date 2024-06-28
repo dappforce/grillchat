@@ -497,7 +497,8 @@ async function getTimeLeftUntilCanPost(address: string) {
     }
   }
 
-  const timeLeft = (lastPosted || Date.now()) + TIME_CONSTRAINT - serverTime
+  if (!lastPosted) return Infinity
+  const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
   return Math.max(timeLeft, 0)
 }
 export const getTimeLeftUntilCanPostQuery = createQuery({
