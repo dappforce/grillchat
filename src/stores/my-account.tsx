@@ -192,16 +192,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         if (parentProxyAddress) {
           parentProxyAddressStorage.set(parentProxyAddress)
           set({ parentProxyAddress })
-          await validateParentProxyAddress({
-            grillAddress: address,
-            parentProxyAddress,
-            onInvalidProxy: () => {
-              get().logout()
-              toast.custom((t) => (
-                <Toast t={t} type='error' title='Login failed' />
-              ))
-            },
-          })
         }
       }
     } catch (e) {
@@ -287,36 +277,6 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
       isInitialized: true,
       parentProxyAddress: parentProxyAddress ?? undefined,
     })
-
-    if (!get().isTemporaryAccount) {
-      if (address && !parentProxyAddress) {
-        get().logout()
-        toast.custom((t) => (
-          <Toast
-            t={t}
-            type='error'
-            title='Logged out'
-            subtitle='Please reopen the page'
-          />
-        ))
-      } else if (parentProxyAddress && !get().isTemporaryAccount) {
-        await validateParentProxyAddress({
-          grillAddress: get().address!,
-          parentProxyAddress,
-          onInvalidProxy: () => {
-            get().logout()
-            toast.custom((t) => (
-              <Toast
-                t={t}
-                type='error'
-                title='Logged out'
-                subtitle='Please reopen the page'
-              />
-            ))
-          },
-        })
-      }
-    }
 
     set({ isInitializedProxy: true })
   },
