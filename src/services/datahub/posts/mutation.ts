@@ -215,6 +215,7 @@ export function useSendMessage(
       }
     },
     onMutate: async (data) => {
+      lastSentMessageStorage.set(new Date().toISOString())
       config?.onMutate?.(data)
       preventWindowUnload()
       const content = getContent(data)
@@ -279,7 +280,6 @@ export function useSendMessage(
       }
     },
     onSuccess: async (...params) => {
-      lastSentMessageStorage.set(new Date().toISOString())
       config?.onSuccess?.(...params)
       allowWindowUnload()
 
