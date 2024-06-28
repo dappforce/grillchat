@@ -11,11 +11,7 @@ import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSetReferrerId } from '@/services/datahub/referral/mutation'
 import { augmentDatahubParams } from '@/services/datahub/utils'
-import {
-  useMyAccount,
-  useMyGrillAddress,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useInitDataRaw } from '@tma.js/sdk-react'
@@ -27,7 +23,7 @@ type OnSuccess = (linkedIdentity: Identity) => void
 
 const useLoginInTelegramMiniApps = () => {
   const initData = useInitDataRaw(true)
-  const myAddress = useMyMainAddress()
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
 
   const data = initData?.result?.user
@@ -172,14 +168,14 @@ const useLoginInTelegramMiniApps = () => {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
   useEffect(() => {
     const login = async () => {
-      if (data && !myAddress && isInitializedProxy) {
+      if (data && !parentProxyAddress && isInitializedProxy) {
         await loginTelegram()
       }
     }
 
     login()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, myAddress, isInitializedProxy])
+  }, [data, parentProxyAddress, isInitializedProxy])
 
   return { isLoading: isLoading, isSuccess: isSuccess }
 }
