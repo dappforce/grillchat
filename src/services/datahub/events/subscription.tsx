@@ -7,7 +7,10 @@ import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import sortKeysRecursive from 'sort-keys-recursive'
-import { getTodaySuperLikeCountQuery } from '../content-staking/query'
+import {
+  getDailyRewardQuery,
+  getTodaySuperLikeCountQuery,
+} from '../content-staking/query'
 import {
   ServiceMessageStatusCode,
   SocialCallName,
@@ -217,6 +220,11 @@ async function processSubscriptionEvent(
       ServiceMessageStatusCode.DailySuperLikesMaxLimitReached
     ) {
       getTodaySuperLikeCountQuery.invalidate(client, mainAddress)
+    } else if (
+      eventData.meta.callName ===
+      SocialCallName.SynthGamificationClaimEntranceDailyReward
+    ) {
+      getDailyRewardQuery.invalidate(client, mainAddress)
     }
 
     toast.custom((t) => (
