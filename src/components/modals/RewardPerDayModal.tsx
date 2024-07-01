@@ -1,5 +1,4 @@
 import Diamond from '@/assets/emojis/diamond.png'
-import WarningIcon from '@/assets/icons/warning.png'
 import { getUserYesterdayRewardQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -102,13 +101,13 @@ Sounds too good to be true? Join me and see for yourself! 😉`
                 </span>
               </Card>
             )}
-            <div className='flex items-center gap-2 rounded-2xl bg-[#EF444480] p-4'>
+            {/* <div className='flex items-center gap-2 rounded-2xl bg-[#EF444480] p-4'>
               <Image src={WarningIcon} alt='' className='' />
               <span className='flex-1 text-sm font-medium text-red-300'>
                 Some of your rewards could have been removed for activity with{' '}
                 <span className='text-text underline'>irrelevant content</span>
               </span>
-            </div>
+            </div> */}
           </div>
           <div className='grid w-full grid-cols-2 gap-4'>
             <Button
