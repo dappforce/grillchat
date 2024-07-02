@@ -39,7 +39,7 @@ const GET_handler = handlerWrapper({
   dataGetter: (req) => req.query,
 })<GetResponseRes>({
   allowedMethods: ['GET'],
-  errorLabel: 'datahub-query',
+  errorLabel: 'datahub-post',
   handler: async (data, _, res) => {
     const canUserDo = await getCanAccountDo({
       action: CanUserDoAction.CreateComment,

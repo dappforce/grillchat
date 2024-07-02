@@ -162,7 +162,11 @@ function Tabs({
               }
               return <span>{hoursLeft} hours left</span>
             }
-            return <span>{daysLeft} days left</span>
+            return (
+              <span>
+                {daysLeft} day{daysLeft > 1 ? 's' : ''} left
+              </span>
+            )
           })()}
         </span>
       </TabButton>

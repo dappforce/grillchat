@@ -23,7 +23,7 @@ const GET_handler = handlerWrapper({
   dataGetter: (req) => req.query,
 })<GetResponseRes>({
   allowedMethods: ['GET'],
-  errorLabel: 'datahub-query',
+  errorLabel: 'datahub-super-like',
   handler: async (_, __, res) => {
     const message = await getSuperLikeConfirmationMsg()
     res.json({ data: message.message, message: 'OK', success: true })
