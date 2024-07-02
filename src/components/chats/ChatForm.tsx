@@ -2,11 +2,12 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import { ERRORS } from '@/constants/error'
+import { env } from '@/env.mjs'
 import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
 import { showErrorToast } from '@/hooks/useToastError'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery, getServerTimeQuery } from '@/services/api/query'
 import { apiInstance } from '@/services/api/utils'
 import { getIsBalanceSufficientQuery } from '@/services/datahub/balances/query'
 import { SocialAction } from '@/services/datahub/generated-query'
@@ -24,6 +25,7 @@ import {
 } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   ComponentProps,
   SyntheticEvent,
@@ -35,6 +37,7 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IoRefresh } from 'react-icons/io5'
 import { toast } from 'sonner'
+import Toast from '../Toast'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 import { sendEventWithRef } from '../referral/analytics'
@@ -80,6 +83,7 @@ export default function ChatForm({
   placeholder,
   ...props
 }: ChatFormProps) {
+  const client = useQueryClient()
   const myAddress = useMyMainAddress()
   const replyTo = useMessageData((state) => state.replyTo)
   const messageToEdit = useMessageData((state) => state.messageToEdit)
@@ -238,6 +242,13 @@ export default function ChatForm({
       }
       resetForm()
       const augmented = await augmentDatahubParams(messageParams)
+      if (env.NEXT_PUBLIC_CONTEST_END_TIME < augmented.timestamp) {
+        toast.custom((t) => (
+          <Toast t={t} title='Contest has ended' type='error' />
+        ))
+        getServerTimeQuery.invalidate(client, null)
+        return
+      }
       sendMessage(augmented)
     } else {
       openLoginModal(true)

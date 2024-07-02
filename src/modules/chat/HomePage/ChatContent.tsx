@@ -2,6 +2,7 @@ import Shield from '@/assets/icons/shield.svg'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
+import { Skeleton } from '@/components/SkeletonFallback'
 import ChatRoom from '@/components/chats/ChatRoom'
 import Meme2EarnIntroModal, {
   hasOpenedMeme2EarnIntroStorage,
@@ -10,6 +11,7 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import PointsWidget from '@/modules/points/PointsWidget'
+import { getServerTimeQuery } from '@/services/api/query'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { getTimeLeftUntilCanPostQuery } from '@/services/datahub/posts/query'
@@ -32,6 +34,11 @@ type Props = {
 export default function ChatContent({ className }: Props) {
   const [selectedTab, setSelectedTab] = useState<TabState>('all')
   const [isOpenModal, setIsOpenModal] = useState(false)
+  const { data: serverTime } = getServerTimeQuery.useQuery(null)
+  const isContestEnded =
+    selectedTab === 'contest' &&
+    serverTime &&
+    serverTime < env.NEXT_PUBLIC_CONTEST_END_TIME
 
   return (
     <>
@@ -52,19 +59,23 @@ export default function ChatContent({ className }: Props) {
         hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
         className='overflow-hidden'
         customAction={
-          <div className='grid grid-cols-[max-content_1fr] gap-2'>
-            <Button
-              type='button'
-              size='lg'
-              className='flex items-center justify-center gap-2'
-              variant='bgLighter'
-              onClick={() => setIsOpenModal(true)}
-            >
-              <Shield className='relative top-px text-text-muted' />
-              <span className='text-text'>Rules</span>
-            </Button>
-            <PostMemeButton />
-          </div>
+          isContestEnded ? (
+            <></>
+          ) : (
+            <div className='grid grid-cols-[max-content_1fr] gap-2'>
+              <Button
+                type='button'
+                size='lg'
+                className='flex items-center justify-center gap-2'
+                variant='bgLighter'
+                onClick={() => setIsOpenModal(true)}
+              >
+                <Shield className='relative top-px text-text-muted' />
+                <span className='text-text'>Rules</span>
+              </Button>
+              <PostMemeButton />
+            </div>
+          )
         }
       />
     </>
@@ -112,6 +123,11 @@ function Tabs({
   setSelectedTab: (tab: TabState) => void
 }) {
   const isAdmin = useIsModerationAdmin()
+  const { data: serverTime, isLoading } = getServerTimeQuery.useQuery(null)
+  const daysLeft = dayjs(env.NEXT_PUBLIC_CONTEST_END_TIME).diff(
+    dayjs(serverTime ?? undefined),
+    'days'
+  )
 
   return (
     <div className='sticky top-14 grid grid-flow-col gap-1 bg-background px-4 py-2'>
@@ -132,9 +148,24 @@ function Tabs({
       >
         {!isAdmin ? (
           <>
-            <span>$SRT MEME CONTEST</span>
+            <span>{env.NEXT_PUBLIC_CONTEST_NAME}</span>
             <span className='text-xs font-medium text-text-primary'>
-              2 days left
+              {(() => {
+                if (isLoading || !serverTime)
+                  return <Skeleton className='w-16' />
+                if (env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime)
+                  return <span className='text-text-red'>Contest ended</span>
+                if (daysLeft === 0) {
+                  const hoursLeft = dayjs(
+                    env.NEXT_PUBLIC_CONTEST_END_TIME
+                  ).diff(dayjs(serverTime ?? undefined), 'hours')
+                  if (hoursLeft < 1) {
+                    return <span>Less than an hour left</span>
+                  }
+                  return <span>{hoursLeft} hours left</span>
+                }
+                return <span>{daysLeft} days left</span>
+              })()}
             </span>
           </>
         ) : (
