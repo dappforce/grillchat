@@ -38,7 +38,7 @@ export default function ChatContent({ className }: Props) {
   const isContestEnded =
     selectedTab === 'contest' &&
     serverTime &&
-    serverTime < env.NEXT_PUBLIC_CONTEST_END_TIME
+    env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime
 
   return (
     <>
@@ -130,10 +130,9 @@ function Tabs({
   )
 
   return (
-    <div className='sticky top-14 grid grid-flow-col gap-1 bg-background px-4 py-2'>
+    <div className='sticky top-14 grid h-14 grid-flow-col gap-1 bg-background px-4 py-2'>
       <TabButton
         tab='all'
-        size={isAdmin ? 'sm' : 'md'}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       >
@@ -141,36 +140,29 @@ function Tabs({
       </TabButton>
       <TabButton
         className='flex flex-col items-center justify-center text-center'
-        size={isAdmin ? 'sm' : 'md'}
         tab='contest'
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       >
-        {!isAdmin ? (
-          <>
-            <span>{env.NEXT_PUBLIC_CONTEST_NAME}</span>
-            <span className='text-xs font-medium text-text-primary'>
-              {(() => {
-                if (isLoading || !serverTime)
-                  return <Skeleton className='w-16' />
-                if (env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime)
-                  return <span className='text-text-red'>Contest ended</span>
-                if (daysLeft === 0) {
-                  const hoursLeft = dayjs(
-                    env.NEXT_PUBLIC_CONTEST_END_TIME
-                  ).diff(dayjs(serverTime ?? undefined), 'hours')
-                  if (hoursLeft < 1) {
-                    return <span>Less than an hour left</span>
-                  }
-                  return <span>{hoursLeft} hours left</span>
-                }
-                return <span>{daysLeft} days left</span>
-              })()}
-            </span>
-          </>
-        ) : (
-          <span>Contest</span>
-        )}
+        <span>{env.NEXT_PUBLIC_CONTEST_NAME}</span>
+        <span className='text-xs font-medium text-text-primary'>
+          {(() => {
+            if (isLoading || !serverTime) return <Skeleton className='w-16' />
+            if (env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime)
+              return <span className='text-text-red'>Contest ended</span>
+            if (daysLeft === 0) {
+              const hoursLeft = dayjs(env.NEXT_PUBLIC_CONTEST_END_TIME).diff(
+                dayjs(serverTime ?? undefined),
+                'hours'
+              )
+              if (hoursLeft < 1) {
+                return <span>Less than an hour left</span>
+              }
+              return <span>{hoursLeft} hours left</span>
+            }
+            return <span>{daysLeft} days left</span>
+          })()}
+        </span>
       </TabButton>
     </div>
   )

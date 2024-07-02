@@ -60,7 +60,7 @@ export default function PointsWidget({
       <div
         {...props}
         className={cx(
-          'z-10 flex w-full cursor-pointer items-center justify-between rounded-b-2xl',
+          'z-10 flex h-14 w-full cursor-pointer items-center justify-between rounded-b-2xl',
           'bg-black/50 px-4.5 py-3 backdrop-blur-xl',
           props.className
         )}

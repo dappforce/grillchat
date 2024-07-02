@@ -2382,6 +2382,11 @@ export type GetBlockedResourcesQuery = {
       id: string
       blockedResourceIds: Array<string>
     }>
+    byCtxPostIds: Array<{
+      __typename?: 'BlockedResourceIdsBatchItem'
+      id: string
+      blockedResourceIds: Array<string>
+    }>
   }
 }
 
@@ -3282,6 +3287,10 @@ export const GetBlockedResources = gql`
       ctxAppIds: $appIds
     ) {
       byCtxAppIds {
+        id
+        blockedResourceIds
+      }
+      byCtxPostIds {
         id
         blockedResourceIds
       }
