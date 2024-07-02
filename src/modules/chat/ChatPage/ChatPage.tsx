@@ -150,6 +150,7 @@ export default function ChatPage({
     isLoading,
     chatEntityId,
     isOwner,
+    chatId,
   ])
 
   if (chat?.struct.hidden) {
