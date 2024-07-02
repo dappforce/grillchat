@@ -67,7 +67,7 @@ export default function CommonChatItem({
   const myAddress = useMyMainAddress()
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { mutate: moderate, isLoading: loadingModeration } =
-    useModerateWithSuccessToast(message.id)
+    useModerateWithSuccessToast(message.id, chatId)
   const { data: reasons } = getModerationReasonsQuery.useQuery(null)
   const firstReasonId = reasons?.[0].id
 

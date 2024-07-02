@@ -81,7 +81,7 @@ export default function ChatItemMenus({
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 
-  const { mutate: moderate } = useModerateWithSuccessToast(messageId)
+  const { mutate: moderate } = useModerateWithSuccessToast(messageId, chatId)
 
   const sendEvent = useSendEvent()
   // const openDonateExtension = useOpenDonateExtension(
@@ -166,6 +166,7 @@ export default function ChatItemMenus({
               ctxPostIds: ['*'],
               ctxAppIds: ['*'],
             },
+            chatId: chatId ?? '',
           })
         },
       })
@@ -182,6 +183,7 @@ export default function ChatItemMenus({
               ctxPostIds: ['*'],
               ctxAppIds: ['*'],
             },
+            chatId,
           })
         },
       })
@@ -462,7 +464,7 @@ function MintingMessageNotice({ message }: { message: PostData }) {
   )
 }
 
-export function useModerateWithSuccessToast(messageId: string) {
+export function useModerateWithSuccessToast(messageId: string, chatId: string) {
   const { data: message } = getPostQuery.useQuery(messageId)
   const ownerId = message?.struct.ownerId ?? ''
   const { name } = useName(ownerId)
@@ -481,6 +483,7 @@ export function useModerateWithSuccessToast(messageId: string) {
               ctxPostIds: ['*'],
               ctxAppIds: ['*'],
             },
+            chatId,
           })
 
         toast.custom((t) => (
