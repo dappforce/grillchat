@@ -25,7 +25,9 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
       prefetchBlockedEntities(
         client,
         [env.NEXT_PUBLIC_MAIN_SPACE_ID].filter(Boolean),
-        [env.NEXT_PUBLIC_MAIN_CHAT_ID].filter(Boolean)
+        [env.NEXT_PUBLIC_MAIN_CHAT_ID, env.NEXT_PUBLIC_CONTEST_CHAT_ID].filter(
+          Boolean
+        )
       ),
     ])
     getPaginatedPostIdsByPostId.invalidateFirstQuery(
