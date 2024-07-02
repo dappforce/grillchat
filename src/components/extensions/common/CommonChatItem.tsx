@@ -267,6 +267,7 @@ export default function CommonChatItem({
                     ctxPostIds: ['*'],
                     ctxAppIds: ['*'],
                   },
+                  chatId,
                 })
               }}
               size='sm'
