@@ -9,7 +9,7 @@ import Meme2EarnIntroModal, {
 } from '@/components/modals/Meme2EarnIntroModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
-import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
+import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerTimeQuery } from '@/services/api/query'
@@ -41,6 +41,11 @@ export default function ChatContent({ className }: Props) {
     serverTime &&
     env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime
 
+  const chatId =
+    selectedTab === 'all'
+      ? env.NEXT_PUBLIC_MAIN_CHAT_ID
+      : env.NEXT_PUBLIC_CONTEST_CHAT_ID
+
   return (
     <>
       <RulesModal
@@ -52,11 +57,7 @@ export default function ChatContent({ className }: Props) {
       <ChatRoom
         scrollableContainerClassName='pt-12'
         asContainer
-        chatId={
-          selectedTab === 'all'
-            ? env.NEXT_PUBLIC_MAIN_CHAT_ID
-            : env.NEXT_PUBLIC_CONTEST_CHAT_ID
-        }
+        chatId={chatId}
         hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
         className='overflow-hidden'
         customAction={
@@ -74,7 +75,7 @@ export default function ChatContent({ className }: Props) {
                 <Shield className='relative top-px text-text-muted' />
                 <span className='text-text'>Rules</span>
               </Button>
-              <PostMemeButton />
+              <PostMemeButton chatId={chatId} />
             </div>
           )
         }
@@ -177,7 +178,7 @@ function countdownText(timeLeft: number) {
     .toString()
     .padStart(2, '0')}`
 }
-function PostMemeButton() {
+function PostMemeButton({ chatId }: { chatId: string }) {
   const sendEvent = useSendEvent()
   const [isOpenIntroModal, setIsOpenIntroModal] = useState(false)
   const openExtensionModal = useExtensionData.use.openExtensionModal()
@@ -189,8 +190,10 @@ function PostMemeButton() {
   const { data: tokenomics, isLoading: loadingTokenomics } =
     getTokenomicsMetadataQuery.useQuery(null)
 
-  const { isBlocked, isLoading: loadingIsBlocked } =
-    useIsAddressBlockedInApp(myAddress)
+  const { isBlocked, isLoading: loadingIsBlocked } = useIsAddressBlockedInChat(
+    myAddress,
+    chatId
+  )
 
   const [timeLeft, setTimeLeft] = useState<number>(Infinity)
   useEffect(() => {

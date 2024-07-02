@@ -6,7 +6,7 @@ export function useCanSendMessage(hubId: string, chatId: string) {
   const myAddress = useMyMainAddress()
   const isWhitelisted = useIsWhitelisted(chatId)
 
-  const isBlocked = useIsAddressBlockedInChat(myAddress ?? '', chatId, hubId)
+  const { isBlocked } = useIsAddressBlockedInChat(myAddress ?? '', chatId)
 
   return !isBlocked && isWhitelisted
 }

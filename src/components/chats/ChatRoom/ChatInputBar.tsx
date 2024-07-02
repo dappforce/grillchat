@@ -21,10 +21,9 @@ export default function ChatInputBar({
 }: ChatInputBarProps) {
   const { chatId, hubId } = formProps
   const myAddress = useMyMainAddress()
-  const isBlocked = useIsAddressBlockedInChat(
+  const { isBlocked } = useIsAddressBlockedInChat(
     myAddress ?? '',
-    formProps.chatId,
-    hubId
+    formProps.chatId
   )
   const { data: isAuthorized } = getCanUserDoDatahubActionQuery.useQuery(
     {
