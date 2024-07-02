@@ -304,6 +304,9 @@ const UserStatsSection = ({
   )
 }
 
+const cardStyles =
+  'flex w-full items-center gap-4 bg-background-light px-[10px] py-2'
+
 const DrawerLinks = ({
   setIsOpen,
   setDrawerContentState,
@@ -316,16 +319,37 @@ const DrawerLinks = ({
     setIsOpen(false)
   }
   return (
-    <div className='flex w-full flex-1 flex-col gap-4 pb-8'>
+    <div className='flex w-full flex-1 flex-col gap-[14px] pb-8'>
       <span className='text-center text-lg font-bold text-text-muted'>
         How to earn Points:
       </span>
-      <LinkWrapper close={onClose} href='/tg'>
-        <Card className='flex w-full items-center gap-4 bg-background-light'>
-          <Image src={Laugh} alt='' className='h-14 w-14 flex-shrink-0' />
+      <LinkWrapper close={onClose} href='/tg/tasks'>
+        <Card className={cardStyles}>
+          <span className='flex-shrink-0 text-[48px]'>🎯</span>
+          {/* <Image src={Tasks} alt=''  /> */}
           <div className='flex flex-col gap-1'>
             <div className='flex items-center gap-2'>
-              <span className='text-lg font-bold'>Meme2Earn</span>
+              <span className='text-base font-bold'>Complete Tasks</span>
+            </div>
+            <p className='text-sm text-text-muted'>
+              Choose a task and get rewarded for its completion.
+            </p>
+          </div>
+          <Button
+            size='circle'
+            className='ml-auto flex-shrink-0 text-lg'
+            variant='transparent'
+          >
+            <HiChevronRight />
+          </Button>
+        </Card>
+      </LinkWrapper>
+      <LinkWrapper close={onClose} href='/tg'>
+        <Card className={cardStyles}>
+          <Image src={Laugh} alt='' className='h-12 w-12 flex-shrink-0' />
+          <div className='flex flex-col gap-1'>
+            <div className='flex items-center gap-2'>
+              <span className='text-base font-bold'>Meme2Earn</span>
             </div>
             <p className='text-sm text-text-muted'>
               Post and like memes to earn even more Points.
@@ -341,11 +365,11 @@ const DrawerLinks = ({
         </Card>
       </LinkWrapper>
       <LinkWrapper close={onClose} href='/tg/friends'>
-        <Card className='flex w-full items-center gap-4 bg-background-light'>
-          <Image src={Speaker} alt='' className='h-14 w-14 flex-shrink-0' />
+        <Card className={cardStyles}>
+          <Image src={Speaker} alt='' className='h-12 w-12 flex-shrink-0' />
           <div className='flex flex-col gap-1'>
             <div className='flex items-center gap-2'>
-              <span className='text-lg font-bold'>Invite2Earn</span>
+              <span className='text-base font-bold'>Invite2Earn</span>
             </div>
             <p className='text-sm text-text-muted'>
               Invite your friends and earn 10% from their Points.
@@ -361,11 +385,11 @@ const DrawerLinks = ({
         </Card>
       </LinkWrapper>
       <LinkWrapper close={onClose} href='/tg/tap'>
-        <Card className='flex w-full items-center gap-4 bg-background-light'>
-          <Image src={Pointup} alt='' className='h-14 w-14 flex-shrink-0' />
+        <Card className={cardStyles}>
+          <Image src={Pointup} alt='' className='h-12 w-12 flex-shrink-0' />
           <div className='flex flex-col gap-1'>
             <div className='flex items-center gap-2'>
-              <span className='text-lg font-bold'>Tap2Earn</span>
+              <span className='text-base font-bold'>Tap2Earn</span>
             </div>
             <p className='text-sm text-text-muted'>
               Tap on the laughing emoji and earn Points.
