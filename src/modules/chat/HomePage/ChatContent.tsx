@@ -3,13 +3,13 @@ import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import ChatRoom from '@/components/chats/ChatRoom'
-import usePinnedMessage from '@/components/chats/hooks/usePinnedMessage'
 import Meme2EarnIntroModal, {
   hasOpenedMeme2EarnIntroStorage,
 } from '@/components/modals/Meme2EarnIntroModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { env } from '@/env.mjs'
+import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import PointsWidget from '@/modules/points/PointsWidget'
-import { getPostQuery } from '@/services/api/query'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { getTimeLeftUntilCanPostQuery } from '@/services/datahub/posts/query'
@@ -20,24 +20,18 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { LuPlusCircle } from 'react-icons/lu'
 
 dayjs.extend(duration)
 
 type Props = {
-  hubId: string
-  chatId: string
   className?: string
 }
 
-export default function ChatContent({ chatId, hubId }: Props) {
+export default function ChatContent({ className }: Props) {
+  const [selectedTab, setSelectedTab] = useState<TabState>('all')
   const [isOpenModal, setIsOpenModal] = useState(false)
-  const pinnedMessageId = usePinnedMessage(chatId)
-  const { data: message } = getPostQuery.useQuery(pinnedMessageId ?? '', {
-    enabled: !!pinnedMessageId,
-  })
-  const hasPinnedMessage = !!message
 
   return (
     <>
@@ -45,20 +39,17 @@ export default function ChatContent({ chatId, hubId }: Props) {
         isOpen={isOpenModal}
         closeModal={() => setIsOpenModal(false)}
       />
+      <PointsWidget isNoTgScroll className='sticky top-0' />
+      <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
       <ChatRoom
-        topElement={
-          <PointsWidget
-            className={cx(
-              'absolute left-0 top-0 z-10 w-full',
-              hasPinnedMessage && 'top-14'
-            )}
-            isNoTgScroll
-          />
-        }
         scrollableContainerClassName='pt-12'
         asContainer
-        chatId={chatId}
-        hubId={hubId}
+        chatId={
+          selectedTab === 'all'
+            ? env.NEXT_PUBLIC_MAIN_CHAT_ID
+            : env.NEXT_PUBLIC_CONTEST_CHAT_ID
+        }
+        hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
         className='overflow-hidden'
         customAction={
           <div className='grid grid-cols-[max-content_1fr] gap-2'>
@@ -77,6 +68,80 @@ export default function ChatContent({ chatId, hubId }: Props) {
         }
       />
     </>
+  )
+}
+
+type TabState = 'all' | 'contest'
+function TabButton({
+  selectedTab,
+  setSelectedTab,
+  tab,
+  children,
+  className,
+  size = 'md',
+}: {
+  tab: TabState
+  selectedTab: TabState
+  setSelectedTab: (tab: TabState) => void
+  children: ReactNode
+  className?: string
+  size?: 'md' | 'sm'
+}) {
+  const isSelected = selectedTab === tab
+  return (
+    <Button
+      variant={isSelected ? 'primary' : 'transparent'}
+      className={cx(
+        'h-10 py-0 text-sm',
+        size === 'sm' ? 'h-8' : 'h-10',
+        isSelected ? 'bg-background-primary/30' : '',
+        className
+      )}
+      onClick={() => setSelectedTab(tab)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+function Tabs({
+  setSelectedTab,
+  selectedTab,
+}: {
+  selectedTab: TabState
+  setSelectedTab: (tab: TabState) => void
+}) {
+  const isAdmin = useIsModerationAdmin()
+
+  return (
+    <div className='sticky top-14 grid grid-flow-col gap-1 bg-background px-4 py-2'>
+      <TabButton
+        tab='all'
+        size={isAdmin ? 'sm' : 'md'}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      >
+        All memes
+      </TabButton>
+      <TabButton
+        className='flex flex-col items-center justify-center text-center'
+        size={isAdmin ? 'sm' : 'md'}
+        tab='contest'
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      >
+        {!isAdmin ? (
+          <>
+            <span>$SRT MEME CONTEST</span>
+            <span className='text-xs font-medium text-text-primary'>
+              2 days left
+            </span>
+          </>
+        ) : (
+          <span>Contest</span>
+        )}
+      </TabButton>
+    </div>
   )
 }
 
