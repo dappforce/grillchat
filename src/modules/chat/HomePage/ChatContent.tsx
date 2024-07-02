@@ -9,6 +9,7 @@ import Meme2EarnIntroModal, {
 } from '@/components/modals/Meme2EarnIntroModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
+import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerTimeQuery } from '@/services/api/query'
@@ -188,6 +189,9 @@ function PostMemeButton() {
   const { data: tokenomics, isLoading: loadingTokenomics } =
     getTokenomicsMetadataQuery.useQuery(null)
 
+  const { isBlocked, isLoading: loadingIsBlocked } =
+    useIsAddressBlockedInApp(myAddress)
+
   const [timeLeft, setTimeLeft] = useState<number>(Infinity)
   useEffect(() => {
     if (typeof timeLeftFromApi === 'number') {
@@ -214,11 +218,23 @@ function PostMemeButton() {
   const isTimeConstrained =
     !loadingTimeLeft && timeLeft !== Infinity && (timeLeft ?? 0) > 0
 
+  if (isBlocked) {
+    return (
+      <Button variant='muted' disabled>
+        You are blocked in this chat
+      </Button>
+    )
+  }
+
   return (
     <>
       <Button
         disabled={
-          isLoading || loadingTokenomics || loadingTimeLeft || isTimeConstrained
+          isLoading ||
+          loadingTokenomics ||
+          loadingTimeLeft ||
+          isTimeConstrained ||
+          loadingIsBlocked
         }
         type='button'
         className='flex items-center justify-center gap-2 px-0 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'

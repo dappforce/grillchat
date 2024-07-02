@@ -24,6 +24,7 @@ import Image, { ImageProps } from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { FaChevronRight } from 'react-icons/fa6'
+import SkeletonFallback from '../../../components/SkeletonFallback'
 
 export default function TasksPage() {
   useTgNoScroll()
@@ -59,9 +60,11 @@ function DailyTasks() {
     getServerDayQuery.useQuery(null)
   const { data: dailyReward, isLoading: loadingDailyReward } =
     getDailyRewardQuery.useQuery(myAddress ?? '')
-  const todayReward = dailyReward?.claims.find(
+  const todayRewardIndex = dailyReward?.claims.findIndex(
     (claim) => Number(claim.claimValidDay) === serverDay?.day
   )
+
+  const todayReward = dailyReward?.claims[todayRewardIndex || 0]
   const isTodayRewardClaimed = !!todayReward && !todayReward.openToClaim
 
   const { data: superLikeCount } = getTodaySuperLikeCountQuery.useQuery(
@@ -98,6 +101,16 @@ function DailyTasks() {
             reward={todayRewardPoints}
             completed={isTodayRewardClaimed}
             isLoadingReward={loadingServerDay || loadingDailyReward}
+            customAction={
+              <span className='font-bold'>
+                <SkeletonFallback
+                  isLoading={loadingServerDay || loadingDailyReward}
+                >
+                  {(todayRewardIndex || 0) + 1}
+                </SkeletonFallback>
+                /7
+              </span>
+            }
           />
           <TaskCard
             image={Like}
