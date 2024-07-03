@@ -9,11 +9,14 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
+import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsMounted from '@/hooks/useIsMounted'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { allowWindowScroll, preventWindowScroll } from '@/utils/window'
 import { Transition } from '@headlessui/react'
@@ -208,12 +211,17 @@ const UserStatsSection = ({
   const sendEvent = useSendEvent()
   const [openProfileModal, setOpenProfileModal] = useState(false)
   const [openRewardModal, setOpenRewardModal] = useState(false)
+  const [openEvmLinkModal, setOpenEvmLinkModal] = useState(false)
+  const { evmAddress } = useLinkedEvmAddress()
 
   return (
     <>
       <div className='mb-10 flex w-full flex-col rounded-xl bg-slate-800 hover:cursor-pointer'>
         <div
-          className='border-b border-slate-700 p-4'
+          className={cx(
+            'border-b border-slate-700 p-4',
+            evmAddress && 'border-none'
+          )}
           onClick={() => {
             setDrawerContentState('leaderboard')
           }}
@@ -225,12 +233,13 @@ const UserStatsSection = ({
                 <div className='flex items-center gap-3'>
                   <Name
                     address={myAddress ?? ''}
+                    clipText
                     className='text-lg font-medium !text-text'
                   />
                   <Button
                     size='circleSm'
                     variant='muted'
-                    className='inline'
+                    className='inline flex-shrink-0'
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
@@ -253,6 +262,28 @@ const UserStatsSection = ({
             <IoIosArrowForward className={cx('fill-slate-400 text-2xl')} />
           </div>
         </div>
+        {evmAddress && (
+          <Card className='mx-4 flex items-center justify-between gap-4 p-4 py-3'>
+            <div className='flex flex-col gap-1'>
+              <span className='text-sm font-medium text-text-muted'>
+                My EVM Address
+              </span>
+              <span className='font-semibold'>
+                {truncateAddress(evmAddress ?? '')}
+              </span>
+            </div>
+            <LinkText
+              variant='primary'
+              className='mr-1'
+              onClick={() => {
+                sendEvent('edit_evm_address_click')
+                setOpenEvmLinkModal(true)
+              }}
+            >
+              Edit
+            </LinkText>
+          </Card>
+        )}
         <div className='flex w-full items-center gap-4 p-4'>
           <div className='flex w-full flex-col gap-2'>
             <span className='text-text-muted'>LIKES LEFT TODAY:</span>
@@ -299,6 +330,12 @@ const UserStatsSection = ({
         title='✏️ Edit Profile'
         closeModal={() => setOpenProfileModal(false)}
         isOpen={openProfileModal}
+      />
+      <LinkEvmAddressModal
+        isOpen={openEvmLinkModal}
+        closeModal={() => setOpenEvmLinkModal(false)}
+        title='Edit your EVM address for rewards'
+        description='We will send your token rewards to this address if you win in contest.'
       />
     </>
   )
