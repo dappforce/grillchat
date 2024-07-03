@@ -4,6 +4,7 @@ import LinkText from '@/components/LinkText'
 import Notice from '@/components/Notice'
 import { Skeleton } from '@/components/SkeletonFallback'
 import ChatRoom from '@/components/chats/ChatRoom'
+import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import Meme2EarnIntroModal, {
   hasOpenedMeme2EarnIntroStorage,
 } from '@/components/modals/Meme2EarnIntroModal'
@@ -11,6 +12,7 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerTimeQuery } from '@/services/api/query'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
@@ -34,7 +36,7 @@ type Props = {
 
 export default function ChatContent({ className }: Props) {
   const [selectedTab, setSelectedTab] = useState<TabState>('all')
-  const [isOpenModal, setIsOpenModal] = useState(false)
+  const [isOpenRules, setIsOpenRules] = useState(false)
   const { data: serverTime } = getServerTimeQuery.useQuery(null)
   const isContestEnded =
     selectedTab === 'contest' &&
@@ -48,10 +50,6 @@ export default function ChatContent({ className }: Props) {
 
   return (
     <>
-      <RulesModal
-        isOpen={isOpenModal}
-        closeModal={() => setIsOpenModal(false)}
-      />
       <PointsWidget isNoTgScroll className='sticky top-0' />
       <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
       <ChatRoom
@@ -70,15 +68,22 @@ export default function ChatContent({ className }: Props) {
                 size='lg'
                 className='flex items-center justify-center gap-2'
                 variant='bgLighter'
-                onClick={() => setIsOpenModal(true)}
+                onClick={() => setIsOpenRules(true)}
               >
                 <Shield className='relative top-px text-text-muted' />
                 <span className='text-text'>Rules</span>
               </Button>
-              <PostMemeButton chatId={chatId} />
+              <PostMemeButton
+                isContestTab={selectedTab === 'contest'}
+                chatId={chatId}
+              />
             </div>
           )
         }
+      />
+      <RulesModal
+        isOpen={isOpenRules}
+        closeModal={() => setIsOpenRules(false)}
       />
     </>
   )
@@ -182,9 +187,16 @@ function countdownText(timeLeft: number) {
     .toString()
     .padStart(2, '0')}`
 }
-function PostMemeButton({ chatId }: { chatId: string }) {
+function PostMemeButton({
+  chatId,
+  isContestTab,
+}: {
+  chatId: string
+  isContestTab: boolean
+}) {
   const sendEvent = useSendEvent()
   const [isOpenIntroModal, setIsOpenIntroModal] = useState(false)
+  const [isOpenLinkEvm, setIsOpenLinkEvm] = useState(false)
   const openExtensionModal = useExtensionData.use.openExtensionModal()
 
   const myAddress = useMyMainAddress() ?? ''
@@ -194,6 +206,7 @@ function PostMemeButton({ chatId }: { chatId: string }) {
   const { data: tokenomics, isLoading: loadingTokenomics } =
     getTokenomicsMetadataQuery.useQuery(null)
 
+  const { evmAddress, isLoading: loadingEvmAddress } = useLinkedEvmAddress()
   const { isBlocked, isLoading: loadingIsBlocked } = useIsAddressBlockedInChat(
     myAddress,
     chatId
@@ -241,7 +254,8 @@ function PostMemeButton({ chatId }: { chatId: string }) {
           loadingTokenomics ||
           loadingTimeLeft ||
           isTimeConstrained ||
-          loadingIsBlocked
+          loadingIsBlocked ||
+          loadingEvmAddress
         }
         type='button'
         className='flex items-center justify-center gap-2 px-0 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
@@ -253,6 +267,10 @@ function PostMemeButton({ chatId }: { chatId: string }) {
               sendEvent('meme2earn_intro_modal_opened')
               setIsOpenIntroModal(true)
               hasOpenedMeme2EarnIntroStorage.set('true')
+              return
+            }
+            if (!evmAddress && isContestTab) {
+              setIsOpenLinkEvm(true)
               return
             }
             openExtensionModal('subsocial-image', null)
@@ -279,6 +297,10 @@ function PostMemeButton({ chatId }: { chatId: string }) {
           sendEvent('meme2earn_intro_modal_closed')
           setIsOpenIntroModal(false)
         }}
+      />
+      <LinkEvmAddressModal
+        isOpen={isOpenLinkEvm}
+        closeModal={() => setIsOpenLinkEvm(false)}
       />
     </>
   )
