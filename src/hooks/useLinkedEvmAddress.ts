@@ -23,10 +23,21 @@ export default function useLinkedEvmAddress(
   const usedLinkedIdentity = address ? linkedIdentity : myLinkedIdentity
   const usedLoading = address ? isLoadingMainAddress : isLoadingMy
 
+  const evmProviders = usedLinkedIdentity?.externalProviders.filter(
+    (identity) => identity.provider === IdentityProvider.Evm
+  )
+  let latestEvmAddress = ''
+  let latestEvmCreatedTime = 0
+  evmProviders?.forEach((provider) => {
+    const currentCreated = new Date(provider.createdAtTime).getTime()
+    if (currentCreated > latestEvmCreatedTime) {
+      latestEvmAddress = provider.externalId
+      latestEvmCreatedTime = currentCreated
+    }
+  })
+
   return {
-    evmAddress: usedLinkedIdentity?.externalProviders.find(
-      (identity) => identity.provider === IdentityProvider.Evm
-    )?.externalId,
+    evmAddress: latestEvmAddress,
     isLoading: usedLoading,
   }
 }

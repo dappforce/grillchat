@@ -2,16 +2,20 @@ import Tokens from '@/assets/graphics/airdrop/tokens.png'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
+import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
+import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { truncateAddress } from '@/utils/account'
 import Image from 'next/image'
 import { useState } from 'react'
 import { RiPencilFill } from 'react-icons/ri'
@@ -27,6 +31,7 @@ export default function AirdropPage() {
   const [openAddEvmModal, setOpenAddEvmModal] = useState(false)
   const myAddress = useMyMainAddress()
   const sendEvent = useSendEvent()
+  const { evmAddress } = useLinkedEvmAddress()
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
@@ -59,6 +64,28 @@ export default function AirdropPage() {
                 <RiPencilFill />
               </Button>
             </div>
+            {evmAddress && (
+              <Card className='mx-4 -mt-1 flex w-full items-center justify-between gap-4 p-4 py-3'>
+                <div className='flex flex-col gap-1'>
+                  <span className='text-sm font-medium text-text-muted'>
+                    My EVM Address
+                  </span>
+                  <span className='font-semibold'>
+                    {truncateAddress(evmAddress ?? '')}
+                  </span>
+                </div>
+                <LinkText
+                  variant='primary'
+                  className='mr-1'
+                  onClick={() => {
+                    sendEvent('edit_evm_address_click')
+                    setOpenAddEvmModal(true)
+                  }}
+                >
+                  Edit
+                </LinkText>
+              </Card>
+            )}
             {isAdmin && (
               <div className='flex flex-col gap-2'>
                 <Button
@@ -96,7 +123,7 @@ export default function AirdropPage() {
         closeModal={() => setOpenProfileModal(false)}
         isOpen={openProfileModal}
       />
-      <AddEvmProviderModal
+      <LinkEvmAddressModal
         isOpen={openAddEvmModal}
         closeModal={() => setOpenAddEvmModal(false)}
       />

@@ -57,7 +57,7 @@ export default function LinkEvmAddressModal(
           }}
         />
         <Button isLoading={isLoading} size='lg' type='submit'>
-          Submit
+          Save
         </Button>
       </form>
     </Modal>

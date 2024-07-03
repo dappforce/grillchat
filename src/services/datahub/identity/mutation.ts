@@ -116,8 +116,10 @@ export const useAddExternalProviderToIdentity = mutationWrapper(
       reloadEveryIntervalUntilLinkedIdentityFound(
         (identity) =>
           !!identity?.externalProviders.find(
-            // @ts-expect-error different provider for IdentityProvider, one from generated type, one from sdk
-            (p) => p.provider === externalProvider.provider
+            (p) =>
+              // @ts-expect-error different provider for IdentityProvider, one from generated type, one from sdk
+              p.provider === externalProvider.provider &&
+              p.externalId === externalProvider.id
           )
       )
     },
