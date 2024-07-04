@@ -7,10 +7,7 @@ import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
-import {
-  getCanPostSuperLikedQuery,
-  getTokenomicsMetadataQuery,
-} from '../content-staking/query'
+import { getTokenomicsMetadataQuery } from '../content-staking/query'
 import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
@@ -159,8 +156,6 @@ async function processMessage(
   }
 
   if (isCreationEvent) {
-    getCanPostSuperLikedQuery.fetchQuery(queryClient, newestId, true)
-
     const newPost = getPostQuery.getQueryData(queryClient, newestId)
     const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
       queryClient,

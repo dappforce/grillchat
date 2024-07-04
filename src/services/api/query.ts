@@ -137,6 +137,10 @@ export async function getServerTime() {
     throw new Error('Failed to get server time')
   }
 }
+export const getServerTimeQuery = createQuery({
+  key: 'server-time',
+  fetcher: getServerTime,
+})
 
 async function getServerDay() {
   try {
