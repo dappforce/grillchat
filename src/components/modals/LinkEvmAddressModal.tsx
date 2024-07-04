@@ -2,7 +2,7 @@ import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import { useAddExternalProviderToIdentity } from '@/services/datahub/identity/mutation'
 import { IdentityProvider } from '@subsocial/data-hub-sdk'
 import { getAddress, isAddress } from 'ethers'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Button from '../Button'
 import Input from '../inputs/Input'
 import Modal, { ModalFunctionalityProps, ModalProps } from './Modal'
@@ -12,19 +12,35 @@ export default function LinkEvmAddressModal(
 ) {
   const [evmAddress, setEvmAddress] = useState('')
   const [evmAddressError, setEvmAddressError] = useState('')
-  const { mutate, isLoading } = useAddExternalProviderToIdentity({
-    onSuccess: () => props.closeModal(),
-  })
+
+  const isAfterSubmit = useRef(false)
+  const { mutate, isLoading, isSuccess, reset } =
+    useAddExternalProviderToIdentity({
+      onSuccess: () => {
+        isAfterSubmit.current = true
+      },
+    })
 
   const { evmAddress: myEvmAddress } = useLinkedEvmAddress()
   useEffect(() => {
-    if (props.isOpen && myEvmAddress) {
+    if (props.isOpen && myEvmAddress && !isAfterSubmit.current) {
       setEvmAddress(myEvmAddress)
+      reset()
+      isAfterSubmit.current = false
     }
+  }, [props.isOpen, myEvmAddress, reset])
+
+  useEffect(() => {
+    if (props.isOpen && isAfterSubmit.current) {
+      props.closeModal()
+      isAfterSubmit.current = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myEvmAddress, props.isOpen])
 
   const onSubmit = (e: any) => {
     e.preventDefault()
+    if (!evmAddress || !isAddress(evmAddress)) return
     const checksumAddress = getAddress(evmAddress)
     mutate({
       externalProvider: { id: checksumAddress, provider: IdentityProvider.EVM },
@@ -56,7 +72,12 @@ export default function LinkEvmAddressModal(
             }
           }}
         />
-        <Button isLoading={isLoading} size='lg' type='submit'>
+        <Button
+          isLoading={isLoading || isSuccess}
+          disabled={!!evmAddressError || !evmAddress}
+          size='lg'
+          type='submit'
+        >
           Save
         </Button>
       </form>
