@@ -23,20 +23,18 @@ export default function LinkEvmAddressModal(
 
   const { evmAddress: myEvmAddress } = useLinkedEvmAddress()
   useEffect(() => {
-    if (props.isOpen && myEvmAddress && !isAfterSubmit.current) {
-      setEvmAddress(myEvmAddress)
-      reset()
-      isAfterSubmit.current = false
-    }
-  }, [props.isOpen, myEvmAddress, reset])
-
-  useEffect(() => {
-    if (props.isOpen && isAfterSubmit.current) {
-      props.closeModal()
-      isAfterSubmit.current = false
+    if (props.isOpen && myEvmAddress) {
+      if (!isAfterSubmit.current) {
+        setEvmAddress(myEvmAddress)
+        reset()
+        isAfterSubmit.current = false
+      } else {
+        props.closeModal()
+        isAfterSubmit.current = false
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myEvmAddress, props.isOpen])
+  }, [props.isOpen, myEvmAddress, reset])
 
   const onSubmit = (e: any) => {
     e.preventDefault()
