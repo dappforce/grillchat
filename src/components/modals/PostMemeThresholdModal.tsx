@@ -24,11 +24,10 @@ export default function PostMemeThresholdModal({
     <Modal
       {...props}
       title={`Reach ${thresholdPoints} points to post${
-        isContest ? ' in contest' : ''
+        isContest ? ' in this contest' : ''
       }`}
       titleClassName='font-medium'
       withCloseButton
-      closeModal={() => undefined}
     >
       <div className='flex flex-col gap-6'>
         <div className='flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-background-lighter p-4'>
