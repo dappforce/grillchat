@@ -221,7 +221,7 @@ const UserStatsSection = ({
           <div className='flex items-center justify-between gap-2'>
             <div className='flex items-center gap-2'>
               <AddressAvatar address={myAddress ?? ''} className='h-16 w-16' />
-              <div className='flex flex-col gap-2'>
+              <div className='flex flex-col gap-1'>
                 <div className='flex items-center gap-3'>
                   <Name
                     address={myAddress ?? ''}
@@ -244,7 +244,7 @@ const UserStatsSection = ({
                 </div>
                 <LinkText
                   variant='primary'
-                  className='flex items-center gap-1 hover:no-underline focus:no-underline'
+                  className='flex items-center gap-2 hover:no-underline focus:no-underline'
                 >
                   <IoIosStats /> See the Leaderboard
                 </LinkText>
