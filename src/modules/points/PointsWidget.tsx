@@ -13,7 +13,6 @@ import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsMounted from '@/hooks/useIsMounted'
-import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
@@ -212,7 +211,10 @@ const UserStatsSection = ({
   const [openProfileModal, setOpenProfileModal] = useState(false)
   const [openRewardModal, setOpenRewardModal] = useState(false)
   const [openEvmLinkModal, setOpenEvmLinkModal] = useState(false)
-  const { evmAddress } = useLinkedEvmAddress()
+
+  // const { evmAddress } = useLinkedEvmAddress()
+  // TODO: remove edit button temporarily until the functionality is done
+  const evmAddress = ''
 
   return (
     <>

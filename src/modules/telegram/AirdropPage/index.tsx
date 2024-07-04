@@ -10,7 +10,6 @@ import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
-import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
@@ -31,7 +30,10 @@ export default function AirdropPage() {
   const [openAddEvmModal, setOpenAddEvmModal] = useState(false)
   const myAddress = useMyMainAddress()
   const sendEvent = useSendEvent()
-  const { evmAddress } = useLinkedEvmAddress()
+
+  // const { evmAddress } = useLinkedEvmAddress()
+  // TODO: remove edit button temporarily until the functionality is done
+  const evmAddress = ''
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
