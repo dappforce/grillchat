@@ -1,13 +1,34 @@
 import { apiInstance } from '@/services/api/utils'
+import { useMyAccount } from '@/stores/my-account'
 import { createQuery } from '@/subsocial-query'
+import { LocalStorage } from '@/utils/storage'
+import { parseJSONData } from '@/utils/strings'
 import { getLinkedIdentity } from './fetcher'
 
+export const getMyLinkedIdentityCache = new LocalStorage(
+  () => 'my-linked-identity-cache'
+)
 export const getLinkedIdentityQuery = createQuery({
   key: 'getLinkedIdentity',
-  fetcher: (address: string) => getLinkedIdentity({ sessionAddress: address }),
-  defaultConfigGenerator: (data) => ({
-    enabled: !!data,
-  }),
+  fetcher: async (address: string) => {
+    const res = await getLinkedIdentity({ sessionAddress: address })
+    if (address === useMyAccount.getState().address) {
+      getMyLinkedIdentityCache.set(JSON.stringify(res))
+    }
+    return res
+  },
+  defaultConfigGenerator: (data) => {
+    let cache: Awaited<ReturnType<typeof getLinkedIdentity>> | undefined =
+      undefined
+    if (data === useMyAccount.getState().address) {
+      const cacheData = getMyLinkedIdentityCache.get()
+      cache = parseJSONData(cacheData)
+    }
+    return {
+      enabled: !!data,
+      placeholderData: cache,
+    }
+  },
 })
 
 export const getLinkedIdentityFromMainAddressQuery = createQuery({

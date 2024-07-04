@@ -79,3 +79,12 @@ export function formatNumber(
   }
   return string
 }
+
+export function parseJSONData<T>(data: string | null) {
+  if (!data) return undefined
+  try {
+    return JSON.parse(data) as T
+  } catch (err) {
+    return undefined
+  }
+}

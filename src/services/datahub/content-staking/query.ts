@@ -3,6 +3,8 @@ import { ApiDatahubSuperLikeGetResponse } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
 import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
+import { LocalStorage } from '@/utils/storage'
+import { parseJSONData } from '@/utils/strings'
 import { AxiosResponse } from 'axios'
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
@@ -645,6 +647,9 @@ export const GET_TOKENOMICS_METADATA = gql`
     }
   }
 `
+const getTokenomicsMetadataCache = new LocalStorage(
+  () => 'tokenomics-metadata-cache'
+)
 export async function getTokenomicsMetadata() {
   const res = await datahubQueryRequest<
     GetTokenomicsMetadataQuery,
@@ -652,12 +657,19 @@ export async function getTokenomicsMetadata() {
   >({
     document: GET_TOKENOMICS_METADATA,
   })
+  getTokenomicsMetadataCache.set(
+    JSON.stringify(res.activeStakingTokenomicMetadata)
+  )
   return res.activeStakingTokenomicMetadata
 }
 export const getTokenomicsMetadataQuery = createQuery({
   key: 'getTokenomicsMetadata',
   fetcher: getTokenomicsMetadata,
-  defaultConfigGenerator: () => ({
-    enabled: true,
-  }),
+  defaultConfigGenerator: () => {
+    const cache = getTokenomicsMetadataCache.get()
+    return {
+      placeholderData:
+        parseJSONData<Awaited<ReturnType<typeof getTokenomicsMetadata>>>(cache),
+    }
+  },
 })

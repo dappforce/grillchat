@@ -6,6 +6,7 @@ import {
   FULL_ENERGY_VALUE,
   getBalanceQuery,
   getEnergyStateQuery,
+  getMyBalanceCache,
 } from './query'
 
 dayjs.extend(utc)
@@ -24,6 +25,7 @@ export const increasePointsBalance = ({
   getBalanceQuery.setQueryData(client, address, (oldData) => {
     if (!oldData) return oldData
 
+    getMyBalanceCache.set((oldData + pointsByClick).toString())
     return oldData + pointsByClick
   })
 }
