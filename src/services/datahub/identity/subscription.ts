@@ -60,6 +60,7 @@ const SUBSCRIBE_IDENTITY = gql`
               externalId
               provider
               enabled
+              createdAtTime
             }
           }
         }
@@ -68,6 +69,7 @@ const SUBSCRIBE_IDENTITY = gql`
           provider
           enabled
           username
+          createdAtTime
           linkedIdentity {
             id
           }
@@ -141,6 +143,7 @@ async function processSessionCreated(
         externalId: p.externalId,
         provider: p.provider,
         username: p.username,
+        createdAtTime: p.createdAtTime,
       })) ?? [],
   })
 }
@@ -174,6 +177,7 @@ async function processExternalProviderUpdate(
           provider: externalProvider.provider,
           enabled: externalProvider.enabled,
           username: externalProvider.username,
+          createdAtTime: externalProvider.createdAtTime,
         },
       ],
     }

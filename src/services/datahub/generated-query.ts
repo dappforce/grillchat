@@ -1850,6 +1850,17 @@ export type TerminateLinkedIdentitySessionResponseDto = {
   removedSessionsCount: Scalars['Int']['output']
 }
 
+export type ThresholdsAndRulesResponse = {
+  __typename?: 'ThresholdsAndRulesResponse'
+  addressBlockOneTimePenaltyPointsAmount: Scalars['String']['output']
+  contextPostId: Scalars['String']['output']
+  creatorModerationPenalty: Scalars['Boolean']['output']
+  deductRewardsOnModeration: Scalars['Boolean']['output']
+  postBlockOneTimePenaltyPointsAmount: Scalars['String']['output']
+  postModerationPenalty: Scalars['Boolean']['output']
+  thresholdPointsAmount: Scalars['String']['output']
+}
+
 export type TokenomicMetadataResponse = {
   __typename?: 'TokenomicMetadataResponse'
   likerRewardDistributionPercent: Scalars['Int']['output']
@@ -1859,6 +1870,7 @@ export type TokenomicMetadataResponse = {
   socialActionBalanceThreshold: SocialActionBalanceThresholdResponse
   socialActionPrice: SocialActionPriceResponse
   superLikeWeightPoints: Scalars['String']['output']
+  thresholdsAndRules: Array<ThresholdsAndRulesResponse>
 }
 
 export type TotalActivityMetricsForFixedPeriodInput = {
@@ -2292,6 +2304,7 @@ export type SubscribeIdentitySubscription = {
             externalId: string
             provider: IdentityProvider
             enabled: boolean
+            createdAtTime: any
           }> | null
         }
       } | null
@@ -2301,6 +2314,7 @@ export type SubscribeIdentitySubscription = {
         provider: IdentityProvider
         enabled: boolean
         username?: string | null
+        createdAtTime: any
         linkedIdentity: { __typename?: 'LinkedIdentity'; id: string }
       } | null
     }
@@ -3231,6 +3245,7 @@ export const SubscribeIdentity = gql`
               externalId
               provider
               enabled
+              createdAtTime
             }
           }
         }
@@ -3239,6 +3254,7 @@ export const SubscribeIdentity = gql`
           provider
           enabled
           username
+          createdAtTime
           linkedIdentity {
             id
           }
