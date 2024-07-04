@@ -13,9 +13,9 @@ import { env } from '@/env.mjs'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
+import usePostMemeThreshold from '@/hooks/usePostMemeThreshold'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { getServerTimeQuery } from '@/services/api/query'
-import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { getTimeLeftUntilCanPostQuery } from '@/services/datahub/posts/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -203,8 +203,9 @@ function PostMemeButton({
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress)
   const { data: timeLeftFromApi, isLoading: loadingTimeLeft } =
     getTimeLeftUntilCanPostQuery.useQuery(myAddress)
-  const { data: tokenomics, isLoading: loadingTokenomics } =
-    getTokenomicsMetadataQuery.useQuery(null)
+
+  const { threshold, isLoading: loadingThreshold } =
+    usePostMemeThreshold(chatId)
 
   const { evmAddress, isLoading: loadingEvmAddress } = useLinkedEvmAddress()
   const { isBlocked, isLoading: loadingIsBlocked } = useIsAddressBlockedInChat(
@@ -229,12 +230,9 @@ function PostMemeButton({
 
   const isMoreThanThreshold =
     !isLoading &&
-    !loadingTokenomics &&
+    !loadingThreshold &&
     data &&
-    data >=
-      parseInt(
-        tokenomics?.socialActionBalanceThreshold.createCommentPoints ?? '0'
-      )
+    data >= parseInt(threshold?.thresholdPointsAmount ?? '0')
   const isTimeConstrained =
     !loadingTimeLeft && timeLeft !== Infinity && (timeLeft ?? 0) > 0
 
@@ -251,7 +249,7 @@ function PostMemeButton({
       <Button
         disabled={
           isLoading ||
-          loadingTokenomics ||
+          loadingThreshold ||
           loadingTimeLeft ||
           isTimeConstrained ||
           loadingIsBlocked ||
@@ -275,7 +273,9 @@ function PostMemeButton({
             }
             openExtensionModal('subsocial-image', null)
           } else {
-            useMessageData.getState().setOpenMessageModal('not-enough-balance')
+            useMessageData
+              .getState()
+              .setOpenMessageModal('not-enough-balance', chatId)
           }
         }}
       >

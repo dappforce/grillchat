@@ -237,7 +237,7 @@ export default function ChatForm({
       const isSufficient = await refetch()
       if (!isSufficient.data) {
         refetch()
-        setOpenMessageModal('not-enough-balance')
+        setOpenMessageModal('not-enough-balance', chatId)
         return
       }
       resetForm()

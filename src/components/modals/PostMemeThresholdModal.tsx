@@ -1,29 +1,40 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import Pointup from '@/assets/emojis/pointup.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
-import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
+import { env } from '@/env.mjs'
+import usePostMemeThreshold from '@/hooks/usePostMemeThreshold'
 import { formatNumber } from '@/utils/strings'
 import Image from 'next/image'
 import Button from '../Button'
 import Modal, { ModalFunctionalityProps } from './Modal'
 
-export default function PostMemeThresholdModal(props: ModalFunctionalityProps) {
-  const { data: tokenomics } = getTokenomicsMetadataQuery.useQuery(null)
+export default function PostMemeThresholdModal({
+  chatId,
+  ...props
+}: ModalFunctionalityProps & { chatId: string }) {
+  const { threshold } = usePostMemeThreshold(chatId)
   const thresholdPoints = formatNumber(
-    tokenomics?.socialActionBalanceThreshold.createCommentPoints ?? '0',
+    threshold?.thresholdPointsAmount ?? '0',
     { shorten: true }
   )
+
+  const isContest = chatId === env.NEXT_PUBLIC_CONTEST_CHAT_ID
+
   return (
     <Modal
       {...props}
-      title={`Reach ${thresholdPoints} points to post`}
+      title={`Reach ${thresholdPoints} points to post${
+        isContest ? ' in contest' : ''
+      }`}
       titleClassName='font-medium'
+      withCloseButton
       closeModal={() => undefined}
     >
       <div className='flex flex-col gap-6'>
         <div className='flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-background-lighter p-4'>
-          <span className='font-medium text-text-muted'>
-            To post your own memes, you need to reach:
+          <span className='text-center font-medium text-text-muted'>
+            To post your own memes{isContest ? ' in this contest' : ''}, you
+            need to reach:
           </span>
           <div className='-ml-2 flex items-center gap-2.5'>
             <Image src={Diamond} alt='' className='h-12 w-12' />

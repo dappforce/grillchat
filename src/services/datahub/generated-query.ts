@@ -2182,10 +2182,11 @@ export type GetTokenomicsMetadataQuery = {
       __typename?: 'SocialActionPriceResponse'
       createCommentPoints: string
     }
-    socialActionBalanceThreshold: {
-      __typename?: 'SocialActionBalanceThresholdResponse'
-      createCommentPoints: string
-    }
+    thresholdsAndRules: Array<{
+      __typename?: 'ThresholdsAndRulesResponse'
+      contextPostId: string
+      thresholdPointsAmount: string
+    }>
   }
 }
 
@@ -3143,8 +3144,9 @@ export const GetTokenomicsMetadata = gql`
       socialActionPrice {
         createCommentPoints
       }
-      socialActionBalanceThreshold {
-        createCommentPoints
+      thresholdsAndRules {
+        contextPostId
+        thresholdPointsAmount
       }
     }
   }
