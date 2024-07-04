@@ -4,6 +4,7 @@ import { apiInstance } from '@/services/api/utils'
 import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { LocalStorage } from '@/utils/storage'
+import { parseJSONData } from '@/utils/strings'
 import { AxiosResponse } from 'axios'
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
@@ -25,11 +26,7 @@ import {
   GetUserYesterdayRewardQuery,
   GetUserYesterdayRewardQueryVariables,
 } from '../generated-query'
-import {
-  datahubQueryRequest,
-  getDayAndWeekTimestamp,
-  parseCachedPlaceholderData,
-} from '../utils'
+import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 
 const GET_SUPER_LIKE_COUNTS = gql`
   query GetSuperLikeCounts($postIds: [String!]!) {
@@ -672,9 +669,7 @@ export const getTokenomicsMetadataQuery = createQuery({
     const cache = getTokenomicsMetadataCache.get()
     return {
       placeholderData:
-        parseCachedPlaceholderData<
-          Awaited<ReturnType<typeof getTokenomicsMetadata>>
-        >(cache),
+        parseJSONData<Awaited<ReturnType<typeof getTokenomicsMetadata>>>(cache),
     }
   },
 })

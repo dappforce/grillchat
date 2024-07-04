@@ -153,12 +153,3 @@ export async function augmentDatahubParams<T>(
     timestamp,
   }
 }
-
-export function parseCachedPlaceholderData<T>(data: string | null) {
-  if (!data) return undefined
-  try {
-    return JSON.parse(data) as T
-  } catch (err) {
-    return undefined
-  }
-}

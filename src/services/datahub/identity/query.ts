@@ -2,7 +2,7 @@ import { apiInstance } from '@/services/api/utils'
 import { useMyAccount } from '@/stores/my-account'
 import { createQuery } from '@/subsocial-query'
 import { LocalStorage } from '@/utils/storage'
-import { parseCachedPlaceholderData } from '../utils'
+import { parseJSONData } from '@/utils/strings'
 import { getLinkedIdentity } from './fetcher'
 
 export const getMyLinkedIdentityCache = new LocalStorage(
@@ -22,7 +22,7 @@ export const getLinkedIdentityQuery = createQuery({
       undefined
     if (data === useMyAccount.getState().address) {
       const cacheData = getMyLinkedIdentityCache.get()
-      cache = parseCachedPlaceholderData(cacheData)
+      cache = parseJSONData(cacheData)
     }
     return {
       enabled: !!data,
