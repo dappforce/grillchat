@@ -6,7 +6,7 @@ import { parseCachedPlaceholderData } from '../utils'
 import { getLinkedIdentity } from './fetcher'
 
 export const getMyLinkedIdentityCache = new LocalStorage(
-  () => 'myLinkedIdentity'
+  () => 'my-linked-identity-cache'
 )
 export const getLinkedIdentityQuery = createQuery({
   key: 'getLinkedIdentity',

@@ -650,7 +650,9 @@ export const GET_TOKENOMICS_METADATA = gql`
     }
   }
 `
-const tokenomicsCache = new LocalStorage(() => 'tokenomics')
+const getTokenomicsMetadataCache = new LocalStorage(
+  () => 'tokenomics-metadata-cache'
+)
 export async function getTokenomicsMetadata() {
   const res = await datahubQueryRequest<
     GetTokenomicsMetadataQuery,
@@ -658,14 +660,16 @@ export async function getTokenomicsMetadata() {
   >({
     document: GET_TOKENOMICS_METADATA,
   })
-  tokenomicsCache.set(JSON.stringify(res.activeStakingTokenomicMetadata))
+  getTokenomicsMetadataCache.set(
+    JSON.stringify(res.activeStakingTokenomicMetadata)
+  )
   return res.activeStakingTokenomicMetadata
 }
 export const getTokenomicsMetadataQuery = createQuery({
   key: 'getTokenomicsMetadata',
   fetcher: getTokenomicsMetadata,
   defaultConfigGenerator: () => {
-    const cache = tokenomicsCache.get()
+    const cache = getTokenomicsMetadataCache.get()
     return {
       placeholderData:
         parseCachedPlaceholderData<

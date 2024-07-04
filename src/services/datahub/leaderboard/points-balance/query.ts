@@ -17,7 +17,7 @@ const GET_BALANCE = gql`
     }
   }
 `
-export const getMyBalanceCache = new LocalStorage(() => 'myBalanceCache')
+export const getMyBalanceCache = new LocalStorage(() => 'my-balance-cache')
 async function getBalance(address: string): Promise<number> {
   const res = await datahubQueryRequest<
     GetBalanceQuery,
