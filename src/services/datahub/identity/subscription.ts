@@ -8,7 +8,8 @@ import {
   SubscribeIdentitySubscription,
 } from '../generated-query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
-import { getLinkedIdentityQuery } from './query'
+import { Identity } from './fetcher'
+import { getLinkedIdentityQuery, getMyLinkedIdentityCache } from './query'
 
 export function useDatahubIdentitySubscriber() {
   const queryClient = useQueryClient()
@@ -134,7 +135,7 @@ async function processSessionCreated(
   session: SubscribeIdentitySubscription['linkedIdentitySubscription']['entity']['session']
 ) {
   if (!session?.id) return
-  getLinkedIdentityQuery.setQueryData(queryClient, session.id, {
+  const newIdentity: Identity = {
     mainAddress: session.linkedIdentity.id,
     externalProviders:
       session.linkedIdentity.externalProviders?.map((p) => ({
@@ -142,7 +143,10 @@ async function processSessionCreated(
         provider: p.provider,
         username: p.username,
       })) ?? [],
-  })
+  }
+  if (session.id === useMyAccount.getState().address)
+    getMyLinkedIdentityCache.set(JSON.stringify(newIdentity))
+  getLinkedIdentityQuery.setQueryData(queryClient, session.id, newIdentity)
 }
 
 async function processExternalProviderUpdate(

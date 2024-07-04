@@ -1,4 +1,6 @@
+import { getMyMainAddress } from '@/stores/my-account'
 import { createQuery } from '@/subsocial-query'
+import { LocalStorage } from '@/utils/storage'
 import { gql } from 'graphql-request'
 import {
   GetBalanceQuery,
@@ -15,6 +17,7 @@ const GET_BALANCE = gql`
     }
   }
 `
+export const getMyBalanceCache = new LocalStorage(() => 'myBalanceCache')
 async function getBalance(address: string): Promise<number> {
   const res = await datahubQueryRequest<
     GetBalanceQuery,
@@ -24,15 +27,26 @@ async function getBalance(address: string): Promise<number> {
     variables: { address },
   })
 
-  return Number(res.socialProfileBalances?.activeStakingPoints ?? 0) || 0
+  const balance =
+    Number(res.socialProfileBalances?.activeStakingPoints ?? 0) || 0
+  if (address === getMyMainAddress()) {
+    getMyBalanceCache.set(balance + '')
+  }
+  return balance
 }
-
 export const getBalanceQuery = createQuery({
   key: 'getBalance',
   fetcher: getBalance,
-  defaultConfigGenerator: (address) => ({
-    enabled: !!address,
-  }),
+  defaultConfigGenerator: (address) => {
+    const cache =
+      getMyMainAddress() === address
+        ? Number(getMyBalanceCache.get())
+        : undefined
+    return {
+      enabled: !!address,
+      placeholderData: cache || undefined,
+    }
+  },
 })
 
 const GET_ENERGY_STATE = gql`

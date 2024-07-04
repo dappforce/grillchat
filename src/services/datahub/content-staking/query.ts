@@ -3,6 +3,7 @@ import { ApiDatahubSuperLikeGetResponse } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
 import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
+import { LocalStorage } from '@/utils/storage'
 import { AxiosResponse } from 'axios'
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
@@ -24,7 +25,11 @@ import {
   GetUserYesterdayRewardQuery,
   GetUserYesterdayRewardQueryVariables,
 } from '../generated-query'
-import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
+import {
+  datahubQueryRequest,
+  getDayAndWeekTimestamp,
+  parseCachedPlaceholderData,
+} from '../utils'
 
 const GET_SUPER_LIKE_COUNTS = gql`
   query GetSuperLikeCounts($postIds: [String!]!) {
@@ -645,6 +650,7 @@ export const GET_TOKENOMICS_METADATA = gql`
     }
   }
 `
+const tokenomicsCache = new LocalStorage(() => 'tokenomics')
 export async function getTokenomicsMetadata() {
   const res = await datahubQueryRequest<
     GetTokenomicsMetadataQuery,
@@ -652,12 +658,19 @@ export async function getTokenomicsMetadata() {
   >({
     document: GET_TOKENOMICS_METADATA,
   })
+  tokenomicsCache.set(JSON.stringify(res.activeStakingTokenomicMetadata))
   return res.activeStakingTokenomicMetadata
 }
 export const getTokenomicsMetadataQuery = createQuery({
   key: 'getTokenomicsMetadata',
   fetcher: getTokenomicsMetadata,
-  defaultConfigGenerator: () => ({
-    enabled: true,
-  }),
+  defaultConfigGenerator: () => {
+    const cache = tokenomicsCache.get()
+    return {
+      placeholderData:
+        parseCachedPlaceholderData<
+          Awaited<ReturnType<typeof getTokenomicsMetadata>>
+        >(cache),
+    }
+  },
 })
