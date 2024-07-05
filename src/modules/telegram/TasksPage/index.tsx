@@ -111,9 +111,10 @@ function DailyTasks() {
             completed={isTodayRewardClaimed}
             isLoadingReward={loadingServerDay || loadingDailyReward}
             customAction={
-              <span className='font-bold'>
+              <span className='flex w-fit items-center font-bold'>
                 <SkeletonFallback
                   isLoading={loadingServerDay || loadingDailyReward}
+                  className='w-fit min-w-[40px]'
                 >
                   {(todayRewardIndex || 0) + 1}
                 </SkeletonFallback>
