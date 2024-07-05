@@ -4,10 +4,10 @@ export default function usePostMemeThreshold(chatId: string) {
   const { data: tokenomics, isLoading } =
     getTokenomicsMetadataQuery.useQuery(null)
 
-  const threshold = tokenomics?.thresholdsAndRules.find(
+  const threshold = tokenomics?.thresholdsAndRules?.find(
     (t) => t.contextPostId === chatId
   )
-  const thresholdForAllChats = tokenomics?.thresholdsAndRules.find(
+  const thresholdForAllChats = tokenomics?.thresholdsAndRules?.find(
     (t) => t.contextPostId === '*'
   )
 
