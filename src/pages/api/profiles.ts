@@ -86,7 +86,7 @@ export async function getProfilesServer(
   const profiles: SubsocialProfile[] = []
   const needToFetch: string[] = []
   const promises = addresses.map(async (address) => {
-    redisCallWrapper(async (redis) => {
+    return redisCallWrapper(async (redis) => {
       const [profile, isInvalidated] = await Promise.all([
         redis?.get(getProfileRedisKey(address)),
         redis?.get(getInvalidatedProfileRedisKey(address)),
@@ -109,7 +109,7 @@ export async function getProfilesServer(
     profilesMap.set(profile.address, profile)
   })
 
-  needToFetch.map((address) => {
+  const saveToRedisPromises = needToFetch.map((address) => {
     const profile = profilesMap.get(address) ?? null
     redisCallWrapper(async (redis) => {
       await redis?.set(
@@ -120,6 +120,7 @@ export async function getProfilesServer(
       )
     })
   })
+  await Promise.all(saveToRedisPromises)
 
   return [...profiles, ...fetchedProfiles]
 }
