@@ -23,9 +23,7 @@ export default function PostMemeThresholdModal({
   return (
     <Modal
       {...props}
-      title={`Reach ${thresholdPoints} points to post${
-        isContest ? ' in this contest' : ''
-      }`}
+      title={`Earn more points to post${isContest ? ' in this contest' : ''}`}
       titleClassName='font-medium'
       withCloseButton
     >

@@ -48,6 +48,8 @@ export default function ChatContent({ className }: Props) {
       ? env.NEXT_PUBLIC_MAIN_CHAT_ID
       : env.NEXT_PUBLIC_CONTEST_CHAT_ID
 
+  const isContest = selectedTab === 'contest'
+
   return (
     <>
       <PointsWidget isNoTgScroll className='sticky top-0' />
@@ -70,19 +72,22 @@ export default function ChatContent({ className }: Props) {
                 variant='bgLighter'
                 onClick={() => setIsOpenRules(true)}
               >
-                <Shield className='relative top-px text-text-muted' />
-                <span className='text-text'>Rules</span>
+                {isContest ? (
+                  <span className='text-text'>Contest Rules</span>
+                ) : (
+                  <>
+                    <Shield className='relative top-px text-text-muted' />
+                    <span className='text-text'>Rules</span>
+                  </>
+                )}
               </Button>
-              <PostMemeButton
-                isContestTab={selectedTab === 'contest'}
-                chatId={chatId}
-              />
+              <PostMemeButton isContestTab={isContest} chatId={chatId} />
             </div>
           )
         }
       />
       <RulesModal
-        isContest={selectedTab === 'contest'}
+        isContest={isContest}
         isOpen={isOpenRules}
         closeModal={() => setIsOpenRules(false)}
       />
@@ -323,6 +328,7 @@ function RulesModal({
               <li>
                 🏆15 winners in total - 5 chosen by most likes, 10 by EPIC team
               </li>
+              <li className='border border-b border-background-lighter' />
               <li>🚫 No sharing personal information</li>
               <li>🚫 No adult content</li>
               <li>🚫 No spam, no scam</li>
