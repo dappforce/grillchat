@@ -225,6 +225,7 @@ const UserStatsSection = ({
             evmAddress && 'border-none'
           )}
           onClick={() => {
+            sendEvent('open_leaderboard')
             setDrawerContentState('leaderboard')
           }}
         >
