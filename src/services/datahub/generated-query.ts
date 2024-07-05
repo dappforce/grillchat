@@ -2936,6 +2936,29 @@ export type GetSpacesQuery = {
   }
 }
 
+export type GetGamificationTasksQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetGamificationTasksQuery = {
+  __typename?: 'Query'
+  gamificationTasks: {
+    __typename?: 'FindTasksResponseDto'
+    total?: number | null
+    data: Array<{
+      __typename?: 'GamificationTask'
+      rewardPoints: string
+      id: string
+      name: GamificationTaskName
+      tag: string
+      createdAt?: any | null
+      completed: boolean
+      claimed: boolean
+      linkedIdentity: { __typename?: 'LinkedIdentity'; id: string }
+    }>
+  }
+}
+
 export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
@@ -3630,4 +3653,23 @@ export const GetSpaces = gql`
     }
   }
   ${SpaceFragment}
+`
+export const GetGamificationTasks = gql`
+  query GetGamificationTasks($address: String!) {
+    gamificationTasks(args: { filter: { address: $address } }) {
+      data {
+        rewardPoints
+        id
+        name
+        tag
+        createdAt
+        completed
+        claimed
+        linkedIdentity {
+          id
+        }
+      }
+      total
+    }
+  }
 `

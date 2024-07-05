@@ -73,8 +73,6 @@ const tabs: Tab[] = [
       const { day } = getDayAndWeekTimestamp()
       const tasksPageVisitedDate = tasksPageVisitedDateStore.get() as string
 
-      console.log(day, tasksPageVisitedDate)
-
       if (tasksPageVisitedDate !== day.toString()) {
         tasksPageVisitedDateStore.set(day.toString())
       }

@@ -182,6 +182,8 @@ export type Mutation = {
   createPostOptimistic: IngestDataResponseDto;
   createSpaceOffChain: IngestDataResponseDto;
   deleteLinkedIdentity: IngestDataResponseDto;
+  gamificationClaimTask: IngestDataResponseDto;
+  gamificationUpdateTaskStatus: IngestDataResponseDto;
   ingestDataFromIndexerNeynar: IngestPersistentDataFromSquidResponseDto;
   ingestPersistentDataSquid: IngestPersistentDataFromSquidResponseDto;
   initLinkedIdentity: IngestDataResponseDto;
@@ -250,6 +252,16 @@ export type MutationCreateSpaceOffChainArgs = {
 
 export type MutationDeleteLinkedIdentityArgs = {
   deleteLinkedIdentityInput: CreateMutateLinkedIdentityInput;
+};
+
+
+export type MutationGamificationClaimTaskArgs = {
+  args: CreateMutateGamificationEntityInput;
+};
+
+
+export type MutationGamificationUpdateTaskStatusArgs = {
+  args: CreateMutateGamificationEntityInput;
 };
 
 
@@ -410,6 +422,7 @@ export enum SocialCallName {
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
   SynthGamificationAddTappingActivityStates = 'synth_gamification_add_tapping_activity_states',
   SynthGamificationClaimEntranceDailyReward = 'synth_gamification_claim_entrance_daily_reward',
+  SynthGamificationClaimTask = 'synth_gamification_claim_task',
   SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
@@ -473,6 +486,13 @@ export type UpdatePostOptimisticInput = {
   providerAddr: Scalars['String']['input'];
   sig: Scalars['String']['input'];
 };
+
+export type GamificationClaimTaskMutationVariables = Exact<{
+  args: CreateMutateGamificationEntityInput;
+}>;
+
+
+export type GamificationClaimTaskMutation = { __typename?: 'Mutation', gamificationClaimTask: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
 export type ClaimDailyRewardMutationVariables = Exact<{
   args: CreateMutateGamificationEntityInput;
@@ -585,6 +605,15 @@ export type CreateSuperLikeMutationVariables = Exact<{
 export type CreateSuperLikeMutation = { __typename?: 'Mutation', activeStakingCreateSuperLike: { __typename?: 'IngestDataResponseDto', processed: boolean, message?: string | null } };
 
 
+export const GamificationClaimTask = gql`
+    mutation GamificationClaimTask($args: CreateMutateGamificationEntityInput!) {
+  gamificationClaimTask(args: $args) {
+    processed
+    callId
+    message
+  }
+}
+    `;
 export const ClaimDailyReward = gql`
     mutation ClaimDailyReward($args: CreateMutateGamificationEntityInput!) {
   claimEntranceDailyReward(args: $args) {

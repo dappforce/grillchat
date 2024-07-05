@@ -7,6 +7,7 @@ export type ApiResponse<T = {}> = T & {
   success: boolean
   message: string
   errors?: any
+  result?: any
 }
 
 export function handlerWrapper<Input extends z.ZodTypeAny>(config: {
