@@ -112,6 +112,22 @@ const ClaimTasksTokensModal = ({
     }
   }, [claimTaskTokensError, client, myAddress])
 
+  useEffect(() => {
+    let timeoutId = null
+    if (loading) {
+      timeoutId = setTimeout(() => {
+        setLoading(false)
+      }, 10000)
+
+      return
+    }
+
+    return () => {
+      setLoading(false)
+      timeoutId && clearTimeout(timeoutId)
+    }
+  }, [loading, claimTaskTokensError])
+
   useToastError(error, 'Failed to claim task tokens')
 
   return createPortal(
