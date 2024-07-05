@@ -163,6 +163,13 @@ function TelegramScriptWrapper({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  useEffect(() => {
+    // if more than 5secs onLoad is not called, just show the content
+    setTimeout(() => {
+      setIsExpanded(true)
+    }, 5000)
+  }, [])
+
   const onLoad = () => {
     const telegram = window.Telegram as any
     const webApp = telegram?.WebApp
