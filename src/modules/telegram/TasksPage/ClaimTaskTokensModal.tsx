@@ -37,6 +37,7 @@ export const claimTaskErrorStore = new LocalStorage(() => 'claim-tasks-error')
 type ModalConfig = {
   image: StaticImageData
   title: string
+  stepsWithOrangeText?: number[]
   steps: React.ReactNode[]
   event: string
   tag: string
@@ -52,16 +53,17 @@ export const modalConfigByVariant: Record<
     title: 'Join Our Telegram Channel',
     event: 'tasks_telegram_open',
     steps: [
-      <div key='join-channel' className='flex flex-col gap-3'>
+      <div key='join-channel' className='flex flex-col gap-2'>
         <span className='text-sm font-medium leading-none text-slate-200'>
           Join the channel:
         </span>
         <LinkText
           href='https://t.me/EpicAppNet'
           variant='primary'
-          className='flex items-center gap-2 leading-none'
+          className='flex items-center gap-1.5 leading-none'
         >
-          @EpicAppNet <FiArrowUpRight />
+          <span>@EpicAppNet</span>
+          <FiArrowUpRight className='relative top-0.5 text-base' />
         </LinkText>
       </div>,
       <span key='claim-click' className='text-sm font-medium text-slate-200'>
@@ -74,25 +76,26 @@ export const modalConfigByVariant: Record<
     tag: 'JOIN_TWITTER_EpicAppNet',
     title: 'Join Our Twitter',
     event: 'tasks_x_open',
+    stepsWithOrangeText: [2],
     steps: [
-      <div key='join-channel' className='flex flex-col gap-3'>
+      <div key='join-channel' className='flex flex-col gap-2'>
         <span className='text-sm font-medium leading-none text-slate-200'>
           Follow us on X
         </span>
         <LinkText
           href='https://x.com/EpicAppNet'
           variant='primary'
-          className='flex items-center gap-2 leading-none'
+          className='flex items-center gap-1.5 leading-none'
         >
-          @EpicAppNet <FiArrowUpRight />
+          @EpicAppNet <FiArrowUpRight className='relative top-0.5 text-base' />
         </LinkText>
       </div>,
       <span key='claim-click' className='text-sm font-medium text-slate-200'>
         Click the button below to earn your reward.
       </span>,
       <span
-        key='rewaed-granted'
-        className='flex-1 text-sm font-medium text-slate-200'
+        key='reward-granted'
+        className='flex-1 text-sm font-medium text-orange-400'
       >
         If you&apos;re not subscribed, a penalty of 1M points will be deducted.
       </span>,
@@ -127,7 +130,12 @@ const ClaimTasksTokensModal = ({
 
   const variant = modalVariant || 'JOIN_TELEGRAM_CHANNEL_EpicAppNet'
 
-  const { image: taskImage, steps, tag } = modalConfigByVariant[variant]
+  const {
+    image: taskImage,
+    steps,
+    tag,
+    stepsWithOrangeText,
+  } = modalConfigByVariant[variant]
 
   const task = data?.find((task) => task.tag === tag)
 
@@ -219,7 +227,8 @@ const ClaimTasksTokensModal = ({
                   <div
                     className={cx(
                       'flex h-10 w-10 items-center justify-center rounded-full',
-                      'border border-slate-500 bg-slate-600 font-bold'
+                      'border border-slate-500 bg-slate-600 font-bold',
+                      stepsWithOrangeText?.includes(index) && 'text-orange-400'
                     )}
                   >
                     {index + 1}
