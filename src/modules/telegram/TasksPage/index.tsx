@@ -2,8 +2,6 @@ import Diamond from '@/assets/emojis/diamond.png'
 import Calendar from '@/assets/graphics/tasks/calendar.png'
 import Like from '@/assets/graphics/tasks/like.png'
 import Present from '@/assets/graphics/tasks/present.png'
-import Telegram from '@/assets/graphics/tasks/telegram.png'
-import TwitterX from '@/assets/graphics/tasks/twitter-x.png'
 import Alarm from '@/assets/icons/alarm.svg'
 import Check from '@/assets/icons/check.svg'
 import Card from '@/components/Card'
@@ -187,10 +185,7 @@ function BasicTasks() {
     myAddress || ''
   )
 
-  const data = gamificationTasks?.data
-
-  const { tag } = modalConfigByVariant['epic-telegram']
-  const task = data?.find((task) => task.tag === tag)
+  const data = gamificationTasks?.data || []
 
   return (
     <div className='flex flex-col gap-5'>
@@ -203,32 +198,30 @@ function BasicTasks() {
         </span>
       </div>
       <div className='flex flex-col gap-2'>
-        <TaskCard
-          image={Telegram}
-          onClick={() => {
-            sendEvent('tasks_telegram_open')
+        {data.map((task, index) => {
+          const tag = task.tag as Exclude<ClaimModalVariant, null>
 
-            if (task !== undefined && !task?.claimed) {
-              clearGamificationTasksError(client)
-              setModalVariant('epic-telegram')
-            }
-          }}
-          title='Join Our Telegram Channel'
-          openInNewTab
-          reward={parseInt(task?.rewardPoints ?? '0')}
-          completed={task?.claimed ?? false}
-        />
-        <TaskCard
-          image={TwitterX}
-          onClick={() => {
-            sendEvent('tasks_x_open')
-          }}
-          href='https://x.com/EpicAppNet'
-          openInNewTab
-          title='Join Our Twitter'
-          reward={30000}
-          completed={false}
-        />
+          const { image, title, event } = modalConfigByVariant[tag]
+
+          return (
+            <TaskCard
+              key={index}
+              image={image}
+              onClick={() => {
+                sendEvent(event)
+
+                if (task !== undefined && !task.claimed) {
+                  clearGamificationTasksError(client)
+                  setModalVariant(tag)
+                }
+              }}
+              title={title}
+              openInNewTab
+              reward={parseInt(task.rewardPoints ?? '0')}
+              completed={task.claimed ?? false}
+            />
+          )
+        })}
       </div>
       <ClaimTasksTokensModal
         modalVariant={modalVariant}
