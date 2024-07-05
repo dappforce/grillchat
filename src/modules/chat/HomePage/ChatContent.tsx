@@ -25,7 +25,8 @@ import { cx } from '@/utils/class-names'
 import { useLocalStorage } from '@uidotdev/usehooks'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import { ReactNode, useEffect, useState } from 'react'
+import Router, { useRouter } from 'next/router'
+import { ReactNode, useEffect, useLayoutEffect, useState } from 'react'
 import { LuPlusCircle } from 'react-icons/lu'
 
 dayjs.extend(duration)
@@ -35,6 +36,7 @@ type Props = {
 }
 
 export default function ChatContent({ className }: Props) {
+  const { query } = useRouter()
   let [selectedTab, setSelectedTab] = useLocalStorage<TabState>(
     'memes-tab',
     'all'
@@ -42,6 +44,16 @@ export default function ChatContent({ className }: Props) {
   if (selectedTab !== 'all' && selectedTab !== 'contest') {
     selectedTab = 'all'
   }
+
+  useLayoutEffect(() => {
+    if (query.tab === 'contest') {
+      setSelectedTab('contest')
+      Router.replace('?', undefined, { shallow: true })
+    } else if (query.tab === 'all') {
+      setSelectedTab('all')
+      Router.replace('?', undefined, { shallow: true })
+    }
+  }, [query.tab, setSelectedTab])
 
   const [isOpenRules, setIsOpenRules] = useState(false)
   const { data: serverTime } = getServerTimeQuery.useQuery(null)

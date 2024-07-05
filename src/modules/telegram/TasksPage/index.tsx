@@ -1,8 +1,10 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import Calendar from '@/assets/graphics/tasks/calendar.png'
 import Like from '@/assets/graphics/tasks/like.png'
+import Present from '@/assets/graphics/tasks/present.png'
 import Telegram from '@/assets/graphics/tasks/telegram.png'
 import TwitterX from '@/assets/graphics/tasks/twitter-x.png'
+import Alarm from '@/assets/icons/alarm.svg'
 import Check from '@/assets/icons/check.svg'
 import Card from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
@@ -19,10 +21,11 @@ import {
 } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import Image, { ImageProps } from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { CSSProperties, useState } from 'react'
 import { FaChevronRight } from 'react-icons/fa6'
 import SkeletonFallback from '../../../components/SkeletonFallback'
 
@@ -37,11 +40,41 @@ export default function TasksPage() {
         className='sticky top-0'
       />
       <div className='flex flex-1 flex-col gap-8 overflow-auto px-4 py-8'>
-        <DailyTasks />
+        <LimitedTasks />
         <BasicTasks />
+        <DailyTasks />
         <NewTasks />
       </div>
     </LayoutWithBottomNavigation>
+  )
+}
+
+function LimitedTasks() {
+  const sendEvent = useSendEvent()
+  return (
+    <div className='flex flex-col gap-2'>
+      <TaskCard
+        topBanner={{
+          icon: <Alarm />,
+          text: 'LIMITED TASK',
+          className: cx('bg-[#895EFD]/10 text-[#A584FE]'),
+          textClassName: cx('bg-clip-text block text-transparent'),
+          textStyle: {
+            backgroundImage: 'linear-gradient(91deg, #A683FD 0%, #798AFC 100%)',
+            WebkitTextFillColor: 'transparent',
+          },
+        }}
+        href='/tg?tab=contest'
+        onClick={() => {
+          sendEvent('tasks_contest_open')
+        }}
+        withoutDiamondIcon
+        image={Present}
+        title='$300 MEME CONTEST'
+        reward='Post memes to win crypto rewards!'
+        completed={false}
+      />
+    </div>
   )
 }
 
@@ -87,7 +120,7 @@ function DailyTasks() {
     <>
       <DailyRewardModal isOpen={isOpen} close={() => setIsOpen(false)} />
       <div className='flex flex-col gap-5'>
-        <span className='self-center text-lg font-bold text-text-muted'>
+        <span className='self-center text-lg font-bold text-slate-300'>
           Daily
         </span>
         <div className='flex flex-col gap-2'>
@@ -137,12 +170,12 @@ function DailyTasks() {
 function BasicTasks() {
   const sendEvent = useSendEvent()
   return (
-    <div className='flex flex-col gap-5'>
-      <div className='flex flex-col gap-1'>
-        <span className='self-center text-lg font-bold text-text-muted'>
-          Basic Tasks
+    <div className='flex flex-col gap-6'>
+      <div className='flex flex-col gap-0.5'>
+        <span className='self-center text-lg font-bold text-slate-300'>
+          Main Tasks
         </span>
-        <span className='self-center text-center text-sm text-text-muted'>
+        <span className='self-center text-center text-sm text-slate-400'>
           Join our social media and receive rewards later
         </span>
       </div>
@@ -184,6 +217,8 @@ function TaskCard({
   href,
   openInNewTab,
   isLoadingReward,
+  withoutDiamondIcon,
+  topBanner,
 }: {
   image: ImageProps['src']
   title: string
@@ -194,34 +229,66 @@ function TaskCard({
   href?: string
   openInNewTab?: boolean
   isLoadingReward?: boolean
+  withoutDiamondIcon?: boolean
+  topBanner?: {
+    icon: JSX.Element
+    text: string
+    className?: string
+    textStyle?: CSSProperties
+    textClassName?: string
+  }
 }) {
   const card = (
-    <Card
-      className='flex cursor-pointer items-center gap-2.5 bg-background-light p-2.5 transition active:bg-background-lighter'
-      onClick={onClick}
-    >
-      <Image src={image} alt='' className='h-14 w-14' />
-      <div className='flex flex-col gap-1'>
-        <span className='font-bold'>{title}</span>
-        <div className='flex items-center gap-0.5'>
-          <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
-          {isLoadingReward ? (
-            <Skeleton className='w-12' />
-          ) : (
-            <span className='text-text-muted'>
-              +{typeof reward === 'number' ? formatNumber(reward) : reward}
+    <Card className='flex cursor-pointer flex-col overflow-clip rounded-2xl p-0'>
+      {topBanner && (
+        <div className='bg-background'>
+          <div
+            className={cx(
+              'flex items-center justify-center gap-1 py-1.5 text-xs',
+              topBanner.className
+            )}
+          >
+            <span className='text-sm'>{topBanner.icon}</span>
+            <span
+              className={cx('font-medium', topBanner.textClassName)}
+              style={topBanner.textStyle}
+            >
+              {topBanner.text}
             </span>
+          </div>
+        </div>
+      )}
+      <div
+        className='flex items-center gap-2.5 bg-background-light p-2.5 transition active:bg-background-lighter'
+        onClick={onClick}
+      >
+        <Image src={image} alt='' className='h-14 w-14' />
+        <div className='flex flex-col gap-1'>
+          <span className='font-bold'>{title}</span>
+          <div className='flex items-center gap-0.5'>
+            {!withoutDiamondIcon && (
+              <Image src={Diamond} alt='' className='relative top-px h-5 w-5' />
+            )}
+            {isLoadingReward ? (
+              <Skeleton className='w-12' />
+            ) : (
+              <span className='text-text-muted'>
+                {typeof reward === 'number'
+                  ? `+${formatNumber(reward)}`
+                  : reward}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className='ml-auto flex items-center justify-center pr-1'>
+          {completed ? (
+            <Check />
+          ) : customAction ? (
+            customAction
+          ) : (
+            <FaChevronRight className='text-text-muted' />
           )}
         </div>
-      </div>
-      <div className='ml-auto flex items-center justify-center pr-1'>
-        {completed ? (
-          <Check />
-        ) : customAction ? (
-          customAction
-        ) : (
-          <FaChevronRight className='text-text-muted' />
-        )}
       </div>
     </Card>
   )
