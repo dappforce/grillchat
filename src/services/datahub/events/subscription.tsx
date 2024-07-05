@@ -207,10 +207,10 @@ async function processSubscriptionEvent(
 
   if (eventData.meta.callName === SocialCallName.SynthGamificationClaimTask) {
     claimTaskErrorStore.set(eventData.meta.code)
-    console.log(reason ? eventData.meta.code : 'None')
-    getGamificationTasksErrorQuery.setQueryData(client, 'error', () => ({
-      error: reason ? eventData.meta.code : 'None',
-    }))
+
+    getGamificationTasksErrorQuery.setQueryData(client, 'error', () =>
+      reason ? eventData.meta.code : 'None'
+    )
   }
 
   if (reason) {

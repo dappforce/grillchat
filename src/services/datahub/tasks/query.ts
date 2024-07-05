@@ -1,4 +1,5 @@
 import { createQuery } from '@/subsocial-query'
+import { QueryClient } from '@tanstack/react-query'
 import { getGamificationTasks } from '.'
 
 export const getGamificationTasksQuery = createQuery({
@@ -12,13 +13,15 @@ export const getGamificationTasksQuery = createQuery({
 export const getGamificationTasksErrorQuery = createQuery({
   key: 'gamificationTasksError',
   fetcher: async (error: string) => {
-    if (error === 'error') return
+    if (error === 'error') return undefined
 
-    return {
-      error: error,
-    }
+    return error
   },
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),
 })
+
+export const clearGamificationTasksError = (client: QueryClient) => {
+  getGamificationTasksErrorQuery.setQueryData(client, 'error', () => undefined)
+}

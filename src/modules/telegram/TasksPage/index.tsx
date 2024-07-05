@@ -17,10 +17,14 @@ import {
   getTodaySuperLikeCountQuery,
   getTokenomicsMetadataQuery,
 } from '@/services/datahub/content-staking/query'
-import { getGamificationTasksQuery } from '@/services/datahub/tasks/query'
+import {
+  clearGamificationTasksError,
+  getGamificationTasksQuery,
+} from '@/services/datahub/tasks/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { formatNumber } from '@/utils/strings'
+import { useQueryClient } from '@tanstack/react-query'
 import Image, { ImageProps } from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -143,12 +147,16 @@ function BasicTasks() {
   const sendEvent = useSendEvent()
   const [modalVariant, setModalVariant] = useState<ClaimModalVariant>(null)
   const myAddress = useMyMainAddress()
+  const client = useQueryClient()
 
   const { data: gamificationTasks } = getGamificationTasksQuery.useQuery(
     myAddress || ''
   )
 
   const data = gamificationTasks?.data
+
+  const { tag } = modalConfigByVariant['epic-telegram']
+  const task = data?.find((task) => task.tag === tag)
 
   return (
     <div className='flex flex-col gap-5'>
@@ -165,17 +173,16 @@ function BasicTasks() {
           image={Telegram}
           onClick={() => {
             sendEvent('tasks_telegram_open')
-            setModalVariant('epic-telegram')
+
+            if (task !== undefined && !task?.claimed) {
+              clearGamificationTasksError(client)
+              setModalVariant('epic-telegram')
+            }
           }}
           title='Join Our Telegram Channel'
           openInNewTab
-          reward={(() => {
-            const { tag } = modalConfigByVariant['epic-telegram']
-            const task = data?.find((task) => task.tag === tag)
-
-            return parseInt(task?.rewardPoints ?? '0')
-          })()}
-          completed={false}
+          reward={parseInt(task?.rewardPoints ?? '0')}
+          completed={task?.claimed ?? false}
         />
         <TaskCard
           image={TwitterX}

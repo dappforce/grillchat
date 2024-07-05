@@ -1,11 +1,16 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import Telegram from '@/assets/graphics/tasks/telegram.png'
+import VerticalStepsDots from '@/assets/icons/vertical-steps-dots.svg'
+import WarningIcon from '@/assets/icons/warning.png'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import useToastError from '@/hooks/useToastError'
 import { GamificationTask } from '@/services/datahub/tasks'
 import { useClaimTaskTokens } from '@/services/datahub/tasks/mutation'
-import { getGamificationTasksErrorQuery } from '@/services/datahub/tasks/query'
+import {
+  clearGamificationTasksError,
+  getGamificationTasksErrorQuery,
+} from '@/services/datahub/tasks/query'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { formatNumber } from '@/utils/strings'
@@ -94,12 +99,12 @@ const ClaimTasksTokensModal = ({
   } = useClaimTaskTokens()
 
   useEffect(() => {
-    if (!!claimTaskTokensError?.error) setLoading(false)
+    if (!!claimTaskTokensError) setLoading(false)
 
-    if (claimTaskTokensError?.error === 'None') {
+    if (claimTaskTokensError === 'None') {
       setIsOpenAnimation(true)
     }
-  }, [claimTaskTokensError?.error])
+  }, [claimTaskTokensError])
 
   useToastError(error, 'Failed to claim task tokens')
 
@@ -121,7 +126,7 @@ const ClaimTasksTokensModal = ({
       <Transition
         show={isOpen && !isOpenAnimation}
         appear
-        className='fixed bottom-0 left-1/2 z-40 mx-auto flex h-auto w-full max-w-screen-md -translate-x-1/2 rounded-t-[10px] bg-background-light outline-none transition duration-300'
+        className='fixed bottom-0 left-1/2 z-40 mx-auto flex h-auto max-h-full w-full max-w-screen-md -translate-x-1/2 overflow-y-auto rounded-t-[10px] bg-background-light outline-none transition duration-300'
         enterFrom={cx('opacity-0 translate-y-48')}
         enterTo='opacity-100 translate-y-0'
         leaveFrom='h-auto'
@@ -151,7 +156,7 @@ const ClaimTasksTokensModal = ({
             </div>
             <div className='flex flex-col gap-6 rounded-[20px] bg-slate-700 p-4'>
               {steps.map((step, index) => (
-                <div key={index} className='flex items-center gap-2'>
+                <div key={index} className='relative flex items-center gap-2'>
                   <div
                     className={cx(
                       'flex h-10 w-10 items-center justify-center rounded-full',
@@ -161,22 +166,35 @@ const ClaimTasksTokensModal = ({
                     {index + 1}
                   </div>
                   {step}
+                  {index !== steps.length - 1 && (
+                    <VerticalStepsDots className='absolute left-5 top-[46px]' />
+                  )}
                 </div>
               ))}
             </div>
+            {!!claimTaskTokensError &&
+              claimTaskTokensError ===
+                'GAMIFICATION_TASK_CLAIM_FAILED_NOT_COMPLETED' && (
+                <div className='flex items-center gap-4 rounded-2xl bg-[#EF444433]/20 p-4'>
+                  <Image
+                    src={WarningIcon}
+                    alt=''
+                    className='h-[30px] w-[30px]'
+                  />
+                  <span className='flex-1 text-sm font-medium leading-[normal] text-red-300'>
+                    Looks like you haven’t completed the required action.
+                    Complete the task to continue.
+                  </span>
+                </div>
+              )}
             <Button
               variant='primary'
               size='lg'
               isLoading={isClaimLoading || loading}
+              loadingText='Checking...'
               onClick={async () => {
                 setLoading(true)
-                getGamificationTasksErrorQuery.setQueryData(
-                  client,
-                  'error',
-                  () => {
-                    return { error: 'error' }
-                  }
-                )
+                clearGamificationTasksError(client)
 
                 claimTaskTokens({ taskTag: tag })
               }}
