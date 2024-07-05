@@ -13,7 +13,7 @@ export const getGamificationTasksQuery = createQuery({
 export const getGamificationTasksErrorQuery = createQuery({
   key: 'gamificationTasksError',
   fetcher: async (error: string) => {
-    if (error === 'error') return undefined
+    if (error === 'error') return null
 
     return error
   },
@@ -23,5 +23,5 @@ export const getGamificationTasksErrorQuery = createQuery({
 })
 
 export const clearGamificationTasksError = (client: QueryClient) => {
-  getGamificationTasksErrorQuery.setQueryData(client, 'error', () => undefined)
+  getGamificationTasksErrorQuery.setQueryData(client, 'error', () => null)
 }
