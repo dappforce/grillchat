@@ -82,6 +82,7 @@ export default function ChatContent({ className }: Props) {
         }
       />
       <RulesModal
+        isContest={selectedTab === 'contest'}
         isOpen={isOpenRules}
         closeModal={() => setIsOpenRules(false)}
       />
@@ -306,17 +307,37 @@ function PostMemeButton({
   )
 }
 
-function RulesModal(props: ModalFunctionalityProps) {
+function RulesModal({
+  isContest,
+  ...props
+}: ModalFunctionalityProps & { isContest: boolean }) {
   return (
     <Modal {...props} title='Rules' withCloseButton>
       <div className='flex flex-col gap-6'>
         <ul className='flex list-none flex-col gap-3.5 text-text-muted'>
-          <li>🤣 Post funny memes</li>
-          <li>🌟 Be polite and respect others</li>
-          <li>🚫 No sharing personal information</li>
-          <li>🚫 No adult content</li>
-          <li>🚫 No spam, no scam</li>
-          <li>🚫 No violence</li>
+          {isContest ? (
+            <>
+              <li>🤣Post memes only about memecoins</li>
+              <li>⏰Contest is open for 1 week</li>
+              <li>🤑300 USD in PEPE prize pool </li>
+              <li>
+                🏆15 winners in total - 5 chosen by most likes, 10 by EPIC team
+              </li>
+              <li>🚫 No sharing personal information</li>
+              <li>🚫 No adult content</li>
+              <li>🚫 No spam, no scam</li>
+              <li>🚫 No violence</li>
+            </>
+          ) : (
+            <>
+              <li>🤣 Post funny memes</li>
+              <li>🌟 Be polite and respect others</li>
+              <li>🚫 No sharing personal information</li>
+              <li>🚫 No adult content</li>
+              <li>🚫 No spam, no scam</li>
+              <li>🚫 No violence</li>
+            </>
+          )}
         </ul>
         <Notice noticeType='warning' className='font-medium'>
           ⚠️ All those who break these rules will be banned and will lose all

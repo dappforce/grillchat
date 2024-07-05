@@ -2,7 +2,6 @@ import Tokens from '@/assets/graphics/airdrop/tokens.png'
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
-import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
@@ -10,6 +9,7 @@ import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
@@ -31,9 +31,7 @@ export default function AirdropPage() {
   const myAddress = useMyMainAddress()
   const sendEvent = useSendEvent()
 
-  // const { evmAddress } = useLinkedEvmAddress()
-  // TODO: remove edit button temporarily until the functionality is done
-  const evmAddress = ''
+  const { evmAddress } = useLinkedEvmAddress()
 
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
@@ -76,7 +74,7 @@ export default function AirdropPage() {
                     {truncateAddress(evmAddress ?? '')}
                   </span>
                 </div>
-                <LinkText
+                {/* <LinkText
                   variant='primary'
                   className='mr-1'
                   onClick={() => {
@@ -85,7 +83,7 @@ export default function AirdropPage() {
                   }}
                 >
                   Edit
-                </LinkText>
+                </LinkText> */}
               </Card>
             )}
             {isAdmin && (
