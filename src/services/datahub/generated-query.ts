@@ -559,6 +559,25 @@ export type FindSpacesWithFilterResponseDto = {
   total?: Maybe<Scalars['Int']['output']>
 }
 
+export type FindTasksFilter = {
+  address: Scalars['String']['input']
+  completed?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type FindTasksResponseDto = {
+  __typename?: 'FindTasksResponseDto'
+  data: Array<GamificationTask>
+  offset?: Maybe<Scalars['Int']['output']>
+  pageSize?: Maybe<Scalars['Int']['output']>
+  total?: Maybe<Scalars['Int']['output']>
+}
+
+export type FindTasksWithFilterArgs = {
+  filter: FindTasksFilter
+  offset?: InputMaybe<Scalars['Int']['input']>
+  pageSize?: InputMaybe<Scalars['Int']['input']>
+}
+
 export type GamificationEntranceDailyRewardsSequence = {
   __typename?: 'GamificationEntranceDailyRewardsSequence'
   active: Scalars['Boolean']['output']
@@ -568,6 +587,55 @@ export type GamificationEntranceDailyRewardsSequence = {
   id: Scalars['String']['output']
   socialProfile: SocialProfile
   totalSequenceRewardPoints: Scalars['String']['output']
+}
+
+export type GamificationTask = {
+  __typename?: 'GamificationTask'
+  claimed: Scalars['Boolean']['output']
+  claimedAt?: Maybe<Scalars['DateTime']['output']>
+  completed: Scalars['Boolean']['output']
+  completedAt?: Maybe<Scalars['DateTime']['output']>
+  createdAt?: Maybe<Scalars['DateTime']['output']>
+  id: Scalars['String']['output']
+  linkedIdentity: LinkedIdentity
+  metadata?: Maybe<GamificationTaskMetadata>
+  name: GamificationTaskName
+  periodicityConfig?: Maybe<Scalars['String']['output']>
+  periodicityType: GamificationTaskPeriodicity
+  rewardPoints: Scalars['String']['output']
+  startedAt?: Maybe<Scalars['DateTime']['output']>
+  tag: Scalars['String']['output']
+  updatedAt?: Maybe<Scalars['DateTime']['output']>
+  validityTimeRange: GamificationTaskValidityTimeRange
+  /** Week number or day timestamp without time */
+  validityTimeRangeValue?: Maybe<Scalars['Int']['output']>
+}
+
+export type GamificationTaskMetadata = {
+  __typename?: 'GamificationTaskMetadata'
+  claimedRewardPoints: Scalars['String']['output']
+  likesNumberToAchieve?: Maybe<Scalars['String']['output']>
+  referralsNumberToAchieve?: Maybe<Scalars['Int']['output']>
+  telegramChannelToJoin?: Maybe<Scalars['String']['output']>
+  userExternalProvider?: Maybe<IdentityProvider>
+  userExternalProviderId?: Maybe<Scalars['String']['output']>
+}
+
+export enum GamificationTaskName {
+  JoinTelegramChannel = 'JOIN_TELEGRAM_CHANNEL',
+  JoinTwitter = 'JOIN_TWITTER',
+}
+
+export enum GamificationTaskPeriodicity {
+  Daily = 'DAILY',
+  Onetime = 'ONETIME',
+  Weekly = 'WEEKLY',
+}
+
+export enum GamificationTaskValidityTimeRange {
+  Day = 'DAY',
+  Infinite = 'INFINITE',
+  Week = 'WEEK',
 }
 
 export type GetModeratorByInput = {
@@ -1054,6 +1122,7 @@ export type Query = {
   gamificationEntranceDailyRewardSequence?: Maybe<GamificationEntranceDailyRewardsSequence>
   gamificationTappingActivityStatsByDate: TappingActivityStatsByDateResponseDto
   gamificationTappingEnergyState?: Maybe<TappingEnergyStateResponseDto>
+  gamificationTasks: FindTasksResponseDto
   isBalanceSufficientForSocialAction: IsBalanceSufficientForSocialActionResponse
   linkedIdentity?: Maybe<LinkedIdentity>
   moderationBlockedResourceIds: Array<Scalars['String']['output']>
@@ -1165,6 +1234,10 @@ export type QueryGamificationTappingActivityStatsByDateArgs = {
 
 export type QueryGamificationTappingEnergyStateArgs = {
   args: TappingEnergyStateInput
+}
+
+export type QueryGamificationTasksArgs = {
+  args: FindTasksWithFilterArgs
 }
 
 export type QueryIsBalanceSufficientForSocialActionArgs = {
@@ -1383,6 +1456,10 @@ export enum ServiceMessageStatusCode {
   ExpiredEntranceDailyRewardClaimForbidden = 'EXPIRED_ENTRANCE_DAILY_REWARD_CLAIM_FORBIDDEN',
   Forbidden = 'FORBIDDEN',
   FutureEntranceDailyRewardClaimForbidden = 'FUTURE_ENTRANCE_DAILY_REWARD_CLAIM_FORBIDDEN',
+  GamificationTaskClaimFailedDuplicatedClaim = 'GAMIFICATION_TASK_CLAIM_FAILED_DUPLICATED_CLAIM',
+  GamificationTaskClaimFailedInvalidData = 'GAMIFICATION_TASK_CLAIM_FAILED_INVALID_DATA',
+  GamificationTaskClaimFailedNotCompleted = 'GAMIFICATION_TASK_CLAIM_FAILED_NOT_COMPLETED',
+  GamificationTaskClaimSuccessCompleted = 'GAMIFICATION_TASK_CLAIM_SUCCESS_COMPLETED',
   Info = 'INFO',
   InsufficientBalance = 'INSUFFICIENT_BALANCE',
   InternalServerError = 'INTERNAL_SERVER_ERROR',
@@ -1460,6 +1537,7 @@ export enum SocialCallName {
   SynthFarcasterCreateSuperLikeFromReaction = 'synth_farcaster_create_super_like_from_reaction',
   SynthGamificationAddTappingActivityStates = 'synth_gamification_add_tapping_activity_states',
   SynthGamificationClaimEntranceDailyReward = 'synth_gamification_claim_entrance_daily_reward',
+  SynthGamificationClaimTask = 'synth_gamification_claim_task',
   SynthInitLinkedIdentity = 'synth_init_linked_identity',
   SynthModerationAddCtxToOrganization = 'synth_moderation_add_ctx_to_organization',
   SynthModerationAddDefaultCtxToModerator = 'synth_moderation_add_default_ctx_to_moderator',
@@ -1772,6 +1850,17 @@ export type TerminateLinkedIdentitySessionResponseDto = {
   removedSessionsCount: Scalars['Int']['output']
 }
 
+export type ThresholdsAndRulesResponse = {
+  __typename?: 'ThresholdsAndRulesResponse'
+  addressBlockOneTimePenaltyPointsAmount: Scalars['String']['output']
+  contextPostId: Scalars['String']['output']
+  creatorModerationPenalty: Scalars['Boolean']['output']
+  deductRewardsOnModeration: Scalars['Boolean']['output']
+  postBlockOneTimePenaltyPointsAmount: Scalars['String']['output']
+  postModerationPenalty: Scalars['Boolean']['output']
+  thresholdPointsAmount: Scalars['String']['output']
+}
+
 export type TokenomicMetadataResponse = {
   __typename?: 'TokenomicMetadataResponse'
   likerRewardDistributionPercent: Scalars['Int']['output']
@@ -1781,6 +1870,7 @@ export type TokenomicMetadataResponse = {
   socialActionBalanceThreshold: SocialActionBalanceThresholdResponse
   socialActionPrice: SocialActionPriceResponse
   superLikeWeightPoints: Scalars['String']['output']
+  thresholdsAndRules: Array<ThresholdsAndRulesResponse>
 }
 
 export type TotalActivityMetricsForFixedPeriodInput = {
@@ -2837,6 +2927,29 @@ export type GetSpacesQuery = {
   }
 }
 
+export type GetGamificationTasksQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetGamificationTasksQuery = {
+  __typename?: 'Query'
+  gamificationTasks: {
+    __typename?: 'FindTasksResponseDto'
+    total?: number | null
+    data: Array<{
+      __typename?: 'GamificationTask'
+      rewardPoints: string
+      id: string
+      name: GamificationTaskName
+      tag: string
+      createdAt?: any | null
+      completed: boolean
+      claimed: boolean
+      linkedIdentity: { __typename?: 'LinkedIdentity'; id: string }
+    }>
+  }
+}
+
 export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
@@ -3523,4 +3636,23 @@ export const GetSpaces = gql`
     }
   }
   ${SpaceFragment}
+`
+export const GetGamificationTasks = gql`
+  query GetGamificationTasks($address: String!) {
+    gamificationTasks(args: { filter: { address: $address } }) {
+      data {
+        rewardPoints
+        id
+        name
+        tag
+        createdAt
+        completed
+        claimed
+        linkedIdentity {
+          id
+        }
+      }
+      total
+    }
+  }
 `
