@@ -4,11 +4,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { SubscribeSuperLikeSubscription } from '../generated-query'
-import {
-  getAddressLikeCountToPostQuery,
-  getSuperLikeCountQuery,
-  getTodaySuperLikeCountQuery,
-} from './query'
+import { getSuperLikeCountQuery, getTodaySuperLikeCountQuery } from './query'
 
 export function toastSuperLikeNotification(
   queryClient: QueryClient,
@@ -18,10 +14,6 @@ export function toastSuperLikeNotification(
   const { post, staker } = eventData.entity
   getSuperLikeCountQuery.invalidate(queryClient, post.persistentId)
   if (staker.id === myAddress && post.persistentId) {
-    getAddressLikeCountToPostQuery.invalidate(queryClient, {
-      address: myAddress,
-      postId: post.persistentId,
-    })
     const todayLike = getTodaySuperLikeCountQuery.getQueryData(
       queryClient,
       myAddress
