@@ -1,7 +1,6 @@
 import Toast from '@/components/Toast'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import { IdentityProvider } from '@/services/datahub/generated-query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getReferrerIdQuery } from '@/services/datahub/referral/query'
 import { getDayAndWeekTimestamp } from '@/services/datahub/utils'
@@ -105,24 +104,24 @@ const sendLaunchEvent = async (
   } else {
     const [
       // linkedTgAccData,
-      linkedIdentity,
+      // linkedIdentity,
       referrerId,
     ] = await Promise.allSettled([
       // getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
       //   address,
       // }),
-      getLinkedIdentityQuery.fetchQuery(queryClient, address),
+      // getLinkedIdentityQuery.fetchQuery(queryClient, address),
       getReferrerIdQuery.fetchQuery(queryClient, address),
     ] as const)
 
     // if (linkedTgAccData.status === 'fulfilled')
     //   userProperties.tgNotifsConnected =
     //     (linkedTgAccData.value?.length || 0) > 0
-    if (linkedIdentity.status === 'fulfilled')
-      userProperties.twitterLinked =
-        !!linkedIdentity.value?.externalProviders.find(
-          (el) => el.provider === IdentityProvider.Twitter
-        )
+    // if (linkedIdentity.status === 'fulfilled')
+    //   userProperties.twitterLinked =
+    //     !!linkedIdentity.value?.externalProviders.find(
+    //       (el) => el.provider === IdentityProvider.Twitter
+    //     )
     if (referrerId.status === 'fulfilled')
       userProperties.ref = referrerId.value || getReferralIdInUrl()
 

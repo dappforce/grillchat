@@ -1,13 +1,11 @@
 import Thumbsup from '@/assets/emojis/thumbsup.png'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery, getServerTimeQuery } from '@/services/api/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
 import {
   PostRewards,
   getAddressLikeCountToPostQuery,
-  getCanPostSuperLikedQuery,
   getConfirmationMsgQuery,
-  getPostRewardsQuery,
   getSuperLikeCountQuery,
   getTodaySuperLikeCountQuery,
 } from '@/services/datahub/content-staking/query'
@@ -22,17 +20,10 @@ import { LocalStorage } from '@/utils/storage'
 import dayjs from 'dayjs'
 import { verifyMessage } from 'ethers'
 import Image from 'next/image'
-import {
-  ComponentProps,
-  ReactNode,
-  SyntheticEvent,
-  useEffect,
-  useState,
-} from 'react'
+import { ComponentProps, ReactNode, SyntheticEvent } from 'react'
 import { toast } from 'sonner'
 import PopOver from '../floating/PopOver'
 import { sendEventWithRef } from '../referral/analytics'
-import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
   withPostReward: boolean
@@ -55,13 +46,13 @@ export function SuperLikeWrapper({
     disabledCause: string
     superLikeCount: number
     handleClick: () => void
-    postRewards: PostRewards | undefined | null
+    postRewards?: PostRewards | undefined | null
   }) => ReactNode
 }) {
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
-  const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
-    enabled: withPostReward,
-  })
+  // const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
+  // enabled: withPostReward,
+  // })
 
   const { isBlocked, isLoading: loadingBlocked } = useIsAddressBlockedInApp()
   const { setIsOpen } = useLoginModal()
@@ -72,13 +63,8 @@ export function SuperLikeWrapper({
   const { mutate: createSuperLike } = useCreateSuperLike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(postId)
 
-  const clientCanPostSuperLiked = useClientValidationOfPostSuperLike(
-    post?.struct.createdAtTime ?? 0
-  )
-  const { data: canPostSuperLike, isLoading: loadingCanPostSuperLiked } =
-    getCanPostSuperLikedQuery.useQuery(postId)
-  const { canPostSuperLiked, isExist, validByCreatorMinStake } =
-    canPostSuperLike || {}
+  const { canBeLiked: canBeSuperliked, isLoading: loadingCanBeLiked } =
+    useClientValidationOfPostSuperLike(post?.struct.createdAtTime ?? 0)
 
   const myAddress = useMyMainAddress()
   const myGrillAddress = useMyAccount.use.address()
@@ -97,7 +83,6 @@ export function SuperLikeWrapper({
   const hasILiked = (myLike?.count ?? 0) > 0
   const isMyPost = post?.struct.ownerId === myAddress
 
-  const canBeSuperliked = clientCanPostSuperLiked && canPostSuperLiked
   // const entity = post?.struct.isComment ? 'message' : 'post'
   const entity = 'memes'
 
@@ -107,22 +92,18 @@ export function SuperLikeWrapper({
       loadingMyLike ||
       loadingBlocked ||
       loadingTodayCount ||
-      loadingCanPostSuperLiked ||
+      loadingCanBeLiked ||
       hasLikedMoreThanLimit ||
       !message) &&
     !hasILiked
 
   let disabledCause = ''
-  if (loadingBlocked || loadingTodayCount || loadingCanPostSuperLiked)
+  if (loadingBlocked || loadingTodayCount || loadingCanBeLiked)
     disabledCause = 'Loading...'
   else if (isMyPost) {
     disabledCause = `You cannot like your own ${entity}`
   } else if (hasLikedMoreThanLimit)
     disabledCause = `You've liked 10 ${entity} today. Come back tomorrow for more fun!`
-  else if (!isExist)
-    disabledCause = `This ${entity} is still being minted, please wait a few seconds`
-  else if (!validByCreatorMinStake)
-    disabledCause = `This ${entity} cannot be liked because its author has not yet locked at least 2,000 SUB`
   else if (!canBeSuperliked)
     disabledCause = `You cannot like ${entity}s that are older than 7 days`
 
@@ -170,7 +151,6 @@ export function SuperLikeWrapper({
         handleClick,
         hasILiked,
         superLikeCount: superLikeCount?.count ?? 0,
-        postRewards,
       })}
     </>
   )
@@ -248,14 +228,14 @@ export default function SuperLike({
             ) : (
               button
             )}
-            {postRewards?.isNotZero && (
+            {/* {postRewards?.isNotZero && (
               <PostRewardStat
                 className={cx(
                   isMyMessage && 'text-text-muted-on-primary-light'
                 )}
                 postId={postId}
               />
-            )}
+            )} */}
           </div>
         )
       }}
@@ -267,14 +247,11 @@ const currentWeekSigStorage = new LocalStorage(() => 'df.current-week-sig')
 
 const CLIENT_CHECK_INTERVAL = 5 * 1000 * 60 // 5 minutes
 function useClientValidationOfPostSuperLike(createdAtTime: number) {
-  const [, setState] = useState({})
-
-  useEffect(() => {
-    const interval = setInterval(() => setState({}), CLIENT_CHECK_INTERVAL) // refresh every interval
-    return () => clearInterval(interval)
-  }, [])
+  const { data: serverTime, isLoading } = getServerTimeQuery.useQuery(null, {
+    refetchInterval: CLIENT_CHECK_INTERVAL,
+  })
 
   const isPostMadeMoreThan1WeekAgo =
-    dayjs().diff(dayjs(createdAtTime), 'day') > 7
-  return !isPostMadeMoreThan1WeekAgo
+    dayjs(serverTime).diff(dayjs(createdAtTime), 'day') > 7
+  return { canBeLiked: !isPostMadeMoreThan1WeekAgo, isLoading }
 }

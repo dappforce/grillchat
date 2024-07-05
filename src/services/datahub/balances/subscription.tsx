@@ -4,7 +4,10 @@ import { gql } from 'graphql-request'
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
 import { SubscribeBalancesSubscription } from '../generated-query'
-import { getBalanceQuery } from '../leaderboard/points-balance/query'
+import {
+  getBalanceQuery,
+  getMyBalanceCache,
+} from '../leaderboard/points-balance/query'
 import { datahubSubscription } from '../utils'
 
 export function useDatahubBalancesSubscriber() {
@@ -95,4 +98,5 @@ async function processSubscriptionEvent(
     mainAddress,
     Number(eventData.entity.activeStakingPoints)
   )
+  getMyBalanceCache.set(eventData.entity.activeStakingPoints)
 }

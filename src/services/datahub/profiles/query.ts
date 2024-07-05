@@ -1,11 +1,17 @@
+import { ApiProfilesResponse } from '@/pages/api/profiles'
+import { apiInstance } from '@/services/api/utils'
 import { createQuery, poolQuery } from '@/subsocial-query'
-import { SubsocialProfile, getProfiles } from './fetcher'
+import { SubsocialProfile } from './fetcher'
 
 const getProfile = poolQuery<string, SubsocialProfile>({
   name: 'getProfile',
   multiCall: async (addresses) => {
     if (addresses.length === 0) return []
-    return getProfiles(addresses)
+    const res = await apiInstance.get(
+      '/api/profiles?' + addresses.map((n) => `addresses=${n}`).join('&')
+    )
+    const data = res.data as ApiProfilesResponse
+    return data.data ?? []
   },
   resultMapper: {
     paramToKey: (address) => address,
