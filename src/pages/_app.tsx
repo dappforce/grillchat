@@ -44,11 +44,11 @@ export type AppCommonProps = {
 }
 
 export default function App(props: AppProps<AppCommonProps>) {
-  // useEffect(() => {
-  //   import('eruda').then(({ default: eruda }) => {
-  //     eruda.init()
-  //   })
-  // })
+  useEffect(() => {
+    import('eruda').then(({ default: eruda }) => {
+      eruda.init()
+    })
+  }, [])
 
   return (
     <SessionProvider
