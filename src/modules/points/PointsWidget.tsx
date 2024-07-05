@@ -2,6 +2,7 @@ import Diamond from '@/assets/emojis/diamond.png'
 import Laugh from '@/assets/emojis/laugh.png'
 import Pointup from '@/assets/emojis/pointup.png'
 import Speaker from '@/assets/emojis/speaker.png'
+import Target from '@/assets/emojis/target.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
 import BlueGradient from '@/assets/graphics/blue-gradient.png'
 import AddressAvatar from '@/components/AddressAvatar'
@@ -286,7 +287,7 @@ const UserStatsSection = ({
           </Card>
         )}
         <div className='flex w-full items-center gap-4 p-4'>
-          <div className='flex w-full flex-col gap-2'>
+          <div className='flex w-full flex-col gap-1'>
             <span className='text-text-muted'>LIKES LEFT TODAY:</span>
             <div className='flex items-center gap-3'>
               <Image src={Thumbsup} alt='' className='h-8 w-8' />
@@ -301,7 +302,7 @@ const UserStatsSection = ({
               </LinkText>
             </div>
           </div>
-          <div className='flex w-full flex-col gap-2'>
+          <div className='flex w-full flex-col gap-1'>
             <span className='text-text-muted'>POINTS EARNED:</span>
             <div
               className='mr-1 flex items-center gap-3'
@@ -363,7 +364,7 @@ const DrawerLinks = ({
       </span>
       <LinkWrapper close={onClose} href='/tg/tasks'>
         <Card className={cardStyles}>
-          <span className='flex-shrink-0 text-[48px]'>🎯</span>
+          <Image src={Target} alt='' className='h-12 w-12 flex-shrink-0' />
           {/* <Image src={Tasks} alt=''  /> */}
           <div className='flex flex-col gap-1'>
             <div className='flex items-center gap-2'>
@@ -430,7 +431,7 @@ const DrawerLinks = ({
               <span className='text-base font-bold'>Tap2Earn</span>
             </div>
             <p className='text-sm text-text-muted'>
-              Tap on the laughing emoji and earn Points.
+              Tap on the cat emoji and earn Points.
             </p>
           </div>
           <Button
@@ -467,7 +468,14 @@ function LinkWrapper({
   )
 
   if (router.pathname === href) {
-    return <span onClick={close}>{link}</span>
+    return (
+      <span
+        onClick={close}
+        className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
+      >
+        {children}
+      </span>
+    )
   }
   return link
 }

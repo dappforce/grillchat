@@ -340,11 +340,15 @@ function RulesModal({
         <ul className='flex list-none flex-col gap-3.5 text-text-muted'>
           {isContest ? (
             <>
-              <li>🤣Post memes only about memecoins</li>
-              <li>⏰Contest is open for 1 week</li>
-              <li>🤑300 USD in PEPE prize pool </li>
-              <li>
-                🏆15 winners in total - 5 chosen by most likes, 10 by EPIC team
+              <li>🤣 Post memes only about memecoins</li>
+              <li>⏰ Contest is open for 1 week</li>
+              <li>🤑 300 USD in $PEPE prize pool </li>
+              <li className='flex gap-1'>
+                <span>🏆</span>
+                <div className='flex flex-col gap-1'>
+                  <span>15 winners x $20 in $PEPE:</span>
+                  <span>10 chosen by most likes / 5 by EPIC</span>
+                </div>
               </li>
               <li className='border border-b border-background-lighter' />
               <li>🚫 No sharing personal information</li>
@@ -363,7 +367,7 @@ function RulesModal({
             </>
           )}
         </ul>
-        <Notice noticeType='warning' className='font-medium'>
+        <Notice noticeType='warning'>
           ⚠️ All those who break these rules will be banned and will lose all
           their points.
         </Notice>
