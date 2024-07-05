@@ -648,6 +648,7 @@ export const GET_TOKENOMICS_METADATA = gql`
     }
   }
 `
+// NOTE: need to be careful when changing the structure of these cached data, because it can cause the app to crash if you access unavailable data
 const getTokenomicsMetadataCache = new LocalStorage(
   () => 'tokenomics-metadata-cache'
 )

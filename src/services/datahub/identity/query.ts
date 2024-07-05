@@ -5,6 +5,7 @@ import { LocalStorage } from '@/utils/storage'
 import { parseJSONData } from '@/utils/strings'
 import { getLinkedIdentity } from './fetcher'
 
+// NOTE: need to be careful when changing the structure of these cached data, because it can cause the app to crash if you access unavailable data
 export const getMyLinkedIdentityCache = new LocalStorage(
   () => 'my-linked-identity-cache'
 )
