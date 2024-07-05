@@ -36,7 +36,7 @@ export default function useSendMessageWithLoginFlow(
       socialAction: SocialAction.CreateComment,
     })
     if (!isSufficient) {
-      setOpenMessageModal('not-enough-balance')
+      setOpenMessageModal('not-enough-balance', params.chatId)
       return null
     }
 

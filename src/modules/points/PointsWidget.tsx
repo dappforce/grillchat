@@ -2,6 +2,7 @@ import Diamond from '@/assets/emojis/diamond.png'
 import Laugh from '@/assets/emojis/laugh.png'
 import Pointup from '@/assets/emojis/pointup.png'
 import Speaker from '@/assets/emojis/speaker.png'
+import Target from '@/assets/emojis/target.png'
 import Thumbsup from '@/assets/emojis/thumbsup.png'
 import BlueGradient from '@/assets/graphics/blue-gradient.png'
 import AddressAvatar from '@/components/AddressAvatar'
@@ -9,11 +10,14 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
+import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
 import useIsMounted from '@/hooks/useIsMounted'
+import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { allowWindowScroll, preventWindowScroll } from '@/utils/window'
 import { Transition } from '@headlessui/react'
@@ -60,7 +64,7 @@ export default function PointsWidget({
       <div
         {...props}
         className={cx(
-          'z-10 flex w-full cursor-pointer items-center justify-between rounded-b-2xl',
+          'z-10 flex h-14 w-full cursor-pointer items-center justify-between rounded-b-2xl',
           'bg-black/50 px-4.5 py-3 backdrop-blur-xl',
           props.className
         )}
@@ -208,13 +212,20 @@ const UserStatsSection = ({
   const sendEvent = useSendEvent()
   const [openProfileModal, setOpenProfileModal] = useState(false)
   const [openRewardModal, setOpenRewardModal] = useState(false)
+  const [openEvmLinkModal, setOpenEvmLinkModal] = useState(false)
+
+  const { evmAddress } = useLinkedEvmAddress()
 
   return (
     <>
       <div className='mb-10 flex w-full flex-col rounded-xl bg-slate-800 hover:cursor-pointer'>
         <div
-          className='border-b border-slate-700 p-4'
+          className={cx(
+            'border-b border-slate-700 p-4',
+            evmAddress && 'border-none'
+          )}
           onClick={() => {
+            sendEvent('open_leaderboard')
             setDrawerContentState('leaderboard')
           }}
         >
@@ -225,12 +236,13 @@ const UserStatsSection = ({
                 <div className='flex items-center gap-3'>
                   <Name
                     address={myAddress ?? ''}
+                    clipText
                     className='text-lg font-medium !text-text'
                   />
                   <Button
                     size='circleSm'
                     variant='muted'
-                    className='inline'
+                    className='inline flex-shrink-0'
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
@@ -253,8 +265,30 @@ const UserStatsSection = ({
             <IoIosArrowForward className={cx('fill-slate-400 text-2xl')} />
           </div>
         </div>
+        {evmAddress && (
+          <Card className='mx-4 flex items-center justify-between gap-4 p-4 py-3'>
+            <div className='flex flex-col gap-1'>
+              <span className='text-sm font-medium text-text-muted'>
+                My EVM Address
+              </span>
+              <span className='font-semibold'>
+                {truncateAddress(evmAddress ?? '')}
+              </span>
+            </div>
+            {/* <LinkText
+              variant='primary'
+              className='mr-1'
+              onClick={() => {
+                sendEvent('edit_evm_address_click')
+                setOpenEvmLinkModal(true)
+              }}
+            >
+              Edit
+            </LinkText> */}
+          </Card>
+        )}
         <div className='flex w-full items-center gap-4 p-4'>
-          <div className='flex w-full flex-col gap-2'>
+          <div className='flex w-full flex-col gap-1'>
             <span className='text-text-muted'>LIKES LEFT TODAY:</span>
             <div className='flex items-center gap-3'>
               <Image src={Thumbsup} alt='' className='h-8 w-8' />
@@ -269,7 +303,7 @@ const UserStatsSection = ({
               </LinkText>
             </div>
           </div>
-          <div className='flex w-full flex-col gap-2'>
+          <div className='flex w-full flex-col gap-1'>
             <span className='text-text-muted'>POINTS EARNED:</span>
             <div
               className='mr-1 flex items-center gap-3'
@@ -300,6 +334,12 @@ const UserStatsSection = ({
         closeModal={() => setOpenProfileModal(false)}
         isOpen={openProfileModal}
       />
+      <LinkEvmAddressModal
+        isOpen={openEvmLinkModal}
+        closeModal={() => setOpenEvmLinkModal(false)}
+        title='Edit your EVM address for rewards'
+        description='We will send your token rewards to this address if you win in contest.'
+      />
     </>
   )
 }
@@ -325,7 +365,7 @@ const DrawerLinks = ({
       </span>
       <LinkWrapper close={onClose} href='/tg/tasks'>
         <Card className={cardStyles}>
-          <span className='flex-shrink-0 text-[48px]'>🎯</span>
+          <Image src={Target} alt='' className='h-12 w-12 flex-shrink-0' />
           {/* <Image src={Tasks} alt=''  /> */}
           <div className='flex flex-col gap-1'>
             <div className='flex items-center gap-2'>
@@ -392,7 +432,7 @@ const DrawerLinks = ({
               <span className='text-base font-bold'>Tap2Earn</span>
             </div>
             <p className='text-sm text-text-muted'>
-              Tap on the laughing emoji and earn Points.
+              Tap on the cat emoji and earn Points.
             </p>
           </div>
           <Button
@@ -429,7 +469,14 @@ function LinkWrapper({
   )
 
   if (router.pathname === href) {
-    return <span onClick={close}>{link}</span>
+    return (
+      <span
+        onClick={close}
+        className='rounded-2xl outline-none ring-2 ring-transparent ring-offset-0 ring-offset-transparent transition focus-within:ring-background-lightest hover:ring-background-lightest'
+      >
+        {children}
+      </span>
+    )
   }
   return link
 }

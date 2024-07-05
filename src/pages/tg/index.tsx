@@ -9,12 +9,15 @@ import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 import { getProfilesServer } from '../api/profiles'
 
-async function prefetchChatData(client: QueryClient) {
+async function prefetchChatData(client: QueryClient, chatId: string) {
+  if (!chatId) return
+
   const firstPageData = await getPaginatedPostIdsByPostId.fetchFirstPageQuery(
     client,
-    env.NEXT_PUBLIC_MAIN_CHAT_ID,
+    chatId,
     1
   )
+  getPaginatedPostIdsByPostId.invalidateFirstQuery(client, chatId)
   const ownerIds = firstPageData.data
     .map((id) => {
       const post = getPostQuery.getQueryData(client, id)
@@ -38,18 +41,16 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
   async () => {
     const client = new QueryClient()
     await Promise.all([
-      prefetchChatData(client),
+      prefetchChatData(client, env.NEXT_PUBLIC_MAIN_CHAT_ID),
+      prefetchChatData(client, env.NEXT_PUBLIC_CONTEST_CHAT_ID),
       prefetchBlockedEntities(
         client,
         [env.NEXT_PUBLIC_MAIN_SPACE_ID].filter(Boolean),
-        [env.NEXT_PUBLIC_MAIN_CHAT_ID].filter(Boolean)
+        [env.NEXT_PUBLIC_MAIN_CHAT_ID, env.NEXT_PUBLIC_CONTEST_CHAT_ID].filter(
+          Boolean
+        )
       ),
     ] as const)
-
-    getPaginatedPostIdsByPostId.invalidateFirstQuery(
-      client,
-      env.NEXT_PUBLIC_MAIN_CHAT_ID
-    )
 
     return {
       revalidate: 20,

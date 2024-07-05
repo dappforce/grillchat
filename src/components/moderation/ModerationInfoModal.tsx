@@ -148,6 +148,7 @@ export default function ModerationInfoModal({
         ctxPostIds: ['*'],
         ctxAppIds: ['*'],
       },
+      chatId,
     })
   }
   const hasAnyBlockedInApp = isAdmin && blockedInAppCardData.length

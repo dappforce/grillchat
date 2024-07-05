@@ -14,6 +14,7 @@ export type Identity = {
     provider: IdentityProvider
     externalId: string
     username?: string | null
+    createdAtTime: string
   }[]
 }
 
@@ -27,6 +28,7 @@ const GET_LINKED_IDENTITIES = gql`
         username
         provider
         enabled
+        createdAtTime
       }
     }
   }

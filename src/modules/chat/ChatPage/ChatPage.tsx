@@ -129,6 +129,7 @@ export default function ChatPage({
             ctxPostIds: [chatEntityId],
             withOrganization: true,
           },
+          chatId,
         })
       } else {
         commitModerationAction({
@@ -137,6 +138,7 @@ export default function ChatPage({
             ctxPostIds: [chatEntityId],
             organizationId: moderatorData?.organizationId ?? '',
           },
+          chatId,
         })
       }
     }
@@ -148,6 +150,7 @@ export default function ChatPage({
     isLoading,
     chatEntityId,
     isOwner,
+    chatId,
   ])
 
   if (chat?.struct.hidden) {

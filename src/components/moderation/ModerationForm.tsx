@@ -93,6 +93,7 @@ export default function ModerationForm({
               ctxPostIds: ['*'],
               ctxAppIds: ['*'],
             },
+            chatId: chatId ?? '',
           })
 
         toast.custom((t) => (
@@ -185,6 +186,7 @@ export default function ModerationForm({
             ctxPostIds: ['*'],
             ctxAppIds: ['*'],
           },
+          chatId: chatId ?? '',
         })
 
         sendEvent('client_moderation', {

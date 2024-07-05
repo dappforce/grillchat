@@ -1,12 +1,8 @@
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import HomePageModals from '@/components/modals/HomePageModals'
 import LikeIntroModal from '@/components/modals/LikeIntroModal'
-import { env } from '@/env.mjs'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
 import ChatContent from '../chat/HomePage/ChatContent'
-
-const hubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
-const chatId = env.NEXT_PUBLIC_MAIN_CHAT_ID
 
 const MemesPage = () => {
   useTgNoScroll()
@@ -20,7 +16,7 @@ const MemesPage = () => {
 }
 
 const ChatsContent = () => {
-  return <ChatContent hubId={hubId} chatId={chatId} />
+  return <ChatContent />
 }
 
 export default MemesPage

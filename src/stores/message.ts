@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import { LocalStorage } from '@/utils/storage'
 import { useParentData } from './parent'
 import { create, createSelectors } from './utils'
@@ -23,6 +24,7 @@ type State = {
   unreadMessage: UnreadMessage
 
   isOpenMessageModal: 'not-enough-balance' | 'blocked' | ''
+  currentChatId: string
 }
 
 let savedStateBeforeEditing: State | null = null
@@ -41,7 +43,10 @@ type Actions = {
     unreadData: UnreadMessage | ((prev: UnreadMessage) => UnreadMessage)
   ) => void
 
-  setOpenMessageModal: (isOpenMessageModal: State['isOpenMessageModal']) => void
+  setOpenMessageModal: (
+    isOpenMessageModal: State['isOpenMessageModal'],
+    chatId?: string
+  ) => void
 }
 
 const INITIAL_STATE: State = {
@@ -55,6 +60,7 @@ const INITIAL_STATE: State = {
     lastMessageTime: Date.now(),
   },
   isOpenMessageModal: '',
+  currentChatId: env.NEXT_PUBLIC_MAIN_CHAT_ID,
 }
 
 const useMessageDataBase = create<State & Actions>()((set, get) => ({
@@ -96,8 +102,9 @@ const useMessageDataBase = create<State & Actions>()((set, get) => ({
     }
     set({ unreadMessage })
   },
-  setOpenMessageModal: (isOpenMessageModal) => {
+  setOpenMessageModal: (isOpenMessageModal, chatId) => {
     set({ isOpenMessageModal })
+    if (chatId) set({ currentChatId: chatId })
   },
   reset: () => {
     savedStateBeforeEditing = null

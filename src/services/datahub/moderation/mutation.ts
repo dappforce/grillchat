@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs'
 import {
   ApiDatahubModerationBody,
   ApiDatahubModerationResponse,
@@ -20,7 +21,7 @@ type ModerationCallNames =
   | (typeof socialCallName)['synth_moderation_unblock_resource']
 type ModerationActionsParams<T extends ModerationCallNames> = DatahubParams<
   SocialCallDataArgs<T>
-> & { callName: T; withoutRevalidateCurrentPath?: boolean }
+> & { callName: T; withoutRevalidateCurrentPath?: boolean; chatId: string }
 async function moderationActions<T extends ModerationCallNames>(
   data: ModerationActionsParams<T>
 ) {
@@ -52,6 +53,19 @@ function augmentModerationActionParams<T extends ModerationCallNames>(
 ) {
   const { signer, address, parentProxyAddress } = useMyAccount.getState()
   if (!address) throw new Error('You have to connect wallet first')
+
+  if (
+    simplifiedParams.chatId !== env.NEXT_PUBLIC_MAIN_CHAT_ID &&
+    (simplifiedParams.callName === 'synth_moderation_block_resource' ||
+      simplifiedParams.callName === 'synth_moderation_unblock_resource')
+  ) {
+    simplifiedParams.args.ctxSpaceIds = undefined
+    simplifiedParams.args.ctxPostIds = [simplifiedParams.chatId]
+    ;(
+      simplifiedParams.args as SocialCallDataArgs<'synth_moderation_block_resource'>
+    ).ctxAppIds = undefined
+  }
+
   return {
     ...simplifiedParams,
     signer,
