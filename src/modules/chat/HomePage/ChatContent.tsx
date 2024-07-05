@@ -11,7 +11,6 @@ import Meme2EarnIntroModal, {
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
-import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import usePostMemeThreshold from '@/hooks/usePostMemeThreshold'
 import PointsWidget from '@/modules/points/PointsWidget'
@@ -23,6 +22,7 @@ import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { useLocalStorage } from '@uidotdev/usehooks'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { ReactNode, useEffect, useState } from 'react'
@@ -35,7 +35,14 @@ type Props = {
 }
 
 export default function ChatContent({ className }: Props) {
-  const [selectedTab, setSelectedTab] = useState<TabState>('all')
+  let [selectedTab, setSelectedTab] = useLocalStorage<TabState>(
+    'memes-tab',
+    'all'
+  )
+  if (selectedTab !== 'all' && selectedTab !== 'contest') {
+    selectedTab = 'all'
+  }
+
   const [isOpenRules, setIsOpenRules] = useState(false)
   const { data: serverTime } = getServerTimeQuery.useQuery(null)
   const isContestEnded =
@@ -135,7 +142,6 @@ function Tabs({
   selectedTab: TabState
   setSelectedTab: (tab: TabState) => void
 }) {
-  const isAdmin = useIsModerationAdmin()
   const { data: serverTime, isLoading } = getServerTimeQuery.useQuery(null)
   const daysLeft = dayjs(env.NEXT_PUBLIC_CONTEST_END_TIME).diff(
     dayjs(serverTime ?? undefined),
