@@ -135,6 +135,7 @@ const ClaimTasksTokensModal = ({
     steps,
     tag,
     stepsWithOrangeText,
+    title,
   } = modalConfigByVariant[variant]
 
   const task = data?.find((task) => task.tag === tag)
@@ -218,7 +219,7 @@ const ClaimTasksTokensModal = ({
                 <Image src={Diamond} alt='' className='h-6 w-6' /> +{reward}
               </span>
               <span className='text-[22px] font-bold leading-none'>
-                Join Our Telegram Channel
+                {title}
               </span>
             </div>
             <div className='flex flex-col gap-6 rounded-[20px] bg-slate-700 p-4'>
