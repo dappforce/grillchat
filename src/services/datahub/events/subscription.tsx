@@ -1,4 +1,5 @@
 import Toast from '@/components/Toast'
+import { claimTaskErrorStore } from '@/modules/telegram/TasksPage/ClaimTaskTokensModal'
 import { deleteOptimisticData } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
@@ -18,6 +19,7 @@ import {
   SubscribeEventsSubscriptionVariables,
 } from '../generated-query'
 import { callIdToPostIdMap } from '../posts/mutation'
+import { getGamificationTasksErrorQuery } from '../tasks/query'
 import { datahubSubscription } from '../utils'
 
 export function useDatahubEventsSubscriber() {
@@ -138,12 +140,22 @@ async function processSubscriptionEvent(
   }
 
   let reason = ''
+
   switch (eventData.meta.code) {
     case ServiceMessageStatusCode.ExpiredEntranceDailyRewardClaimForbidden:
       reason = 'You already claimed the daily reward'
       break
     case ServiceMessageStatusCode.FutureEntranceDailyRewardClaimForbidden:
       reason = 'You can claim the daily reward only for the current day'
+      break
+    case ServiceMessageStatusCode.GamificationTaskClaimFailedDuplicatedClaim:
+      reason = 'You already claimed the task reward'
+      break
+    case ServiceMessageStatusCode.GamificationTaskClaimFailedInvalidData:
+      reason = 'Invalid data'
+      break
+    case ServiceMessageStatusCode.GamificationTaskClaimFailedNotCompleted:
+      reason = 'Task is not completed'
       break
     case ServiceMessageStatusCode.Unauthorized:
       reason = 'You are not authorized to perform this action'
@@ -192,6 +204,15 @@ async function processSubscriptionEvent(
       reason = 'Daily taps limit reached'
       break
   }
+
+  if (eventData.meta.callName === SocialCallName.SynthGamificationClaimTask) {
+    claimTaskErrorStore.set(eventData.meta.code)
+
+    getGamificationTasksErrorQuery.setQueryData(client, 'error', () =>
+      reason ? eventData.meta.code : 'None'
+    )
+  }
+
   if (reason) {
     if (eventData.meta.callName === SocialCallName.CreatePost) {
       const callId = eventData.meta.callId

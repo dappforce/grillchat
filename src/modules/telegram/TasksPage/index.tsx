@@ -17,14 +17,23 @@ import {
   getTodaySuperLikeCountQuery,
   getTokenomicsMetadataQuery,
 } from '@/services/datahub/content-staking/query'
+import {
+  clearGamificationTasksError,
+  getGamificationTasksQuery,
+} from '@/services/datahub/tasks/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { formatNumber } from '@/utils/strings'
+import { useQueryClient } from '@tanstack/react-query'
 import Image, { ImageProps } from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { FaChevronRight } from 'react-icons/fa6'
 import SkeletonFallback from '../../../components/SkeletonFallback'
+import ClaimTasksTokensModal, {
+  ClaimModalVariant,
+  modalConfigByVariant,
+} from './ClaimTaskTokensModal'
 
 export default function TasksPage() {
   useTgNoScroll()
@@ -37,8 +46,8 @@ export default function TasksPage() {
         className='sticky top-0'
       />
       <div className='flex flex-1 flex-col gap-8 overflow-auto px-4 py-8'>
-        <DailyTasks />
         <BasicTasks />
+        <DailyTasks />
         <NewTasks />
       </div>
     </LayoutWithBottomNavigation>
@@ -102,9 +111,10 @@ function DailyTasks() {
             completed={isTodayRewardClaimed}
             isLoadingReward={loadingServerDay || loadingDailyReward}
             customAction={
-              <span className='font-bold'>
+              <span className='flex w-fit items-center font-bold'>
                 <SkeletonFallback
                   isLoading={loadingServerDay || loadingDailyReward}
+                  className='w-fit min-w-[40px]'
                 >
                   {(todayRewardIndex || 0) + 1}
                 </SkeletonFallback>
@@ -136,11 +146,24 @@ function DailyTasks() {
 
 function BasicTasks() {
   const sendEvent = useSendEvent()
+  const [modalVariant, setModalVariant] = useState<ClaimModalVariant>(null)
+  const myAddress = useMyMainAddress()
+  const client = useQueryClient()
+
+  const { data: gamificationTasks } = getGamificationTasksQuery.useQuery(
+    myAddress || ''
+  )
+
+  const data = gamificationTasks?.data
+
+  const { tag } = modalConfigByVariant['epic-telegram']
+  const task = data?.find((task) => task.tag === tag)
+
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex flex-col gap-1'>
         <span className='self-center text-lg font-bold text-text-muted'>
-          Basic Tasks
+          Main Tasks
         </span>
         <span className='self-center text-center text-sm text-text-muted'>
           Join our social media and receive rewards later
@@ -151,12 +174,16 @@ function BasicTasks() {
           image={Telegram}
           onClick={() => {
             sendEvent('tasks_telegram_open')
+
+            if (task !== undefined && !task?.claimed) {
+              clearGamificationTasksError(client)
+              setModalVariant('epic-telegram')
+            }
           }}
           title='Join Our Telegram Channel'
-          href='https://t.me/EpicAppNet'
           openInNewTab
-          reward={30000}
-          completed={false}
+          reward={parseInt(task?.rewardPoints ?? '0')}
+          completed={task?.claimed ?? false}
         />
         <TaskCard
           image={TwitterX}
@@ -170,6 +197,11 @@ function BasicTasks() {
           completed={false}
         />
       </div>
+      <ClaimTasksTokensModal
+        modalVariant={modalVariant}
+        close={() => setModalVariant(null)}
+        data={data || []}
+      />
     </div>
   )
 }
