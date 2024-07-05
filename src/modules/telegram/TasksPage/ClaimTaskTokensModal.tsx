@@ -5,12 +5,15 @@ import WarningIcon from '@/assets/icons/warning.png'
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import useToastError from '@/hooks/useToastError'
+import { getBalanceQuery } from '@/services/datahub/leaderboard/points-balance/query'
 import { GamificationTask } from '@/services/datahub/tasks'
 import { useClaimTaskTokens } from '@/services/datahub/tasks/mutation'
 import {
   clearGamificationTasksError,
   getGamificationTasksErrorQuery,
+  getGamificationTasksQuery,
 } from '@/services/datahub/tasks/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { formatNumber } from '@/utils/strings'
@@ -74,6 +77,7 @@ const ClaimTasksTokensModal = ({
   const [isOpenAnimation, setIsOpenAnimation] = useState(false)
   const client = useQueryClient()
   const [loading, setLoading] = useState(false)
+  const myAddress = useMyMainAddress()
 
   const { data: claimTaskTokensError } =
     getGamificationTasksErrorQuery.useQuery('error')
@@ -103,8 +107,10 @@ const ClaimTasksTokensModal = ({
 
     if (claimTaskTokensError === 'None') {
       setIsOpenAnimation(true)
+      getGamificationTasksQuery.invalidate(client, myAddress)
+      getBalanceQuery.invalidate(client, myAddress)
     }
-  }, [claimTaskTokensError])
+  }, [claimTaskTokensError, client, myAddress])
 
   useToastError(error, 'Failed to claim task tokens')
 
