@@ -113,7 +113,7 @@ const ClaimTasksTokensModal = ({
   }, [claimTaskTokensError, client, myAddress])
 
   useEffect(() => {
-    let timeoutId = null
+    let timeoutId: any = null
     if (loading) {
       timeoutId = setTimeout(() => {
         setLoading(false)
