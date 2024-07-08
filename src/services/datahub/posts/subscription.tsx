@@ -67,6 +67,7 @@ const SUBSCRIBE_POST = gql`
         persistentId
         optimisticId
         dataType
+        approvedInRootPost
         rootPost {
           persistentId
         }
@@ -149,20 +150,34 @@ async function processMessage(
     getPostQuery.invalidate(queryClient, newestId)
   } else {
     if (dataFromPersistentId) {
+      getPostQuery.setQueryData(queryClient, newestId, (oldData) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          struct: {
+            ...oldData.struct,
+            approvedInRootPost: eventData.entity.approvedInRootPost,
+          },
+        }
+      })
       await getPostQuery.invalidate(queryClient, newestId)
     } else {
       await getPostQuery.fetchQuery(queryClient, newestId)
     }
   }
 
+  const newPost = getPostQuery.getQueryData(queryClient, newestId)
   if (isCreationEvent) {
-    const newPost = getPostQuery.getQueryData(queryClient, newestId)
     const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
       queryClient,
       null
     )
     const myAddress = getMyMainAddress()
-    if (newPost?.struct.ownerId === myAddress && isCreationEvent) {
+    if (
+      newPost?.struct.ownerId === myAddress &&
+      isCreationEvent &&
+      newPost.struct.approvedInRootPost
+    ) {
       toast.custom((t) => (
         <Toast
           t={t}
@@ -178,7 +193,10 @@ async function processMessage(
 
   getPaginatedPostIdsByPostId.setQueryFirstPageData(
     queryClient,
-    { postId: rootPostId, onlyDisplayUnapprovedMessages: false },
+    {
+      postId: rootPostId,
+      onlyDisplayUnapprovedMessages: !newPost?.struct.approvedInRootPost,
+    },
     (oldData) => {
       if (!oldData) return oldData
       const oldIdsSet = new Set(oldData)

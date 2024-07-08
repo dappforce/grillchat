@@ -52,6 +52,9 @@ export default function ChatItem({
 
   const canRenderEmbed = useCanRenderEmbed(link ?? '')
 
+  if (showApproveButton && message.struct.approvedInRootPost) return null
+  if (!showApproveButton && !message.struct.approvedInRootPost) return null
+
   if (!body && (!extensions || extensions.length === 0)) return null
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')

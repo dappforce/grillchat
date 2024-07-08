@@ -1,7 +1,6 @@
 import Button from '@/components/Button'
 import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
-import Toast from '@/components/Toast'
 import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatItemMenus'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
@@ -18,7 +17,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
-import { toast } from 'sonner'
 import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
@@ -324,19 +322,7 @@ function ApproveButton({
   ownerId: string
 }) {
   const { data: profile } = getProfileQuery.useQuery(ownerId)
-  const { mutate } = useApproveUser({
-    onSuccess: () => {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          type='default'
-          title={`You have approved ${
-            profile?.profileSpace?.content?.name || 'user'
-          }`}
-        />
-      ))
-    },
-  })
+  const { mutate } = useApproveUser()
   return (
     <Button
       variant='greenOutline'

@@ -19,6 +19,7 @@ import {
   SubscribeEventsSubscriptionVariables,
 } from '../generated-query'
 import { callIdToPostIdMap } from '../posts/mutation'
+import { getProfileQuery } from '../profiles/query'
 import { getGamificationTasksErrorQuery } from '../tasks/query'
 import { datahubSubscription } from '../utils'
 
@@ -51,6 +52,7 @@ const SUBSCRIBE_EVENTS = gql`
         msg
         code
         callId
+        extension
       }
     }
   }
@@ -203,6 +205,26 @@ async function processSubscriptionEvent(
     case ServiceMessageStatusCode.DailyTapsMaxLimitReached:
       reason = 'Daily taps limit reached'
       break
+  }
+
+  if (
+    eventData.meta.callName ===
+    SocialCallName.SynthSocialProfileSetActionPermissions
+  ) {
+    const profile = getProfileQuery.getQueryData(
+      client,
+      eventData.meta.extension?.updatedCreatorAddress ?? ''
+    )
+    toast.custom((t) => (
+      <Toast
+        t={t}
+        type='default'
+        title={`You have approved ${
+          profile?.profileSpace?.content?.name || 'user'
+        }`}
+      />
+    ))
+    return
   }
 
   if (eventData.meta.callName === SocialCallName.SynthGamificationClaimTask) {

@@ -2234,6 +2234,7 @@ export type SubscribeEventsSubscription = {
       msg?: string | null
       code: ServiceMessageStatusCode
       callId?: string | null
+      extension?: any | null
     }
   }
 }
@@ -2623,6 +2624,7 @@ export type DatahubPostFragmentFragment = {
   createdAtTime?: any | null
   title?: string | null
   body?: string | null
+  approvedInRootPost: boolean
   createdByAccount: { __typename?: 'Account'; id: string }
   space?: { __typename?: 'Space'; id: string } | null
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2655,6 +2657,7 @@ export type GetPostsQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
+      approvedInRootPost: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2688,6 +2691,7 @@ export type GetOptimisticPostsQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
+      approvedInRootPost: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2720,6 +2724,7 @@ export type GetCommentIdsInPostIdQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
+      approvedInRootPost: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2784,6 +2789,7 @@ export type GetOwnedPostsQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
+      approvedInRootPost: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2815,6 +2821,7 @@ export type GetPostsBySpaceIdQuery = {
       createdAtTime?: any | null
       title?: string | null
       body?: string | null
+      approvedInRootPost: boolean
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2857,6 +2864,7 @@ export type SubscribePostSubscription = {
       persistentId?: string | null
       optimisticId?: string | null
       dataType: DataType
+      approvedInRootPost: boolean
       rootPost?: { __typename?: 'Post'; persistentId?: string | null } | null
     }
   }
@@ -2979,6 +2987,7 @@ export const DatahubPostFragment = gql`
     }
     title
     body
+    approvedInRootPost
     ownedByAccount {
       id
     }
@@ -3209,6 +3218,7 @@ export const SubscribeEvents = gql`
         msg
         code
         callId
+        extension
       }
     }
   }
@@ -3612,6 +3622,7 @@ export const SubscribePost = gql`
         persistentId
         optimisticId
         dataType
+        approvedInRootPost
         rootPost {
           persistentId
         }

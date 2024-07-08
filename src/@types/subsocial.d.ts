@@ -101,6 +101,7 @@ declare module '@subsocial/api/types' {
         blockchainSyncFailed?: boolean
         dataType?: 'persistent' | 'optimistic' | 'offChain'
         parentPostId?: string | null
+        approvedInRootPost?: boolean
       },
     PostContent
   > & { requestedId?: string }
