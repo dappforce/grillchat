@@ -12,8 +12,9 @@ export function toastSuperLikeNotification(
   myAddress: string | undefined
 ) {
   const { post, staker } = eventData.entity
-  getSuperLikeCountQuery.invalidate(queryClient, post.persistentId)
   if (staker.id === myAddress && post.persistentId) {
+    getSuperLikeCountQuery.invalidate(queryClient, post.persistentId)
+
     const todayLike = getTodaySuperLikeCountQuery.getQueryData(
       queryClient,
       myAddress
