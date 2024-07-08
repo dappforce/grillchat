@@ -8,6 +8,7 @@ export type ExtensionChatItemProps = {
   chatId: string
   hubId: string
   bg?: 'background' | 'background-light'
+  showApproveButton?: boolean
 }
 
 export type RepliedMessagePreviewPartProps = {

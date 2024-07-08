@@ -46,7 +46,7 @@ export function addOptimisticData({
   } as unknown as PostData)
   getPaginatedPostIdsByPostId.setQueryFirstPageData(
     client,
-    params.chatId,
+    { onlyDisplayUnapprovedMessages: false, postId: params.chatId },
     (oldData) => {
       return [newId, ...(oldData ?? [])]
     }

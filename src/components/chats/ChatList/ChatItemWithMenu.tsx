@@ -13,6 +13,7 @@ export type ChatItemWithMenuProps = {
   chatId: string
   hubId: string
   scrollToMessage: ScrollToMessage
+  showApproveButton?: boolean
 }
 function InnerChatItemWithMenu({
   message,
@@ -20,6 +21,7 @@ function InnerChatItemWithMenu({
   chatId,
   hubId,
   scrollToMessage,
+  showApproveButton,
 }: ChatItemWithMenuProps) {
   return message ? (
     <ChatItemMenus
@@ -47,6 +49,7 @@ function InnerChatItemWithMenu({
               message={message}
               messageBubbleId={getMessageElementId(message.id)}
               scrollToMessage={scrollToMessage}
+              showApproveButton={showApproveButton}
             />
           </div>
         )

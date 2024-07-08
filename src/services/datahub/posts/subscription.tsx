@@ -36,10 +36,10 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
         unsubRef.current = subscription(queryClient)
         // invalidate first page so it will refetch after the websocket connection is disconnected previously when the user is not in the tab
         if (subscribedPostId) {
-          getPaginatedPostIdsByPostId.invalidateFirstQuery(
-            queryClient,
-            subscribedPostId
-          )
+          getPaginatedPostIdsByPostId.invalidateFirstQuery(queryClient, {
+            postId: subscribedPostId,
+            onlyDisplayUnapprovedMessages: false,
+          })
         }
       } else {
         if (
@@ -178,7 +178,7 @@ async function processMessage(
 
   getPaginatedPostIdsByPostId.setQueryFirstPageData(
     queryClient,
-    rootPostId,
+    { postId: rootPostId, onlyDisplayUnapprovedMessages: false },
     (oldData) => {
       if (!oldData) return oldData
       const oldIdsSet = new Set(oldData)

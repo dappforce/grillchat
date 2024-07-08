@@ -497,6 +497,7 @@ export type FindPostsFilter = {
   AND?: InputMaybe<Array<FindPostsFilter>>
   OR?: InputMaybe<Array<FindPostsFilter>>
   activeStaking?: InputMaybe<Scalars['Boolean']['input']>
+  approvedInRootPost?: InputMaybe<Scalars['Boolean']['input']>
   createdAtTime?: InputMaybe<Scalars['String']['input']>
   /** Datetime as ISO 8601 string */
   createdAtTimeGt?: InputMaybe<Scalars['String']['input']>
@@ -575,6 +576,8 @@ export type FindTasksResponseDto = {
 export type FindTasksWithFilterArgs = {
   filter: FindTasksFilter
   offset?: InputMaybe<Scalars['Int']['input']>
+  orderBy?: InputMaybe<Scalars['String']['input']>
+  orderDirection?: InputMaybe<QueryOrder>
   pageSize?: InputMaybe<Scalars['Int']['input']>
 }
 
@@ -597,6 +600,7 @@ export type GamificationTask = {
   completedAt?: Maybe<Scalars['DateTime']['output']>
   createdAt?: Maybe<Scalars['DateTime']['output']>
   id: Scalars['String']['output']
+  index: Scalars['Int']['output']
   linkedIdentity: LinkedIdentity
   metadata?: Maybe<GamificationTaskMetadata>
   name: GamificationTaskName
@@ -617,6 +621,7 @@ export type GamificationTaskMetadata = {
   likesNumberToAchieve?: Maybe<Scalars['String']['output']>
   referralsNumberToAchieve?: Maybe<Scalars['Int']['output']>
   telegramChannelToJoin?: Maybe<Scalars['String']['output']>
+  twitterChannelToJoin?: Maybe<Scalars['String']['output']>
   userExternalProvider?: Maybe<IdentityProvider>
   userExternalProviderId?: Maybe<Scalars['String']['output']>
 }
@@ -966,6 +971,7 @@ export type Post = {
   activeStaking: Scalars['Boolean']['output']
   activeStakingSuperLikes?: Maybe<Array<ActiveStakingSuperLike>>
   activeStakingSuperLikesCount?: Maybe<Scalars['Int']['output']>
+  approvedInRootPost: Scalars['Boolean']['output']
   /** is off-chain data CID backed up in blockchain */
   backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   blockchainSyncFailed: Scalars['Boolean']['output']
@@ -1550,6 +1556,7 @@ export enum SocialCallName {
   SynthModerationInitModerator = 'synth_moderation_init_moderator',
   SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
   SynthSocialProfileAddReferrerId = 'synth_social_profile_add_referrer_id',
+  SynthSocialProfileSetActionPermissions = 'synth_social_profile_set_action_permissions',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
   SynthUpdatePostTxRetry = 'synth_update_post_tx_retry',
   UpdatePost = 'update_post',
@@ -1570,6 +1577,7 @@ export type SocialProfile = {
   activeStakingTrial: Scalars['Boolean']['output']
   activeStakingTrialFinishedAtTime?: Maybe<Scalars['DateTime']['output']>
   activeStakingTrialStartedAtTime?: Maybe<Scalars['DateTime']['output']>
+  allowedCreateCommentRootPostIds: Array<Scalars['String']['output']>
   balances?: Maybe<SocialProfileBalances>
   entranceDailyRewardSequences?: Maybe<
     Array<GamificationEntranceDailyRewardsSequence>

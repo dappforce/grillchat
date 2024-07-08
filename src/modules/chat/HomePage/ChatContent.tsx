@@ -36,6 +36,13 @@ type Props = {
   className?: string
 }
 
+const chatIdsBasedOnSelectedTab = {
+  all: env.NEXT_PUBLIC_MAIN_CHAT_ID,
+  contest: env.NEXT_PUBLIC_CONTEST_CHAT_ID,
+  'not-approved': env.NEXT_PUBLIC_MAIN_CHAT_ID,
+  'not-approved-contest': env.NEXT_PUBLIC_CONTEST_CHAT_ID,
+}
+
 export default function ChatContent({ className }: Props) {
   const { query } = useRouter()
   let [selectedTab, setSelectedTab] = useLocalStorage<TabState>(
@@ -67,12 +74,10 @@ export default function ChatContent({ className }: Props) {
     selectedTab === 'not-approved' ||
     selectedTab === 'not-approved-contest'
 
-  const chatId =
-    selectedTab === 'all'
-      ? env.NEXT_PUBLIC_MAIN_CHAT_ID
-      : env.NEXT_PUBLIC_CONTEST_CHAT_ID
-
-  const isContest = selectedTab === 'contest'
+  const chatId = chatIdsBasedOnSelectedTab[selectedTab]
+  const isContest = chatId === env.NEXT_PUBLIC_CONTEST_CHAT_ID
+  const shouldShowUnapproved =
+    selectedTab === 'not-approved' || selectedTab === 'not-approved-contest'
 
   return (
     <>
@@ -84,6 +89,7 @@ export default function ChatContent({ className }: Props) {
         chatId={chatId}
         hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
         className='overflow-hidden'
+        onlyDisplayUnapprovedMessages={shouldShowUnapproved}
         customAction={
           isCannotPost ? (
             <></>
@@ -147,7 +153,7 @@ function TabButton({
       variant={isSelected ? 'primary' : 'transparent'}
       className={cx(
         'h-10 py-0 text-sm',
-        size === 'sm' ? 'h-8 px-2' : 'h-10',
+        size === 'sm' ? 'px-2' : 'h-10',
         isSelected ? 'bg-background-primary/30' : '',
         className
       )}

@@ -14,10 +14,13 @@ async function prefetchChatData(client: QueryClient, chatId: string) {
 
   const firstPageData = await getPaginatedPostIdsByPostId.fetchFirstPageQuery(
     client,
-    chatId,
+    { postId: chatId, onlyDisplayUnapprovedMessages: false },
     1
   )
-  getPaginatedPostIdsByPostId.invalidateFirstQuery(client, chatId)
+  getPaginatedPostIdsByPostId.invalidateFirstQuery(client, {
+    postId: chatId,
+    onlyDisplayUnapprovedMessages: false,
+  })
   const ownerIds = firstPageData.data
     .map((id) => {
       const post = getPostQuery.getQueryData(client, id)

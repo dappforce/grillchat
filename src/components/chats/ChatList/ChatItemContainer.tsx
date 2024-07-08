@@ -13,10 +13,17 @@ export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
   containerProps?: ComponentProps<'div'>
   chatId: string
   hubId: string
+  showApproveButton?: boolean
 }
 
 function ChatItemContainer(
-  { containerProps, chatId, hubId, ...props }: ChatItemContainerProps,
+  {
+    containerProps,
+    chatId,
+    hubId,
+    showApproveButton,
+    ...props
+  }: ChatItemContainerProps,
   ref: any
 ) {
   const { message } = props
@@ -63,6 +70,7 @@ function ChatItemContainer(
         chatId={chatId}
         isMyMessage={isMyMessage}
         hubId={hubId}
+        showApproveButton={showApproveButton}
       />
     </div>
   )

@@ -24,6 +24,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   chatId: string
   hubId: string
   bg?: 'background-light' | 'background'
+  showApproveButton?: boolean
 }
 
 export default function ChatItem({
@@ -35,6 +36,7 @@ export default function ChatItem({
   chatId,
   hubId,
   bg = 'background-light',
+  showApproveButton,
   ...props
 }: ChatItemProps) {
   const setReplyTo = useMessageData((state) => state.setReplyTo)
@@ -106,6 +108,7 @@ export default function ChatItem({
                     chatId={chatId}
                     hubId={hubId}
                     bg={bg}
+                    showApproveButton={showApproveButton}
                   />
                 ) : (
                   <ChatItemContentVariant

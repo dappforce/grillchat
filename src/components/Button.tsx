@@ -20,6 +20,8 @@ export const buttonStyles = cva('relative transition', {
       muted: 'bg-background-lightest !ring-background-lightest text-text-muted',
       transparent: 'bg-transparent border border-transparent',
       redOutline: 'bg-transparent border border-text-red !ring-text-red',
+      greenOutline:
+        'bg-transparent border border-green-500 !ring-green-500 text-green-500',
       landingPrimary:
         'bg-gradient-to-r from-[#DB4646] to-[#F9A11E] text-white hover:!ring-white/50 focus-visible:!ring-white/50',
       landingPrimaryOutline:

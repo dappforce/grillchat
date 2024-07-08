@@ -22,6 +22,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   chatId: string
   hubId: string
   topElement?: ReactNode
+  onlyDisplayUnapprovedMessages?: boolean
 }
 
 export default function ChatRoom({
@@ -32,6 +33,7 @@ export default function ChatRoom({
   chatId,
   hubId,
   topElement,
+  onlyDisplayUnapprovedMessages,
   ...props
 }: ChatRoomProps) {
   const replyTo = useMessageData((state) => state.replyTo)
@@ -41,6 +43,7 @@ export default function ChatRoom({
     <div {...props} className={cx('relative flex flex-1 flex-col', className)}>
       {topElement}
       <ChatList
+        onlyDisplayUnapprovedMessages={onlyDisplayUnapprovedMessages}
         topElement={topElement}
         hubId={hubId}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
