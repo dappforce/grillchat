@@ -11,6 +11,7 @@ import Meme2EarnIntroModal, {
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
+import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import usePostMemeThreshold from '@/hooks/usePostMemeThreshold'
 import PointsWidget from '@/modules/points/PointsWidget'
@@ -41,7 +42,7 @@ export default function ChatContent({ className }: Props) {
     'memes-tab',
     'all'
   )
-  if (selectedTab !== 'all' && selectedTab !== 'contest') {
+  if (!tabStates.includes(selectedTab)) {
     selectedTab = 'all'
   }
 
@@ -61,6 +62,10 @@ export default function ChatContent({ className }: Props) {
     selectedTab === 'contest' &&
     serverTime &&
     env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime
+  const isCannotPost =
+    isContestEnded ||
+    selectedTab === 'not-approved' ||
+    selectedTab === 'not-approved-contest'
 
   const chatId =
     selectedTab === 'all'
@@ -80,7 +85,7 @@ export default function ChatContent({ className }: Props) {
         hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
         className='overflow-hidden'
         customAction={
-          isContestEnded ? (
+          isCannotPost ? (
             <></>
           ) : (
             <div className='grid grid-cols-[max-content_1fr] gap-2'>
@@ -114,7 +119,13 @@ export default function ChatContent({ className }: Props) {
   )
 }
 
-type TabState = 'all' | 'contest'
+const tabStates = [
+  'all',
+  'contest',
+  'not-approved',
+  'not-approved-contest',
+] as const
+type TabState = (typeof tabStates)[number]
 function TabButton({
   selectedTab,
   setSelectedTab,
@@ -136,7 +147,7 @@ function TabButton({
       variant={isSelected ? 'primary' : 'transparent'}
       className={cx(
         'h-10 py-0 text-sm',
-        size === 'sm' ? 'h-8' : 'h-10',
+        size === 'sm' ? 'h-8 px-2' : 'h-10',
         isSelected ? 'bg-background-primary/30' : '',
         className
       )}
@@ -154,50 +165,81 @@ function Tabs({
   selectedTab: TabState
   setSelectedTab: (tab: TabState) => void
 }) {
+  const isAdmin = useIsModerationAdmin()
   const { data: serverTime, isLoading } = getServerTimeQuery.useQuery(null)
   const daysLeft = dayjs(env.NEXT_PUBLIC_CONTEST_END_TIME).diff(
     dayjs(serverTime ?? undefined),
     'days'
   )
 
+  const tabSize: 'sm' | 'md' = isAdmin ? 'sm' : 'md'
+
   return (
-    <div className='sticky top-14 grid h-14 grid-flow-col gap-1 bg-background px-4 py-2'>
+    <div className='sticky top-14 grid h-14 grid-flow-col items-center gap-1 bg-background px-4 py-2'>
+      {isAdmin && (
+        <>
+          <TabButton
+            tab='not-approved'
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+            size={tabSize}
+          >
+            Pending
+          </TabButton>
+          <TabButton
+            tab='not-approved-contest'
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+            size={tabSize}
+          >
+            Pending Contest
+          </TabButton>
+        </>
+      )}
       <TabButton
         tab='all'
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
+        size={tabSize}
       >
-        All memes
+        {isAdmin ? 'Approved' : 'All memes'}
       </TabButton>
       <TabButton
         className='flex flex-col items-center justify-center text-center'
         tab='contest'
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
+        size={tabSize}
       >
-        <span>{env.NEXT_PUBLIC_CONTEST_NAME}</span>
-        <span className='text-xs font-medium text-text-primary'>
-          {(() => {
-            if (isLoading || !serverTime) return <Skeleton className='w-16' />
-            if (env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime)
-              return <span className='text-text-red'>Contest ended</span>
-            if (daysLeft === 0) {
-              const hoursLeft = dayjs(env.NEXT_PUBLIC_CONTEST_END_TIME).diff(
-                dayjs(serverTime ?? undefined),
-                'hours'
-              )
-              if (hoursLeft < 1) {
-                return <span>Less than an hour left</span>
-              }
-              return <span>{hoursLeft} hours left</span>
-            }
-            return (
-              <span>
-                {daysLeft} day{daysLeft > 1 ? 's' : ''} left
-              </span>
-            )
-          })()}
-        </span>
+        {!isAdmin ? (
+          <>
+            <span>{env.NEXT_PUBLIC_CONTEST_NAME}</span>
+            <span className='text-xs font-medium text-text-primary'>
+              {(() => {
+                if (isLoading || !serverTime)
+                  return <Skeleton className='w-16' />
+                if (env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime)
+                  return <span className='text-text-red'>Contest ended</span>
+                if (daysLeft === 0) {
+                  const hoursLeft = dayjs(
+                    env.NEXT_PUBLIC_CONTEST_END_TIME
+                  ).diff(dayjs(serverTime ?? undefined), 'hours')
+                  if (hoursLeft < 1) {
+                    return <span>Less than an hour left</span>
+                  }
+                  return <span>{hoursLeft} hours left</span>
+                }
+                return (
+                  <span>
+                    {daysLeft} day{daysLeft > 1 ? 's' : ''} left
+                  </span>
+                )
+              })()}
+            </span>
+          </>
+        ) : (
+          <span>Contest</span>
+        )}
       </TabButton>
     </div>
   )
