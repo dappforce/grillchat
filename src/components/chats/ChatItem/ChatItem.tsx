@@ -1,7 +1,4 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
-import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
-import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
@@ -9,7 +6,7 @@ import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import Embed, { useCanRenderEmbed } from './Embed'
-import { getMessageStatusById } from './MessageStatusIndicator'
+import ProfilePostsListModalWrapper from './profilePosts/ProfileProstsListModal'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -21,6 +18,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   messageBubbleId?: string
   scrollToMessage?: ScrollToMessage
   enableChatMenu?: boolean
+  enableProfileModal?: boolean
   chatId: string
   hubId: string
   bg?: 'background-light' | 'background'
@@ -37,18 +35,11 @@ export default function ChatItem({
   hubId,
   bg = 'background-light',
   showApproveButton,
+  enableProfileModal = true,
   ...props
 }: ChatItemProps) {
-  const setReplyTo = useMessageData((state) => state.setReplyTo)
-
-  const messageId = message.id
-  const { ownerId, dataType } = message.struct
+  const { ownerId, id: messageId } = message.struct
   const { body, extensions, link } = message.content || {}
-
-  const setMessageAsReply = () => {
-    if (!isMessageSent(messageId, dataType)) return
-    setReplyTo(messageId)
-  }
 
   const canRenderEmbed = useCanRenderEmbed(link ?? '')
 
@@ -58,8 +49,6 @@ export default function ChatItem({
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
-
-  const messageStatus = getMessageStatusById(message)
 
   return (
     <>
@@ -72,15 +61,20 @@ export default function ChatItem({
         )}
       >
         {!isMyMessage && (
-          <ProfilePreviewModalWrapper address={ownerId} messageId={message.id}>
+          <ProfilePostsListModalWrapper
+            address={ownerId}
+            chatId={chatId}
+            hubId={hubId}
+            messageId={messageId}
+          >
             {(onClick) => (
               <AddressAvatar
-                onClick={onClick}
+                onClick={enableProfileModal ? onClick : undefined}
                 address={ownerId}
                 className='flex-shrink-0 cursor-pointer'
               />
             )}
-          </ProfilePreviewModalWrapper>
+          </ProfilePostsListModalWrapper>
         )}
         <ChatItemMenus
           chatId={chatId}
@@ -109,6 +103,7 @@ export default function ChatItem({
                     isMyMessage={isMyMessage}
                     chatId={chatId}
                     hubId={hubId}
+                    enableProfileModal={enableProfileModal}
                     bg={bg}
                     showApproveButton={showApproveButton}
                   />
@@ -118,6 +113,7 @@ export default function ChatItem({
                     isMyMessage={isMyMessage}
                     scrollToMessage={scrollToMessage}
                     chatId={chatId}
+                    enableProfileModal={enableProfileModal}
                     hubId={hubId}
                     bg={bg}
                   />
