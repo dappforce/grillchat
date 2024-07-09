@@ -310,7 +310,11 @@ export default function CommonChatItem({
             className='mb-1.5 ml-2.5 mt-1 self-start'
           />
         ) : (
-          <Button disabled>Pending Review</Button>
+          <div className='mb-1.5 ml-2.5 mt-1 flex text-sm'>
+            <div className='rounded-full bg-background/10 px-2 py-1 text-text/80'>
+              Pending Review
+            </div>
+          </div>
         )}
       </div>
     </div>
