@@ -69,6 +69,7 @@ const SUBSCRIBE_POST = gql`
         optimisticId
         dataType
         approvedInRootPost
+        createdAtTime
         rootPost {
           persistentId
         }
@@ -236,7 +237,19 @@ async function processMessage(
         return newIds
       }
 
-      newIds.unshift(newestId)
+      const index = oldData.findIndex((id) => {
+        const data = getPostQuery.getQueryData(queryClient, id)
+        if (!data) return false
+        if (data.struct.createdAtTime <= eventData.entity.createdAtTime) {
+          newIds.unshift(newestId)
+          return true
+        }
+        return false
+      })
+      if (index !== -1) {
+        newIds.splice(index, 0, newestId)
+      }
+
       return newIds
     }
   )
