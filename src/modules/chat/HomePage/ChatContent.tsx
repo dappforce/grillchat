@@ -274,7 +274,9 @@ function PostMemeButton({
   const myAddress = useMyMainAddress() ?? ''
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress)
   const { data: timeLeftFromApi, isLoading: loadingTimeLeft } =
-    getTimeLeftUntilCanPostQuery.useQuery(myAddress)
+    getTimeLeftUntilCanPostQuery.useQuery(myAddress, {
+      refetchOnWindowFocus: true,
+    })
 
   const { threshold, isLoading: loadingThreshold } =
     usePostMemeThreshold(chatId)

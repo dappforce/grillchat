@@ -10,6 +10,7 @@ import Button from '@/components/Button'
 import Card from '@/components/Card'
 import LinkText from '@/components/LinkText'
 import Name from '@/components/Name'
+import Toast from '@/components/Toast'
 import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
 import RewardPerDayModal from '@/components/modals/RewardPerDayModal'
 import SubsocialProfileModal from '@/components/subsocial-profile/SubsocialProfileModal'
@@ -19,6 +20,7 @@ import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
+import { copyToClipboard } from '@/utils/strings'
 import { allowWindowScroll, preventWindowScroll } from '@/utils/window'
 import { Transition } from '@headlessui/react'
 import Image from 'next/image'
@@ -30,7 +32,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { FaChevronDown } from 'react-icons/fa'
 import { HiChevronRight, HiOutlineChevronLeft, HiXMark } from 'react-icons/hi2'
 import { IoIosArrowForward, IoIosStats } from 'react-icons/io'
+import { MdContentCopy } from 'react-icons/md'
 import { RiPencilFill } from 'react-icons/ri'
+import { toast } from 'sonner'
 import { LeaderboardContent } from '../telegram/StatsPage/LeaderboardSection'
 import LikeCount from './LikePreview'
 import Points from './PointsPreview'
@@ -271,9 +275,25 @@ const UserStatsSection = ({
               <span className='text-sm font-medium text-text-muted'>
                 My EVM Address
               </span>
-              <span className='font-semibold'>
-                {truncateAddress(evmAddress ?? '')}
-              </span>
+              <div className='flex items-center gap-2.5'>
+                <span className='font-semibold'>
+                  {truncateAddress(evmAddress ?? '')}
+                </span>
+                <Button
+                  className='flex-shrink-0 text-sm text-text-muted'
+                  variant='transparent'
+                  size='circleSm'
+                  onClick={() => {
+                    sendEvent('copy_evm_address_click')
+                    copyToClipboard(evmAddress ?? '')
+                    toast.custom((t) => (
+                      <Toast t={t} title='Copied to clipboard!' />
+                    ))
+                  }}
+                >
+                  <MdContentCopy />
+                </Button>
+              </div>
             </div>
             {/* <LinkText
               variant='primary'

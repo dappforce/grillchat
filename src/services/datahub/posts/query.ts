@@ -100,6 +100,7 @@ async function getPaginatedPostIdsByRootPostId({
                     approvedInRootPost: !onlyDisplayUnapprovedMessages,
                   },
                   {
+                    rootPostId: postId,
                     createdByAccountAddress: myAddress,
                   },
                 ],
