@@ -222,9 +222,12 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
       <ImageLoader
         clearImage={() => setImageUrl('')}
         src={imageUrl}
-        onLoad={() =>
-          setUploadedImageLink((prev) => ({ ...prev, loadedLink: imageUrl }))
-        }
+        onLoad={() => {
+          // To prevent this called first before the useEffect, which causes image rendered, but the link is null
+          setTimeout(() => {
+            setUploadedImageLink((prev) => ({ ...prev, loadedLink: imageUrl }))
+          })
+        }}
       />
     )
   }
