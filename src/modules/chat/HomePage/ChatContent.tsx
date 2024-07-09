@@ -276,6 +276,7 @@ function PostMemeButton({
   const { data: timeLeftFromApi, isLoading: loadingTimeLeft } =
     getTimeLeftUntilCanPostQuery.useQuery(myAddress, {
       refetchOnWindowFocus: true,
+      staleTime: 0,
     })
 
   const { threshold, isLoading: loadingThreshold } =
