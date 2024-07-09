@@ -2,6 +2,7 @@ import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import Name, { NameProps } from './Name'
 import ProfilePreview from './ProfilePreview'
+import ProfilePostsListModalWrapper from './chats/ChatItem/ProfileProstsListModal'
 import Modal from './modals/Modal'
 
 export type ProfilePreviewModalWrapperProps = {
@@ -14,7 +15,6 @@ export type ProfilePreviewModalWrapperProps = {
 
 export default function ProfilePreviewModalWrapper({
   address,
-  messageId,
   children,
 }: ProfilePreviewModalWrapperProps) {
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
@@ -32,19 +32,6 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview asLink address={address} className='mb-2' />
-        {/* {messageId && (
-          <ActionCard
-            className='mt-2'
-            actions={[
-              {
-                icon: RiCopperCoinLine,
-                text: 'Donate',
-                iconClassName: cx('text-text-muted'),
-                onClick: () => openDonateExtension(),
-              },
-            ]}
-          />
-        )} */}
       </Modal>
     </>
   )
@@ -55,7 +42,7 @@ export function ProfilePreviewModalName({
   ...props
 }: NameProps & { messageId?: string }) {
   return (
-    <ProfilePreviewModalWrapper address={props.address} messageId={messageId}>
+    <ProfilePostsListModalWrapper address={props.address}>
       {(onClick) => (
         <Name
           {...props}
@@ -67,6 +54,6 @@ export function ProfilePreviewModalName({
           address={props.address}
         />
       )}
-    </ProfilePreviewModalWrapper>
+    </ProfilePostsListModalWrapper>
   )
 }
