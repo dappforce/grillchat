@@ -272,6 +272,7 @@ function DatahubHealthChecker() {
   })
   const currentId = useRef<string | number>('')
   useEffect(() => {
+    if (typeof data !== 'boolean') return
     if (!data) {
       if (currentId.current) return
       const id = toast.custom(
