@@ -11,12 +11,21 @@ import ChatItem, { ChatItemProps } from '../ChatItem'
 
 export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
   containerProps?: ComponentProps<'div'>
+  enableProfileModal?: boolean
+  showBlockedMessage?: boolean
   chatId: string
   hubId: string
 }
 
 function ChatItemContainer(
-  { containerProps, chatId, hubId, ...props }: ChatItemContainerProps,
+  {
+    containerProps,
+    chatId,
+    hubId,
+    showBlockedMessage,
+    enableProfileModal = true,
+    ...props
+  }: ChatItemContainerProps,
   ref: any
 ) {
   const { message } = props
@@ -37,7 +46,8 @@ function ChatItemContainer(
   const { body, extensions } = content || {}
   const myAddress = useMyMainAddress()
 
-  if (isMessageBlocked || (!body && !extensions)) return null
+  if ((isMessageBlocked && !showBlockedMessage) || (!body && !extensions))
+    return null
 
   const ownerId = message.struct.ownerId
   const senderAddress = ownerId ?? ''
@@ -62,6 +72,7 @@ function ChatItemContainer(
         {...props}
         chatId={chatId}
         isMyMessage={isMyMessage}
+        enableProfileModal={enableProfileModal}
         hubId={hubId}
       />
     </div>

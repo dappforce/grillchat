@@ -6,7 +6,7 @@ import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import Embed, { useCanRenderEmbed } from './Embed'
-import ProfilePostsListModalWrapper from './ProfileProstsListModal'
+import ProfilePostsListModalWrapper from './profilePosts/ProfileProstsListModal'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -18,6 +18,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   messageBubbleId?: string
   scrollToMessage?: ScrollToMessage
   enableChatMenu?: boolean
+  enableProfileModal?: boolean
   chatId: string
   hubId: string
   bg?: 'background-light' | 'background'
@@ -32,6 +33,7 @@ export default function ChatItem({
   chatId,
   hubId,
   bg = 'background-light',
+  enableProfileModal = true,
   ...props
 }: ChatItemProps) {
   const { ownerId, id: messageId } = message.struct
@@ -63,7 +65,7 @@ export default function ChatItem({
           >
             {(onClick) => (
               <AddressAvatar
-                onClick={onClick}
+                onClick={enableProfileModal ? onClick : undefined}
                 address={ownerId}
                 className='flex-shrink-0 cursor-pointer'
               />
@@ -97,6 +99,7 @@ export default function ChatItem({
                     isMyMessage={isMyMessage}
                     chatId={chatId}
                     hubId={hubId}
+                    enableProfileModal={enableProfileModal}
                     bg={bg}
                   />
                 ) : (
@@ -105,6 +108,7 @@ export default function ChatItem({
                     isMyMessage={isMyMessage}
                     scrollToMessage={scrollToMessage}
                     chatId={chatId}
+                    enableProfileModal={enableProfileModal}
                     hubId={hubId}
                     bg={bg}
                   />

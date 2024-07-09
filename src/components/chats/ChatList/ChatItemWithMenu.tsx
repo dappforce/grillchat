@@ -12,13 +12,17 @@ export type ChatItemWithMenuProps = {
   message: PostData | null | undefined
   chatId: string
   hubId: string
-  scrollToMessage: ScrollToMessage
+  enableProfileModal?: boolean
+  showBlockedMessage?: boolean
+  scrollToMessage?: ScrollToMessage
 }
 function InnerChatItemWithMenu({
   message,
   chatItemClassName,
   chatId,
   hubId,
+  enableProfileModal = true,
+  showBlockedMessage,
   scrollToMessage,
 }: ChatItemWithMenuProps) {
   return message ? (
@@ -45,7 +49,9 @@ function InnerChatItemWithMenu({
               hubId={hubId}
               chatId={chatId}
               message={message}
+              showBlockedMessage={showBlockedMessage}
               messageBubbleId={getMessageElementId(message.id)}
+              enableProfileModal={enableProfileModal}
               scrollToMessage={scrollToMessage}
             />
           </div>

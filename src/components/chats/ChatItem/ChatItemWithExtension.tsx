@@ -4,7 +4,9 @@ import {
 } from '@/components/extensions/config'
 import { ExtensionChatItemProps } from '@/components/extensions/types'
 
-export default function ChatItemWithExtension(props: ExtensionChatItemProps) {
+export default function ChatItemWithExtension(
+  props: ExtensionChatItemProps & { enableProfileModal?: boolean }
+) {
   const extensionId = props.message.content?.extensions?.[0]
     .id as MessageExtensionIds
 
