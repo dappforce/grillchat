@@ -273,11 +273,21 @@ function PostMemeButton({
 
   const myAddress = useMyMainAddress() ?? ''
   const { data, isLoading } = getBalanceQuery.useQuery(myAddress)
-  const { data: timeLeftFromApi, isLoading: loadingTimeLeft } =
-    getTimeLeftUntilCanPostQuery.useQuery(myAddress, {
-      refetchOnWindowFocus: true,
-      staleTime: 0,
-    })
+
+  const {
+    data: timeLeftFromApi,
+    isLoading: loadingTimeLeft,
+    refetch,
+  } = getTimeLeftUntilCanPostQuery.useQuery(myAddress)
+  useEffect(() => {
+    const listener = () => {
+      if (document.visibilityState === 'visible') refetch()
+    }
+    document.addEventListener('visibilitychange', listener, false)
+    return () => {
+      document.removeEventListener('visibilitychange', listener)
+    }
+  }, [refetch])
 
   const { threshold, isLoading: loadingThreshold } =
     usePostMemeThreshold(chatId)
