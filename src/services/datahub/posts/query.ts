@@ -56,15 +56,20 @@ async function getPaginatedPostIdsByRootPostId({
   page,
   postId,
   client,
+  onlyDisplayUnapprovedMessages,
 }: {
   postId: string
   page: number
   client?: QueryClient | null
+  onlyDisplayUnapprovedMessages: boolean
 }): Promise<PaginatedPostsData> {
   if (!postId || !client)
     return { data: [], page, hasMore: false, totalData: 0 }
 
-  const oldIds = getPaginatedPostIdsByPostId.getFirstPageData(client, postId)
+  const oldIds = getPaginatedPostIdsByPostId.getFirstPageData(client, {
+    postId,
+    onlyDisplayUnapprovedMessages,
+  })
   const firstPageDataLength = oldIds?.length || CHAT_PER_PAGE
 
   // only first page that has dynamic content, where its length can increase from:
@@ -83,6 +88,7 @@ async function getPaginatedPostIdsByRootPostId({
       args: {
         filter: {
           rootPostId: postId,
+          approvedInRootPost: !onlyDisplayUnapprovedMessages,
         },
         orderBy: 'createdAtTime',
         orderDirection: QueryOrder.Desc,
@@ -158,28 +164,29 @@ async function getPaginatedPostIdsByRootPostId({
     totalData,
   }
 }
+type Data = { postId: string; onlyDisplayUnapprovedMessages: boolean }
 const COMMENT_IDS_QUERY_KEY = 'comments'
-const getQueryKey = (postId: string) => [COMMENT_IDS_QUERY_KEY, postId]
+const getQueryKey = (data: Data) => [COMMENT_IDS_QUERY_KEY, data]
 export const getPaginatedPostIdsByPostId = {
   getQueryKey,
-  getFirstPageData: (client: QueryClient, postId: string) => {
-    const cachedData = client?.getQueryData(getQueryKey(postId))
+  getFirstPageData: (client: QueryClient, data: Data) => {
+    const cachedData = client?.getQueryData(getQueryKey(data))
     return ((cachedData as any)?.pages?.[0] as PaginatedPostsData | undefined)
       ?.data
   },
   fetchFirstPageQuery: async (
     client: QueryClient | null,
-    postId: string,
+    data: Data,
     page = 1
   ) => {
     const res = await getPaginatedPostIdsByRootPostId({
-      postId,
+      ...data,
       page,
       client,
     })
     if (!client) return res
 
-    client.setQueryData(getQueryKey(postId), {
+    client.setQueryData(getQueryKey(data), {
       pageParams: [1],
       pages: [res],
     })
@@ -187,10 +194,10 @@ export const getPaginatedPostIdsByPostId = {
   },
   setQueryFirstPageData: (
     client: QueryClient,
-    postId: string,
+    data: Data,
     updater: (oldIds?: string[]) => string[] | undefined | null
   ) => {
-    client.setQueryData(getQueryKey(postId), (oldData: any) => {
+    client.setQueryData(getQueryKey(data), (oldData: any) => {
       const firstPage = oldData?.pages?.[0] as PaginatedPostsData | undefined
       const newPages = [...(oldData?.pages ?? [])]
       const newFirstPageMessageIds = updater(firstPage?.data)
@@ -205,23 +212,23 @@ export const getPaginatedPostIdsByPostId = {
       }
     })
   },
-  invalidateFirstQuery: (client: QueryClient, postId: string) => {
-    client.invalidateQueries(getQueryKey(postId), {
+  invalidateFirstQuery: (client: QueryClient, data: Data) => {
+    client.invalidateQueries(getQueryKey(data), {
       refetchPage: (_, index) => index === 0,
     })
   },
   useInfiniteQuery: (
-    postId: string,
+    data: Data,
     config?: QueryConfig
   ): UseInfiniteQueryResult<PaginatedPostsData, unknown> => {
     const client = useQueryClient()
     return useInfiniteQuery({
       ...config,
-      queryKey: getQueryKey(postId),
+      queryKey: getQueryKey(data),
       queryFn: async ({ pageParam = 1, queryKey }) => {
         const [_, postId] = queryKey
         const res = await getPaginatedPostIdsByRootPostId({
-          postId,
+          ...data,
           page: pageParam,
           client,
         })
@@ -231,7 +238,7 @@ export const getPaginatedPostIdsByPostId = {
           client.setQueryData<{
             pageParams: number[]
             pages: PaginatedPostsData[]
-          }>(getQueryKey(postId), (oldData) => {
+          }>(getQueryKey(data), (oldData) => {
             if (
               !oldData ||
               !Array.isArray(oldData.pageParams) ||

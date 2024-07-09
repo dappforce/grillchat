@@ -15,6 +15,7 @@ export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
   showBlockedMessage?: boolean
   chatId: string
   hubId: string
+  showApproveButton?: boolean
 }
 
 function ChatItemContainer(
@@ -24,6 +25,7 @@ function ChatItemContainer(
     hubId,
     showBlockedMessage,
     enableProfileModal = true,
+    showApproveButton,
     ...props
   }: ChatItemContainerProps,
   ref: any
@@ -74,6 +76,7 @@ function ChatItemContainer(
         isMyMessage={isMyMessage}
         enableProfileModal={enableProfileModal}
         hubId={hubId}
+        showApproveButton={showApproveButton}
       />
     </div>
   )

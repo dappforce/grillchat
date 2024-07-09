@@ -1,5 +1,7 @@
 import { gql } from 'graphql-request'
 import {
+  ApproveUserMutation,
+  ApproveUserMutationVariables,
   CanAccountDoArgsInput,
   CreatePostOffChainInput,
   CreatePostOffChainMutation,
@@ -81,5 +83,29 @@ export async function updatePostData(input: UpdatePostOptimisticInput) {
     },
   })
   throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to update post')
+  return res.updatePostOptimistic.callId
+}
+
+// TODO: change this if the new mutation is created
+const APPROVE_USER_MUTATION = gql`
+  mutation ApproveUser($input: UpdatePostOptimisticInput!) {
+    updatePostOptimistic(updatePostOptimisticInput: $input) {
+      processed
+      callId
+      message
+    }
+  }
+`
+export async function approveUser(input: UpdatePostOptimisticInput) {
+  const res = await datahubQueueRequest<
+    ApproveUserMutation,
+    ApproveUserMutationVariables
+  >({
+    document: APPROVE_USER_MUTATION,
+    variables: {
+      input,
+    },
+  })
+  throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to approve user')
   return res.updatePostOptimistic.callId
 }

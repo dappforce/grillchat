@@ -22,6 +22,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   chatId: string
   hubId: string
   bg?: 'background-light' | 'background'
+  showApproveButton?: boolean
 }
 
 export default function ChatItem({
@@ -33,6 +34,7 @@ export default function ChatItem({
   chatId,
   hubId,
   bg = 'background-light',
+  showApproveButton,
   enableProfileModal = true,
   ...props
 }: ChatItemProps) {
@@ -40,6 +42,9 @@ export default function ChatItem({
   const { body, extensions, link } = message.content || {}
 
   const canRenderEmbed = useCanRenderEmbed(link ?? '')
+
+  if (showApproveButton && message.struct.approvedInRootPost) return null
+  if (!showApproveButton && !message.struct.approvedInRootPost) return null
 
   if (!body && (!extensions || extensions.length === 0)) return null
 
@@ -101,6 +106,7 @@ export default function ChatItem({
                     hubId={hubId}
                     enableProfileModal={enableProfileModal}
                     bg={bg}
+                    showApproveButton={showApproveButton}
                   />
                 ) : (
                   <ChatItemContentVariant

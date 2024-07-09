@@ -11,6 +11,8 @@ import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
+import { useApproveUser } from '@/services/datahub/posts/mutation'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -66,6 +68,7 @@ export default function CommonChatItem({
   chatId,
   hubId,
   bg = 'background',
+  showApproveButton,
 }: CommonChatItemProps) {
   const myAddress = useMyMainAddress()
   const { isAuthorized } = useAuthorizedForModeration(chatId)
@@ -147,6 +150,10 @@ export default function CommonChatItem({
     (superLikeCount?.count ?? 0) <= 0 &&
     (myMessageConfig.children === 'bottom' ||
       (myMessageConfig.children === 'middle' && !body))
+
+  if (showApproveButton) {
+    othersMessage.checkMark = 'top'
+  }
 
   return (
     <div className={cx('relative flex flex-col gap-2')}>
@@ -271,7 +278,12 @@ export default function CommonChatItem({
         )}
 
         {isAuthorized && (
-          <div className='px-2 pb-1 pt-2'>
+          <div
+            className={cx(
+              'grid items-center gap-2 px-2 pb-1 pt-2',
+              showApproveButton ? 'grid-cols-2' : 'grid-cols-1'
+            )}
+          >
             <Button
               variant='redOutline'
               isLoading={loadingModeration}
@@ -298,6 +310,9 @@ export default function CommonChatItem({
             >
               {isMessageBlocked ? 'Blocked' : 'Block message'}
             </Button>
+            {showApproveButton && (
+              <ApproveButton ownerId={ownerId} chatId={chatId} />
+            )}
           </div>
         )}
         {!isMyMessage && othersMessage.children === 'bottom' && childrenElement}
@@ -306,14 +321,47 @@ export default function CommonChatItem({
           myMessageConfig.children === 'bottom' &&
           childrenElement}
 
-        <SuperLike
-          isMyMessage={isMyMessage}
-          showWhenZero={showSuperLikeWhenZero}
-          withPostReward
-          postId={message.id}
-          className='mb-1.5 ml-2.5 mt-1 self-start'
-        />
+        {showApproveButton ? (
+          <div className='pt-1' />
+        ) : (
+          <SuperLike
+            isMyMessage={isMyMessage}
+            showWhenZero={showSuperLikeWhenZero}
+            withPostReward
+            postId={message.id}
+            className='mb-1.5 ml-2.5 mt-1 self-start'
+          />
+        )}
       </div>
     </div>
+  )
+}
+
+function ApproveButton({
+  ownerId,
+  chatId,
+}: {
+  chatId: string
+  ownerId: string
+}) {
+  const { data: profile } = getProfileQuery.useQuery(ownerId)
+  const { mutate } = useApproveUser()
+  return (
+    <Button
+      variant='greenOutline'
+      className='disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+      loadingText='Approving...'
+      onClick={(e) => {
+        e.stopPropagation()
+        mutate({
+          address: ownerId,
+          allow: {
+            createCommentRootPostIds: [chatId],
+          },
+        })
+      }}
+    >
+      Approve
+    </Button>
   )
 }

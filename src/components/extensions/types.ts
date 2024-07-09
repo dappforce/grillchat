@@ -9,6 +9,7 @@ export type ExtensionChatItemProps = {
   hubId: string
   enableProfileModal?: boolean
   bg?: 'background' | 'background-light'
+  showApproveButton?: boolean
 }
 
 export type RepliedMessagePreviewPartProps = {
