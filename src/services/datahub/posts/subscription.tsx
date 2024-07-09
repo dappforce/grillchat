@@ -3,6 +3,7 @@ import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
 import { getMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
+import { cx } from '@/utils/class-names'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -173,18 +174,30 @@ async function processMessage(
       null
     )
     const myAddress = getMyMainAddress()
-    if (
-      newPost?.struct.ownerId === myAddress &&
-      isCreationEvent &&
-      newPost.struct.approvedInRootPost
-    ) {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          title='✨ Meme Sent!'
-          description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. More memes, more fun!`}
-        />
-      ))
+    if (newPost?.struct.ownerId === myAddress && isCreationEvent) {
+      if (newPost.struct.approvedInRootPost) {
+        toast.custom((t) => (
+          <Toast
+            icon={(className) => (
+              <span className={cx(className, 'text-base')}>✨</span>
+            )}
+            t={t}
+            title='Meme Sent!'
+            description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. More memes, more fun!`}
+          />
+        ))
+      } else {
+        toast.custom((t) => (
+          <Toast
+            t={t}
+            icon={(className) => (
+              <span className={cx(className, 'text-base')}>⏳</span>
+            )}
+            title='Your meme is under review'
+            description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. We got your meme! Hang tight while we give it a quick review.`}
+          />
+        ))
+      }
     }
   }
 
