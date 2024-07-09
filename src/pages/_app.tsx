@@ -1,6 +1,7 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
 import HeadConfig, { HeadConfigProps } from '@/components/HeadConfig'
 import Spinner from '@/components/Spinner'
+import Toast from '@/components/Toast'
 import GlobalModals from '@/components/modals/GlobalModals'
 import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
@@ -10,6 +11,7 @@ import useSaveTappedPointsAndEnergy, {
 } from '@/modules/telegram/TapPage/useSaveTappedPointsAndEnergy'
 import { ConfigProvider } from '@/providers/config/ConfigProvider'
 import EvmProvider from '@/providers/evm/EvmProvider'
+import { getDatahubHealthQuery } from '@/services/datahub/health/query'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { increaseEnergyValue } from '@/services/datahub/leaderboard/points-balance/optimistic'
 import { FULL_ENERGY_VALUE } from '@/services/datahub/leaderboard/points-balance/query'
@@ -33,7 +35,7 @@ import type { AppProps } from 'next/app'
 import Script from 'next/script'
 import React, { useEffect, useRef, useState } from 'react'
 import { isDesktop } from 'react-device-detect'
-import { Toaster } from 'sonner'
+import { Toaster, toast } from 'sonner'
 import urlJoin from 'url-join'
 
 export type AppCommonProps = {
@@ -139,6 +141,7 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <ToasterConfig />
         <ReferralUrlChanger />
         <GlobalModals />
+        <DatahubHealthChecker />
         <SessionAccountChecker />
         <div className={cx('font-sans')}>
           <ErrorBoundary>
@@ -259,6 +262,34 @@ function SessionAccountChecker() {
       useMyAccount.getState().saveProxyAddress(linkedIdentity.mainAddress)
     }
   }, [linkedIdentity, mainAddress])
+
+  return null
+}
+
+function DatahubHealthChecker() {
+  const { data } = getDatahubHealthQuery.useQuery(null, {
+    refetchInterval: 10_000,
+  })
+  const currentId = useRef<string | number>('')
+  useEffect(() => {
+    if (!data) {
+      if (currentId.current) return
+      const id = toast.custom(
+        (t) => (
+          <Toast
+            t={t}
+            title='We are currently performing maintenance. Thank you for your patience.'
+            type='error'
+          />
+        ),
+        { duration: Infinity, dismissible: false }
+      )
+      currentId.current = id
+    } else {
+      toast.dismiss(currentId.current)
+      currentId.current = ''
+    }
+  }, [data])
 
   return null
 }
