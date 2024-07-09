@@ -311,8 +311,8 @@ export default function CommonChatItem({
           />
         ) : (
           <div className='mb-1.5 ml-2.5 mt-1 flex text-sm'>
-            <div className='rounded-full bg-background/10 px-2 py-1 text-text/80'>
-              Pending Review
+            <div className='rounded-full bg-background/20 px-2 py-1 text-text/80'>
+              ⌛ Pending Review
             </div>
           </div>
         )}
