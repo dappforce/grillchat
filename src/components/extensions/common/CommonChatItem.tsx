@@ -352,12 +352,13 @@ function ApproveButton({
   ownerId: string
 }) {
   const { data: profile } = getProfileQuery.useQuery(ownerId)
-  const { mutate } = useApproveUser()
+  const { mutate, isLoading } = useApproveUser()
   return (
     <Button
       variant='greenOutline'
       className='disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
       loadingText='Approving...'
+      isLoading={isLoading}
       onClick={(e) => {
         e.stopPropagation()
         mutate({
