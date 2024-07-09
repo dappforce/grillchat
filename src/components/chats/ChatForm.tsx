@@ -242,7 +242,10 @@ export default function ChatForm({
       }
       resetForm()
       const augmented = await augmentDatahubParams(messageParams)
-      if (env.NEXT_PUBLIC_CONTEST_END_TIME < augmented.timestamp) {
+      if (
+        chatId === env.NEXT_PUBLIC_CONTEST_CHAT_ID &&
+        env.NEXT_PUBLIC_CONTEST_END_TIME < augmented.timestamp
+      ) {
         toast.custom((t) => (
           <Toast t={t} title='Contest has ended' type='error' />
         ))

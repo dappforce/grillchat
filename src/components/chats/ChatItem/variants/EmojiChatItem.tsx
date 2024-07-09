@@ -8,7 +8,9 @@ import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
 
-export type EmojiChatItemProps = ChatItemContentProps
+export type EmojiChatItemProps = ChatItemContentProps & {
+  enableProfileModal?: boolean
+}
 
 const EMOJI_FONT_SIZE = {
   min: 32,
@@ -28,6 +30,7 @@ export default function EmojiChatItem({
   isMyMessage,
   scrollToMessage,
   chatId,
+  enableProfileModal = true,
   hubId,
   ...props
 }: EmojiChatItemProps) {
@@ -69,6 +72,9 @@ export default function EmojiChatItem({
             labelingData={{ chatId }}
             messageId={messageId}
             address={ownerId}
+            chatId={chatId}
+            hubId={hubId}
+            enableProfileModal={enableProfileModal}
             className={cx('mr-2 text-sm font-medium text-text-secondary')}
           />
           {/* <SubTeamLabel address={ownerId} className='!bg-background-light/50' /> */}

@@ -8,6 +8,7 @@ import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePre
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { useApproveUser } from '@/services/datahub/posts/mutation'
@@ -42,6 +43,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   textColor?: string
   bg?: 'background' | 'background-light'
   showSuperLikeWhenZero?: boolean
+  enableProfileModal?: boolean
 }
 
 const defaultMyMessageConfig: MyMessageConfig = {
@@ -61,6 +63,7 @@ export default function CommonChatItem({
   textColor,
   className,
   isMyMessage: _isMyMessage,
+  enableProfileModal = true,
   showSuperLikeWhenZero,
   chatId,
   hubId,
@@ -83,6 +86,19 @@ export default function CommonChatItem({
   const isMyMessage = _isMyMessage ?? ownerId === myAddress
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
+
+  const isMessageBlockedInCurrentHub = useIsMessageBlocked(
+    hubId,
+    message,
+    chatId
+  )
+  const isMessageBlockedInOriginalHub = useIsMessageBlocked(
+    message.struct.spaceId ?? '',
+    message,
+    chatId
+  )
+  const isMessageBlocked =
+    isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
 
   const childrenElement =
     typeof children === 'function'
@@ -193,6 +209,9 @@ export default function CommonChatItem({
               messageId={message.id}
               address={ownerId}
               color={textColor}
+              chatId={chatId}
+              hubId={hubId}
+              enableProfileModal={enableProfileModal}
               className={cx('text-sm font-medium text-text-secondary')}
             />
             {/* <SubTeamLabel address={ownerId} /> */}
@@ -269,6 +288,7 @@ export default function CommonChatItem({
               variant='redOutline'
               isLoading={loadingModeration}
               loadingText='Blocking...'
+              disabled={isMessageBlocked}
               onClick={(e) => {
                 e.stopPropagation()
                 moderate({
@@ -283,9 +303,12 @@ export default function CommonChatItem({
                 })
               }}
               size='sm'
-              className='!text-text-red disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+              className={cx('w-full !text-text-red', {
+                ['!bg-[#EF4444] disabled:border-none disabled:!text-white disabled:!ring-0 disabled:!brightness-100']:
+                  isMessageBlocked,
+              })}
             >
-              Block message
+              {isMessageBlocked ? 'Blocked' : 'Block message'}
             </Button>
             {showApproveButton && (
               <ApproveButton ownerId={ownerId} chatId={chatId} />
