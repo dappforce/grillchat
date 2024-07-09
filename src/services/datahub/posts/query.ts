@@ -1,5 +1,5 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import { TIME_CONSTRAINT } from '@/constants/chat-rules'
+import { env } from '@/env.mjs'
 import { getPostQuery, getServerTime } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
 import { QueryConfig, createQuery, poolQuery } from '@/subsocial-query'
@@ -523,8 +523,8 @@ async function getTimeLeftUntilCanPost(address: string) {
   }
 
   if (!lastPosted) return Infinity
-  const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
-  return Math.min(Math.max(timeLeft, 0), TIME_CONSTRAINT)
+  const timeLeft = lastPosted + env.NEXT_PUBLIC_TIME_CONSTRAINT - serverTime
+  return Math.min(Math.max(timeLeft, 0), env.NEXT_PUBLIC_TIME_CONSTRAINT)
 }
 export const getTimeLeftUntilCanPostQuery = createQuery({
   key: 'lastPostedMeme',

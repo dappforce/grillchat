@@ -1,5 +1,5 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import { TIME_CONSTRAINT } from '@/constants/chat-rules'
+import { env } from '@/env.mjs'
 import {
   ApiDatahubPostMutationBody,
   ApiDatahubPostResponse,
@@ -257,7 +257,7 @@ export function useSendMessage(
         getTimeLeftUntilCanPostQuery.setQueryData(
           queryClient,
           myAddress,
-          TIME_CONSTRAINT
+          env.NEXT_PUBLIC_TIME_CONSTRAINT
         )
       }
     },
