@@ -145,7 +145,8 @@ export default function CommonChatItem({
         <div
           className={cx(
             'absolute bottom-1.5 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
-            isMyMessageChildrenOnBottom && 'bg-black/45'
+            (isMyMessageChildrenOnBottom || showApproveButton) && 'bg-black/45',
+            showApproveButton && 'bottom-16'
           )}
         >
           {myMessageCheckMarkElement(
