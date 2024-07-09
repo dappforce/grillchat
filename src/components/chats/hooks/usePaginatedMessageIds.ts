@@ -3,6 +3,7 @@ import {
   PaginatedPostsData,
   getPaginatedPostIdsByPostId,
 } from '@/services/datahub/posts/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { useMemo } from 'react'
 
 type PaginatedData = {
@@ -26,11 +27,23 @@ export default function usePaginatedMessageIds({
   hubId,
   onlyDisplayUnapprovedMessages,
 }: PaginatedConfig): PaginatedData {
-  const { data, fetchNextPage, isLoading } =
+  const myAddress = useMyMainAddress() ?? ''
+  // because from server it doesn't have access to myAddress, so we need to use the data without users' unapproved posts as placeholder
+  const { data: placeholderData } =
     getPaginatedPostIdsByPostId.useInfiniteQuery({
       postId: chatId,
       onlyDisplayUnapprovedMessages: !!onlyDisplayUnapprovedMessages,
+      myAddress: '',
     })
+  const { data, fetchNextPage, isLoading } =
+    getPaginatedPostIdsByPostId.useInfiniteQuery(
+      {
+        postId: chatId,
+        onlyDisplayUnapprovedMessages: !!onlyDisplayUnapprovedMessages,
+        myAddress,
+      },
+      { enabled: !!myAddress, placeholderData }
+    )
 
   const page = data?.pages
   let lastPage: PaginatedPostsData | null = null

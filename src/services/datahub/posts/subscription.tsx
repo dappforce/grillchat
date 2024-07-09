@@ -1,7 +1,7 @@
 import Toast from '@/components/Toast'
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
-import { getMyMainAddress } from '@/stores/my-account'
+import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { cx } from '@/utils/class-names'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
@@ -19,6 +19,7 @@ import { getPaginatedPostIdsByPostId, getPostMetadataQuery } from './query'
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
 export function useDatahubPostSubscriber(subscribedPostId?: string) {
+  const myAddress = useMyMainAddress()
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
   const subState = useSubscriptionState(
@@ -33,13 +34,14 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
     if (!isDatahubAvailable) return
 
     const listener = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && myAddress) {
         unsubRef.current = subscription(queryClient)
         // invalidate first page so it will refetch after the websocket connection is disconnected previously when the user is not in the tab
         if (subscribedPostId) {
           getPaginatedPostIdsByPostId.invalidateFirstQuery(queryClient, {
             postId: subscribedPostId,
             onlyDisplayUnapprovedMessages: false,
+            myAddress,
           })
         }
       } else {
@@ -56,7 +58,7 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
       document.removeEventListener('visibilitychange', listener)
       unsubRef.current?.()
     }
-  }, [queryClient, subscribedPostId])
+  }, [queryClient, subscribedPostId, myAddress])
 }
 
 const SUBSCRIBE_POST = gql`
@@ -169,13 +171,14 @@ async function processMessage(
   }
 
   const newPost = getPostQuery.getQueryData(queryClient, newestId)
+  const myAddress = getMyMainAddress()
+  const isCurrentOwner = newPost?.struct.ownerId === myAddress
   if (isCreationEvent) {
     const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
       queryClient,
       null
     )
-    const myAddress = getMyMainAddress()
-    if (newPost?.struct.ownerId === myAddress && isCreationEvent) {
+    if (isCurrentOwner && isCreationEvent) {
       if (newPost.struct.approvedInRootPost) {
         toast.custom((t) => (
           <Toast
@@ -205,11 +208,44 @@ async function processMessage(
   const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
 
+  if (isCreationEvent && !entity.approvedInRootPost && isCurrentOwner) {
+    getPaginatedPostIdsByPostId.setQueryFirstPageData(
+      queryClient,
+      {
+        postId: rootPostId,
+        onlyDisplayUnapprovedMessages: false,
+        myAddress: getMyMainAddress() ?? '',
+      },
+      (oldData) => {
+        if (!oldData) return oldData
+        const oldIdsSet = new Set(oldData)
+        if (oldIdsSet.has(newestId)) return oldData
+
+        const newIds = [...oldData]
+        const index = oldData.findIndex((id) => {
+          const data = getPostQuery.getQueryData(queryClient, id)
+          if (!data) return false
+          if (data.struct.createdAtTime <= eventData.entity.createdAtTime) {
+            newIds.unshift(newestId)
+            return true
+          }
+          return false
+        })
+        if (index !== -1) {
+          newIds.splice(index, 0, newestId)
+        }
+
+        return newIds
+      }
+    )
+  }
+
   getPaginatedPostIdsByPostId.setQueryFirstPageData(
     queryClient,
     {
       postId: rootPostId,
       onlyDisplayUnapprovedMessages: !newPost?.struct.approvedInRootPost,
+      myAddress: getMyMainAddress() ?? '',
     },
     (oldData) => {
       if (!oldData) return oldData
@@ -240,7 +276,10 @@ async function processMessage(
       const index = oldData.findIndex((id) => {
         const data = getPostQuery.getQueryData(queryClient, id)
         if (!data) return false
-        if (data.struct.createdAtTime <= eventData.entity.createdAtTime) {
+        if (
+          new Date(data.struct.createdAtTime) <=
+          new Date(eventData.entity.createdAtTime)
+        ) {
           newIds.unshift(newestId)
           return true
         }

@@ -52,23 +52,28 @@ export type PaginatedPostsData = {
   hasMore: boolean
   totalData: number
 }
+type Data = {
+  postId: string
+  onlyDisplayUnapprovedMessages: boolean
+  myAddress: string
+}
 async function getPaginatedPostIdsByRootPostId({
   page,
   postId,
   client,
   onlyDisplayUnapprovedMessages,
+  myAddress,
 }: {
-  postId: string
   page: number
   client?: QueryClient | null
-  onlyDisplayUnapprovedMessages: boolean
-}): Promise<PaginatedPostsData> {
+} & Data): Promise<PaginatedPostsData> {
   if (!postId || !client)
     return { data: [], page, hasMore: false, totalData: 0 }
 
   const oldIds = getPaginatedPostIdsByPostId.getFirstPageData(client, {
     postId,
     onlyDisplayUnapprovedMessages,
+    myAddress,
   })
   const firstPageDataLength = oldIds?.length || CHAT_PER_PAGE
 
@@ -86,10 +91,23 @@ async function getPaginatedPostIdsByRootPostId({
     document: GET_COMMENT_IDS_IN_POST_ID,
     variables: {
       args: {
-        filter: {
-          rootPostId: postId,
-          approvedInRootPost: !onlyDisplayUnapprovedMessages,
-        },
+        filter:
+          myAddress && !onlyDisplayUnapprovedMessages
+            ? {
+                OR: [
+                  {
+                    rootPostId: postId,
+                    approvedInRootPost: !onlyDisplayUnapprovedMessages,
+                  },
+                  {
+                    createdByAccountAddress: myAddress,
+                  },
+                ],
+              }
+            : {
+                rootPostId: postId,
+                approvedInRootPost: !onlyDisplayUnapprovedMessages,
+              },
         orderBy: 'createdAtTime',
         orderDirection: QueryOrder.Desc,
         pageSize: CHAT_PER_PAGE,
@@ -164,7 +182,6 @@ async function getPaginatedPostIdsByRootPostId({
     totalData,
   }
 }
-type Data = { postId: string; onlyDisplayUnapprovedMessages: boolean }
 const COMMENT_IDS_QUERY_KEY = 'comments'
 const getQueryKey = (data: Data) => [COMMENT_IDS_QUERY_KEY, data]
 export const getPaginatedPostIdsByPostId = {

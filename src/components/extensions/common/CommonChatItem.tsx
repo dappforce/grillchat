@@ -301,7 +301,7 @@ export default function CommonChatItem({
 
         {showApproveButton ? (
           <div className='pt-1' />
-        ) : (
+        ) : message.struct.approvedInRootPost ? (
           <SuperLike
             isMyMessage={isMyMessage}
             showWhenZero={showSuperLikeWhenZero}
@@ -309,6 +309,8 @@ export default function CommonChatItem({
             postId={message.id}
             className='mb-1.5 ml-2.5 mt-1 self-start'
           />
+        ) : (
+          <Button disabled>Pending Review</Button>
         )}
       </div>
     </div>
