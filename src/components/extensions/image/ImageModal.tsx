@@ -228,7 +228,6 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
         clearImage={() => setImageUrl('')}
         src={imageUrl}
         onLoad={() => {
-          // To prevent this called first before the useEffect, which causes image rendered, but the link is null
           setTimeout(() => {
             currentLoadedImage.current = imageUrl
             setUploadedImageLink((prev) => ({ ...prev, loadedLink: imageUrl }))
