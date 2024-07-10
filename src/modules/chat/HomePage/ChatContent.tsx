@@ -106,7 +106,7 @@ export default function ChatContent({ className }: Props) {
                   <span className='text-text'>Contest Rules</span>
                 ) : (
                   <>
-                    <Shield className='relative top-px text-text-muted' />
+                    <Shield className='text-text-muted' />
                     <span className='text-text'>Rules</span>
                   </>
                 )}
@@ -366,12 +366,12 @@ function PostMemeButton({
       >
         {!isTimeConstrained ? (
           <>
-            <LuPlusCircle className='relative top-px text-lg' />
+            <LuPlusCircle className='text-lg' />
             <span>Post Meme</span>
           </>
         ) : (
           <>
-            {/* <FaRegClock className='relative top-px text-lg' /> */}
+            {/* <FaRegClock className='text-lg' /> */}
             <span>Posting available in: {countdownText(timeLeft)}</span>
           </>
         )}
