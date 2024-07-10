@@ -38,8 +38,8 @@ export const getSubstrateHttpApi = async () => {
 
   const provider = new HttpProvider(substrateHttpUrl)
   const substrateApi = ApiPromise.create({ provider })
-  substrateHttpApi = substrateApi
 
+  substrateHttpApi = substrateApi
   return substrateApi
 }
 
