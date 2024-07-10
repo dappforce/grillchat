@@ -181,7 +181,7 @@ function Tabs({
   const tabSize: 'sm' | 'md' = isAdmin ? 'sm' : 'md'
 
   return (
-    <div className='sticky top-14 grid h-14 grid-flow-col items-center gap-1 bg-background px-4 py-2'>
+    <div className='sticky top-14 grid h-12 grid-flow-col items-center gap-1 bg-background px-4'>
       {isAdmin && (
         <>
           <TabButton
