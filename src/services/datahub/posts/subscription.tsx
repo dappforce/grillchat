@@ -242,12 +242,16 @@ async function processMessage(
               const title = 'Under review'
               const description =
                 remaining > 0
-                  ? `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received your meme! We need at least ${remaining} more memes from you to mark you as a verified creator.`
+                  ? `${
+                      tokenomics.socialActionPrice.createCommentPoints
+                    } points have been used. We received your meme! We need at least ${remaining} more meme${
+                      remaining > 1 ? 's' : ''
+                    } from you to mark you as a verified creator.`
                   : `${
                       tokenomics.socialActionPrice.createCommentPoints
                     } points have been used. We received ${
                       count ?? 0
-                    } meme from you! Now we need a bit of time to finish review you as a verified creator.`
+                    } memes from you! Now we need a bit of time to finish review you as a verified creator.`
               toast.custom((t) => (
                 <Toast
                   t={t}
