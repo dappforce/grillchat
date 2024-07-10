@@ -15,7 +15,7 @@ import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/q
 import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { HiTrash } from 'react-icons/hi2'
 import { z } from 'zod'
@@ -212,9 +212,14 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
     saveImage(initialImage)
   }, [initialImage, saveImage])
 
+  const currentLoadedImage = useRef('')
   useEffect(() => {
     const isShowingImage = (!!imageUrl || isLoading) && !isError
-    setUploadedImageLink({ isShowingImage, loadedLink: null })
+    if (currentLoadedImage.current === imageUrl) {
+      setUploadedImageLink((prev) => ({ ...prev, isShowingImage }))
+    } else {
+      setUploadedImageLink({ isShowingImage, loadedLink: null })
+    }
   }, [setUploadedImageLink, imageUrl, isLoading, isError])
 
   if (imageUrl) {
@@ -222,9 +227,12 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
       <ImageLoader
         clearImage={() => setImageUrl('')}
         src={imageUrl}
-        onLoad={() =>
-          setUploadedImageLink((prev) => ({ ...prev, loadedLink: imageUrl }))
-        }
+        onLoad={() => {
+          setTimeout(() => {
+            currentLoadedImage.current = imageUrl
+            setUploadedImageLink((prev) => ({ ...prev, loadedLink: imageUrl }))
+          })
+        }}
       />
     )
   }
