@@ -10,6 +10,7 @@ import { cx } from '@/utils/class-names'
 import { sendMessageToParentWindow } from '@/utils/window'
 import { ComponentProps, Fragment, useEffect, useId, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import ProfilePostsListModal from '../ChatItem/profilePosts/ProfileProstsListModal'
 import usePaginatedMessageIds from '../hooks/usePaginatedMessageIds'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import CenterChatNotice from './CenterChatNotice'
@@ -28,6 +29,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollableContainerClassName?: string
   hubId: string
   chatId: string
+  onlyDisplayUnapprovedMessages?: boolean
   newMessageNoticeClassName?: string
   topElement?: React.ReactNode
 }
@@ -54,6 +56,7 @@ function ChatListContent({
   chatId,
   scrollContainerRef: _scrollContainerRef,
   newMessageNoticeClassName,
+  onlyDisplayUnapprovedMessages,
   ...props
 }: ChatListProps) {
   const sendEvent = useSendEvent()
@@ -77,6 +80,7 @@ function ChatListContent({
   } = usePaginatedMessageIds({
     hubId,
     chatId,
+    onlyDisplayUnapprovedMessages,
   })
 
   const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
@@ -130,7 +134,8 @@ function ChatListContent({
           <CenterChatNotice
             isMyChat={isMyChat}
             customText={
-              (postMetadata?.totalCommentsCount ?? 0) > 0
+              (postMetadata?.totalCommentsCount ?? 0) > 0 &&
+              !onlyDisplayUnapprovedMessages
                 ? 'Loading messages...'
                 : undefined
             }
@@ -206,6 +211,7 @@ function ChatListContent({
                         hubId={hubId}
                         message={message}
                         scrollToMessage={scrollToMessage}
+                        showApproveButton={onlyDisplayUnapprovedMessages}
                       />
                     </Fragment>
                   )
@@ -226,6 +232,7 @@ function ChatListContent({
           newMessageNoticeClassName={newMessageNoticeClassName}
         />
       </div>
+      <ProfilePostsListModal />
     </ChatListContext.Provider>
   )
 }

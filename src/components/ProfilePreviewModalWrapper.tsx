@@ -1,3 +1,4 @@
+import { useProfilePostsModal } from '@/stores/profile-posts-modal'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import Name, { NameProps } from './Name'
@@ -14,7 +15,6 @@ export type ProfilePreviewModalWrapperProps = {
 
 export default function ProfilePreviewModalWrapper({
   address,
-  messageId,
   children,
 }: ProfilePreviewModalWrapperProps) {
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
@@ -32,19 +32,6 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview asLink address={address} className='mb-2' />
-        {/* {messageId && (
-          <ActionCard
-            className='mt-2'
-            actions={[
-              {
-                icon: RiCopperCoinLine,
-                text: 'Donate',
-                iconClassName: cx('text-text-muted'),
-                onClick: () => openDonateExtension(),
-              },
-            ]}
-          />
-        )} */}
       </Modal>
     </>
   )
@@ -52,21 +39,30 @@ export default function ProfilePreviewModalWrapper({
 
 export function ProfilePreviewModalName({
   messageId,
+  chatId,
+  hubId,
+  enableProfileModal = true,
   ...props
-}: NameProps & { messageId?: string }) {
+}: NameProps & {
+  messageId: string
+  chatId: string
+  hubId: string
+  enableProfileModal?: boolean
+}) {
+  const { openModal } = useProfilePostsModal()
+
   return (
-    <ProfilePreviewModalWrapper address={props.address} messageId={messageId}>
-      {(onClick) => (
-        <Name
-          {...props}
-          onClick={(e) => {
-            onClick(e)
-            props.onClick?.(e)
-          }}
-          className={cx('cursor-pointer', props.className)}
-          address={props.address}
-        />
-      )}
-    </ProfilePreviewModalWrapper>
+    <Name
+      {...props}
+      onClick={(e) => {
+        if (enableProfileModal) {
+          e.preventDefault()
+          openModal({ messageId, chatId, hubId, address: props.address })
+          props.onClick?.(e)
+        }
+      }}
+      className={cx('cursor-pointer', props.className)}
+      address={props.address}
+    />
   )
 }

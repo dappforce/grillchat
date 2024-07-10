@@ -5,6 +5,7 @@ import {
   UpdatePostOptimisticInput,
 } from '@/server/datahub-queue/generated'
 import {
+  approveUser,
   createPostData,
   getCanAccountDo,
   updatePostData,
@@ -59,6 +60,10 @@ export type ApiDatahubPostMutationBody =
       action: 'update-post'
       payload: UpdatePostOptimisticInput
     }
+  | {
+      action: 'approve-user'
+      payload: UpdatePostOptimisticInput
+    }
 
 export type ApiDatahubPostResponse = ApiResponse<{ callId?: string }>
 const POST_handler = handlerWrapper({
@@ -101,6 +106,8 @@ function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
       return createPostData(data.payload)
     case 'update-post':
       return updatePostData(data.payload)
+    case 'approve-user':
+      return approveUser(data.payload)
     default:
       throw new Error('Unknown action')
   }

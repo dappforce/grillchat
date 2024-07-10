@@ -1,5 +1,5 @@
 import { getMaxMessageLength } from '@/constants/chat'
-import { TIME_CONSTRAINT } from '@/constants/chat-rules'
+import { env } from '@/env.mjs'
 import {
   ApiDatahubPostMutationBody,
   ApiDatahubPostResponse,
@@ -14,6 +14,7 @@ import {
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getMyMainAddress } from '@/stores/my-account'
+import mutationWrapper from '@/subsocial-query/base'
 import { ParentPostIdWrapper, ReplyWrapper } from '@/utils/ipfs'
 import { LocalStorage } from '@/utils/storage'
 import { TAGS_REGEX } from '@/utils/strings'
@@ -22,6 +23,7 @@ import { PostContent } from '@subsocial/api/types'
 import {
   CreatePostCallParsedArgs,
   PostKind,
+  SocialCallDataArgs,
   UpdatePostCallParsedArgs,
   socialCallName,
 } from '@subsocial/data-hub-sdk'
@@ -255,7 +257,7 @@ export function useSendMessage(
         getTimeLeftUntilCanPostQuery.setQueryData(
           queryClient,
           myAddress,
-          TIME_CONSTRAINT
+          env.NEXT_PUBLIC_TIME_CONSTRAINT
         )
       }
     },
@@ -276,6 +278,7 @@ export function useSendMessage(
 
       const myAddress = getMyMainAddress()
       if (queryClient && myAddress) {
+        lastSentMessageStorage.remove()
         getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
       }
     },
@@ -295,3 +298,22 @@ export function useSendMessage(
     },
   })
 }
+
+type ApproveUserArgs =
+  SocialCallDataArgs<'synth_social_profile_set_action_permissions'>
+async function approveUser(args: ApproveUserArgs) {
+  const input = await createSignedSocialDataEvent(
+    socialCallName.synth_social_profile_set_action_permissions,
+    { ...getCurrentWallet(), args },
+    args
+  )
+
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'approve-user',
+      payload: input as any,
+    }
+  )
+}
+export const useApproveUser = mutationWrapper(approveUser)

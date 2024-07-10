@@ -97,12 +97,13 @@ export default function MediaLoader({
             alt={props.alt || ''}
             className={cx(
               commonProps.className,
-              'absolute inset-0 m-0 h-full w-full p-0'
+              'absolute inset-0 m-0 h-full max-h-96 w-full scale-110 object-cover p-0 blur-lg'
             )}
           />
           <Image
             {...commonProps}
             loading='eager'
+            className={cx('max-h-96 object-contain', commonProps.className)}
             style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
             width={commonProps.width || 500}
             height={commonProps.height || 500}

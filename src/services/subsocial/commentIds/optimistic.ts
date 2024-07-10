@@ -10,6 +10,7 @@ import {
   getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
 } from '@/services/datahub/posts/query'
+import { getMyMainAddress } from '@/stores/my-account'
 import type { SendMessageParams } from './types'
 
 export const commentIdsOptimisticEncoder = {
@@ -46,7 +47,11 @@ export function addOptimisticData({
   } as unknown as PostData)
   getPaginatedPostIdsByPostId.setQueryFirstPageData(
     client,
-    params.chatId,
+    {
+      onlyDisplayUnapprovedMessages: false,
+      postId: params.chatId,
+      myAddress: getMyMainAddress() || '',
+    },
     (oldData) => {
       return [newId, ...(oldData ?? [])]
     }

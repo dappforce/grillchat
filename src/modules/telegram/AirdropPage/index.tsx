@@ -3,6 +3,7 @@ import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Card from '@/components/Card'
 import Name from '@/components/Name'
+import Toast from '@/components/Toast'
 import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import LinkEvmAddressModal from '@/components/modals/LinkEvmAddressModal'
@@ -15,9 +16,12 @@ import PointsWidget from '@/modules/points/PointsWidget'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
+import { copyToClipboard } from '@/utils/strings'
 import Image from 'next/image'
 import { useState } from 'react'
+import { MdContentCopy } from 'react-icons/md'
 import { RiPencilFill } from 'react-icons/ri'
+import { toast } from 'sonner'
 import RemoveLinkedIdentityModal from './RemoveLinkedIdentityModal'
 
 export default function AirdropPage() {
@@ -70,9 +74,25 @@ export default function AirdropPage() {
                   <span className='text-sm font-medium text-text-muted'>
                     My EVM Address
                   </span>
-                  <span className='font-semibold'>
-                    {truncateAddress(evmAddress ?? '')}
-                  </span>
+                  <div className='flex items-center gap-2.5'>
+                    <span className='font-semibold'>
+                      {truncateAddress(evmAddress ?? '')}
+                    </span>
+                    <Button
+                      className='flex-shrink-0 text-sm text-text-muted'
+                      variant='transparent'
+                      size='circleSm'
+                      onClick={() => {
+                        sendEvent('copy_evm_address_click')
+                        copyToClipboard(evmAddress ?? '')
+                        toast.custom((t) => (
+                          <Toast t={t} title='Copied to clipboard!' />
+                        ))
+                      }}
+                    >
+                      <MdContentCopy />
+                    </Button>
+                  </div>
                 </div>
                 {/* <LinkText
                   variant='primary'

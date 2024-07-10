@@ -5,16 +5,20 @@ import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatIte
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
+import UnapprovedMemeCount from '@/components/chats/UnapprovedMemeCount'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
+import { useApproveUser } from '@/services/datahub/posts/mutation'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
+import { useInView } from 'react-intersection-observer'
 import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
@@ -40,6 +44,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   textColor?: string
   bg?: 'background' | 'background-light'
   showSuperLikeWhenZero?: boolean
+  enableProfileModal?: boolean
 }
 
 const defaultMyMessageConfig: MyMessageConfig = {
@@ -59,11 +64,14 @@ export default function CommonChatItem({
   textColor,
   className,
   isMyMessage: _isMyMessage,
+  enableProfileModal = true,
   showSuperLikeWhenZero,
   chatId,
   hubId,
   bg = 'background',
+  showApproveButton,
 }: CommonChatItemProps) {
+  const { inView, ref } = useInView()
   const myAddress = useMyMainAddress()
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { mutate: moderate, isLoading: loadingModeration } =
@@ -80,6 +88,19 @@ export default function CommonChatItem({
   const isMyMessage = _isMyMessage ?? ownerId === myAddress
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
+
+  const isMessageBlockedInCurrentHub = useIsMessageBlocked(
+    hubId,
+    message,
+    chatId
+  )
+  const isMessageBlockedInOriginalHub = useIsMessageBlocked(
+    message.struct.spaceId ?? '',
+    message,
+    chatId
+  )
+  const isMessageBlocked =
+    isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
 
   const childrenElement =
     typeof children === 'function'
@@ -132,13 +153,18 @@ export default function CommonChatItem({
     (myMessageConfig.children === 'bottom' ||
       (myMessageConfig.children === 'middle' && !body))
 
+  if (showApproveButton) {
+    othersMessage.checkMark = 'top'
+  }
+
   return (
     <div className={cx('relative flex flex-col gap-2')}>
       {isMyMessage && myMessageConfig.checkMark === 'adaptive-inside' && (
         <div
           className={cx(
             'absolute bottom-1.5 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
-            isMyMessageChildrenOnBottom && 'bg-black/45'
+            (isMyMessageChildrenOnBottom || showApproveButton) && 'bg-black/45',
+            showApproveButton && 'bottom-16'
           )}
         >
           {myMessageCheckMarkElement(
@@ -178,6 +204,7 @@ export default function CommonChatItem({
               'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5',
               othersMessage.checkMark !== 'top' && 'justify-between'
             )}
+            ref={ref}
           >
             <ProfilePreviewModalName
               clipText
@@ -186,8 +213,14 @@ export default function CommonChatItem({
               messageId={message.id}
               address={ownerId}
               color={textColor}
+              chatId={chatId}
+              hubId={hubId}
+              enableProfileModal={enableProfileModal}
               className={cx('text-sm font-medium text-text-secondary')}
             />
+            {showApproveButton && inView && (
+              <UnapprovedMemeCount address={ownerId} chatId={chatId} />
+            )}
             {/* <SubTeamLabel address={ownerId} /> */}
             {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
@@ -252,11 +285,17 @@ export default function CommonChatItem({
         )}
 
         {isAuthorized && (
-          <div className='px-2 pb-1 pt-2'>
+          <div
+            className={cx(
+              'grid items-center gap-2 px-2 pb-1 pt-2',
+              showApproveButton ? 'grid-cols-2' : 'grid-cols-1'
+            )}
+          >
             <Button
               variant='redOutline'
               isLoading={loadingModeration}
               loadingText='Blocking...'
+              disabled={isMessageBlocked}
               onClick={(e) => {
                 e.stopPropagation()
                 moderate({
@@ -271,10 +310,16 @@ export default function CommonChatItem({
                 })
               }}
               size='sm'
-              className='w-full !text-text-red disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+              className={cx('w-full !text-text-red', {
+                ['!bg-[#EF4444] disabled:border-none disabled:!text-white disabled:!ring-0 disabled:!brightness-100']:
+                  isMessageBlocked,
+              })}
             >
-              Block message
+              {isMessageBlocked ? 'Blocked' : 'Block message'}
             </Button>
+            {showApproveButton && (
+              <ApproveButton ownerId={ownerId} chatId={chatId} />
+            )}
           </div>
         )}
         {!isMyMessage && othersMessage.children === 'bottom' && childrenElement}
@@ -283,14 +328,53 @@ export default function CommonChatItem({
           myMessageConfig.children === 'bottom' &&
           childrenElement}
 
-        <SuperLike
-          isMyMessage={isMyMessage}
-          showWhenZero={showSuperLikeWhenZero}
-          withPostReward
-          postId={message.id}
-          className='mb-1.5 ml-2.5 mt-1 self-start'
-        />
+        {showApproveButton ? (
+          <div className='pt-1' />
+        ) : message.struct.approvedInRootPost ? (
+          <SuperLike
+            isMyMessage={isMyMessage}
+            showWhenZero={showSuperLikeWhenZero}
+            withPostReward
+            postId={message.id}
+            className='mb-1.5 ml-2.5 mt-1 self-start'
+          />
+        ) : (
+          <div className='mb-1.5 ml-2.5 mt-1 flex text-sm'>
+            <div className='rounded-full bg-background/20 px-2 py-1 text-text/80'>
+              ⌛ Pending Review
+            </div>
+          </div>
+        )}
       </div>
     </div>
+  )
+}
+
+function ApproveButton({
+  ownerId,
+  chatId,
+}: {
+  chatId: string
+  ownerId: string
+}) {
+  const { mutate, isLoading } = useApproveUser()
+  return (
+    <Button
+      variant='greenOutline'
+      className='disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+      loadingText='Approving...'
+      isLoading={isLoading}
+      onClick={(e) => {
+        e.stopPropagation()
+        mutate({
+          address: ownerId,
+          allow: {
+            createCommentRootPostIds: [chatId],
+          },
+        })
+      }}
+    >
+      Approve user
+    </Button>
   )
 }

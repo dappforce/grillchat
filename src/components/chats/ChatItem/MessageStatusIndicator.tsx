@@ -1,10 +1,7 @@
-import Button from '@/components/Button'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
-import { SyntheticEvent, useState } from 'react'
 import { IoCheckmarkDoneOutline, IoCheckmarkOutline } from 'react-icons/io5'
-import CheckMarkExplanationModal from './CheckMarkExplanationModal'
 
 export type MessageStatus = 'sending' | 'offChain' | 'optimistic' | 'blockchain'
 
@@ -16,23 +13,18 @@ export default function MessageStatusIndicator({
   message,
 }: MessageStatusIndicatorProps) {
   const sendEvent = useSendEvent()
-  const [isOpenCheckmarkModal, setIsOpenCheckmarkModal] = useState(false)
+  // const [isOpenCheckmarkModal, setIsOpenCheckmarkModal] = useState(false)
 
   const messageStatus = getMessageStatusById(message)
 
-  const onCheckMarkClick = (e: SyntheticEvent) => {
-    e.stopPropagation()
-    sendEvent('click check_mark_button', { type: messageStatus })
-    setIsOpenCheckmarkModal(true)
-  }
+  // const onCheckMarkClick = (e: SyntheticEvent) => {
+  //   e.stopPropagation()
+  //   sendEvent('click check_mark_button', { type: messageStatus })
+  //   setIsOpenCheckmarkModal(true)
+  // }
 
   return (
-    <Button
-      variant='transparent'
-      size='noPadding'
-      interactive='brightness-only'
-      onClick={onCheckMarkClick}
-    >
+    <span>
       {(() => {
         if (!message.struct.dataType) {
           return (
@@ -47,14 +39,14 @@ export default function MessageStatusIndicator({
         }
       })()}
 
-      <CheckMarkExplanationModal
+      {/* <CheckMarkExplanationModal
         isOpen={isOpenCheckmarkModal}
         variant={messageStatus}
         closeModal={() => setIsOpenCheckmarkModal(false)}
         blockNumber={message.struct.createdAtBlock}
         cid={message.struct.contentId}
-      />
-    </Button>
+      /> */}
+    </span>
   )
 }
 

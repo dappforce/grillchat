@@ -194,6 +194,7 @@ export type Mutation = {
   moderationInitModerator: IngestDataResponseDto;
   moderationUnblockResource: IngestDataResponseDto;
   socialProfileAddReferrerId: IngestDataResponseDto;
+  socialProfileSetActionPermissions: IngestDataResponseDto;
   updatePostBlockchainSyncStatus: IngestDataResponseDto;
   updatePostOptimistic: IngestDataResponseDto;
   updateSpaceOffChain: IngestDataResponseDto;
@@ -311,6 +312,11 @@ export type MutationModerationUnblockResourceArgs = {
 
 
 export type MutationSocialProfileAddReferrerIdArgs = {
+  args: SocialProfileAddReferrerIdInput;
+};
+
+
+export type MutationSocialProfileSetActionPermissionsArgs = {
   args: SocialProfileAddReferrerIdInput;
 };
 
@@ -437,6 +443,7 @@ export enum SocialCallName {
   SynthModerationInitModerator = 'synth_moderation_init_moderator',
   SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
   SynthSocialProfileAddReferrerId = 'synth_social_profile_add_referrer_id',
+  SynthSocialProfileSetActionPermissions = 'synth_social_profile_set_action_permissions',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
   SynthUpdatePostTxRetry = 'synth_update_post_tx_retry',
   UpdatePost = 'update_post',
@@ -571,6 +578,13 @@ export type UpdatePostOptimisticMutationVariables = Exact<{
 
 export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
+export type ApproveUserMutationVariables = Exact<{
+  input: UpdatePostOptimisticInput;
+}>;
+
+
+export type ApproveUserMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
+
 export type SetReferrerIdMutationVariables = Exact<{
   setReferrerIdInput: SocialProfileAddReferrerIdInput;
 }>;
@@ -698,6 +712,15 @@ export const CreatePostOffChain = gql`
 export const UpdatePostOptimistic = gql`
     mutation UpdatePostOptimistic($updatePostOptimisticInput: UpdatePostOptimisticInput!) {
   updatePostOptimistic(updatePostOptimisticInput: $updatePostOptimisticInput) {
+    processed
+    callId
+    message
+  }
+}
+    `;
+export const ApproveUser = gql`
+    mutation ApproveUser($input: UpdatePostOptimisticInput!) {
+  updatePostOptimistic(updatePostOptimisticInput: $input) {
     processed
     callId
     message

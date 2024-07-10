@@ -1,7 +1,5 @@
 import AddressAvatar from '@/components/AddressAvatar'
-import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
-import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
-import { useMessageData } from '@/stores/message'
+import { useProfilePostsModal } from '@/stores/profile-posts-modal'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
@@ -9,7 +7,6 @@ import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import Embed, { useCanRenderEmbed } from './Embed'
-import { getMessageStatusById } from './MessageStatusIndicator'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -21,9 +18,12 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   messageBubbleId?: string
   scrollToMessage?: ScrollToMessage
   enableChatMenu?: boolean
+  enableProfileModal?: boolean
   chatId: string
   hubId: string
   bg?: 'background-light' | 'background'
+  showApproveButton?: boolean
+  menuIdPrefix?: string
 }
 
 export default function ChatItem({
@@ -35,27 +35,23 @@ export default function ChatItem({
   chatId,
   hubId,
   bg = 'background-light',
+  showApproveButton,
+  enableProfileModal = true,
+  menuIdPrefix,
   ...props
 }: ChatItemProps) {
-  const setReplyTo = useMessageData((state) => state.setReplyTo)
-
-  const messageId = message.id
-  const { ownerId, dataType } = message.struct
+  const { ownerId, id: messageId } = message.struct
   const { body, extensions, link } = message.content || {}
-
-  const setMessageAsReply = () => {
-    if (!isMessageSent(messageId, dataType)) return
-    setReplyTo(messageId)
-  }
+  const { openModal } = useProfilePostsModal()
 
   const canRenderEmbed = useCanRenderEmbed(link ?? '')
+
+  if (showApproveButton && message.struct.approvedInRootPost) return null
 
   if (!body && (!extensions || extensions.length === 0)) return null
 
   const isEmojiOnly = shouldRenderEmojiChatItem(body ?? '')
   const ChatItemContentVariant = isEmojiOnly ? EmojiChatItem : DefaultChatItem
-
-  const messageStatus = getMessageStatusById(message)
 
   return (
     <>
@@ -68,17 +64,20 @@ export default function ChatItem({
         )}
       >
         {!isMyMessage && (
-          <ProfilePreviewModalWrapper address={ownerId} messageId={message.id}>
-            {(onClick) => (
-              <AddressAvatar
-                onClick={onClick}
-                address={ownerId}
-                className='flex-shrink-0 cursor-pointer'
-              />
-            )}
-          </ProfilePreviewModalWrapper>
+          <AddressAvatar
+            onClick={(e) => {
+              e.preventDefault()
+
+              if (enableProfileModal) {
+                openModal({ chatId, hubId, messageId, address: ownerId })
+              }
+            }}
+            address={ownerId}
+            className='flex-shrink-0 cursor-pointer'
+          />
         )}
         <ChatItemMenus
+          menuIdPrefix={menuIdPrefix}
           chatId={chatId}
           messageId={message.id}
           enableChatMenu={enableChatMenu}
@@ -94,7 +93,6 @@ export default function ChatItem({
                   e.preventDefault()
                   toggleDisplay?.(e)
                 }}
-                // onDoubleClick={() => setMessageAsReply()}
                 {...referenceProps}
                 id={messageBubbleId}
               >
@@ -105,7 +103,9 @@ export default function ChatItem({
                     isMyMessage={isMyMessage}
                     chatId={chatId}
                     hubId={hubId}
+                    enableProfileModal={enableProfileModal}
                     bg={bg}
+                    showApproveButton={showApproveButton}
                   />
                 ) : (
                   <ChatItemContentVariant
@@ -113,6 +113,7 @@ export default function ChatItem({
                     isMyMessage={isMyMessage}
                     scrollToMessage={scrollToMessage}
                     chatId={chatId}
+                    enableProfileModal={enableProfileModal}
                     hubId={hubId}
                     bg={bg}
                   />

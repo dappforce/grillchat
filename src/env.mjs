@@ -44,6 +44,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CONTEST_CHAT_ID: z.string().default(''),
     NEXT_PUBLIC_CONTEST_NAME: z.string().default(''),
     NEXT_PUBLIC_CONTEST_END_TIME: z.string().default('').transform(Number),
+    NEXT_PUBLIC_TIME_CONSTRAINT: z.string().default('').transform(Number),
     NEXT_PUBLIC_BASE_PATH: z.string().default(''),
     NEXT_PUBLIC_TELEGRAM_BOT_ID: z.string().default(''),
     NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: z.string().default(''),
@@ -85,6 +86,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CONTEST_CHAT_ID: process.env.NEXT_PUBLIC_CONTEST_CHAT_ID,
     NEXT_PUBLIC_CONTEST_NAME: process.env.NEXT_PUBLIC_CONTEST_NAME,
     NEXT_PUBLIC_CONTEST_END_TIME: process.env.NEXT_PUBLIC_CONTEST_END_TIME,
+    NEXT_PUBLIC_TIME_CONSTRAINT: process.env.NEXT_PUBLIC_TIME_CONSTRAINT,
     NEXT_PUBLIC_TELEGRAM_BOT_ID: process.env.NEXT_PUBLIC_TELEGRAM_BOT_ID,
     NEXT_PUBLIC_TELEGRAM_BOT_USERNAME:
       process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME,

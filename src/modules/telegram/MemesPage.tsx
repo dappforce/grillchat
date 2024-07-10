@@ -9,14 +9,10 @@ const MemesPage = () => {
   return (
     <LayoutWithBottomNavigation withFixedHeight className='relative'>
       <LikeIntroModal />
-      <ChatsContent />
+      <ChatContent />
       <HomePageModals />
     </LayoutWithBottomNavigation>
   )
-}
-
-const ChatsContent = () => {
-  return <ChatContent />
 }
 
 export default MemesPage

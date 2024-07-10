@@ -1,8 +1,11 @@
 import Toast from '@/components/Toast'
+import { MIN_MEME_FOR_REVIEW } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
-import { getMyMainAddress } from '@/stores/my-account'
+import { useMessageData } from '@/stores/message'
+import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
+import { cx } from '@/utils/class-names'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -13,11 +16,18 @@ import {
   SubscribePostSubscription,
 } from '../generated-query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
-import { getPaginatedPostIdsByPostId, getPostMetadataQuery } from './query'
+import { lastSentMessageStorage } from './mutation'
+import {
+  getPaginatedPostIdsByPostId,
+  getPostMetadataQuery,
+  getTimeLeftUntilCanPostQuery,
+  getUnapprovedMemesCountQuery,
+} from './query'
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
 export function useDatahubPostSubscriber(subscribedPostId?: string) {
+  const myAddress = useMyMainAddress()
   const queryClient = useQueryClient()
   const unsubRef = useRef<(() => void) | undefined>()
   const subState = useSubscriptionState(
@@ -32,14 +42,15 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
     if (!isDatahubAvailable) return
 
     const listener = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && myAddress) {
         unsubRef.current = subscription(queryClient)
         // invalidate first page so it will refetch after the websocket connection is disconnected previously when the user is not in the tab
         if (subscribedPostId) {
-          getPaginatedPostIdsByPostId.invalidateFirstQuery(
-            queryClient,
-            subscribedPostId
-          )
+          getPaginatedPostIdsByPostId.invalidateFirstQuery(queryClient, {
+            postId: subscribedPostId,
+            onlyDisplayUnapprovedMessages: false,
+            myAddress,
+          })
         }
       } else {
         if (
@@ -55,7 +66,7 @@ export function useDatahubPostSubscriber(subscribedPostId?: string) {
       document.removeEventListener('visibilitychange', listener)
       unsubRef.current?.()
     }
-  }, [queryClient, subscribedPostId])
+  }, [queryClient, subscribedPostId, myAddress])
 }
 
 const SUBSCRIBE_POST = gql`
@@ -67,6 +78,8 @@ const SUBSCRIBE_POST = gql`
         persistentId
         optimisticId
         dataType
+        approvedInRootPost
+        createdAtTime
         rootPost {
           persistentId
         }
@@ -149,38 +162,156 @@ async function processMessage(
     getPostQuery.invalidate(queryClient, newestId)
   } else {
     if (dataFromPersistentId) {
+      getPostQuery.setQueryData(queryClient, newestId, (oldData) => {
+        if (!oldData) return oldData
+        return {
+          ...oldData,
+          struct: {
+            ...oldData.struct,
+            approvedInRootPost: eventData.entity.approvedInRootPost,
+          },
+        }
+      })
       await getPostQuery.invalidate(queryClient, newestId)
     } else {
       await getPostQuery.fetchQuery(queryClient, newestId)
     }
   }
 
+  const newPost = getPostQuery.getQueryData(queryClient, newestId)
+  const myAddress = getMyMainAddress()
+
+  const rootPostId = entity.rootPost?.persistentId
+  const ownerId = newPost?.struct.ownerId
+  const isCurrentOwner = ownerId === myAddress
+
   if (isCreationEvent) {
-    const newPost = getPostQuery.getQueryData(queryClient, newestId)
     const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
       queryClient,
       null
     )
-    const myAddress = getMyMainAddress()
-    if (newPost?.struct.ownerId === myAddress && isCreationEvent) {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          title='✨ Meme Sent!'
-          description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. More memes, more fun!`}
-        />
-      ))
+    if (isCreationEvent && newPost) {
+      if (newPost.struct.approvedInRootPost) {
+        if (isCurrentOwner) {
+          toast.custom((t) => (
+            <Toast
+              icon={(className) => (
+                <span className={cx(className, 'text-base')}>✨</span>
+              )}
+              t={t}
+              title='Meme Sent!'
+              description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. More memes, more fun!`}
+            />
+          ))
+        }
+      } else {
+        // to not wait for another query to run the other synchronous actions below
+        processUnapprovedMeme()
+        async function processUnapprovedMeme() {
+          if (ownerId) {
+            const cachedCount = getUnapprovedMemesCountQuery.getQueryData(
+              queryClient,
+              { address: ownerId, chatId: rootPostId ?? '' }
+            )
+            if (typeof cachedCount === 'number') {
+              getUnapprovedMemesCountQuery.setQueryData(
+                queryClient,
+                { address: ownerId, chatId: rootPostId ?? '' },
+                (count) => (count ?? 0) + 1
+              )
+            } else if (isCurrentOwner) {
+              await getUnapprovedMemesCountQuery.fetchQuery(queryClient, {
+                address: ownerId,
+                chatId: rootPostId ?? '',
+              })
+            }
+          }
+          if (isCurrentOwner) {
+            // reset timer because its unapproved meme
+            getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
+            lastSentMessageStorage.remove()
+
+            const count = getUnapprovedMemesCountQuery.getQueryData(
+              queryClient,
+              { address: myAddress, chatId: rootPostId ?? '' }
+            )
+            if (count === 1 || count === 3) {
+              useMessageData.getState().setOpenMessageModal('on-review')
+            } else {
+              const remaining = Math.max(MIN_MEME_FOR_REVIEW - (count ?? 0), 0)
+              const title = 'Under review'
+              const description =
+                remaining > 0
+                  ? `${
+                      tokenomics.socialActionPrice.createCommentPoints
+                    } points have been used. We received your meme! We need at least ${remaining} more meme${
+                      remaining > 1 ? 's' : ''
+                    } from you to mark you as a verified creator.`
+                  : `${
+                      tokenomics.socialActionPrice.createCommentPoints
+                    } points have been used. We received ${
+                      count ?? 0
+                    } memes from you! Now we need a bit of time to finish review you as a verified creator.`
+              toast.custom((t) => (
+                <Toast
+                  t={t}
+                  icon={(className) => (
+                    <span className={cx(className, 'text-base')}>⏳</span>
+                  )}
+                  title={title}
+                  description={description}
+                />
+              ))
+            }
+          }
+        }
+      }
     }
   }
 
-  const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
+
+  if (isCreationEvent && !entity.approvedInRootPost && isCurrentOwner) {
+    getPaginatedPostIdsByPostId.setQueryFirstPageData(
+      queryClient,
+      {
+        postId: rootPostId,
+        onlyDisplayUnapprovedMessages: false,
+        myAddress: getMyMainAddress() ?? '',
+      },
+      (oldData) => {
+        if (!oldData) return [newestId]
+        const oldIdsSet = new Set(oldData)
+        if (oldIdsSet.has(newestId)) return oldData
+
+        const newIds = [...oldData]
+        const index = oldData.findIndex((id) => {
+          const data = getPostQuery.getQueryData(queryClient, id)
+          if (!data) return false
+          if (data.struct.createdAtTime <= eventData.entity.createdAtTime) {
+            newIds.unshift(newestId)
+            return true
+          }
+          return false
+        })
+        if (index !== -1 || oldData.length <= 0) {
+          newIds.splice(index, 0, newestId)
+        }
+
+        return newIds
+      }
+    )
+  }
 
   getPaginatedPostIdsByPostId.setQueryFirstPageData(
     queryClient,
-    rootPostId,
+    {
+      postId: rootPostId,
+      onlyDisplayUnapprovedMessages: !newPost?.struct.approvedInRootPost,
+      myAddress: getMyMainAddress() ?? '',
+    },
     (oldData) => {
-      if (!oldData) return oldData
+      if (!oldData) return [newestId]
       const oldIdsSet = new Set(oldData)
       if (oldIdsSet.has(newestId)) return oldData
 
@@ -205,7 +336,22 @@ async function processMessage(
         return newIds
       }
 
-      newIds.unshift(newestId)
+      const index = oldData.findIndex((id) => {
+        const data = getPostQuery.getQueryData(queryClient, id)
+        if (!data) return false
+        if (
+          new Date(data.struct.createdAtTime) <=
+          new Date(eventData.entity.createdAtTime)
+        ) {
+          newIds.unshift(newestId)
+          return true
+        }
+        return false
+      })
+      if (index !== -1 || oldData.length <= 0) {
+        newIds.splice(index, 0, newestId)
+      }
+
       return newIds
     }
   )

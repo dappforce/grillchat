@@ -1,5 +1,5 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import { TIME_CONSTRAINT } from '@/constants/chat-rules'
+import { env } from '@/env.mjs'
 import { getPostQuery, getServerTime } from '@/services/api/query'
 import { queryClient } from '@/services/provider'
 import { QueryConfig, createQuery, poolQuery } from '@/subsocial-query'
@@ -26,6 +26,8 @@ import {
   GetPostMetadataQueryVariables,
   GetPostsBySpaceIdQuery,
   GetPostsBySpaceIdQueryVariables,
+  GetUnapprovedMemesCountQuery,
+  GetUnapprovedMemesCountQueryVariables,
   GetUnreadCountQuery,
   GetUnreadCountQueryVariables,
   QueryOrder,
@@ -52,19 +54,29 @@ export type PaginatedPostsData = {
   hasMore: boolean
   totalData: number
 }
+type Data = {
+  postId: string
+  onlyDisplayUnapprovedMessages: boolean
+  myAddress: string
+}
 async function getPaginatedPostIdsByRootPostId({
   page,
   postId,
   client,
+  onlyDisplayUnapprovedMessages,
+  myAddress,
 }: {
-  postId: string
   page: number
   client?: QueryClient | null
-}): Promise<PaginatedPostsData> {
+} & Data): Promise<PaginatedPostsData> {
   if (!postId || !client)
     return { data: [], page, hasMore: false, totalData: 0 }
 
-  const oldIds = getPaginatedPostIdsByPostId.getFirstPageData(client, postId)
+  const oldIds = getPaginatedPostIdsByPostId.getFirstPageData(client, {
+    postId,
+    onlyDisplayUnapprovedMessages,
+    myAddress,
+  })
   const firstPageDataLength = oldIds?.length || CHAT_PER_PAGE
 
   // only first page that has dynamic content, where its length can increase from:
@@ -81,9 +93,24 @@ async function getPaginatedPostIdsByRootPostId({
     document: GET_COMMENT_IDS_IN_POST_ID,
     variables: {
       args: {
-        filter: {
-          rootPostId: postId,
-        },
+        filter:
+          myAddress && !onlyDisplayUnapprovedMessages
+            ? {
+                OR: [
+                  {
+                    rootPostId: postId,
+                    approvedInRootPost: !onlyDisplayUnapprovedMessages,
+                  },
+                  {
+                    rootPostId: postId,
+                    createdByAccountAddress: myAddress,
+                  },
+                ],
+              }
+            : {
+                rootPostId: postId,
+                approvedInRootPost: !onlyDisplayUnapprovedMessages,
+              },
         orderBy: 'createdAtTime',
         orderDirection: QueryOrder.Desc,
         pageSize: CHAT_PER_PAGE,
@@ -159,27 +186,27 @@ async function getPaginatedPostIdsByRootPostId({
   }
 }
 const COMMENT_IDS_QUERY_KEY = 'comments'
-const getQueryKey = (postId: string) => [COMMENT_IDS_QUERY_KEY, postId]
+const getQueryKey = (data: Data) => [COMMENT_IDS_QUERY_KEY, data]
 export const getPaginatedPostIdsByPostId = {
   getQueryKey,
-  getFirstPageData: (client: QueryClient, postId: string) => {
-    const cachedData = client?.getQueryData(getQueryKey(postId))
+  getFirstPageData: (client: QueryClient, data: Data) => {
+    const cachedData = client?.getQueryData(getQueryKey(data))
     return ((cachedData as any)?.pages?.[0] as PaginatedPostsData | undefined)
       ?.data
   },
   fetchFirstPageQuery: async (
     client: QueryClient | null,
-    postId: string,
+    data: Data,
     page = 1
   ) => {
     const res = await getPaginatedPostIdsByRootPostId({
-      postId,
+      ...data,
       page,
       client,
     })
     if (!client) return res
 
-    client.setQueryData(getQueryKey(postId), {
+    client.setQueryData(getQueryKey(data), {
       pageParams: [1],
       pages: [res],
     })
@@ -187,10 +214,10 @@ export const getPaginatedPostIdsByPostId = {
   },
   setQueryFirstPageData: (
     client: QueryClient,
-    postId: string,
+    data: Data,
     updater: (oldIds?: string[]) => string[] | undefined | null
   ) => {
-    client.setQueryData(getQueryKey(postId), (oldData: any) => {
+    client.setQueryData(getQueryKey(data), (oldData: any) => {
       const firstPage = oldData?.pages?.[0] as PaginatedPostsData | undefined
       const newPages = [...(oldData?.pages ?? [])]
       const newFirstPageMessageIds = updater(firstPage?.data)
@@ -205,23 +232,23 @@ export const getPaginatedPostIdsByPostId = {
       }
     })
   },
-  invalidateFirstQuery: (client: QueryClient, postId: string) => {
-    client.invalidateQueries(getQueryKey(postId), {
+  invalidateFirstQuery: (client: QueryClient, data: Data) => {
+    client.invalidateQueries(getQueryKey(data), {
       refetchPage: (_, index) => index === 0,
     })
   },
   useInfiniteQuery: (
-    postId: string,
+    data: Data,
     config?: QueryConfig
   ): UseInfiniteQueryResult<PaginatedPostsData, unknown> => {
     const client = useQueryClient()
     return useInfiniteQuery({
       ...config,
-      queryKey: getQueryKey(postId),
+      queryKey: getQueryKey(data),
       queryFn: async ({ pageParam = 1, queryKey }) => {
         const [_, postId] = queryKey
         const res = await getPaginatedPostIdsByRootPostId({
-          postId,
+          ...data,
           page: pageParam,
           client,
         })
@@ -231,7 +258,7 @@ export const getPaginatedPostIdsByPostId = {
           client.setQueryData<{
             pageParams: number[]
             pages: PaginatedPostsData[]
-          }>(getQueryKey(postId), (oldData) => {
+          }>(getQueryKey(data), (oldData) => {
             if (
               !oldData ||
               !Array.isArray(oldData.pageParams) ||
@@ -456,7 +483,7 @@ const GET_LAST_POSTED_MEME = gql`
   query GetLastPostedMeme($address: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address }
+        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
         pageSize: 1
         orderBy: "createdAtTime"
         orderDirection: DESC
@@ -498,13 +525,45 @@ async function getTimeLeftUntilCanPost(address: string) {
   }
 
   if (!lastPosted) return Infinity
-  const timeLeft = lastPosted + TIME_CONSTRAINT - serverTime
-  return Math.min(Math.max(timeLeft, 0), TIME_CONSTRAINT)
+  const timeLeft = lastPosted + env.NEXT_PUBLIC_TIME_CONSTRAINT - serverTime
+  return Math.min(Math.max(timeLeft, 0), env.NEXT_PUBLIC_TIME_CONSTRAINT)
 }
 export const getTimeLeftUntilCanPostQuery = createQuery({
   key: 'lastPostedMeme',
   fetcher: getTimeLeftUntilCanPost,
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
+  }),
+})
+
+const GET_UNAPPROVED_MEMES_COUNT = gql`
+  query GetUnapprovedMemesCount($address: String!, $postId: String!) {
+    posts(
+      args: {
+        filter: {
+          createdByAccountAddress: $address
+          approvedInRootPost: false
+          rootPostId: $postId
+        }
+      }
+    ) {
+      total
+    }
+  }
+`
+export const getUnapprovedMemesCountQuery = createQuery({
+  key: 'unapprovedMemesCount',
+  fetcher: async ({ address, chatId }: { chatId: string; address: string }) => {
+    const res = await datahubQueryRequest<
+      GetUnapprovedMemesCountQuery,
+      GetUnapprovedMemesCountQueryVariables
+    >({
+      document: GET_UNAPPROVED_MEMES_COUNT,
+      variables: { address, postId: chatId },
+    })
+    return res.posts.total ?? 0
+  },
+  defaultConfigGenerator: (params) => ({
+    enabled: !!params?.address && !!params.chatId,
   }),
 })

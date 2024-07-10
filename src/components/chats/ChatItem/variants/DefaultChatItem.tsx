@@ -17,7 +17,9 @@ import MessageStatusIndicator from '../MessageStatusIndicator'
 import RepliedMessagePreview from '../RepliedMessagePreview'
 import { ChatItemContentProps } from './types'
 
-export type DefaultChatItemProps = ChatItemContentProps
+export type DefaultChatItemProps = ChatItemContentProps & {
+  enableProfileModal?: boolean
+}
 
 export default function DefaultChatItem({
   chatId,
@@ -25,6 +27,7 @@ export default function DefaultChatItem({
   message,
   isMyMessage,
   scrollToMessage,
+  enableProfileModal = true,
   bg = 'background',
   ...props
 }: DefaultChatItemProps) {
@@ -75,6 +78,9 @@ export default function DefaultChatItem({
               labelingData={{ chatId }}
               messageId={messageId}
               address={ownerId}
+              chatId={chatId}
+              hubId={hubId}
+              enableProfileModal={enableProfileModal}
               className={cx('text-sm font-medium text-text-secondary')}
             />
             {/* <SubTeamLabel address={ownerId} /> */}

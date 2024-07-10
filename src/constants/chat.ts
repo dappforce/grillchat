@@ -7,3 +7,5 @@ const CUSTOM_CHAT_MAX_LENGTH: Record<string, number> = {
 export function getMaxMessageLength(chatId: string) {
   return CUSTOM_CHAT_MAX_LENGTH[chatId] ?? DEFAULT_MAX_MESSAGE_LENGTH
 }
+
+export const MIN_MEME_FOR_REVIEW = 3
