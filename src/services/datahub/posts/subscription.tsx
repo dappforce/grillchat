@@ -2,10 +2,10 @@ import Toast from '@/components/Toast'
 import { MIN_MEME_FOR_REVIEW } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
+import { useMessageData } from '@/stores/message'
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { cx } from '@/utils/class-names'
-import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -206,8 +206,8 @@ async function processMessage(
         }
       } else {
         // to not wait for another query to run the other synchronous actions below
-        processUnapprovedMeme(newPost)
-        async function processUnapprovedMeme(newPost: PostData) {
+        processUnapprovedMeme()
+        async function processUnapprovedMeme() {
           if (ownerId) {
             const cachedCount = getUnapprovedMemesCountQuery.getQueryData(
               queryClient,
@@ -235,25 +235,30 @@ async function processMessage(
               queryClient,
               { address: myAddress, chatId: rootPostId ?? '' }
             )
-            const remaining = Math.max(MIN_MEME_FOR_REVIEW - (count ?? 0), 0)
-            const title =
-              remaining > 0
-                ? `Your meme is under review (at least ${remaining} more memes required).`
-                : `Your meme is under review (${MIN_MEME_FOR_REVIEW} required memes submitted).`
-            const description =
-              remaining > 0
-                ? `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received your meme! Hang tight while we give it a quick review. But we need at least ${remaining} memes from you to start the process.`
-                : `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received your meme! Hang tight while we give it a quick review.`
-            toast.custom((t) => (
-              <Toast
-                t={t}
-                icon={(className) => (
-                  <span className={cx(className, 'text-base')}>⏳</span>
-                )}
-                title={title}
-                description={description}
-              />
-            ))
+            if (count === 1 || count === 3) {
+              useMessageData.getState().setOpenMessageModal('on-review')
+            } else {
+              const remaining = Math.max(MIN_MEME_FOR_REVIEW - (count ?? 0), 0)
+              const title = 'Under review'
+              const description =
+                remaining > 0
+                  ? `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received your meme! We need at least ${remaining} more memes from you to mark you as a verified creator.`
+                  : `${
+                      tokenomics.socialActionPrice.createCommentPoints
+                    } points have been used. We received ${
+                      count ?? 0
+                    } meme from you! Now we need a bit of time to finish review you as a verified creator.`
+              toast.custom((t) => (
+                <Toast
+                  t={t}
+                  icon={(className) => (
+                    <span className={cx(className, 'text-base')}>⏳</span>
+                  )}
+                  title={title}
+                  description={description}
+                />
+              ))
+            }
           }
         }
       }

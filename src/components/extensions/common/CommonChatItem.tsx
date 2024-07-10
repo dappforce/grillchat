@@ -374,7 +374,7 @@ function ApproveButton({
         })
       }}
     >
-      Approve
+      Approve user
     </Button>
   )
 }

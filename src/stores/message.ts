@@ -23,7 +23,7 @@ type State = {
 
   unreadMessage: UnreadMessage
 
-  isOpenMessageModal: 'not-enough-balance' | 'blocked' | ''
+  isOpenMessageModal: 'not-enough-balance' | 'on-review' | 'blocked' | ''
   currentChatId: string
 }
 
