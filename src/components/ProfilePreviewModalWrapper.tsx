@@ -1,8 +1,8 @@
+import { useProfilePostsModal } from '@/stores/profile-posts-modal'
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import Name, { NameProps } from './Name'
 import ProfilePreview from './ProfilePreview'
-import ProfilePostsListModalWrapper from './chats/ChatItem/profilePosts/ProfileProstsListModal'
 import Modal from './modals/Modal'
 
 export type ProfilePreviewModalWrapperProps = {
@@ -49,26 +49,20 @@ export function ProfilePreviewModalName({
   hubId: string
   enableProfileModal?: boolean
 }) {
+  const { openModal } = useProfilePostsModal()
+
   return (
-    <ProfilePostsListModalWrapper
+    <Name
+      {...props}
+      onClick={(e) => {
+        if (enableProfileModal) {
+          e.preventDefault()
+          openModal({ messageId, chatId, hubId, address: props.address })
+          props.onClick?.(e)
+        }
+      }}
+      className={cx('cursor-pointer', props.className)}
       address={props.address}
-      messageId={messageId}
-      chatId={chatId}
-      hubId={hubId}
-    >
-      {(onClick) => (
-        <Name
-          {...props}
-          onClick={(e) => {
-            if (enableProfileModal) {
-              onClick(e)
-              props.onClick?.(e)
-            }
-          }}
-          className={cx('cursor-pointer', props.className)}
-          address={props.address}
-        />
-      )}
-    </ProfilePostsListModalWrapper>
+    />
   )
 }

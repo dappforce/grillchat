@@ -1,4 +1,5 @@
 import AddressAvatar from '@/components/AddressAvatar'
+import { useProfilePostsModal } from '@/stores/profile-posts-modal'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
@@ -6,7 +7,6 @@ import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
 import Embed, { useCanRenderEmbed } from './Embed'
-import ProfilePostsListModalWrapper from './profilePosts/ProfileProstsListModal'
 import DefaultChatItem from './variants/DefaultChatItem'
 import EmojiChatItem, {
   shouldRenderEmojiChatItem,
@@ -42,6 +42,7 @@ export default function ChatItem({
 }: ChatItemProps) {
   const { ownerId, id: messageId } = message.struct
   const { body, extensions, link } = message.content || {}
+  const { openModal } = useProfilePostsModal()
 
   const canRenderEmbed = useCanRenderEmbed(link ?? '')
 
@@ -63,20 +64,17 @@ export default function ChatItem({
         )}
       >
         {!isMyMessage && (
-          <ProfilePostsListModalWrapper
+          <AddressAvatar
+            onClick={(e) => {
+              e.preventDefault()
+
+              if (enableProfileModal) {
+                openModal({ chatId, hubId, messageId, address: ownerId })
+              }
+            }}
             address={ownerId}
-            chatId={chatId}
-            hubId={hubId}
-            messageId={messageId}
-          >
-            {(onClick) => (
-              <AddressAvatar
-                onClick={enableProfileModal ? onClick : undefined}
-                address={ownerId}
-                className='flex-shrink-0 cursor-pointer'
-              />
-            )}
-          </ProfilePostsListModalWrapper>
+            className='flex-shrink-0 cursor-pointer'
+          />
         )}
         <ChatItemMenus
           menuIdPrefix={menuIdPrefix}
@@ -95,7 +93,6 @@ export default function ChatItem({
                   e.preventDefault()
                   toggleDisplay?.(e)
                 }}
-                // onDoubleClick={() => setMessageAsReply()}
                 {...referenceProps}
                 id={messageBubbleId}
               >

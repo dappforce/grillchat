@@ -10,6 +10,7 @@ import { cx } from '@/utils/class-names'
 import { sendMessageToParentWindow } from '@/utils/window'
 import { ComponentProps, Fragment, useEffect, useId, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import ProfilePostsListModal from '../ChatItem/profilePosts/ProfileProstsListModal'
 import usePaginatedMessageIds from '../hooks/usePaginatedMessageIds'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import CenterChatNotice from './CenterChatNotice'
@@ -231,6 +232,7 @@ function ChatListContent({
           newMessageNoticeClassName={newMessageNoticeClassName}
         />
       </div>
+      <ProfilePostsListModal />
     </ChatListContext.Provider>
   )
 }
