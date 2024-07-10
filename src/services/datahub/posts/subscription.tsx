@@ -217,7 +217,7 @@ async function processMessage(
         myAddress: getMyMainAddress() ?? '',
       },
       (oldData) => {
-        if (!oldData) return oldData
+        if (!oldData) return [newestId]
         const oldIdsSet = new Set(oldData)
         if (oldIdsSet.has(newestId)) return oldData
 
@@ -231,7 +231,7 @@ async function processMessage(
           }
           return false
         })
-        if (index !== -1) {
+        if (index !== -1 || oldData.length <= 0) {
           newIds.splice(index, 0, newestId)
         }
 
@@ -248,7 +248,7 @@ async function processMessage(
       myAddress: getMyMainAddress() ?? '',
     },
     (oldData) => {
-      if (!oldData) return oldData
+      if (!oldData) return [newestId]
       const oldIdsSet = new Set(oldData)
       if (oldIdsSet.has(newestId)) return oldData
 
@@ -285,7 +285,7 @@ async function processMessage(
         }
         return false
       })
-      if (index !== -1) {
+      if (index !== -1 || oldData.length <= 0) {
         newIds.splice(index, 0, newestId)
       }
 
