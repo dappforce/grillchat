@@ -47,6 +47,7 @@ import usePinnedMessage from '../hooks/usePinnedMessage'
 
 export type ChatItemMenusProps = {
   messageId: string
+  menuIdPrefix?: string
   chatId: string
   hubId: string
   children: FloatingMenusProps['children']
@@ -57,6 +58,7 @@ type ModalState = 'metadata' | 'moderate' | 'hide' | null
 
 export default function ChatItemMenus({
   messageId,
+  menuIdPrefix,
   children,
   chatId,
   hubId,
@@ -65,7 +67,8 @@ export default function ChatItemMenus({
   // const canSendMessage = useCanSendMessage(hubId, chatId)
   const myAddress = useMyMainAddress()
 
-  const isOpen = useChatMenu((state) => state.openedChatId === messageId)
+  const menuId = `${menuIdPrefix || ''}${messageId}`
+  const isOpen = useChatMenu((state) => state.openedChatId === menuId)
   const setIsOpenChatMenu = useChatMenu((state) => state.setOpenedChatId)
   const isMessageOwner = useIsOwnerOfPost(messageId)
 
@@ -344,7 +347,7 @@ export default function ChatItemMenus({
             if (closestButton?.classList.contains('superlike') && isOpen) {
               return
             }
-            setIsOpenChatMenu(isOpen ? messageId : null)
+            setIsOpenChatMenu(isOpen ? menuId : null)
           },
         }}
       >

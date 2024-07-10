@@ -23,6 +23,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   hubId: string
   bg?: 'background-light' | 'background'
   showApproveButton?: boolean
+  menuIdPrefix?: string
 }
 
 export default function ChatItem({
@@ -36,6 +37,7 @@ export default function ChatItem({
   bg = 'background-light',
   showApproveButton,
   enableProfileModal = true,
+  menuIdPrefix,
   ...props
 }: ChatItemProps) {
   const { ownerId, id: messageId } = message.struct
@@ -77,6 +79,7 @@ export default function ChatItem({
           </ProfilePostsListModalWrapper>
         )}
         <ChatItemMenus
+          menuIdPrefix={menuIdPrefix}
           chatId={chatId}
           messageId={message.id}
           enableChatMenu={enableChatMenu}

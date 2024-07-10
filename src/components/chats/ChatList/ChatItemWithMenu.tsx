@@ -16,6 +16,7 @@ export type ChatItemWithMenuProps = {
   showBlockedMessage?: boolean
   scrollToMessage?: ScrollToMessage
   showApproveButton?: boolean
+  menuIdPrefix?: string
 }
 function InnerChatItemWithMenu({
   message,
@@ -26,6 +27,7 @@ function InnerChatItemWithMenu({
   showBlockedMessage,
   scrollToMessage,
   showApproveButton,
+  menuIdPrefix,
 }: ChatItemWithMenuProps) {
   return message ? (
     <ChatItemMenus
@@ -33,6 +35,7 @@ function InnerChatItemWithMenu({
       messageId={message.id}
       key={message.id}
       hubId={hubId}
+      menuIdPrefix={menuIdPrefix}
     >
       {(config) => {
         const { referenceProps, toggleDisplay } = config || {}
@@ -56,6 +59,7 @@ function InnerChatItemWithMenu({
               enableProfileModal={enableProfileModal}
               scrollToMessage={scrollToMessage}
               showApproveButton={showApproveButton}
+              menuIdPrefix={menuIdPrefix}
             />
           </div>
         )
