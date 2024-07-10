@@ -219,7 +219,7 @@ export default function CommonChatItem({
               className={cx('text-sm font-medium text-text-secondary')}
             />
             {showApproveButton && inView && (
-              <UnapprovedMemeCount address={ownerId} />
+              <UnapprovedMemeCount address={ownerId} chatId={chatId} />
             )}
             {/* <SubTeamLabel address={ownerId} /> */}
             {othersMessage.checkMark === 'top' &&

@@ -1,8 +1,16 @@
 import { getUnapprovedMemesCountQuery } from '@/services/datahub/posts/query'
 
-export default function UnapprovedMemeCount({ address }: { address: string }) {
-  const { data: count, isLoading } =
-    getUnapprovedMemesCountQuery.useQuery(address)
+export default function UnapprovedMemeCount({
+  address,
+  chatId,
+}: {
+  address: string
+  chatId: string
+}) {
+  const { data: count, isLoading } = getUnapprovedMemesCountQuery.useQuery({
+    address,
+    chatId,
+  })
   if (isLoading) return null
 
   return (

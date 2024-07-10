@@ -180,7 +180,11 @@ async function processMessage(
 
   const newPost = getPostQuery.getQueryData(queryClient, newestId)
   const myAddress = getMyMainAddress()
-  const isCurrentOwner = newPost?.struct.ownerId === myAddress
+
+  const rootPostId = entity.rootPost?.persistentId
+  const ownerId = newPost?.struct.ownerId
+  const isCurrentOwner = ownerId === myAddress
+
   if (isCreationEvent) {
     const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
       queryClient,
@@ -204,22 +208,22 @@ async function processMessage(
         // to not wait for another query to run the other synchronous actions below
         processUnapprovedMeme(newPost)
         async function processUnapprovedMeme(newPost: PostData) {
-          if (newPost.struct.ownerId) {
+          if (ownerId) {
             const cachedCount = getUnapprovedMemesCountQuery.getQueryData(
               queryClient,
-              newPost.struct.ownerId
+              { address: ownerId, chatId: rootPostId ?? '' }
             )
             if (typeof cachedCount === 'number') {
               getUnapprovedMemesCountQuery.setQueryData(
                 queryClient,
-                newPost.struct.ownerId,
+                { address: ownerId, chatId: rootPostId ?? '' },
                 (count) => (count ?? 0) + 1
               )
             } else if (isCurrentOwner) {
-              await getUnapprovedMemesCountQuery.fetchQuery(
-                queryClient,
-                myAddress
-              )
+              await getUnapprovedMemesCountQuery.fetchQuery(queryClient, {
+                address: ownerId,
+                chatId: rootPostId ?? '',
+              })
             }
           }
           if (isCurrentOwner) {
@@ -229,7 +233,7 @@ async function processMessage(
 
             const count = getUnapprovedMemesCountQuery.getQueryData(
               queryClient,
-              myAddress
+              { address: myAddress, chatId: rootPostId ?? '' }
             )
             const remaining = Math.max(MIN_MEME_FOR_REVIEW - (count ?? 0), 0)
             const title =
@@ -256,7 +260,6 @@ async function processMessage(
     }
   }
 
-  const rootPostId = entity.rootPost?.persistentId
   if (!rootPostId) return
 
   if (isCreationEvent && !entity.approvedInRootPost && isCurrentOwner) {

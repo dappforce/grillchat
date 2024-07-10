@@ -537,10 +537,14 @@ export const getTimeLeftUntilCanPostQuery = createQuery({
 })
 
 const GET_UNAPPROVED_MEMES_COUNT = gql`
-  query GetUnapprovedMemesCount($address: String!) {
+  query GetUnapprovedMemesCount($address: String!, $postId: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address, approvedInRootPost: false }
+        filter: {
+          createdByAccountAddress: $address
+          approvedInRootPost: false
+          rootPostId: $postId
+        }
       }
     ) {
       total
@@ -549,17 +553,17 @@ const GET_UNAPPROVED_MEMES_COUNT = gql`
 `
 export const getUnapprovedMemesCountQuery = createQuery({
   key: 'unapprovedMemesCount',
-  fetcher: async (address: string) => {
+  fetcher: async ({ address, chatId }: { chatId: string; address: string }) => {
     const res = await datahubQueryRequest<
       GetUnapprovedMemesCountQuery,
       GetUnapprovedMemesCountQueryVariables
     >({
       document: GET_UNAPPROVED_MEMES_COUNT,
-      variables: { address },
+      variables: { address, postId: chatId },
     })
     return res.posts.total ?? 0
   },
-  defaultConfigGenerator: (address) => ({
-    enabled: !!address,
+  defaultConfigGenerator: (params) => ({
+    enabled: !!params?.address && !!params.chatId,
   }),
 })

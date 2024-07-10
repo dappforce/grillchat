@@ -2853,6 +2853,7 @@ export type GetLastPostedMemeQuery = {
 
 export type GetUnapprovedMemesCountQueryVariables = Exact<{
   address: Scalars['String']['input']
+  postId: Scalars['String']['input']
 }>
 
 export type GetUnapprovedMemesCountQuery = {
@@ -3624,10 +3625,14 @@ export const GetLastPostedMeme = gql`
   }
 `
 export const GetUnapprovedMemesCount = gql`
-  query GetUnapprovedMemesCount($address: String!) {
+  query GetUnapprovedMemesCount($address: String!, $postId: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
+        filter: {
+          createdByAccountAddress: $address
+          approvedInRootPost: false
+          rootPostId: $postId
+        }
       }
     ) {
       total
