@@ -1,9 +1,11 @@
 import Toast from '@/components/Toast'
+import { MIN_MEME_FOR_REVIEW } from '@/constants/chat'
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { cx } from '@/utils/class-names'
+import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
@@ -14,7 +16,13 @@ import {
   SubscribePostSubscription,
 } from '../generated-query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
-import { getPaginatedPostIdsByPostId, getPostMetadataQuery } from './query'
+import { lastSentMessageStorage } from './mutation'
+import {
+  getPaginatedPostIdsByPostId,
+  getPostMetadataQuery,
+  getTimeLeftUntilCanPostQuery,
+  getUnapprovedMemesCountQuery,
+} from './query'
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
@@ -178,29 +186,72 @@ async function processMessage(
       queryClient,
       null
     )
-    if (isCurrentOwner && isCreationEvent) {
+    if (isCreationEvent && newPost) {
       if (newPost.struct.approvedInRootPost) {
-        toast.custom((t) => (
-          <Toast
-            icon={(className) => (
-              <span className={cx(className, 'text-base')}>✨</span>
-            )}
-            t={t}
-            title='Meme Sent!'
-            description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. More memes, more fun!`}
-          />
-        ))
+        if (isCurrentOwner) {
+          toast.custom((t) => (
+            <Toast
+              icon={(className) => (
+                <span className={cx(className, 'text-base')}>✨</span>
+              )}
+              t={t}
+              title='Meme Sent!'
+              description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. More memes, more fun!`}
+            />
+          ))
+        }
       } else {
-        toast.custom((t) => (
-          <Toast
-            t={t}
-            icon={(className) => (
-              <span className={cx(className, 'text-base')}>⏳</span>
-            )}
-            title='Your meme is under review'
-            description={`${tokenomics.socialActionPrice.createCommentPoints} points have been used. We got your meme! Hang tight while we give it a quick review.`}
-          />
-        ))
+        // to not wait for another query to run the other synchronous actions below
+        processUnapprovedMeme(newPost)
+        async function processUnapprovedMeme(newPost: PostData) {
+          if (newPost.struct.ownerId) {
+            const cachedCount = getUnapprovedMemesCountQuery.getQueryData(
+              queryClient,
+              newPost.struct.ownerId
+            )
+            if (typeof cachedCount === 'number') {
+              getUnapprovedMemesCountQuery.setQueryData(
+                queryClient,
+                newPost.struct.ownerId,
+                (count) => (count ?? 0) + 1
+              )
+            } else if (isCurrentOwner) {
+              await getUnapprovedMemesCountQuery.fetchQuery(
+                queryClient,
+                myAddress
+              )
+            }
+          }
+          if (isCurrentOwner) {
+            // reset timer because its unapproved meme
+            getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
+            lastSentMessageStorage.remove()
+
+            const count = getUnapprovedMemesCountQuery.getQueryData(
+              queryClient,
+              myAddress
+            )
+            const remaining = Math.max(MIN_MEME_FOR_REVIEW - (count ?? 0), 0)
+            const title =
+              remaining > 0
+                ? `Your meme is under review (at least ${remaining} more memes required).`
+                : `Your meme is under review (${MIN_MEME_FOR_REVIEW} required memes submitted).`
+            const description =
+              remaining > 0
+                ? `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received your meme! Hang tight while we give it a quick review. But we need at least ${remaining} memes from you to start the process.`
+                : `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received your meme! Hang tight while we give it a quick review.`
+            toast.custom((t) => (
+              <Toast
+                t={t}
+                icon={(className) => (
+                  <span className={cx(className, 'text-base')}>⏳</span>
+                )}
+                title={title}
+                description={description}
+              />
+            ))
+          }
+        }
       }
     }
   }

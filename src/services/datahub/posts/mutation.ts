@@ -278,6 +278,7 @@ export function useSendMessage(
 
       const myAddress = getMyMainAddress()
       if (queryClient && myAddress) {
+        lastSentMessageStorage.remove()
         getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
       }
     },

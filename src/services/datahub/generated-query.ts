@@ -2851,6 +2851,15 @@ export type GetLastPostedMemeQuery = {
   }
 }
 
+export type GetUnapprovedMemesCountQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetUnapprovedMemesCountQuery = {
+  __typename?: 'Query'
+  posts: { __typename?: 'FindPostsResponseDto'; total?: number | null }
+}
+
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
 
 export type SubscribePostSubscription = {
@@ -3602,7 +3611,7 @@ export const GetLastPostedMeme = gql`
   query GetLastPostedMeme($address: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address }
+        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
         pageSize: 1
         orderBy: "createdAtTime"
         orderDirection: DESC
@@ -3611,6 +3620,17 @@ export const GetLastPostedMeme = gql`
       data {
         createdAtTime
       }
+    }
+  }
+`
+export const GetUnapprovedMemesCount = gql`
+  query GetUnapprovedMemesCount($address: String!) {
+    posts(
+      args: {
+        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
+      }
+    ) {
+      total
     }
   }
 `

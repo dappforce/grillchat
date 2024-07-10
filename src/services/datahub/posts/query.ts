@@ -26,6 +26,8 @@ import {
   GetPostMetadataQueryVariables,
   GetPostsBySpaceIdQuery,
   GetPostsBySpaceIdQueryVariables,
+  GetUnapprovedMemesCountQuery,
+  GetUnapprovedMemesCountQueryVariables,
   GetUnreadCountQuery,
   GetUnreadCountQueryVariables,
   QueryOrder,
@@ -481,7 +483,7 @@ const GET_LAST_POSTED_MEME = gql`
   query GetLastPostedMeme($address: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address }
+        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
         pageSize: 1
         orderBy: "createdAtTime"
         orderDirection: DESC
@@ -529,6 +531,34 @@ async function getTimeLeftUntilCanPost(address: string) {
 export const getTimeLeftUntilCanPostQuery = createQuery({
   key: 'lastPostedMeme',
   fetcher: getTimeLeftUntilCanPost,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+const GET_UNAPPROVED_MEMES_COUNT = gql`
+  query GetUnapprovedMemesCount($address: String!) {
+    posts(
+      args: {
+        filter: { createdByAccountAddress: $address, approvedInRootPost: false }
+      }
+    ) {
+      total
+    }
+  }
+`
+export const getUnapprovedMemesCountQuery = createQuery({
+  key: 'unapprovedMemesCount',
+  fetcher: async (address: string) => {
+    const res = await datahubQueryRequest<
+      GetUnapprovedMemesCountQuery,
+      GetUnapprovedMemesCountQueryVariables
+    >({
+      document: GET_UNAPPROVED_MEMES_COUNT,
+      variables: { address },
+    })
+    return res.posts.total ?? 0
+  },
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
   }),

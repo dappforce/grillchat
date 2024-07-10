@@ -5,6 +5,7 @@ import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatIte
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
+import UnapprovedMemeCount from '@/components/chats/UnapprovedMemeCount'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike from '@/components/content-staking/SuperLike'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
@@ -12,12 +13,12 @@ import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { useApproveUser } from '@/services/datahub/posts/mutation'
-import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Linkify from 'linkify-react'
+import { useInView } from 'react-intersection-observer'
 import { ExtensionChatItemProps } from '../types'
 
 type DerivativesData = {
@@ -70,6 +71,7 @@ export default function CommonChatItem({
   bg = 'background',
   showApproveButton,
 }: CommonChatItemProps) {
+  const { inView, ref } = useInView()
   const myAddress = useMyMainAddress()
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { mutate: moderate, isLoading: loadingModeration } =
@@ -202,6 +204,7 @@ export default function CommonChatItem({
               'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5',
               othersMessage.checkMark !== 'top' && 'justify-between'
             )}
+            ref={ref}
           >
             <ProfilePreviewModalName
               clipText
@@ -215,6 +218,9 @@ export default function CommonChatItem({
               enableProfileModal={enableProfileModal}
               className={cx('text-sm font-medium text-text-secondary')}
             />
+            {showApproveButton && inView && (
+              <UnapprovedMemeCount address={ownerId} />
+            )}
             {/* <SubTeamLabel address={ownerId} /> */}
             {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
@@ -351,7 +357,6 @@ function ApproveButton({
   chatId: string
   ownerId: string
 }) {
-  const { data: profile } = getProfileQuery.useQuery(ownerId)
   const { mutate, isLoading } = useApproveUser()
   return (
     <Button
