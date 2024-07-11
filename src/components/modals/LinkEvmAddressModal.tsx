@@ -48,7 +48,7 @@ export default function LinkEvmAddressModal(
   return (
     <Modal
       {...props}
-      title={props.title || 'Your EVM address for rewards'}
+      title={props.title || 'Your Ethereum address for rewards'}
       description={
         props.description ??
         'We will send your token rewards to this address if you win this contest.'
@@ -59,12 +59,12 @@ export default function LinkEvmAddressModal(
         <Input
           error={evmAddressError}
           value={evmAddress}
-          placeholder='Your EVM address'
+          placeholder='Your Ethereum address'
           onChange={(e) => {
             const address = e.target.value
             setEvmAddress(address)
             if (!isAddress(address)) {
-              setEvmAddressError('Invalid EVM Address')
+              setEvmAddressError('Invalid Ethereum Address')
             } else {
               setEvmAddressError('')
             }

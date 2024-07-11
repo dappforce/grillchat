@@ -12,8 +12,8 @@ export default function ConnectEvmModal(props: ModalFunctionalityProps) {
     <Modal
       {...props}
       withCloseButton
-      title='Connect Your EVM to Get Rewards'
-      description='Only users with a connected EVM will be able to receive and manage their rewards on the platform. It also allows you to use features such as donations and NFTs, display your identity, and much more.'
+      title='Connect Your Ethereum address to Get Rewards'
+      description='Only users with a connected Ethereum address will be able to receive and manage their rewards on the platform. It also allows you to use features such as donations and NFTs, display your identity, and much more.'
     >
       <div className='flex flex-col gap-8'>
         <Image src={EvmConnectionImage} alt='' className='w-full' />

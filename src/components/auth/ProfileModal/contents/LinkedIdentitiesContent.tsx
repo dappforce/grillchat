@@ -46,8 +46,8 @@ export default function LinkedIdentitiesContent() {
 
   const externalProviders: ProviderData[] = [
     {
-      name: 'EVM',
-      title: 'EVM Address for Rewards',
+      name: 'Ethereum Address',
+      title: 'Ethereum Address for Rewards',
       points: 0,
       icon: SiEthereum,
       provider: IdentityProvider.Evm,
@@ -170,7 +170,7 @@ function EvmConnectButton() {
       reset()
     },
   })
-  useToastError(error, 'Failed to link EVM address')
+  useToastError(error, 'Failed to link Ethereum address')
 
   const hasTriedSigning = useRef(false)
   const signAndLinkEvmAddress = async (evmAddress: string) => {

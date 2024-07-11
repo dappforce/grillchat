@@ -75,7 +75,7 @@ export default function LoginModal({
       desc: 'We have created an account linked to your X for you. You can now use Epic!',
     },
     'evm-address-link': {
-      title: '🔑 Connect EVM',
+      title: '🔑 Connect Ethereum address',
       desc: 'Create an on-chain proof to link your Epic account.',
       withBackButton: true,
     },

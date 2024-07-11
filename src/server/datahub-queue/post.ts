@@ -86,7 +86,6 @@ export async function updatePostData(input: UpdatePostOptimisticInput) {
   return res.updatePostOptimistic.callId
 }
 
-// TODO: change this if the new mutation is created
 const APPROVE_USER_MUTATION = gql`
   mutation ApproveUser($input: UpdatePostOptimisticInput!) {
     updatePostOptimistic(updatePostOptimisticInput: $input) {

@@ -14,7 +14,7 @@ export const ConnectWalletContent = ({
       className='pt-0'
       menus={[
         {
-          text: 'EVM',
+          text: 'Ethereum',
           icon: EthIcon,
           onClick: () => {
             sendEvent('start_link_evm_address')

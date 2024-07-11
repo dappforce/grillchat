@@ -357,7 +357,7 @@ const UserStatsSection = ({
       <LinkEvmAddressModal
         isOpen={openEvmLinkModal}
         closeModal={() => setOpenEvmLinkModal(false)}
-        title='Edit your EVM address for rewards'
+        title='Edit your Ethereum address for rewards'
         description='We will send your token rewards to this address if you win in contest.'
       />
     </>

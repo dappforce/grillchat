@@ -13,7 +13,7 @@ export default function EvmAddress({ evmAddress, ...props }: EvmAddressProps) {
     <Card {...props} className={cx('flex justify-between', props.className)}>
       <CopyTextInline
         text={truncateAddress(evmAddress)}
-        tooltip='Copy my EVM address'
+        tooltip='Copy my Ethereum address'
         tooltipPlacement='top'
         textToCopy={evmAddress}
         textClassName='font-mono'

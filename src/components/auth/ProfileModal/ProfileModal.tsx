@@ -157,7 +157,7 @@ export default function ProfileModal({
       withBackButton: true,
     },
     'add-evm-provider': {
-      title: '🔑 Connect EVM',
+      title: '🔑 Connect Ethereum address',
       desc: 'Create an on-chain proof to link your Epic account.',
       withBackButton: true,
     },

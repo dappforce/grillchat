@@ -20,7 +20,7 @@ type CustomConnectButtonProps = ButtonProps & {
 export const CustomConnectButton = ({
   className,
   onSuccessConnect,
-  label = 'Connect EVM Wallet',
+  label = 'Connect Ethereum Address',
   withWalletActionImage = true,
   secondLabel,
   isLoading,

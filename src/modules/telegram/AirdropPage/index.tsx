@@ -158,7 +158,7 @@ export function AddEvmProviderModal(props: ModalFunctionalityProps) {
   return (
     <Modal
       {...props}
-      title='🔑 Connect EVM'
+      title='🔑 Connect Ethereum address'
       description='Create an on-chain proof to link your Epic account.'
       withCloseButton
     >

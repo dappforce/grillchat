@@ -165,7 +165,7 @@ export const CommonEvmAddressLinked = () => {
         onClick={() => {
           const twitterUrl = twitterShareUrl(
             getCurrentUrlOrigin(),
-            `I just linked my #EVM wallet to Epic 🥳!`,
+            `I just linked my #Ethereum address to Epic 🥳!`,
             { tags: ['Ethereum', 'Epic', 'Base', 'Meme2Earn'] }
           )
           openNewWindow(twitterUrl)
