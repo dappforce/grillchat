@@ -197,7 +197,7 @@ export default function LikeIntroModal() {
                 },
               }}
             />
-            <HandPoint className='pointer-events-none absolute -bottom-5 left-11 animate-pulse' />
+            <HandPoint className='pointer-events-none absolute -bottom-5 left-11 h-12 w-12 animate-scale' />
           </div>
           <div className='mt-6 flex flex-col items-center gap-2 text-center'>
             <span className='font-medium text-text-muted'>Points earned</span>
