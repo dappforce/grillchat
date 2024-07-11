@@ -33,6 +33,7 @@ function Points({
 
   if (!withPointsAnimation) return <span>{splitValues}</span>
 
+  // Slot counter needs to be inside a span with font-bold and text-xl or bigger to work properly, otherwise, it will always rerender
   return (
     <SlotCounter
       containerClassName='relative -top-0.5'

@@ -21,7 +21,7 @@ export default function ImageChatItem(props: ExtensionChatItemProps) {
       showSuperLikeWhenZero
       othersMessage={{ children: 'middle', checkMark: 'bottom' }}
       myMessageConfig={{ children: 'middle', checkMark: 'adaptive-inside' }}
-      className='max-w-xs'
+      className={cx('max-w-xs', props.className)}
     >
       {({ isMyMessage }) => (
         <div className={cx('flex flex-col', !isMyMessage && 'mt-1')}>

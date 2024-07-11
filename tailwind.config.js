@@ -7,14 +7,19 @@ module.exports = {
     extend: {
       animation: {
         fade: 'fadeOut .4s ease-in-out',
+        scale: 'scale 1s ease-in-out infinite',
       },
 
-      keyframes: () => ({
+      keyframes: {
         fadeOut: {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 },
         },
-      }),
+        scale: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.25)' },
+        },
+      },
 
       gridTemplateRows: {
         0: 'repeat(1, minmax(0, 0fr))',
