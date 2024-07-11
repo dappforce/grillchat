@@ -103,7 +103,10 @@ export default function MediaLoader({
           <Image
             {...commonProps}
             loading='eager'
-            className={cx('max-h-96 object-contain', commonProps.className)}
+            className={cx(
+              'mx-auto max-h-96 object-contain',
+              commonProps.className
+            )}
             style={{ backfaceVisibility: 'hidden', ...commonProps.style }}
             width={commonProps.width || 500}
             height={commonProps.height || 500}
@@ -123,7 +126,7 @@ export default function MediaLoader({
       ) : (
         <div
           className={cx(
-            'aspect-square w-full animate-pulse bg-background-lighter',
+            'aspect-square max-h-96 w-full animate-pulse bg-background-lighter',
             placeholderClassName
           )}
         />
