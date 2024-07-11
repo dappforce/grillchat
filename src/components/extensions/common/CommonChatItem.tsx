@@ -7,7 +7,9 @@ import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusInd
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import UnapprovedMemeCount from '@/components/chats/UnapprovedMemeCount'
 import { getRepliedMessageId } from '@/components/chats/utils'
-import SuperLike from '@/components/content-staking/SuperLike'
+import SuperLike, {
+  SuperLikeButton,
+} from '@/components/content-staking/SuperLike'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
@@ -42,7 +44,7 @@ type CommonChatItemProps = ExtensionChatItemProps & {
   othersMessage?: OthersMessageConfig
   className?: string
   textColor?: string
-  bg?: 'background' | 'background-light'
+  bg?: 'background' | 'background-light' | 'background-lighter'
   showSuperLikeWhenZero?: boolean
   enableProfileModal?: boolean
 }
@@ -70,6 +72,7 @@ export default function CommonChatItem({
   hubId,
   bg = 'background',
   showApproveButton,
+  dummySuperLike,
 }: CommonChatItemProps) {
   const { inView, ref } = useInView()
   const myAddress = useMyMainAddress()
@@ -194,7 +197,9 @@ export default function CommonChatItem({
             ? 'bg-background-primary-light text-text dark:bg-background-primary/70 dark:text-text-on-primary'
             : bg === 'background'
             ? 'bg-background'
-            : 'bg-background-light',
+            : bg === 'background-light'
+            ? 'bg-background-light'
+            : 'bg-background-lighter',
           className
         )}
       >
@@ -328,7 +333,15 @@ export default function CommonChatItem({
           myMessageConfig.children === 'bottom' &&
           childrenElement}
 
-        {showApproveButton ? (
+        {dummySuperLike ? (
+          <SuperLikeButton
+            {...dummySuperLike}
+            className={cx(
+              'mb-1.5 ml-2.5 mt-1 self-start dark:bg-background-lightest',
+              dummySuperLike.className
+            )}
+          />
+        ) : showApproveButton ? (
           <div className='pt-1' />
         ) : message.struct.approvedInRootPost ? (
           <SuperLike

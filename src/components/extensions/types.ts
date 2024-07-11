@@ -1,5 +1,6 @@
 import { PostContent, PostData } from '@subsocial/api/types'
 import { ComponentType } from 'react'
+import { SuperLikeButtonProps } from '../content-staking/SuperLike'
 
 export type ExtensionChatItemProps = {
   message: PostData
@@ -8,8 +9,10 @@ export type ExtensionChatItemProps = {
   chatId: string
   hubId: string
   enableProfileModal?: boolean
-  bg?: 'background' | 'background-light'
+  bg?: 'background' | 'background-light' | 'background-lighter'
   showApproveButton?: boolean
+  className?: string
+  dummySuperLike?: SuperLikeButtonProps
 }
 
 export type RepliedMessagePreviewPartProps = {
