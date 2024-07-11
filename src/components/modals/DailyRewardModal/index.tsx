@@ -148,6 +148,7 @@ export default function DailyRewardModal({
               onClick={() => {
                 sendEvent('daily_reward_claimed', {
                   value: claimable?.claimRewardPoints,
+                  day: claimable?.index,
                 })
                 setSelectedClaim(claimable)
                 claim(undefined)
