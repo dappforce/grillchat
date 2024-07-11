@@ -217,7 +217,10 @@ async function processMessage(
               getUnapprovedMemesCountQuery.setQueryData(
                 queryClient,
                 { address: ownerId, chatId: rootPostId ?? '' },
-                (count) => (count ?? 0) + 1
+                (count) => ({
+                  unapproved: (count?.unapproved ?? 0) + 1,
+                  approved: count?.approved ?? 0,
+                })
               )
             } else if (isCurrentOwner) {
               await getUnapprovedMemesCountQuery.fetchQuery(queryClient, {
@@ -235,10 +238,13 @@ async function processMessage(
               queryClient,
               { address: myAddress, chatId: rootPostId ?? '' }
             )
-            if (count === 1 || count === 3) {
+            if (count.unapproved === 1 || count.unapproved === 3) {
               useMessageData.getState().setOpenMessageModal('on-review')
             } else {
-              const remaining = Math.max(MIN_MEME_FOR_REVIEW - (count ?? 0), 0)
+              const remaining = Math.max(
+                MIN_MEME_FOR_REVIEW - (count.unapproved ?? 0),
+                0
+              )
               const title = 'Under review'
               const description =
                 remaining > 0
