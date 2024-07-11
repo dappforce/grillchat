@@ -14,7 +14,10 @@ import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
-import { useApproveUser } from '@/services/datahub/posts/mutation'
+import {
+  useApproveMessage,
+  useApproveUser,
+} from '@/services/datahub/posts/mutation'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -74,7 +77,9 @@ export default function CommonChatItem({
   showApproveButton,
   dummySuperLike,
 }: CommonChatItemProps) {
-  const { inView, ref } = useInView()
+  const { inView, ref } = useInView({
+    triggerOnce: true,
+  })
   const myAddress = useMyMainAddress()
   const { isAuthorized } = useAuthorizedForModeration(chatId)
   const { mutate: moderate, isLoading: loadingModeration } =
@@ -190,6 +195,15 @@ export default function CommonChatItem({
           )}
         </div>
       )}
+
+      {showApproveButton && inView && (
+        <UnapprovedMemeCount
+          className='absolute bottom-14 right-1.5 z-10 bg-black/50 text-white'
+          address={ownerId}
+          chatId={chatId}
+        />
+      )}
+
       <div
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
@@ -223,9 +237,6 @@ export default function CommonChatItem({
               enableProfileModal={enableProfileModal}
               className={cx('text-sm font-medium text-text-secondary')}
             />
-            {showApproveButton && inView && (
-              <UnapprovedMemeCount address={ownerId} chatId={chatId} />
-            )}
             {/* <SubTeamLabel address={ownerId} /> */}
             {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
@@ -293,7 +304,7 @@ export default function CommonChatItem({
           <div
             className={cx(
               'grid items-center gap-2 px-2 pb-1 pt-2',
-              showApproveButton ? 'grid-cols-2' : 'grid-cols-1'
+              showApproveButton ? 'grid-flow-col gap-1' : 'grid-cols-1'
             )}
           >
             <Button
@@ -315,15 +326,21 @@ export default function CommonChatItem({
                 })
               }}
               size='sm'
-              className={cx('w-full !text-text-red', {
-                ['!bg-[#EF4444] disabled:border-none disabled:!text-white disabled:!ring-0 disabled:!brightness-100']:
-                  isMessageBlocked,
-              })}
+              className={cx(
+                'w-full whitespace-nowrap px-0 text-xs !text-text-red',
+                {
+                  ['!bg-[#EF4444] disabled:border-none disabled:!text-white disabled:!ring-0 disabled:!brightness-100']:
+                    isMessageBlocked,
+                }
+              )}
             >
-              {isMessageBlocked ? 'Blocked' : 'Block message'}
+              {isMessageBlocked ? 'Blocked' : 'Block meme'}
             </Button>
             {showApproveButton && (
-              <ApproveButton ownerId={ownerId} chatId={chatId} />
+              <>
+                <ApproveUserButton ownerId={ownerId} chatId={chatId} />
+                <ApproveMemeButton messageId={message.id} chatId={chatId} />
+              </>
             )}
           </div>
         )}
@@ -363,7 +380,7 @@ export default function CommonChatItem({
   )
 }
 
-function ApproveButton({
+function ApproveUserButton({
   ownerId,
   chatId,
 }: {
@@ -374,7 +391,8 @@ function ApproveButton({
   return (
     <Button
       variant='greenOutline'
-      className='disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+      size='sm'
+      className='whitespace-nowrap px-0 text-xs disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
       loadingText='Approving...'
       isLoading={isLoading}
       onClick={(e) => {
@@ -388,6 +406,34 @@ function ApproveButton({
       }}
     >
       Approve user
+    </Button>
+  )
+}
+
+function ApproveMemeButton({
+  messageId,
+  chatId,
+}: {
+  chatId: string
+  messageId: string
+}) {
+  const { mutate, isLoading } = useApproveMessage()
+  return (
+    <Button
+      variant='greenOutline'
+      size='sm'
+      className='whitespace-nowrap px-0 text-xs disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+      loadingText='Approving...'
+      isLoading={isLoading}
+      onClick={(e) => {
+        e.stopPropagation()
+        mutate({
+          approvedInRootPost: true,
+          postId: messageId,
+        })
+      }}
+    >
+      Approve meme
     </Button>
   )
 }
