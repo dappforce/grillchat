@@ -20,7 +20,7 @@ export default function MemeOnReviewModal({
       enabled: props.isOpen,
     }
   )
-  const remaining = MIN_MEME_FOR_REVIEW - (count ?? 0)
+  const remaining = MIN_MEME_FOR_REVIEW - (count?.unapproved ?? 0)
 
   const description =
     remaining > 0
