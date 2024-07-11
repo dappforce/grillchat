@@ -1,4 +1,5 @@
 import Diamond from '@/assets/emojis/diamond.png'
+import HandPoint from '@/assets/graphics/hand-point.svg'
 import LikeButtonImage from '@/assets/graphics/like-button.png'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -163,6 +164,7 @@ export default function LikeIntroModal() {
             onClick={() => {
               sendEvent('finish_like_intro_modal')
               setIsOpenModal(false)
+              hasOpenedModal.set('true')
             }}
           >
             See More Memes
@@ -170,30 +172,33 @@ export default function LikeIntroModal() {
         </div>
       ) : (
         <>
-          <ImageChatItem
-            message={current.message}
-            chatId='0x123'
-            hubId='0x123'
-            className='max-w-none'
-            bg='background-lighter'
-            dummySuperLike={{
-              className: 'outline-none',
-              disabled: !tokenomics,
-              hasILiked,
-              superLikeCount: current.superLikeCount + (hasILiked ? 1 : 0),
-              onClick: () => {
-                if (hasILiked) return
+          <div className='relative'>
+            <ImageChatItem
+              message={current.message}
+              chatId='0x123'
+              hubId='0x123'
+              className='max-w-none'
+              bg='background-lighter'
+              dummySuperLike={{
+                className: 'outline-none',
+                disabled: !tokenomics,
+                hasILiked,
+                superLikeCount: current.superLikeCount + (hasILiked ? 1 : 0),
+                onClick: () => {
+                  if (hasILiked) return
 
-                sendEvent('like_intro_modal_meme', { step: step + 1 })
-                setHasILiked(true)
-                setPointsEarned((prev) => prev + pointsPerLike)
-                setTimeout(() => {
-                  setStep((prev) => prev + 1)
-                  setHasILiked(false)
-                }, 1000)
-              },
-            }}
-          />
+                  sendEvent('like_intro_modal_meme', { step: step + 1 })
+                  setHasILiked(true)
+                  setPointsEarned((prev) => prev + pointsPerLike)
+                  setTimeout(() => {
+                    setStep((prev) => prev + 1)
+                    setHasILiked(false)
+                  }, 1000)
+                },
+              }}
+            />
+            <HandPoint className='pointer-events-none absolute -bottom-5 left-11 animate-pulse' />
+          </div>
           <div className='mt-6 flex flex-col items-center gap-2 text-center'>
             <span className='font-medium text-text-muted'>Points earned</span>
             <div className='flex items-center gap-2.5'>
