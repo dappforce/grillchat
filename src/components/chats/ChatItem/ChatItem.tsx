@@ -67,6 +67,7 @@ export default function ChatItem({
           <AddressAvatar
             onClick={(e) => {
               e.preventDefault()
+              e.stopPropagation()
 
               if (enableProfileModal) {
                 openModal({ chatId, hubId, messageId, address: ownerId })

@@ -57,6 +57,7 @@ export function ProfilePreviewModalName({
       onClick={(e) => {
         if (enableProfileModal) {
           e.preventDefault()
+          e.stopPropagation()
           openModal({ messageId, chatId, hubId, address: props.address })
           props.onClick?.(e)
         }
