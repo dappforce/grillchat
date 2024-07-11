@@ -14,7 +14,10 @@ import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
-import { useApproveUser } from '@/services/datahub/posts/mutation'
+import {
+  useApproveMessage,
+  useApproveUser,
+} from '@/services/datahub/posts/mutation'
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -414,8 +417,7 @@ function ApproveMemeButton({
   chatId: string
   messageId: string
 }) {
-  // TODO: change
-  const { mutate, isLoading } = useApproveUser()
+  const { mutate, isLoading } = useApproveMessage()
   return (
     <Button
       variant='greenOutline'
@@ -426,10 +428,8 @@ function ApproveMemeButton({
       onClick={(e) => {
         e.stopPropagation()
         mutate({
-          address: messageId,
-          allow: {
-            createCommentRootPostIds: [chatId],
-          },
+          approvedInRootPost: true,
+          postId: messageId,
         })
       }}
     >

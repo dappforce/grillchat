@@ -536,7 +536,6 @@ export const getTimeLeftUntilCanPostQuery = createQuery({
   }),
 })
 
-// TODO: change
 const GET_UNAPPROVED_MEMES_COUNT = gql`
   query GetUnapprovedMemesCount($address: String!, $postId: String!) {
     posts(

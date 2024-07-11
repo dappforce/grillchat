@@ -318,12 +318,10 @@ async function approveUser(args: ApproveUserArgs) {
 }
 export const useApproveUser = mutationWrapper(approveUser)
 
-// TODO: change
-type ApproveMessageArgs =
-  SocialCallDataArgs<'synth_social_profile_set_action_permissions'>
+type ApproveMessageArgs = SocialCallDataArgs<'synth_set_post_approve_status'>
 async function approveMessage(args: ApproveMessageArgs) {
   const input = await createSignedSocialDataEvent(
-    socialCallName.synth_social_profile_set_action_permissions,
+    socialCallName.synth_set_post_approve_status,
     { ...getCurrentWallet(), args },
     args
   )

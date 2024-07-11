@@ -1,5 +1,7 @@
 import { gql } from 'graphql-request'
 import {
+  ApproveMessageMutation,
+  ApproveMessageMutationVariables,
   ApproveUserMutation,
   ApproveUserMutationVariables,
   CanAccountDoArgsInput,
@@ -113,10 +115,9 @@ export async function approveUser(input: SocialProfileAddReferrerIdInput) {
   return res.socialProfileSetActionPermissions.callId
 }
 
-// TODO: change
 const APPROVE_MESSAGE_MUTATION = gql`
-  mutation ApproveMessage($input: SocialProfileAddReferrerIdInput!) {
-    socialProfileSetActionPermissions(args: $input) {
+  mutation ApproveMessage($input: CreateMutatePostOffChainDataInput!) {
+    setPostApproveStatus(args: $input) {
       processed
       callId
       message
@@ -125,8 +126,8 @@ const APPROVE_MESSAGE_MUTATION = gql`
 `
 export async function approveMessage(input: SocialProfileAddReferrerIdInput) {
   const res = await datahubQueueRequest<
-    ApproveUserMutation,
-    ApproveUserMutationVariables
+    ApproveMessageMutation,
+    ApproveMessageMutationVariables
   >({
     document: APPROVE_MESSAGE_MUTATION,
     variables: {
@@ -134,8 +135,8 @@ export async function approveMessage(input: SocialProfileAddReferrerIdInput) {
     },
   })
   throwErrorIfNotProcessed(
-    res.socialProfileSetActionPermissions,
+    res.setPostApproveStatus,
     'Failed to approve message'
   )
-  return res.socialProfileSetActionPermissions.callId
+  return res.setPostApproveStatus.callId
 }

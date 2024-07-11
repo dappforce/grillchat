@@ -193,6 +193,7 @@ export type Mutation = {
   moderationExecuteForceCall: IngestDataResponseDto;
   moderationInitModerator: IngestDataResponseDto;
   moderationUnblockResource: IngestDataResponseDto;
+  setPostApproveStatus: IngestDataResponseDto;
   socialProfileAddReferrerId: IngestDataResponseDto;
   socialProfileSetActionPermissions: IngestDataResponseDto;
   updatePostBlockchainSyncStatus: IngestDataResponseDto;
@@ -308,6 +309,11 @@ export type MutationModerationInitModeratorArgs = {
 
 export type MutationModerationUnblockResourceArgs = {
   unblockResourceInput: ModerationCallInput;
+};
+
+
+export type MutationSetPostApproveStatusArgs = {
+  args: CreateMutatePostOffChainDataInput;
 };
 
 
@@ -442,6 +448,7 @@ export enum SocialCallName {
   SynthModerationForceUnblockResource = 'synth_moderation_force_unblock_resource',
   SynthModerationInitModerator = 'synth_moderation_init_moderator',
   SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
+  SynthSetPostApproveStatus = 'synth_set_post_approve_status',
   SynthSocialProfileAddReferrerId = 'synth_social_profile_add_referrer_id',
   SynthSocialProfileSetActionPermissions = 'synth_social_profile_set_action_permissions',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
@@ -585,6 +592,13 @@ export type ApproveUserMutationVariables = Exact<{
 
 export type ApproveUserMutation = { __typename?: 'Mutation', socialProfileSetActionPermissions: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
+export type ApproveMessageMutationVariables = Exact<{
+  input: CreateMutatePostOffChainDataInput;
+}>;
+
+
+export type ApproveMessageMutation = { __typename?: 'Mutation', setPostApproveStatus: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
+
 export type SetReferrerIdMutationVariables = Exact<{
   setReferrerIdInput: SocialProfileAddReferrerIdInput;
 }>;
@@ -721,6 +735,15 @@ export const UpdatePostOptimistic = gql`
 export const ApproveUser = gql`
     mutation ApproveUser($input: SocialProfileAddReferrerIdInput!) {
   socialProfileSetActionPermissions(args: $input) {
+    processed
+    callId
+    message
+  }
+}
+    `;
+export const ApproveMessage = gql`
+    mutation ApproveMessage($input: CreateMutatePostOffChainDataInput!) {
+  setPostApproveStatus(args: $input) {
     processed
     callId
     message
