@@ -317,3 +317,23 @@ async function approveUser(args: ApproveUserArgs) {
   )
 }
 export const useApproveUser = mutationWrapper(approveUser)
+
+// TODO: change
+type ApproveMessageArgs =
+  SocialCallDataArgs<'synth_social_profile_set_action_permissions'>
+async function approveMessage(args: ApproveMessageArgs) {
+  const input = await createSignedSocialDataEvent(
+    socialCallName.synth_social_profile_set_action_permissions,
+    { ...getCurrentWallet(), args },
+    args
+  )
+
+  await apiInstance.post<any, any, ApiDatahubPostMutationBody>(
+    '/api/datahub/post',
+    {
+      action: 'approve-message',
+      payload: input as any,
+    }
+  )
+}
+export const useApproveMessage = mutationWrapper(approveMessage)

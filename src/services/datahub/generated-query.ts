@@ -2858,7 +2858,10 @@ export type GetUnapprovedMemesCountQueryVariables = Exact<{
 
 export type GetUnapprovedMemesCountQuery = {
   __typename?: 'Query'
-  posts: { __typename?: 'FindPostsResponseDto'; total?: number | null }
+  posts: {
+    __typename?: 'FindPostsResponseDto'
+    data: Array<{ __typename?: 'Post'; approvedInRootPost: boolean }>
+  }
 }
 
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
@@ -3629,13 +3632,16 @@ export const GetUnapprovedMemesCount = gql`
     posts(
       args: {
         filter: {
+          createdAtTimeGt: "2024-07-10T16:17:49.243Z"
           createdByAccountAddress: $address
-          approvedInRootPost: false
           rootPostId: $postId
         }
+        pageSize: 100
       }
     ) {
-      total
+      data {
+        approvedInRootPost
+      }
     }
   }
 `

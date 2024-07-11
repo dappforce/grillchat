@@ -536,18 +536,22 @@ export const getTimeLeftUntilCanPostQuery = createQuery({
   }),
 })
 
+// TODO: change
 const GET_UNAPPROVED_MEMES_COUNT = gql`
   query GetUnapprovedMemesCount($address: String!, $postId: String!) {
     posts(
       args: {
         filter: {
+          createdAtTimeGt: "2024-07-10T16:17:49.243Z"
           createdByAccountAddress: $address
-          approvedInRootPost: false
           rootPostId: $postId
         }
+        pageSize: 100
       }
     ) {
-      total
+      data {
+        approvedInRootPost
+      }
     }
   }
 `
@@ -561,7 +565,13 @@ export const getUnapprovedMemesCountQuery = createQuery({
       document: GET_UNAPPROVED_MEMES_COUNT,
       variables: { address, postId: chatId },
     })
-    return res.posts.total ?? 0
+    let unapproved = 0
+    let approved = 0
+    res.posts.data.forEach((post) => {
+      if (post.approvedInRootPost) approved++
+      else unapproved++
+    })
+    return { unapproved, approved }
   },
   defaultConfigGenerator: (params) => ({
     enabled: !!params?.address && !!params.chatId,

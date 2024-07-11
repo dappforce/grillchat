@@ -579,11 +579,11 @@ export type UpdatePostOptimisticMutationVariables = Exact<{
 export type UpdatePostOptimisticMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
 export type ApproveUserMutationVariables = Exact<{
-  input: UpdatePostOptimisticInput;
+  input: SocialProfileAddReferrerIdInput;
 }>;
 
 
-export type ApproveUserMutation = { __typename?: 'Mutation', updatePostOptimistic: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
+export type ApproveUserMutation = { __typename?: 'Mutation', socialProfileSetActionPermissions: { __typename?: 'IngestDataResponseDto', processed: boolean, callId?: string | null, message?: string | null } };
 
 export type SetReferrerIdMutationVariables = Exact<{
   setReferrerIdInput: SocialProfileAddReferrerIdInput;
@@ -719,8 +719,8 @@ export const UpdatePostOptimistic = gql`
 }
     `;
 export const ApproveUser = gql`
-    mutation ApproveUser($input: UpdatePostOptimisticInput!) {
-  updatePostOptimistic(updatePostOptimisticInput: $input) {
+    mutation ApproveUser($input: SocialProfileAddReferrerIdInput!) {
+  socialProfileSetActionPermissions(args: $input) {
     processed
     callId
     message
