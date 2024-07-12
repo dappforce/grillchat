@@ -98,7 +98,7 @@ export default function ChatContent({ className }: Props) {
               <Button
                 type='button'
                 size='lg'
-                className='flex items-center justify-center gap-2'
+                className='flex items-center justify-center gap-2 py-2.5'
                 variant='bgLighter'
                 onClick={() => setIsOpenRules(true)}
               >
@@ -341,7 +341,7 @@ function PostMemeButton({
           loadingEvmAddress
         }
         type='button'
-        className='flex items-center justify-center gap-2 px-0 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
+        className='flex items-center justify-center gap-2 px-0 py-2.5 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
         size='lg'
         variant={isMoreThanThreshold ? 'primary' : 'primaryOutline'}
         onClick={() => {
