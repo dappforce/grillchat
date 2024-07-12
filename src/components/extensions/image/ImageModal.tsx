@@ -77,7 +77,17 @@ export default function ImageModal({
   return (
     <CommonExtensionModal
       hubId={hubId}
-      onSubmit={onSubmit}
+      onSubmit={() => {
+        onSubmit()
+        setImageLinkStatus({
+          isShowingImage: false,
+          loadedLink: null,
+        })
+        setImageUploadStatus({
+          isShowingImage: false,
+          loadedLink: null,
+        })
+      }}
       extensionType='subsocial-image'
       description={
         <span>
