@@ -112,7 +112,9 @@ async function getPaginatedPostIdsByRootPostId({
                 approvedInRootPost: !onlyDisplayUnapprovedMessages,
               },
         orderBy: 'createdAtTime',
-        orderDirection: QueryOrder.Desc,
+        orderDirection: onlyDisplayUnapprovedMessages
+          ? QueryOrder.Asc
+          : QueryOrder.Desc,
         pageSize: CHAT_PER_PAGE,
         offset,
       },
@@ -230,6 +232,11 @@ export const getPaginatedPostIdsByPostId = {
         pageParams: [...(oldData?.pageParams ?? [])],
         pages: [...newPages],
       }
+    })
+  },
+  invalidateLastQuery: (client: QueryClient, data: Data) => {
+    client.invalidateQueries(getQueryKey(data), {
+      refetchPage: (_, index, allPages) => index === allPages.length - 1,
     })
   },
   invalidateFirstQuery: (client: QueryClient, data: Data) => {

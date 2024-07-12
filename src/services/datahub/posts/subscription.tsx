@@ -213,7 +213,7 @@ async function processMessage(
               queryClient,
               { address: ownerId, chatId: rootPostId ?? '' }
             )
-            if (typeof cachedCount === 'number') {
+            if (cachedCount) {
               getUnapprovedMemesCountQuery.setQueryData(
                 queryClient,
                 { address: ownerId, chatId: rootPostId ?? '' },
@@ -277,7 +277,8 @@ async function processMessage(
 
   if (!rootPostId) return
 
-  if (isCreationEvent && !entity.approvedInRootPost && isCurrentOwner) {
+  const isApproved = entity.approvedInRootPost
+  if (isCreationEvent && !isApproved && isCurrentOwner) {
     getPaginatedPostIdsByPostId.setQueryFirstPageData(
       queryClient,
       {
@@ -309,58 +310,66 @@ async function processMessage(
     )
   }
 
-  getPaginatedPostIdsByPostId.setQueryFirstPageData(
-    queryClient,
-    {
-      postId: rootPostId,
-      onlyDisplayUnapprovedMessages: !newPost?.struct.approvedInRootPost,
-      myAddress: getMyMainAddress() ?? '',
-    },
-    (oldData) => {
-      if (!oldData) return [newestId]
-      const oldIdsSet = new Set(oldData)
-      if (oldIdsSet.has(newestId)) return oldData
+  if (isApproved) {
+    getPaginatedPostIdsByPostId.setQueryFirstPageData(
+      queryClient,
+      {
+        postId: rootPostId,
+        onlyDisplayUnapprovedMessages: !isApproved,
+        myAddress: getMyMainAddress() ?? '',
+      },
+      (oldData) => {
+        if (!oldData) return [newestId]
+        const oldIdsSet = new Set(oldData)
+        if (oldIdsSet.has(newestId)) return oldData
 
-      const newIds = [...oldData]
+        const newIds = [...oldData]
 
-      const usedAsClientOptimisticId = entity.optimisticId || entity.id
-      const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-        usedAsClientOptimisticId ?? ''
-      )
-      if (oldIdsSet.has(clientOptimisticId)) {
-        const optimisticIdIndex = newIds.findIndex(
-          (id) => id === clientOptimisticId
+        const usedAsClientOptimisticId = entity.optimisticId || entity.id
+        const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+          usedAsClientOptimisticId ?? ''
         )
-        newIds.splice(optimisticIdIndex, 1, newestId)
-        return newIds
-      }
-
-      if (entity.persistentId && oldIdsSet.has(entity.id)) {
-        const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
-        newIds.splice(optimisticIdIndex, 1, newestId)
-
-        return newIds
-      }
-
-      const index = oldData.findIndex((id) => {
-        const data = getPostQuery.getQueryData(queryClient, id)
-        if (!data) return false
-        if (
-          new Date(data.struct.createdAtTime) <=
-          new Date(eventData.entity.createdAtTime)
-        ) {
-          newIds.unshift(newestId)
-          return true
+        if (oldIdsSet.has(clientOptimisticId)) {
+          const optimisticIdIndex = newIds.findIndex(
+            (id) => id === clientOptimisticId
+          )
+          newIds.splice(optimisticIdIndex, 1, newestId)
+          return newIds
         }
-        return false
-      })
-      if (index !== -1 || oldData.length <= 0) {
-        newIds.splice(index, 0, newestId)
-      }
 
-      return newIds
-    }
-  )
+        if (entity.persistentId && oldIdsSet.has(entity.id)) {
+          const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
+          newIds.splice(optimisticIdIndex, 1, newestId)
+
+          return newIds
+        }
+
+        const index = oldData.findIndex((id) => {
+          const data = getPostQuery.getQueryData(queryClient, id)
+          if (!data) return false
+          if (
+            new Date(data.struct.createdAtTime) <=
+            new Date(eventData.entity.createdAtTime)
+          ) {
+            newIds.unshift(newestId)
+            return true
+          }
+          return false
+        })
+        if (index !== -1 || oldData.length <= 0) {
+          newIds.splice(index, 0, newestId)
+        }
+
+        return newIds
+      }
+    )
+  } else {
+    getPaginatedPostIdsByPostId.invalidateLastQuery(queryClient, {
+      postId: rootPostId,
+      onlyDisplayUnapprovedMessages: !isApproved,
+      myAddress: getMyMainAddress() ?? '',
+    })
+  }
 
   getPostMetadataQuery.invalidate(queryClient, rootPostId)
 }

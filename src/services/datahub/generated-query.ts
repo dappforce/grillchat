@@ -2643,6 +2643,7 @@ export type DatahubPostFragmentFragment = {
   title?: string | null
   body?: string | null
   approvedInRootPost: boolean
+  approvedInRootPostAtTime?: any | null
   createdByAccount: { __typename?: 'Account'; id: string }
   space?: { __typename?: 'Space'; id: string } | null
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2676,6 +2677,7 @@ export type GetPostsQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2710,6 +2712,7 @@ export type GetOptimisticPostsQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2743,6 +2746,7 @@ export type GetCommentIdsInPostIdQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2808,6 +2812,7 @@ export type GetOwnedPostsQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2840,6 +2845,7 @@ export type GetPostsBySpaceIdQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -3020,6 +3026,7 @@ export const DatahubPostFragment = gql`
     title
     body
     approvedInRootPost
+    approvedInRootPostAtTime
     ownedByAccount {
       id
     }
