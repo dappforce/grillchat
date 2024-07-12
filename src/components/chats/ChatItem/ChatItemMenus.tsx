@@ -160,6 +160,7 @@ export default function ChatItemMenus({
   return (
     <>
       <FloatingMenus
+        preventOnClickOpen
         beforeMenus={
           !isOptimisticMessage && (
             <SuperLikeWrapper postId={messageId} withPostReward={false}>

@@ -1,8 +1,15 @@
+import Thumbsup from '@/assets/emojis/thumbsup.png'
 import AddressAvatar from '@/components/AddressAvatar'
+import { SuperLikeWrapper } from '@/components/content-staking/SuperLike'
+import { FloatingWrapperProps } from '@/components/floating/FloatingWrapper'
+import useLongTouch from '@/hooks/useLongTouch'
+import { PostRewards } from '@/services/datahub/content-staking/query'
 import { useProfilePostsModal } from '@/stores/profile-posts-modal'
 import { cx } from '@/utils/class-names'
+import { isTouchDevice } from '@/utils/device'
 import { PostData } from '@subsocial/api/types'
-import { ComponentProps } from 'react'
+import { useHapticFeedbackRaw } from '@tma.js/sdk-react'
+import { ComponentProps, useRef } from 'react'
 import { ScrollToMessage } from '../ChatList/hooks/useScrollToMessage'
 import ChatItemMenus from './ChatItemMenus'
 import ChatItemWithExtension from './ChatItemWithExtension'
@@ -84,44 +91,42 @@ export default function ChatItem({
           enableChatMenu={enableChatMenu}
           hubId={hubId}
         >
-          {(config) => {
-            const { toggleDisplay, referenceProps } = config || {}
-
-            return (
-              <div
-                className={cx('relative flex flex-col')}
-                onContextMenu={(e) => {
-                  e.preventDefault()
-                  toggleDisplay?.(e)
-                }}
-                {...referenceProps}
-                id={messageBubbleId}
-              >
-                {extensions && extensions.length > 0 ? (
-                  <ChatItemWithExtension
-                    scrollToMessage={scrollToMessage}
-                    message={message}
-                    isMyMessage={isMyMessage}
-                    chatId={chatId}
-                    hubId={hubId}
-                    enableProfileModal={enableProfileModal}
-                    bg={bg}
-                    showApproveButton={showApproveButton}
-                  />
-                ) : (
-                  <ChatItemContentVariant
-                    message={message}
-                    isMyMessage={isMyMessage}
-                    scrollToMessage={scrollToMessage}
-                    chatId={chatId}
-                    enableProfileModal={enableProfileModal}
-                    hubId={hubId}
-                    bg={bg}
-                  />
-                )}
-              </div>
-            )
-          }}
+          {(config) => (
+            <SuperLikeWrapper postId={messageId} withPostReward={false}>
+              {(props) => {
+                return (
+                  <ChatItemMenuWrapper
+                    config={config}
+                    superLikeProps={props}
+                    messageBubbleId={messageBubbleId}
+                  >
+                    {extensions && extensions.length > 0 ? (
+                      <ChatItemWithExtension
+                        scrollToMessage={scrollToMessage}
+                        message={message}
+                        isMyMessage={isMyMessage}
+                        chatId={chatId}
+                        hubId={hubId}
+                        enableProfileModal={enableProfileModal}
+                        bg={bg}
+                        showApproveButton={showApproveButton}
+                      />
+                    ) : (
+                      <ChatItemContentVariant
+                        message={message}
+                        isMyMessage={isMyMessage}
+                        scrollToMessage={scrollToMessage}
+                        chatId={chatId}
+                        enableProfileModal={enableProfileModal}
+                        hubId={hubId}
+                        bg={bg}
+                      />
+                    )}
+                  </ChatItemMenuWrapper>
+                )
+              }}
+            </SuperLikeWrapper>
+          )}
         </ChatItemMenus>
       </div>
       {canRenderEmbed && (
@@ -135,5 +140,114 @@ export default function ChatItem({
         </div>
       )}
     </>
+  )
+}
+
+type ChatItemMenuWrapperProps = {
+  config?: Parameters<FloatingWrapperProps['children']>[0]
+  superLikeProps: {
+    hasILiked: boolean
+    isDisabled: boolean
+    disabledCause: string
+    superLikeCount: number
+    handleClick: () => void
+    postRewards?: PostRewards | undefined | null
+  }
+  children: React.ReactNode
+  messageBubbleId?: string
+}
+
+const animateHeart = (x: number, y: number) => {
+  const container = document.getElementById('__next')
+  if (container) {
+    const like = document.createElement('img')
+
+    like.src = Thumbsup.src
+    like.classList.add('big-floating-like')
+
+    like.style.left = `${x - 50}px`
+    like.style.top = `${y - 50}px`
+
+    container.appendChild(like)
+
+    like.addEventListener(
+      'animationend',
+      () => {
+        like.remove()
+      },
+      { once: true }
+    )
+  }
+}
+
+const ChatItemMenuWrapper = ({
+  config,
+  superLikeProps,
+  children,
+  messageBubbleId,
+}: ChatItemMenuWrapperProps) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { toggleDisplay, referenceProps } = config || {}
+  const haptic = useHapticFeedbackRaw(true)
+
+  const { hasILiked, isDisabled, handleClick } = superLikeProps
+
+  const onLongPress = useLongTouch(
+    (e) => {
+      if (isTouchDevice()) {
+        toggleDisplay?.(e)
+      }
+    },
+    { delay: 500 },
+    {
+      startAnimation: () => {
+        if (containerRef.current) {
+          containerRef.current.classList.add('scale-section')
+
+          containerRef.current.addEventListener(
+            'animationend',
+            () => {
+              if (containerRef.current) {
+                containerRef.current.classList.remove('scale-section')
+              }
+            },
+            { once: true }
+          )
+        }
+      },
+      endAnimation: () => {
+        if (containerRef.current) {
+          containerRef.current.classList.remove('scale-section')
+        }
+      },
+    }
+  )
+
+  return (
+    <div
+      ref={containerRef}
+      className={cx('relative flex flex-col')}
+      onContextMenu={(e) => {
+        if (!isTouchDevice()) {
+          e.preventDefault()
+          toggleDisplay?.(e)
+        }
+      }}
+      {...onLongPress}
+      onDoubleClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (!isDisabled && !hasILiked) {
+          haptic?.result?.impactOccurred('medium')
+          handleClick()
+          animateHeart(e.clientX, e.clientY)
+        }
+      }}
+      {...referenceProps}
+      id={messageBubbleId}
+    >
+      {children}
+    </div>
   )
 }

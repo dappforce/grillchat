@@ -1,3 +1,6 @@
+import { FloatingWrapperProps } from '@/components/floating/FloatingWrapper'
+import useLongTouch from '@/hooks/useLongTouch'
+import { isTouchDevice } from '@/utils/device'
 import { PostData } from '@subsocial/api/types'
 import { memo } from 'react'
 import ChatItemMenus from '../ChatItem/ChatItemMenus'
@@ -37,35 +40,62 @@ function InnerChatItemWithMenu({
       hubId={hubId}
       menuIdPrefix={menuIdPrefix}
     >
-      {(config) => {
-        const { referenceProps, toggleDisplay } = config || {}
-        return (
-          <div
-            {...referenceProps}
-            className='flex flex-col'
-            onContextMenu={(e) => {
-              e.preventDefault()
-              toggleDisplay?.(e)
-            }}
-          >
-            <MemoizedChatItemContainer
-              className={chatItemClassName}
-              enableChatMenu={false}
-              hubId={hubId}
-              chatId={chatId}
-              message={message}
-              showBlockedMessage={showBlockedMessage}
-              messageBubbleId={getMessageElementId(message.id)}
-              enableProfileModal={enableProfileModal}
-              scrollToMessage={scrollToMessage}
-              showApproveButton={showApproveButton}
-              menuIdPrefix={menuIdPrefix}
-            />
-          </div>
-        )
-      }}
+      {(config) => (
+        <ChatItemMenuWrapper config={config}>
+          <MemoizedChatItemContainer
+            className={chatItemClassName}
+            enableChatMenu={false}
+            hubId={hubId}
+            chatId={chatId}
+            message={message}
+            showBlockedMessage={showBlockedMessage}
+            messageBubbleId={getMessageElementId(message.id)}
+            enableProfileModal={enableProfileModal}
+            scrollToMessage={scrollToMessage}
+            showApproveButton={showApproveButton}
+            menuIdPrefix={menuIdPrefix}
+          />
+        </ChatItemMenuWrapper>
+      )}
     </ChatItemMenus>
   ) : null
+}
+
+type ChatItemMenuWrapperProps = {
+  config?: Parameters<FloatingWrapperProps['children']>[0]
+  children: React.ReactNode
+}
+
+const ChatItemMenuWrapper = ({
+  config,
+  children,
+}: ChatItemMenuWrapperProps) => {
+  const { toggleDisplay, referenceProps } = config || {}
+
+  const onLongPress = useLongTouch(
+    (e) => {
+      if (isTouchDevice()) {
+        toggleDisplay?.(e)
+      }
+    },
+    { delay: 500 }
+  )
+
+  return (
+    <div
+      {...referenceProps}
+      className='flex select-none flex-col'
+      {...onLongPress}
+      onContextMenu={(e) => {
+        if (!isTouchDevice()) {
+          e.preventDefault()
+          toggleDisplay?.(e)
+        }
+      }}
+    >
+      {children}
+    </div>
+  )
 }
 const ChatItemWithMenu = memo(InnerChatItemWithMenu)
 export default ChatItemWithMenu

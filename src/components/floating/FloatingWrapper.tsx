@@ -12,6 +12,7 @@ import {
   useClientPoint,
   useDismiss,
   useFloating,
+  useFocus,
   useHover,
   useInteractions,
   useTransitionStyles,
@@ -41,6 +42,7 @@ export type FloatingWrapperProps = {
   allowedPlacements?: Placement[]
   useClickPointAsAnchor?: boolean
   mainAxisOffset?: number
+  preventOnClickOpen?: boolean
 }
 
 export default function FloatingWrapper({
@@ -52,6 +54,7 @@ export default function FloatingWrapper({
   showOnHover,
   allowedPlacements,
   useClickPointAsAnchor,
+  preventOnClickOpen = false,
   mainAxisOffset = 0,
 }: FloatingWrapperProps) {
   const [openMenu, setOpenMenu] = useState(false)
@@ -92,9 +95,15 @@ export default function FloatingWrapper({
   const dismiss = useDismiss(context, {
     bubbles: false,
   })
+
+  const focus = useFocus(context, {
+    enabled: true,
+  })
+
   const { getReferenceProps, getFloatingProps } = useInteractions([
     clientPoint,
     dismiss,
+    focus,
     hover,
   ])
   const { isMounted } = useTransitionStyles(context, {
@@ -103,15 +112,15 @@ export default function FloatingWrapper({
 
   const toggleDisplay = (e?: MouseEvent<Element, globalThis.MouseEvent>) => {
     if (!open && e && useClickPointAsAnchor) {
-      clientClickX.current = e.clientX
-      clientClickY.current = e.clientY
+      clientClickX.current = e?.clientX || (e as any)?.touches[0].clientX
+      clientClickY.current = e?.clientY || (e as any)?.touches[0].clientY
     }
+
     onOpenChange(!open, e)
   }
-
   const closeMenu = () => onOpenChange(false)
   const onClick: MouseEventHandler<Element> = (e) => {
-    if (isTouchDevice()) toggleDisplay(e)
+    if (isTouchDevice()) preventOnClickOpen ? closeMenu() : toggleDisplay(e)
     else closeMenu()
   }
 

@@ -353,6 +353,7 @@ export default function CommonChatItem({
         {dummySuperLike ? (
           <SuperLikeButton
             {...dummySuperLike}
+            postId={message.id}
             className={cx(
               'mb-1.5 ml-2.5 mt-1 self-start dark:bg-background-lightest',
               dummySuperLike.className
@@ -412,7 +413,6 @@ function ApproveUserButton({
 
 function ApproveMemeButton({
   messageId,
-  chatId,
 }: {
   chatId: string
   messageId: string

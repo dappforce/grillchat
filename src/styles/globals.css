@@ -72,6 +72,10 @@ body {
   @apply bg-background;
 }
 
+#__next {
+  position: relative;
+}
+
 #pwa-install {
   position: relative;
   z-index: 9999;
@@ -108,6 +112,110 @@ body {
   15% {
     filter: brightness(1.4);
   }
+}
+
+@keyframes bounceAnimation {
+  0% {
+    transform: scale(1.5) rotateZ(0);
+  }
+  20% {
+    transform: scale(1.5) rotateZ(-45deg);
+  }
+  40% {
+    transform: scale(1) rotateZ(0);
+  }
+  60% {
+    transform: scale(1.1) rotateZ(-25deg);
+  }
+  80% {
+    transform: scale(1) rotateZ(0);
+  }
+  100% {
+    transform: scale(1.1) rotateZ(-15deg);
+  }
+}
+
+.animate {
+  animation: bounceAnimation 0.7s ease;
+}
+
+@keyframes floatLike {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.5);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(var(--x), var(--y)) scale(0.5) rotateY(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), calc(var(--y) + 200px)) scale(0.5)
+      rotateY(360deg);
+  }
+}
+
+.floating-like {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  font-size: 20px;
+  animation: floatLike 1.5s ease-out;
+  pointer-events: none;
+}
+
+@keyframes floatBigLike {
+  from {
+    opacity: 0;
+    transform: scale(0) rotateZ(0deg);
+  }
+  40% {
+    opacity: 0.9;
+    transform: scale(0.5) rotateZ(-20deg);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.1) rotateZ(-25deg);
+  }
+  60% {
+    opacity: 0.9;
+    transform: scale(1.1) rotateZ(0);
+  }
+  80% {
+    opacity: 0.9;
+    transform: scale(0.9) rotateZ(0) translateY(-300);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6) rotateZ(0) translateY(-600px);
+  }
+}
+
+.big-floating-like {
+  position: absolute;
+  height: 5rem;
+  width: 5rem;
+  animation: floatBigLike 1s ease-in;
+  pointer-events: none;
+}
+
+@keyframes slcaleSection {
+  from {
+    transform: scale(1);
+  }
+  70% {
+    transform: scale(0.98);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.scale-section {
+  animation: slcaleSection 0.4s ease-in;
 }
 
 .input-range {
