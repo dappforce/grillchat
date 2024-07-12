@@ -39,6 +39,7 @@ export function addOptimisticData({
     id: newId,
     struct: {
       createdAtTime: Date.now(),
+      approvedInRootPostAtTime: Date.now(),
       ownerId: address,
       rootPostId: params.chatId,
       parentPostId: params.replyTo,
