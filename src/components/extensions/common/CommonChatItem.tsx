@@ -240,7 +240,7 @@ export default function CommonChatItem({
               className={cx('text-sm font-medium text-text-secondary')}
             />
             {/* <SubTeamLabel address={ownerId} /> */}
-            {inView && isAdmin && (
+            {inView && isAdmin && !showApproveButton && (
               <UnapprovedUserChip chatId={chatId} address={ownerId} />
             )}
             {othersMessage.checkMark === 'top' &&
