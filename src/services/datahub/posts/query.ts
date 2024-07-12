@@ -541,7 +541,7 @@ const GET_UNAPPROVED_MEMES_COUNT = gql`
     posts(
       args: {
         filter: {
-          createdAtTimeGt: "2024-07-10T16:17:49.243Z"
+          createdAtTimeGt: "2024-07-10T17:37:35.000Z"
           createdByAccountAddress: $address
           rootPostId: $postId
         }
