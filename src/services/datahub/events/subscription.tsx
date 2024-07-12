@@ -18,6 +18,7 @@ import {
   SubscribeEventsSubscription,
   SubscribeEventsSubscriptionVariables,
 } from '../generated-query'
+import { getSocialProfileQuery } from '../identity/query'
 import { callIdToPostIdMap } from '../posts/mutation'
 import { getProfileQuery } from '../profiles/query'
 import { getGamificationTasksErrorQuery } from '../tasks/query'
@@ -224,6 +225,10 @@ async function processSubscriptionEvent(
         }`}
       />
     ))
+    getSocialProfileQuery.invalidate(
+      client,
+      eventData.meta.extension?.updatedCreatorAddress
+    )
     return
   }
 

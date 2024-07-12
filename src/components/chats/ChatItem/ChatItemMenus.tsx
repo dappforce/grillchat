@@ -17,8 +17,10 @@ import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
+import { getSocialProfileQuery } from '@/services/datahub/identity/query'
 import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
+import { useApproveUser } from '@/services/datahub/posts/mutation'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
@@ -32,6 +34,7 @@ import { ImageProperties, PostData } from '@subsocial/api/types'
 import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { useEffect, useState } from 'react'
 import { BsFillPinAngleFill } from 'react-icons/bs'
+import { FaCheck } from 'react-icons/fa6'
 import {
   HiChevronRight,
   HiMiniArrowUturnLeft,
@@ -73,7 +76,12 @@ export default function ChatItemMenus({
 
   const { data: post } = getPostQuery.useQuery(messageId)
   const ownerId = post?.struct.ownerId ?? ''
-  const { ref } = useInView({ triggerOnce: true })
+  const { ref, inView } = useInView({ triggerOnce: true })
+  const { data: socialProfile, isLoading: loadingSocialProfile } =
+    getSocialProfileQuery.useQuery(ownerId, {
+      enabled: inView,
+    })
+  const { mutate: approveUser } = useApproveUser()
 
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
@@ -144,6 +152,22 @@ export default function ChatItemMenus({
           })
         },
       })
+      if (
+        !loadingSocialProfile &&
+        !socialProfile?.allowedCreateCommentRootPostIds.includes(chatId)
+      ) {
+        menus.unshift({
+          text: 'Approve User',
+          icon: FaCheck,
+          onClick: () => {
+            sendEvent('approve_user', { hubId, chatId })
+            approveUser({
+              address: ownerId,
+              allow: { createCommentRootPostIds: [chatId] },
+            })
+          },
+        })
+      }
     }
 
     if (isOptimisticMessage) return menus
@@ -259,7 +283,7 @@ export default function ChatItemMenus({
       >
         {children}
       </FloatingMenus>
-      <div ref={ref} className='absolute' />
+      <div ref={ref} />
       {message && (
         <MetadataModal
           isOpen={modalState === 'metadata'}

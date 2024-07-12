@@ -972,6 +972,7 @@ export type Post = {
   activeStakingSuperLikes?: Maybe<Array<ActiveStakingSuperLike>>
   activeStakingSuperLikesCount?: Maybe<Scalars['Int']['output']>
   approvedInRootPost: Scalars['Boolean']['output']
+  approvedInRootPostAtTime?: Maybe<Scalars['DateTime']['output']>
   /** is off-chain data CID backed up in blockchain */
   backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   blockchainSyncFailed: Scalars['Boolean']['output']
@@ -1555,6 +1556,7 @@ export enum SocialCallName {
   SynthModerationForceUnblockResource = 'synth_moderation_force_unblock_resource',
   SynthModerationInitModerator = 'synth_moderation_init_moderator',
   SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
+  SynthSetPostApproveStatus = 'synth_set_post_approve_status',
   SynthSocialProfileAddReferrerId = 'synth_social_profile_add_referrer_id',
   SynthSocialProfileSetActionPermissions = 'synth_social_profile_set_action_permissions',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
@@ -2288,6 +2290,22 @@ export type GetLinkedIdentitiesFromProviderIdQuery = {
       enabled: boolean
     }> | null
   } | null
+}
+
+export type GetSocialProfileQueryVariables = Exact<{
+  addresses: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetSocialProfileQuery = {
+  __typename?: 'Query'
+  socialProfiles: {
+    __typename?: 'SocialProfilesResponse'
+    data: Array<{
+      __typename?: 'SocialProfile'
+      id: string
+      allowedCreateCommentRootPostIds: Array<string>
+    }>
+  }
 }
 
 export type SubscribeIdentitySubscriptionVariables = Exact<{
@@ -3287,6 +3305,16 @@ export const GetLinkedIdentitiesFromProviderId = gql`
     }
   }
 `
+export const GetSocialProfile = gql`
+  query GetSocialProfile($addresses: [String!]!) {
+    socialProfiles(args: { where: { substrateAddresses: $addresses } }) {
+      data {
+        id
+        allowedCreateCommentRootPostIds
+      }
+    }
+  }
+`
 export const SubscribeIdentity = gql`
   subscription SubscribeIdentity {
     linkedIdentitySubscription {
@@ -3632,7 +3660,7 @@ export const GetUnapprovedMemesCount = gql`
     posts(
       args: {
         filter: {
-          createdAtTimeGt: "2024-07-10T16:17:49.243Z"
+          createdAtTimeGt: "2024-07-10T17:37:35.000Z"
           createdByAccountAddress: $address
           rootPostId: $postId
         }

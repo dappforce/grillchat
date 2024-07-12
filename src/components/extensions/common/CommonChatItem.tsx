@@ -6,12 +6,14 @@ import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
 import UnapprovedMemeCount from '@/components/chats/UnapprovedMemeCount'
+import UnapprovedUserChip from '@/components/chats/UnapprovedUserChip'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike, {
   SuperLikeButton,
 } from '@/components/content-staking/SuperLike'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
+import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import {
@@ -97,6 +99,7 @@ export default function CommonChatItem({
   const relativeTime = getTimeRelativeToNow(createdAtTime)
   const isSent = isMessageSent(message.id, dataType)
 
+  const isAdmin = useIsModerationAdmin()
   const isMessageBlockedInCurrentHub = useIsMessageBlocked(
     hubId,
     message,
@@ -172,7 +175,7 @@ export default function CommonChatItem({
           className={cx(
             'absolute bottom-1.5 right-1.5 z-10 flex items-center gap-1 self-end rounded-full px-1.5 py-0.5',
             (isMyMessageChildrenOnBottom || showApproveButton) && 'bg-black/45',
-            showApproveButton && 'bottom-16'
+            showApproveButton && 'bottom-14'
           )}
         >
           {myMessageCheckMarkElement(
@@ -220,8 +223,7 @@ export default function CommonChatItem({
         {!isMyMessage && (
           <div
             className={cx(
-              'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5',
-              othersMessage.checkMark !== 'top' && 'justify-between'
+              'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5'
             )}
             ref={ref}
           >
@@ -238,6 +240,9 @@ export default function CommonChatItem({
               className={cx('text-sm font-medium text-text-secondary')}
             />
             {/* <SubTeamLabel address={ownerId} /> */}
+            {inView && isAdmin && (
+              <UnapprovedUserChip chatId={chatId} address={ownerId} />
+            )}
             {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
           </div>
