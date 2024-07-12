@@ -13,6 +13,7 @@ import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
 import useToastError from '@/hooks/useToastError'
@@ -77,9 +78,11 @@ export default function ChatItemMenus({
   const { data: post } = getPostQuery.useQuery(messageId)
   const ownerId = post?.struct.ownerId ?? ''
   const { ref, inView } = useInView({ triggerOnce: true })
+
+  const isAdmin = useIsModerationAdmin()
   const { data: socialProfile, isLoading: loadingSocialProfile } =
     getSocialProfileQuery.useQuery(ownerId, {
-      enabled: inView,
+      enabled: inView && isAdmin,
     })
   const { mutate: approveUser } = useApproveUser()
 
