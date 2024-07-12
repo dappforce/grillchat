@@ -102,7 +102,7 @@ declare module '@subsocial/api/types' {
         dataType?: 'persistent' | 'optimistic' | 'offChain'
         parentPostId?: string | null
         approvedInRootPost?: boolean
-        approvedInRootPostAtTime: string
+        approvedInRootPostAtTime: number
       },
     PostContent
   > & { requestedId?: string }

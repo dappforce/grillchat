@@ -90,7 +90,13 @@ export default function CommonChatItem({
   const firstReasonId = reasons?.[0].id
 
   const { struct, content } = message
-  const { ownerId, createdAtTime, dataType, isUpdated } = struct
+  const {
+    ownerId,
+    createdAtTime,
+    approvedInRootPostAtTime,
+    dataType,
+    isUpdated,
+  } = struct
   const { body } = content || {}
   const repliedMessageId = getRepliedMessageId(message)
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(message.id)
@@ -118,10 +124,13 @@ export default function CommonChatItem({
       ? children({ isMyMessage, relativeTime, isSent })
       : children
 
+  const displayedTime = showApproveButton
+    ? createdAtTime
+    : approvedInRootPostAtTime
   const otherMessageCheckMarkElement = (className?: string) => (
     <ChatRelativeTime
       isUpdated={isUpdated}
-      createdAtTime={createdAtTime}
+      createdAtTime={displayedTime}
       className={cx(
         'text-xs text-text-muted',
         isMyMessage && 'text-text-muted-on-primary-light',
@@ -139,7 +148,7 @@ export default function CommonChatItem({
     <div className={cx('flex items-center gap-1 self-end', className)}>
       <ChatRelativeTime
         isUpdated={isUpdated}
-        createdAtTime={createdAtTime}
+        createdAtTime={displayedTime}
         className={cx(
           'text-xs text-text-muted-on-primary-light',
           isMyMessage && 'text-text-muted-on-primary-light',
