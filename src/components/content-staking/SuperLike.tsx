@@ -179,36 +179,22 @@ export default function SuperLike({
       }) => {
         if (superLikeCount <= 0 && !showWhenZero) return null
         const button = (
-          // To make the post reward stat not jumping when its liked, maybe its a mac issue
-          <div className='min-w-[3.25rem]'>
-            <button
-              onClick={() => {
-                sendEventWithRef(myAddress ?? '', (refId) => {
-                  sendEvent(
-                    'click_superlike',
-                    { eventSource: 'message', postId },
-                    { ref: refId }
-                  )
-                })
-                handleClick()
-              }}
-              disabled={isDisabled}
-              className={cx(
-                // identifier for toggle chat menu checker in ChatItemMenus
-                'superlike',
-                'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-text-muted transition dark:bg-background-lighter',
-                'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
-                'disabled:!opacity-50',
-                isMyMessage &&
-                  'dark:disabled:!bg-black/20 dark:disabled:!text-white/50',
-                hasILiked &&
-                  '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white'
-              )}
-            >
-              <Image src={Thumbsup} alt='' className='h-4 w-auto' />
-              <span className='relative -top-px'>{superLikeCount}</span>
-            </button>
-          </div>
+          <SuperLikeButton
+            superLikeCount={superLikeCount}
+            isMyMessage={isMyMessage}
+            hasILiked={hasILiked}
+            onClick={() => {
+              sendEventWithRef(myAddress ?? '', (refId) => {
+                sendEvent(
+                  'click_superlike',
+                  { eventSource: 'message', postId },
+                  { ref: refId }
+                )
+              })
+              handleClick()
+            }}
+            disabled={isDisabled}
+          />
         )
         return (
           <div
@@ -254,4 +240,40 @@ function useClientValidationOfPostSuperLike(createdAtTime: number) {
   const isPostMadeMoreThan1WeekAgo =
     dayjs(serverTime).diff(dayjs(createdAtTime), 'day') > 7
   return { canBeLiked: !isPostMadeMoreThan1WeekAgo, isLoading }
+}
+
+export type SuperLikeButtonProps = ComponentProps<'button'> & {
+  superLikeCount: number
+  isMyMessage?: boolean
+  hasILiked?: boolean
+}
+export function SuperLikeButton({
+  superLikeCount,
+  isMyMessage,
+  hasILiked,
+  ...props
+}: SuperLikeButtonProps) {
+  return (
+    // To make the post reward stat not jumping when its liked, maybe its a mac issue
+    <div className='min-w-[3.25rem]'>
+      <button
+        {...props}
+        className={cx(
+          // identifier for toggle chat menu checker in ChatItemMenus
+          'superlike',
+          'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-text-muted transition dark:bg-background-lighter',
+          'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
+          'disabled:!opacity-50',
+          isMyMessage &&
+            'dark:disabled:!bg-black/20 dark:disabled:!text-white/50',
+          hasILiked &&
+            '!bg-gradient-to-r from-[#8B55FD] to-[#7493FC] !text-white',
+          props.className
+        )}
+      >
+        <Image src={Thumbsup} alt='' className='h-4 w-auto' />
+        <span className='relative -top-px'>{superLikeCount}</span>
+      </button>
+    </div>
+  )
 }
