@@ -14,6 +14,7 @@ export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
   enableProfileModal?: boolean
   showBlockedMessage?: boolean
   chatId: string
+  disableSuperLike?: boolean
   hubId: string
   showApproveButton?: boolean
 }
@@ -25,6 +26,7 @@ function ChatItemContainer(
     hubId,
     showBlockedMessage,
     enableProfileModal = true,
+    disableSuperLike,
     showApproveButton,
     ...props
   }: ChatItemContainerProps,
@@ -75,6 +77,7 @@ function ChatItemContainer(
         chatId={chatId}
         isMyMessage={isMyMessage}
         enableProfileModal={enableProfileModal}
+        disableSuperLike={disableSuperLike}
         hubId={hubId}
         showApproveButton={showApproveButton}
       />

@@ -19,6 +19,7 @@ export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
   scrollableContainerClassName?: string
   customAction?: ReactNode
+  disableSuperLike?: boolean
   chatId: string
   hubId: string
   topElement?: ReactNode
@@ -31,6 +32,7 @@ export default function ChatRoom({
   scrollableContainerClassName,
   customAction,
   chatId,
+  disableSuperLike,
   hubId,
   topElement,
   onlyDisplayUnapprovedMessages,
@@ -46,6 +48,7 @@ export default function ChatRoom({
         onlyDisplayUnapprovedMessages={onlyDisplayUnapprovedMessages}
         topElement={topElement}
         hubId={hubId}
+        disableSuperLike={disableSuperLike}
         newMessageNoticeClassName={cx(replyTo && 'bottom-2')}
         chatId={chatId}
         asContainer={asContainer}
