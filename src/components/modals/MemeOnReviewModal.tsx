@@ -32,7 +32,7 @@ export default function MemeOnReviewModal({
       : `${
           tokenomics?.socialActionPrice.createCommentPoints
         } points have been used. We received ${
-          count?.unapproved ?? 0
+          count ?? 0
         } memes from you! Now we need a bit of time to finish review you as a verified creator.`
 
   return (
