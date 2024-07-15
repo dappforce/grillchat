@@ -30,6 +30,7 @@ export default function EmojiChatItem({
   isMyMessage,
   scrollToMessage,
   chatId,
+  disableSuperLike,
   enableProfileModal = true,
   hubId,
   ...props
@@ -132,6 +133,7 @@ export default function EmojiChatItem({
       <SuperLike
         isMyMessage={isMyMessage}
         withPostReward
+        disabled={disableSuperLike}
         className={cx(
           !isMyMessage && 'mt-1.5',
           isMyMessage && 'flex-row-reverse'

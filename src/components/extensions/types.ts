@@ -7,6 +7,7 @@ export type ExtensionChatItemProps = {
   isMyMessage?: boolean
   scrollToMessage?: (messageId: string) => Promise<void>
   chatId: string
+  disableSuperLike?: boolean
   hubId: string
   enableProfileModal?: boolean
   bg?: 'background' | 'background-light' | 'background-lighter'

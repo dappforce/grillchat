@@ -89,6 +89,7 @@ export default function ChatContent({ className }: Props) {
         chatId={chatId}
         hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
         className='overflow-hidden'
+        disableSuperLike={selectedTab === 'contest' && !!isContestEnded}
         onlyDisplayUnapprovedMessages={shouldShowUnapproved}
         customAction={
           isCannotPost ? (

@@ -30,6 +30,7 @@ export type ChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   hubId: string
   bg?: 'background-light' | 'background'
   showApproveButton?: boolean
+  disableSuperLike?: boolean
   menuIdPrefix?: string
 }
 
@@ -41,6 +42,7 @@ export default function ChatItem({
   enableChatMenu = true,
   chatId,
   hubId,
+  disableSuperLike,
   bg = 'background-light',
   showApproveButton,
   enableProfileModal = true,
