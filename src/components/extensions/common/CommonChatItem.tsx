@@ -72,6 +72,7 @@ export default function CommonChatItem({
   hubId,
   bg = 'background',
   showApproveButton,
+  disableSuperLike,
   dummySuperLike,
 }: CommonChatItemProps) {
   const { inView, ref } = useInView()
@@ -349,6 +350,7 @@ export default function CommonChatItem({
             showWhenZero={showSuperLikeWhenZero}
             withPostReward
             postId={message.id}
+            disabled={disableSuperLike}
             className='mb-1.5 ml-2.5 mt-1 self-start'
           />
         ) : (
