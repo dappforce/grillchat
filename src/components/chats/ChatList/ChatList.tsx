@@ -86,6 +86,18 @@ function ChatListContent({
     onlyDisplayUnapprovedMessages,
   })
 
+  const filteredIdsCount = messageIds.length
+  const unfilteredIdsCount = unfilteredMessageIds.length
+  useEffect(() => {
+    if (!scrollContainerRef.current) return
+    if (
+      scrollContainerRef.current.scrollHeight <=
+      scrollContainerRef.current.clientHeight
+    ) {
+      loadMore()
+    }
+  }, [filteredIdsCount, unfilteredIdsCount, loadMore, scrollContainerRef])
+
   const lastFocusedTime = useLastFocusedMessageTime(chatId, messageIds[0] ?? '')
 
   useEffect(() => {
