@@ -9,6 +9,7 @@ type FloatingMenuItemProps = {
   menus: MenuListProps['menus']
   closeMenu: () => void
   panelClassName?: string
+  preventOnClickOpen?: boolean
   panelSize?: MenuListProps['size']
 }
 export type FloatingMenusProps = Omit<FloatingWrapperProps, 'panel'> &

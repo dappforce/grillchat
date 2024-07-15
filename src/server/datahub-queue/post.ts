@@ -1,5 +1,7 @@
 import { gql } from 'graphql-request'
 import {
+  ApproveMessageMutation,
+  ApproveMessageMutationVariables,
   ApproveUserMutation,
   ApproveUserMutationVariables,
   CanAccountDoArgsInput,
@@ -8,6 +10,7 @@ import {
   CreatePostOffChainMutationVariables,
   GetCanAccountDoQuery,
   GetCanAccountDoQueryVariables,
+  SocialProfileAddReferrerIdInput,
   UpdatePostOptimisticInput,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
@@ -87,15 +90,15 @@ export async function updatePostData(input: UpdatePostOptimisticInput) {
 }
 
 const APPROVE_USER_MUTATION = gql`
-  mutation ApproveUser($input: UpdatePostOptimisticInput!) {
-    updatePostOptimistic(updatePostOptimisticInput: $input) {
+  mutation ApproveUser($input: SocialProfileAddReferrerIdInput!) {
+    socialProfileSetActionPermissions(args: $input) {
       processed
       callId
       message
     }
   }
 `
-export async function approveUser(input: UpdatePostOptimisticInput) {
+export async function approveUser(input: SocialProfileAddReferrerIdInput) {
   const res = await datahubQueueRequest<
     ApproveUserMutation,
     ApproveUserMutationVariables
@@ -105,6 +108,35 @@ export async function approveUser(input: UpdatePostOptimisticInput) {
       input,
     },
   })
-  throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to approve user')
-  return res.updatePostOptimistic.callId
+  throwErrorIfNotProcessed(
+    res.socialProfileSetActionPermissions,
+    'Failed to approve user'
+  )
+  return res.socialProfileSetActionPermissions.callId
+}
+
+const APPROVE_MESSAGE_MUTATION = gql`
+  mutation ApproveMessage($input: CreateMutatePostOffChainDataInput!) {
+    setPostApproveStatus(args: $input) {
+      processed
+      callId
+      message
+    }
+  }
+`
+export async function approveMessage(input: SocialProfileAddReferrerIdInput) {
+  const res = await datahubQueueRequest<
+    ApproveMessageMutation,
+    ApproveMessageMutationVariables
+  >({
+    document: APPROVE_MESSAGE_MUTATION,
+    variables: {
+      input,
+    },
+  })
+  throwErrorIfNotProcessed(
+    res.setPostApproveStatus,
+    'Failed to approve message'
+  )
+  return res.setPostApproveStatus.callId
 }

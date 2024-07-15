@@ -972,6 +972,7 @@ export type Post = {
   activeStakingSuperLikes?: Maybe<Array<ActiveStakingSuperLike>>
   activeStakingSuperLikesCount?: Maybe<Scalars['Int']['output']>
   approvedInRootPost: Scalars['Boolean']['output']
+  approvedInRootPostAtTime?: Maybe<Scalars['DateTime']['output']>
   /** is off-chain data CID backed up in blockchain */
   backupInBlockchain?: Maybe<Scalars['Boolean']['output']>
   blockchainSyncFailed: Scalars['Boolean']['output']
@@ -1555,6 +1556,7 @@ export enum SocialCallName {
   SynthModerationForceUnblockResource = 'synth_moderation_force_unblock_resource',
   SynthModerationInitModerator = 'synth_moderation_init_moderator',
   SynthModerationUnblockResource = 'synth_moderation_unblock_resource',
+  SynthSetPostApproveStatus = 'synth_set_post_approve_status',
   SynthSocialProfileAddReferrerId = 'synth_social_profile_add_referrer_id',
   SynthSocialProfileSetActionPermissions = 'synth_social_profile_set_action_permissions',
   SynthUpdatePostTxFailed = 'synth_update_post_tx_failed',
@@ -2290,6 +2292,22 @@ export type GetLinkedIdentitiesFromProviderIdQuery = {
   } | null
 }
 
+export type GetSocialProfileQueryVariables = Exact<{
+  addresses: Array<Scalars['String']['input']> | Scalars['String']['input']
+}>
+
+export type GetSocialProfileQuery = {
+  __typename?: 'Query'
+  socialProfiles: {
+    __typename?: 'SocialProfilesResponse'
+    data: Array<{
+      __typename?: 'SocialProfile'
+      id: string
+      allowedCreateCommentRootPostIds: Array<string>
+    }>
+  }
+}
+
 export type SubscribeIdentitySubscriptionVariables = Exact<{
   [key: string]: never
 }>
@@ -2625,6 +2643,7 @@ export type DatahubPostFragmentFragment = {
   title?: string | null
   body?: string | null
   approvedInRootPost: boolean
+  approvedInRootPostAtTime?: any | null
   createdByAccount: { __typename?: 'Account'; id: string }
   space?: { __typename?: 'Space'; id: string } | null
   ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2658,6 +2677,7 @@ export type GetPostsQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2692,6 +2712,7 @@ export type GetOptimisticPostsQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2725,6 +2746,7 @@ export type GetCommentIdsInPostIdQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2790,6 +2812,7 @@ export type GetOwnedPostsQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2822,6 +2845,7 @@ export type GetPostsBySpaceIdQuery = {
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdByAccount: { __typename?: 'Account'; id: string }
       space?: { __typename?: 'Space'; id: string } | null
       ownedByAccount: { __typename?: 'Account'; id: string }
@@ -2858,7 +2882,14 @@ export type GetUnapprovedMemesCountQueryVariables = Exact<{
 
 export type GetUnapprovedMemesCountQuery = {
   __typename?: 'Query'
-  posts: { __typename?: 'FindPostsResponseDto'; total?: number | null }
+  posts: {
+    __typename?: 'FindPostsResponseDto'
+    data: Array<{
+      __typename?: 'Post'
+      id: string
+      approvedInRootPost: boolean
+    }>
+  }
 }
 
 export type SubscribePostSubscriptionVariables = Exact<{ [key: string]: never }>
@@ -2875,6 +2906,7 @@ export type SubscribePostSubscription = {
       optimisticId?: string | null
       dataType: DataType
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdAtTime?: any | null
       rootPost?: { __typename?: 'Post'; persistentId?: string | null } | null
     }
@@ -2999,6 +3031,7 @@ export const DatahubPostFragment = gql`
     title
     body
     approvedInRootPost
+    approvedInRootPostAtTime
     ownedByAccount {
       id
     }
@@ -3280,6 +3313,16 @@ export const GetLinkedIdentitiesFromProviderId = gql`
       id
       externalProviders {
         enabled
+      }
+    }
+  }
+`
+export const GetSocialProfile = gql`
+  query GetSocialProfile($addresses: [String!]!) {
+    socialProfiles(args: { where: { substrateAddresses: $addresses } }) {
+      data {
+        id
+        allowedCreateCommentRootPostIds
       }
     }
   }
@@ -3629,13 +3672,17 @@ export const GetUnapprovedMemesCount = gql`
     posts(
       args: {
         filter: {
+          createdAtTimeGt: "2024-07-10T17:37:35.000Z"
           createdByAccountAddress: $address
-          approvedInRootPost: false
           rootPostId: $postId
         }
+        pageSize: 100
       }
     ) {
-      total
+      data {
+        id
+        approvedInRootPost
+      }
     }
   }
 `
@@ -3649,6 +3696,7 @@ export const SubscribePost = gql`
         optimisticId
         dataType
         approvedInRootPost
+        approvedInRootPostAtTime
         createdAtTime
         rootPost {
           persistentId

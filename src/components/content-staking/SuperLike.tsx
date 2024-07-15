@@ -20,7 +20,7 @@ import { LocalStorage } from '@/utils/storage'
 import dayjs from 'dayjs'
 import { verifyMessage } from 'ethers'
 import Image from 'next/image'
-import { ComponentProps, ReactNode, SyntheticEvent } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 import { toast } from 'sonner'
 import PopOver from '../floating/PopOver'
 import { sendEventWithRef } from '../referral/analytics'
@@ -107,8 +107,9 @@ export function SuperLikeWrapper({
   else if (!canBeSuperliked)
     disabledCause = `You cannot like ${entity}s that are older than 7 days`
 
-  const handleClick = async (e?: SyntheticEvent) => {
+  const handleClick = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     // prevent chat menu from opening when clicking this button
+
     if (!isMenuOpened) e?.stopPropagation()
 
     if (hasILiked || !message || isDisabled) return
@@ -140,6 +141,7 @@ export function SuperLikeWrapper({
       handleClick()
       return
     }
+
     createSuperLike({ postId, confirmation: { msg: message, sig } })
   }
 
@@ -154,6 +156,67 @@ export function SuperLikeWrapper({
       })}
     </>
   )
+}
+
+function animateLike(postId: string) {
+  const likeImage = document.getElementById(
+    `floating-like-image-${postId}`
+  ) as HTMLImageElement
+
+  const container = document.getElementById(
+    `floating-like-container-${postId}`
+  ) as HTMLDivElement
+
+  if (likeImage) {
+    likeImage.classList.add('animate')
+    likeImage.addEventListener(
+      'animationend',
+      () => {
+        likeImage?.classList.remove('animate')
+      },
+      { once: true }
+    )
+  }
+  createFloatingLikes(likeImage, container)
+}
+
+function createFloatingLikes(
+  likeImage: HTMLImageElement | null,
+  container: HTMLDivElement | null
+) {
+  if (container && likeImage) {
+    const numberOfLikes = 5
+    for (let i = 0; i < numberOfLikes; i++) {
+      setTimeout(() => {
+        const like = document.createElement('div')
+        like.classList.add('floating-like')
+        like.textContent = '👍'
+
+        const minDistance = 20
+        const maxDistance = 40
+
+        const angle = i * (180 / numberOfLikes) * (Math.PI / 180)
+        const distance =
+          Math.random() * (maxDistance - minDistance) + minDistance
+
+        const x = Math.cos(angle) * distance
+        const y = -Math.sin(angle) * distance
+
+        like.style.setProperty('--x', `${x}px`)
+        like.style.setProperty('--y', `${y}px`)
+
+        container.appendChild(like)
+
+        like.addEventListener(
+          'animationend',
+          () => {
+            like.remove()
+          },
+          { once: true }
+        )
+      }, Math.random() * 500)
+    }
+  }
 }
 
 export default function SuperLike({
@@ -183,6 +246,7 @@ export default function SuperLike({
             superLikeCount={superLikeCount}
             isMyMessage={isMyMessage}
             hasILiked={hasILiked}
+            postId={postId}
             onClick={() => {
               sendEventWithRef(myAddress ?? '', (refId) => {
                 sendEvent(
@@ -192,7 +256,15 @@ export default function SuperLike({
                 )
               })
               handleClick()
+              if (!hasILiked && !isDisabled) {
+                animateLike(postId)
+              }
             }}
+            style={
+              hasILiked
+                ? { backgroundPosition: '-1px', backgroundSize: '105%' }
+                : {}
+            }
             disabled={isDisabled || disabled}
           />
         )
@@ -246,16 +318,21 @@ export type SuperLikeButtonProps = ComponentProps<'button'> & {
   superLikeCount: number
   isMyMessage?: boolean
   hasILiked?: boolean
+  postId?: string
 }
 export function SuperLikeButton({
   superLikeCount,
   isMyMessage,
   hasILiked,
+  postId,
   ...props
 }: SuperLikeButtonProps) {
   return (
     // To make the post reward stat not jumping when its liked, maybe its a mac issue
-    <div className='min-w-[3.25rem]'>
+    <div
+      className='relative min-w-[3.25rem]'
+      id={`floating-like-container-${postId}`}
+    >
       <button
         {...props}
         className={cx(
@@ -271,7 +348,12 @@ export function SuperLikeButton({
           props.className
         )}
       >
-        <Image src={Thumbsup} alt='' className='h-4 w-auto' />
+        <Image
+          id={`floating-like-image-${postId}`}
+          src={Thumbsup}
+          alt=''
+          className='h-4 w-auto'
+        />
         <span className='relative -top-px'>{superLikeCount}</span>
       </button>
     </div>

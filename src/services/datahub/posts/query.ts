@@ -111,8 +111,12 @@ async function getPaginatedPostIdsByRootPostId({
                 rootPostId: postId,
                 approvedInRootPost: !onlyDisplayUnapprovedMessages,
               },
-        orderBy: 'createdAtTime',
-        orderDirection: QueryOrder.Desc,
+        orderBy: onlyDisplayUnapprovedMessages
+          ? 'createdAtTime'
+          : 'approvedInRootPostAtTime',
+        orderDirection: onlyDisplayUnapprovedMessages
+          ? QueryOrder.Asc
+          : QueryOrder.Desc,
         pageSize: CHAT_PER_PAGE,
         offset,
       },
@@ -230,6 +234,11 @@ export const getPaginatedPostIdsByPostId = {
         pageParams: [...(oldData?.pageParams ?? [])],
         pages: [...newPages],
       }
+    })
+  },
+  invalidateLastQuery: (client: QueryClient, data: Data) => {
+    client.invalidateQueries(getQueryKey(data), {
+      refetchPage: (_, index, allPages) => index === allPages.length - 1,
     })
   },
   invalidateFirstQuery: (client: QueryClient, data: Data) => {
@@ -541,13 +550,17 @@ const GET_UNAPPROVED_MEMES_COUNT = gql`
     posts(
       args: {
         filter: {
+          createdAtTimeGt: "2024-07-10T17:37:35.000Z"
           createdByAccountAddress: $address
-          approvedInRootPost: false
           rootPostId: $postId
         }
+        pageSize: 100
       }
     ) {
-      total
+      data {
+        id
+        approvedInRootPost
+      }
     }
   }
 `
@@ -561,7 +574,13 @@ export const getUnapprovedMemesCountQuery = createQuery({
       document: GET_UNAPPROVED_MEMES_COUNT,
       variables: { address, postId: chatId },
     })
-    return res.posts.total ?? 0
+    let unapproved = 0
+    let approved = 0
+    res.posts.data.forEach((post) => {
+      if (post.approvedInRootPost) approved++
+      else unapproved++
+    })
+    return { unapproved, approved, ids: res.posts.data.map((post) => post.id) }
   },
   defaultConfigGenerator: (params) => ({
     enabled: !!params?.address && !!params.chatId,
