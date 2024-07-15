@@ -74,6 +74,7 @@ function ChatListContent({
     messageIds,
     hasMore,
     loadMore,
+    unfilteredMessageIds,
     totalDataCount,
     currentPage,
     isLoading,
@@ -156,7 +157,7 @@ function ChatListContent({
           >
             <div className='flex-1'>
               <InfiniteScroll
-                dataLength={renderedMessageQueries.length}
+                dataLength={unfilteredMessageIds.length}
                 next={() => {
                   loadMore()
                   sendEvent('load_more_messages', { currentPage })

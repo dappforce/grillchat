@@ -9,6 +9,7 @@ import { useMemo } from 'react'
 
 type PaginatedData = {
   messageIds: string[]
+  unfilteredMessageIds: string[]
   currentPage: number
   loadMore: () => void
   hasMore: boolean
@@ -70,6 +71,7 @@ export default function usePaginatedMessageIds({
   return {
     currentPage: lastPage?.page ?? 1,
     messageIds: filteredPageIds,
+    unfilteredMessageIds: flattenedIds,
     loadMore: fetchNextPage,
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore ?? true,
@@ -117,6 +119,7 @@ export function usePaginatedMessageIdsByAccount({
     loadMore: fetchNextPage,
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore ?? true,
+    unfilteredMessageIds: flattenedIds,
     isLoading,
     allIds: isModerator ? flattenedIds : filteredPageIds,
   }
