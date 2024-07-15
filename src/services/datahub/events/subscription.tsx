@@ -20,6 +20,7 @@ import {
 } from '../generated-query'
 import { getSocialProfileQuery } from '../identity/query'
 import { callIdToPostIdMap } from '../posts/mutation'
+import { getUnapprovedMemesCountQuery } from '../posts/query'
 import { getProfileQuery } from '../profiles/query'
 import { getGamificationTasksErrorQuery } from '../tasks/query'
 import { datahubSubscription } from '../utils'
@@ -228,6 +229,36 @@ async function processSubscriptionEvent(
     getSocialProfileQuery.invalidate(
       client,
       eventData.meta.extension?.updatedCreatorAddress
+    )
+    return
+  }
+
+  if (eventData.meta.callName === SocialCallName.SynthSetPostApproveStatus) {
+    const extension = eventData.meta.extension
+    const updatedPostId = extension?.postId ?? ''
+    const creatorAddress = extension?.creatorAddress ?? ''
+    const rootPostId = extension?.rootPostId ?? ''
+    const profile = getProfileQuery.getQueryData(client, creatorAddress)
+    toast.custom((t) => (
+      <Toast
+        t={t}
+        type='default'
+        title={`You have approved a meme from ${
+          profile?.profileSpace?.content?.name || 'user'
+        }`}
+      />
+    ))
+    getUnapprovedMemesCountQuery.setQueryData(
+      client,
+      { address: creatorAddress, chatId: rootPostId },
+      (oldCount) => {
+        if (!oldCount) return oldCount
+        return {
+          ...oldCount,
+          ids: [...oldCount.ids, updatedPostId],
+          approved: oldCount.approved + 1,
+        }
+      }
     )
     return
   }
