@@ -20,7 +20,8 @@ export default function MemeOnReviewModal({
       enabled: props.isOpen,
     }
   )
-  const remaining = MIN_MEME_FOR_REVIEW - (count?.unapproved ?? 0)
+  const sentMeme = (count?.unapproved ?? 0) + (count?.approved ?? 0)
+  const remaining = MIN_MEME_FOR_REVIEW - sentMeme
 
   const description =
     remaining > 0
@@ -32,7 +33,7 @@ export default function MemeOnReviewModal({
       : `${
           tokenomics?.socialActionPrice.createCommentPoints
         } points have been used. We received ${
-          count?.unapproved ?? 0
+          sentMeme ?? 0
         } memes from you! Now we need a bit of time to finish review you as a verified creator.`
 
   return (

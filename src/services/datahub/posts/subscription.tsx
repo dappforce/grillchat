@@ -239,11 +239,12 @@ async function processMessage(
               queryClient,
               { address: myAddress, chatId: rootPostId ?? '' }
             )
-            if (count.unapproved === 1 || count.unapproved === 3) {
+            const sentMeme = count.approved + count.unapproved
+            if (sentMeme === 1 || sentMeme === 3) {
               useMessageData.getState().setOpenMessageModal('on-review')
             } else {
               const remaining = Math.max(
-                MIN_MEME_FOR_REVIEW - (count.unapproved ?? 0),
+                MIN_MEME_FOR_REVIEW - (sentMeme ?? 0),
                 0
               )
               const title = 'Under review'
@@ -254,11 +255,7 @@ async function processMessage(
                     } points have been used. We received your meme! We need at least ${remaining} more meme${
                       remaining > 1 ? 's' : ''
                     } from you to mark you as a verified creator.`
-                  : `${
-                      tokenomics.socialActionPrice.createCommentPoints
-                    } points have been used. We received ${
-                      count ?? 0
-                    } memes from you! Now we need a bit of time to finish review you as a verified creator.`
+                  : `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received ${sentMeme} memes from you! Now we need a bit of time to finish review you as a verified creator.`
               toast.custom((t) => (
                 <Toast
                   t={t}

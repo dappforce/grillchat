@@ -235,7 +235,6 @@ async function processSubscriptionEvent(
 
   if (eventData.meta.callName === SocialCallName.SynthSetPostApproveStatus) {
     const extension = eventData.meta.extension
-    const updatedPostId = extension?.postId ?? ''
     const creatorAddress = extension?.creatorAddress ?? ''
     const rootPostId = extension?.rootPostId ?? ''
     const profile = getProfileQuery.getQueryData(client, creatorAddress)
@@ -255,8 +254,8 @@ async function processSubscriptionEvent(
         if (!oldCount) return oldCount
         return {
           ...oldCount,
-          ids: [...oldCount.ids, updatedPostId],
           approved: oldCount.approved + 1,
+          unapproved: oldCount.unapproved - 1,
         }
       }
     )
