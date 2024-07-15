@@ -79,6 +79,7 @@ const SUBSCRIBE_POST = gql`
         optimisticId
         dataType
         approvedInRootPost
+        approvedInRootPostAtTime
         createdAtTime
         rootPost {
           persistentId
@@ -156,6 +157,7 @@ async function processMessage(
       ...dataFromEntityId,
       struct: {
         ...dataFromEntityId.struct,
+        approvedInRootPostAtTime: eventData.entity.approvedInRootPostAtTime,
         dataType: eventData.entity.dataType,
       },
     })
@@ -169,6 +171,7 @@ async function processMessage(
           struct: {
             ...oldData.struct,
             approvedInRootPost: eventData.entity.approvedInRootPost,
+            approvedInRootPostAtTime: eventData.entity.approvedInRootPostAtTime,
           },
         }
       })
@@ -213,11 +216,15 @@ async function processMessage(
               queryClient,
               { address: ownerId, chatId: rootPostId ?? '' }
             )
-            if (typeof cachedCount === 'number') {
+            if (cachedCount) {
               getUnapprovedMemesCountQuery.setQueryData(
                 queryClient,
                 { address: ownerId, chatId: rootPostId ?? '' },
-                (count) => (count ?? 0) + 1
+                (count) => ({
+                  ids: [...(count?.ids ?? []), entity.id],
+                  unapproved: (count?.unapproved ?? 0) + 1,
+                  approved: count?.approved ?? 0,
+                })
               )
             } else if (isCurrentOwner) {
               await getUnapprovedMemesCountQuery.fetchQuery(queryClient, {
@@ -235,10 +242,14 @@ async function processMessage(
               queryClient,
               { address: myAddress, chatId: rootPostId ?? '' }
             )
-            if (count === 1 || count === 3) {
+            const sentMeme = count.approved + count.unapproved
+            if (sentMeme === 1 || sentMeme === 3) {
               useMessageData.getState().setOpenMessageModal('on-review')
             } else {
-              const remaining = Math.max(MIN_MEME_FOR_REVIEW - (count ?? 0), 0)
+              const remaining = Math.max(
+                MIN_MEME_FOR_REVIEW - (sentMeme ?? 0),
+                0
+              )
               const title = 'Under review'
               const description =
                 remaining > 0
@@ -247,11 +258,7 @@ async function processMessage(
                     } points have been used. We received your meme! We need at least ${remaining} more meme${
                       remaining > 1 ? 's' : ''
                     } from you to mark you as a verified creator.`
-                  : `${
-                      tokenomics.socialActionPrice.createCommentPoints
-                    } points have been used. We received ${
-                      count ?? 0
-                    } memes from you! Now we need a bit of time to finish review you as a verified creator.`
+                  : `${tokenomics.socialActionPrice.createCommentPoints} points have been used. We received ${sentMeme} memes from you! Now we need a bit of time to finish review you as a verified creator.`
               toast.custom((t) => (
                 <Toast
                   t={t}
@@ -271,7 +278,8 @@ async function processMessage(
 
   if (!rootPostId) return
 
-  if (isCreationEvent && !entity.approvedInRootPost && isCurrentOwner) {
+  const isApproved = entity.approvedInRootPost
+  if (isCreationEvent && !isApproved && isCurrentOwner) {
     getPaginatedPostIdsByPostId.setQueryFirstPageData(
       queryClient,
       {
@@ -303,58 +311,66 @@ async function processMessage(
     )
   }
 
-  getPaginatedPostIdsByPostId.setQueryFirstPageData(
-    queryClient,
-    {
-      postId: rootPostId,
-      onlyDisplayUnapprovedMessages: !newPost?.struct.approvedInRootPost,
-      myAddress: getMyMainAddress() ?? '',
-    },
-    (oldData) => {
-      if (!oldData) return [newestId]
-      const oldIdsSet = new Set(oldData)
-      if (oldIdsSet.has(newestId)) return oldData
+  if (isApproved) {
+    getPaginatedPostIdsByPostId.setQueryFirstPageData(
+      queryClient,
+      {
+        postId: rootPostId,
+        onlyDisplayUnapprovedMessages: !isApproved,
+        myAddress: getMyMainAddress() ?? '',
+      },
+      (oldData) => {
+        if (!oldData) return [newestId]
+        const oldIdsSet = new Set(oldData)
+        if (oldIdsSet.has(newestId)) return oldData
 
-      const newIds = [...oldData]
+        const newIds = [...oldData]
 
-      const usedAsClientOptimisticId = entity.optimisticId || entity.id
-      const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-        usedAsClientOptimisticId ?? ''
-      )
-      if (oldIdsSet.has(clientOptimisticId)) {
-        const optimisticIdIndex = newIds.findIndex(
-          (id) => id === clientOptimisticId
+        const usedAsClientOptimisticId = entity.optimisticId || entity.id
+        const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+          usedAsClientOptimisticId ?? ''
         )
-        newIds.splice(optimisticIdIndex, 1, newestId)
-        return newIds
-      }
-
-      if (entity.persistentId && oldIdsSet.has(entity.id)) {
-        const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
-        newIds.splice(optimisticIdIndex, 1, newestId)
-
-        return newIds
-      }
-
-      const index = oldData.findIndex((id) => {
-        const data = getPostQuery.getQueryData(queryClient, id)
-        if (!data) return false
-        if (
-          new Date(data.struct.createdAtTime) <=
-          new Date(eventData.entity.createdAtTime)
-        ) {
-          newIds.unshift(newestId)
-          return true
+        if (oldIdsSet.has(clientOptimisticId)) {
+          const optimisticIdIndex = newIds.findIndex(
+            (id) => id === clientOptimisticId
+          )
+          newIds.splice(optimisticIdIndex, 1, newestId)
+          return newIds
         }
-        return false
-      })
-      if (index !== -1 || oldData.length <= 0) {
-        newIds.splice(index, 0, newestId)
-      }
 
-      return newIds
-    }
-  )
+        if (entity.persistentId && oldIdsSet.has(entity.id)) {
+          const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
+          newIds.splice(optimisticIdIndex, 1, newestId)
+
+          return newIds
+        }
+
+        const index = oldData.findIndex((id) => {
+          const data = getPostQuery.getQueryData(queryClient, id)
+          if (!data) return false
+          if (
+            new Date(data.struct.createdAtTime) <=
+            new Date(eventData.entity.createdAtTime)
+          ) {
+            newIds.unshift(newestId)
+            return true
+          }
+          return false
+        })
+        if (index !== -1 || oldData.length <= 0) {
+          newIds.splice(index, 0, newestId)
+        }
+
+        return newIds
+      }
+    )
+  } else {
+    getPaginatedPostIdsByPostId.invalidateLastQuery(queryClient, {
+      postId: rootPostId,
+      onlyDisplayUnapprovedMessages: !isApproved,
+      myAddress: getMyMainAddress() ?? '',
+    })
+  }
 
   getPostMetadataQuery.invalidate(queryClient, rootPostId)
 }

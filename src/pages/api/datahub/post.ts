@@ -2,9 +2,11 @@ import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   CanUserDoAction,
   CreatePostOptimisticInput,
+  SocialProfileAddReferrerIdInput,
   UpdatePostOptimisticInput,
 } from '@/server/datahub-queue/generated'
 import {
+  approveMessage,
   approveUser,
   createPostData,
   getCanAccountDo,
@@ -62,7 +64,11 @@ export type ApiDatahubPostMutationBody =
     }
   | {
       action: 'approve-user'
-      payload: UpdatePostOptimisticInput
+      payload: SocialProfileAddReferrerIdInput
+    }
+  | {
+      action: 'approve-message'
+      payload: SocialProfileAddReferrerIdInput
     }
 
 export type ApiDatahubPostResponse = ApiResponse<{ callId?: string }>
@@ -108,6 +114,8 @@ function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
       return updatePostData(data.payload)
     case 'approve-user':
       return approveUser(data.payload)
+    case 'approve-message':
+      return approveMessage(data.payload)
     default:
       throw new Error('Unknown action')
   }

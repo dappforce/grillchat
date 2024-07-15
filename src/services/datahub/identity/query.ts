@@ -1,8 +1,14 @@
 import { apiInstance } from '@/services/api/utils'
 import { useMyAccount } from '@/stores/my-account'
-import { createQuery } from '@/subsocial-query'
+import { createQuery, poolQuery } from '@/subsocial-query'
 import { LocalStorage } from '@/utils/storage'
 import { parseJSONData } from '@/utils/strings'
+import { gql } from 'graphql-request'
+import {
+  GetSocialProfileQuery,
+  GetSocialProfileQueryVariables,
+} from '../generated-query'
+import { datahubQueryRequest } from '../utils'
 import { getLinkedIdentity } from './fetcher'
 
 // NOTE: need to be careful when changing the structure of these cached data, because it can cause the app to crash if you access unavailable data
@@ -51,5 +57,44 @@ export const getEvmLinkedIdentityMessageQuery = createQuery({
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
     retry: false,
+  }),
+})
+
+const GET_SOCIAL_PROFILE = gql`
+  query GetSocialProfile($addresses: [String!]!) {
+    socialProfiles(args: { where: { substrateAddresses: $addresses } }) {
+      data {
+        id
+        allowedCreateCommentRootPostIds
+      }
+    }
+  }
+`
+const getSocialProfile = poolQuery<
+  string,
+  { id: string; allowedCreateCommentRootPostIds: string[] }
+>({
+  name: 'getSocialProfile',
+  multiCall: async (addresses) => {
+    const data = await datahubQueryRequest<
+      GetSocialProfileQuery,
+      GetSocialProfileQueryVariables
+    >({
+      document: GET_SOCIAL_PROFILE,
+      variables: { addresses },
+    })
+
+    return data.socialProfiles.data
+  },
+  resultMapper: {
+    paramToKey: (address) => address,
+    resultToKey: (result) => result.id || '',
+  },
+})
+export const getSocialProfileQuery = createQuery({
+  key: 'getSocialProfile',
+  fetcher: (address: string) => getSocialProfile(address),
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
   }),
 })

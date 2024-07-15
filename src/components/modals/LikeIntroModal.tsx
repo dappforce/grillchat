@@ -21,6 +21,7 @@ const DUMMY_MESSAGES: { message: PostData; superLikeCount: number }[] = [
     message: {
       id: '0x123',
       struct: {
+        approvedInRootPostAtTime: dayjs().subtract(1, 'day').toDate().getTime(),
         id: '0x123',
         createdAtBlock: 0,
         createdAtTime: dayjs().subtract(1, 'day').toDate().getTime(),
@@ -59,6 +60,7 @@ const DUMMY_MESSAGES: { message: PostData; superLikeCount: number }[] = [
     message: {
       id: '0x123',
       struct: {
+        approvedInRootPostAtTime: dayjs().subtract(1, 'day').toDate().getTime(),
         id: '0x123',
         createdAtBlock: 0,
         createdAtTime: dayjs().subtract(1, 'day').toDate().getTime(),
