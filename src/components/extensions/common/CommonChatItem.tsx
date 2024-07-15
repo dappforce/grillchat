@@ -209,7 +209,7 @@ export default function CommonChatItem({
         </div>
       )}
 
-      {showApproveButton && inView && (
+      {showApproveButton && !isMyMessage && inView && (
         <UnapprovedMemeCount
           className='absolute bottom-14 right-1.5 z-10 bg-black/50 text-white'
           address={ownerId}
