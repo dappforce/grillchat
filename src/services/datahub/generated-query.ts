@@ -2906,6 +2906,7 @@ export type SubscribePostSubscription = {
       optimisticId?: string | null
       dataType: DataType
       approvedInRootPost: boolean
+      approvedInRootPostAtTime?: any | null
       createdAtTime?: any | null
       rootPost?: { __typename?: 'Post'; persistentId?: string | null } | null
     }
@@ -3695,6 +3696,7 @@ export const SubscribePost = gql`
         optimisticId
         dataType
         approvedInRootPost
+        approvedInRootPostAtTime
         createdAtTime
         rootPost {
           persistentId

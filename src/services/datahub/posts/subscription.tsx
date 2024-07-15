@@ -79,6 +79,7 @@ const SUBSCRIBE_POST = gql`
         optimisticId
         dataType
         approvedInRootPost
+        approvedInRootPostAtTime
         createdAtTime
         rootPost {
           persistentId
@@ -156,6 +157,7 @@ async function processMessage(
       ...dataFromEntityId,
       struct: {
         ...dataFromEntityId.struct,
+        approvedInRootPostAtTime: eventData.entity.approvedInRootPostAtTime,
         dataType: eventData.entity.dataType,
       },
     })
@@ -169,6 +171,7 @@ async function processMessage(
           struct: {
             ...oldData.struct,
             approvedInRootPost: eventData.entity.approvedInRootPost,
+            approvedInRootPostAtTime: eventData.entity.approvedInRootPostAtTime,
           },
         }
       })

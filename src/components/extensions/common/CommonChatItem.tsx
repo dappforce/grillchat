@@ -127,7 +127,7 @@ export default function CommonChatItem({
 
   const displayedTime = showApproveButton
     ? createdAtTime
-    : approvedInRootPostAtTime
+    : approvedInRootPostAtTime || createdAtTime
   const otherMessageCheckMarkElement = (className?: string) => (
     <ChatRelativeTime
       isUpdated={isUpdated}
