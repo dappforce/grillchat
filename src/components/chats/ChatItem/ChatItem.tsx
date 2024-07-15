@@ -101,6 +101,7 @@ export default function ChatItem({
                     config={config}
                     superLikeProps={props}
                     messageBubbleId={messageBubbleId}
+                    disableSuperLike={disableSuperLike}
                   >
                     {extensions && extensions.length > 0 ? (
                       <ChatItemWithExtension
@@ -109,6 +110,7 @@ export default function ChatItem({
                         isMyMessage={isMyMessage}
                         chatId={chatId}
                         hubId={hubId}
+                        disableSuperLike={disableSuperLike}
                         enableProfileModal={enableProfileModal}
                         bg={bg}
                         showApproveButton={showApproveButton}
@@ -118,6 +120,7 @@ export default function ChatItem({
                         message={message}
                         isMyMessage={isMyMessage}
                         scrollToMessage={scrollToMessage}
+                        disableSuperLike={disableSuperLike}
                         chatId={chatId}
                         enableProfileModal={enableProfileModal}
                         hubId={hubId}
@@ -156,6 +159,7 @@ type ChatItemMenuWrapperProps = {
     postRewards?: PostRewards | undefined | null
   }
   children: React.ReactNode
+  disableSuperLike?: boolean
   messageBubbleId?: string
 }
 
@@ -187,6 +191,7 @@ const ChatItemMenuWrapper = ({
   superLikeProps,
   children,
   messageBubbleId,
+  disableSuperLike,
 }: ChatItemMenuWrapperProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const { toggleDisplay, referenceProps } = config || {}
@@ -240,7 +245,7 @@ const ChatItemMenuWrapper = ({
         e.preventDefault()
         e.stopPropagation()
 
-        if (!isDisabled && !hasILiked) {
+        if (!isDisabled && !disableSuperLike && !hasILiked) {
           haptic?.result?.impactOccurred('medium')
           handleClick()
           animateHeart(e.clientX, e.clientY)

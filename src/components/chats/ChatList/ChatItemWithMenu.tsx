@@ -52,6 +52,7 @@ function InnerChatItemWithMenu({
             message={message}
             showBlockedMessage={showBlockedMessage}
             messageBubbleId={getMessageElementId(message.id)}
+            disableSuperLike={disableSuperLike}
             enableProfileModal={enableProfileModal}
             scrollToMessage={scrollToMessage}
             showApproveButton={showApproveButton}
