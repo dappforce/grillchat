@@ -318,7 +318,7 @@ export default function CommonChatItem({
           <div
             className={cx(
               'grid items-center gap-2 px-2 pb-1 pt-2',
-              showApproveButton ? 'grid-flow-col gap-1' : 'grid-cols-1'
+              showApproveButton ? 'grid-cols-2 gap-1' : 'grid-cols-1'
             )}
           >
             <Button
@@ -352,7 +352,7 @@ export default function CommonChatItem({
             </Button>
             {showApproveButton && (
               <>
-                <ApproveUserButton ownerId={ownerId} chatId={chatId} />
+                {/* <ApproveUserButton ownerId={ownerId} chatId={chatId} /> */}
                 <ApproveMemeButton messageId={message.id} chatId={chatId} />
               </>
             )}
