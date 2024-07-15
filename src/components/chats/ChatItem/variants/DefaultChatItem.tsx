@@ -26,6 +26,7 @@ export default function DefaultChatItem({
   hubId,
   message,
   isMyMessage,
+  disableSuperLike,
   scrollToMessage,
   enableProfileModal = true,
   bg = 'background',
@@ -101,30 +102,6 @@ export default function DefaultChatItem({
           <Linkify
             options={{
               render: ({ content, attributes }) => {
-                // const href = attributes.href || ''
-                // const baseUrl = 'https://epicapp.net'
-                // if (href.startsWith(baseUrl)) {
-                //   content = content.replace(/(https?:\/\/)?(www\.)?/, '')
-                // }
-
-                // const messageLinkRegex =
-                //   /^(https?:\/\/)?(www\.)?epicapp\.net\/([^\/?#]+)\/([^\/?#]+)\/([^\/?#]+)\/?$/i
-                // const match = href.match(messageLinkRegex)
-                // const messageId = match?.[5]
-                // if (messageId) {
-                //   return (
-                //     <MessageLink
-                //       attributes={attributes as any}
-                //       isMyMessage={isMyMessage}
-                //       content={content}
-                //       chatId={chatId}
-                //       messageId={messageId}
-                //       hubId={hubId}
-                //       scrollToMessage={scrollToMessage}
-                //     />
-                //   )
-                // }
-
                 return (
                   <LinkRedirect
                     attributes={attributes as any}
@@ -171,6 +148,7 @@ export default function DefaultChatItem({
             isMyMessage={isMyMessage}
             withPostReward
             postId={message.id}
+            disabled={disableSuperLike}
           />
           <span className='pointer-events-none ml-4 select-none opacity-0'>
             {relativeTime()}

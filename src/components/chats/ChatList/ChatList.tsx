@@ -28,6 +28,7 @@ export type ChatListProps = ComponentProps<'div'> & {
   scrollContainerRef?: React.RefObject<HTMLDivElement>
   scrollableContainerClassName?: string
   hubId: string
+  disableSuperLike?: boolean
   chatId: string
   onlyDisplayUnapprovedMessages?: boolean
   newMessageNoticeClassName?: string
@@ -55,6 +56,7 @@ function ChatListContent({
   hubId,
   chatId,
   scrollContainerRef: _scrollContainerRef,
+  disableSuperLike,
   newMessageNoticeClassName,
   onlyDisplayUnapprovedMessages,
   ...props
@@ -210,6 +212,7 @@ function ChatListContent({
                         chatId={chatId}
                         hubId={hubId}
                         message={message}
+                        disableSuperLike={disableSuperLike}
                         scrollToMessage={scrollToMessage}
                         showApproveButton={onlyDisplayUnapprovedMessages}
                       />
