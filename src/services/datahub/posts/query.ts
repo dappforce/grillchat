@@ -558,6 +558,7 @@ const GET_UNAPPROVED_MEMES_COUNT = gql`
       }
     ) {
       data {
+        id
         approvedInRootPost
       }
     }
@@ -579,7 +580,7 @@ export const getUnapprovedMemesCountQuery = createQuery({
       if (post.approvedInRootPost) approved++
       else unapproved++
     })
-    return { unapproved, approved }
+    return { unapproved, approved, ids: res.posts.data.map((post) => post.id) }
   },
   defaultConfigGenerator: (params) => ({
     enabled: !!params?.address && !!params.chatId,

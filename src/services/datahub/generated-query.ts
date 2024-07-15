@@ -2884,7 +2884,11 @@ export type GetUnapprovedMemesCountQuery = {
   __typename?: 'Query'
   posts: {
     __typename?: 'FindPostsResponseDto'
-    data: Array<{ __typename?: 'Post'; approvedInRootPost: boolean }>
+    data: Array<{
+      __typename?: 'Post'
+      id: string
+      approvedInRootPost: boolean
+    }>
   }
 }
 
@@ -3675,6 +3679,7 @@ export const GetUnapprovedMemesCount = gql`
       }
     ) {
       data {
+        id
         approvedInRootPost
       }
     }
