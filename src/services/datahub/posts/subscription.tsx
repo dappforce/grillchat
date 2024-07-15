@@ -218,6 +218,7 @@ async function processMessage(
                 queryClient,
                 { address: ownerId, chatId: rootPostId ?? '' },
                 (count) => ({
+                  ids: [...(count?.ids ?? []), entity.id],
                   unapproved: (count?.unapproved ?? 0) + 1,
                   approved: count?.approved ?? 0,
                 })
