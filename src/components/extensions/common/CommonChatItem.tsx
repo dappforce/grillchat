@@ -179,7 +179,7 @@ export default function CommonChatItem({
   }
 
   return (
-    <div className={cx('relative flex flex-col gap-2')}>
+    <div className={cx('relative flex flex-col gap-2')} ref={ref}>
       {isMyMessage && myMessageConfig.checkMark === 'adaptive-inside' && (
         <div
           className={cx(
@@ -235,7 +235,6 @@ export default function CommonChatItem({
             className={cx(
               'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5'
             )}
-            ref={ref}
           >
             <ProfilePreviewModalName
               clipText
