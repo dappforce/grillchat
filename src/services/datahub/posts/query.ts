@@ -114,9 +114,7 @@ async function getPaginatedPostIdsByRootPostId({
         orderBy: onlyDisplayUnapprovedMessages
           ? 'createdAtTime'
           : 'approvedInRootPostAtTime',
-        orderDirection: onlyDisplayUnapprovedMessages
-          ? QueryOrder.Asc
-          : QueryOrder.Desc,
+        orderDirection: QueryOrder.Desc,
         pageSize: CHAT_PER_PAGE,
         offset,
       },
