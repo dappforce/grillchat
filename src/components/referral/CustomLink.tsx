@@ -1,4 +1,5 @@
 import Link, { LinkProps } from 'next/link'
+import { useRouter } from 'next/router'
 import urlJoin from 'url-join'
 import { useReferralId } from './ReferralUrlChanger'
 
@@ -14,6 +15,7 @@ export default function ProfileLinkCustomLink({
 }) {
   const refId = useReferralId()
   const { href, as } = props
+  const { pathname } = useRouter()
 
   if (!href) {
     return <span {...props} />
@@ -31,7 +33,19 @@ export default function ProfileLinkCustomLink({
     return <a {...props} href={props.href} />
   }
 
-  return <Link {...props} href={href} />
+  return (
+    <Link
+      {...props}
+      onClick={(e) => {
+        if (pathname === href) {
+          e.stopPropagation()
+          e.preventDefault()
+        }
+        props.onClick?.(e)
+      }}
+      href={href}
+    />
+  )
 }
 
 function augmentLink(link: LinkProps['href'], refId: string) {
