@@ -15,7 +15,6 @@ import {
   SubscribeOrganizationSubscription,
 } from '../generated-query'
 import { isPersistentId } from '../posts/fetcher'
-import { getUnapprovedMemesCountQuery } from '../posts/query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
   getBlockedInAppDetailedQuery,
@@ -312,11 +311,6 @@ async function processBlockedResources(
         getPostQuery.fetchQuery(queryClient, resourceId),
         getPostQuery.fetchQuery(queryClient, entity.rootPostId),
       ] as const)
-
-      getUnapprovedMemesCountQuery.invalidate(queryClient, {
-        chatId: entity.rootPostId,
-        address: message?.struct.ownerId ?? '',
-      })
 
       if (message?.struct.ownerId === myAddress) {
         toast.custom((t) => (

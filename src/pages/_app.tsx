@@ -269,6 +269,7 @@ function SessionAccountChecker() {
 function DatahubHealthChecker() {
   const { data } = getDatahubHealthQuery.useQuery(null, {
     refetchInterval: 10_000,
+    retry: false,
   })
   const currentId = useRef<string | number>('')
   useEffect(() => {

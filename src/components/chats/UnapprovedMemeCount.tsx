@@ -3,7 +3,7 @@ import ForbiddenImage from '@/assets/emojis/forbidden.png'
 import TimeImage from '@/assets/emojis/time.png'
 import { env } from '@/env.mjs'
 import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
-import { getUnapprovedMemesCountQuery } from '@/services/datahub/posts/query'
+import { getUserPostedMemesForCountQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { useMemo } from 'react'
@@ -17,8 +17,8 @@ export default function UnapprovedMemeCount({
   chatId: string
   className?: string
 }) {
-  const { data: count, isLoading: loadingUnapproved } =
-    getUnapprovedMemesCountQuery.useQuery({
+  const { data, isLoading: loadingMemes } =
+    getUserPostedMemesForCountQuery.useQuery({
       address,
       chatId,
     })
@@ -30,24 +30,25 @@ export default function UnapprovedMemeCount({
     })
 
   const isLoading =
-    loadingUnapproved || loadingBlockedInApp || loadingBlockedInContest
-  const blockedCount = useMemo(() => {
-    if (isLoading) return null
-    const blockedInAppCount =
-      blockedInApp?.blockedResources.postId?.filter((id) =>
-        count?.ids.includes(id)
-      ).length ?? 0
-    const blockedInChatCount =
-      blockedInChat?.blockedResources.postId?.filter((id) =>
-        count?.ids.includes(id)
-      ).length ?? 0
-    return blockedInAppCount + blockedInChatCount
-  }, [count, blockedInApp, blockedInChat, isLoading])
+    loadingMemes || loadingBlockedInApp || loadingBlockedInContest
+  const { blocked, approved, unapproved } = useMemo(() => {
+    if (isLoading) return { blocked: 0, approved: 0, unapproved: 0 }
+    let blocked = 0
+    let approved = 0
+    let unapproved = 0
+    data?.forEach((meme) => {
+      if (
+        blockedInApp?.blockedResources.postId.includes(meme.id) ||
+        blockedInChat?.blockedResources.postId.includes(meme.id)
+      ) {
+        blocked++
+      } else if (meme.approvedInRootPost) approved++
+      else unapproved++
+    })
+    return { blocked, approved, unapproved }
+  }, [data, blockedInApp, blockedInChat, isLoading])
 
   if (isLoading || loadingBlockedInApp || loadingBlockedInContest) return null
-
-  const approved = count?.approved ?? 0
-  const unapproved = count?.unapproved ?? 0
 
   return (
     <div
@@ -59,7 +60,7 @@ export default function UnapprovedMemeCount({
       <div className='flex items-center gap-1'>
         <div className='flex items-center gap-1'>
           <Image src={ForbiddenImage} className='h-4 w-4' alt='' />
-          <span>{blockedCount}</span>
+          <span>{blocked}</span>
         </div>
         <span>/</span>
         <div className='flex items-center gap-1'>
