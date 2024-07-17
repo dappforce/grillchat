@@ -54,7 +54,6 @@ const SearchUser = () => {
             disabled={!value}
             onClick={() => {
               const { address, error } = getStartParam(value)
-              console.log(address)
 
               if (error) {
                 toast.custom((t) => <Toast t={t} title={error} />, {
