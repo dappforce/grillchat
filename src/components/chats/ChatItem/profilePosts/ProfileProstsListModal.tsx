@@ -1,27 +1,52 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Name from '@/components/Name'
+import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import { TabButton } from '@/modules/chat/HomePage/ChatTabs'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { getPaginatedPostIdsByPostIdAndAccount } from '@/services/datahub/posts/queryByAccount'
 import { useSendEvent } from '@/stores/analytics'
 import { useProfilePostsModal } from '@/stores/profile-posts-modal'
 import { cx } from '@/utils/class-names'
 import { Transition } from '@headlessui/react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import SkeletonFallback from '../../../SkeletonFallback'
 import { useModerateWithSuccessToast } from '../ChatItemMenus'
 import ProfilePostsList from './ProfilePostsList'
 
-const ProfilePostsListModal = () => {
+type Tab = 'all' | 'contest'
+
+type ProfilePostsListModalProps = {
+  tabsConfig?: {
+    defaultTab: Tab
+  }
+}
+
+const defaultHubId = env.NEXT_PUBLIC_MAIN_SPACE_ID
+const chatIdByTab = {
+  all: env.NEXT_PUBLIC_MAIN_CHAT_ID,
+  contest: env.NEXT_PUBLIC_CONTEST_CHAT_ID,
+}
+
+const ProfilePostsListModal = ({ tabsConfig }: ProfilePostsListModalProps) => {
+  const [selectedTab, setSelectedTab] = useState<Tab>(
+    tabsConfig?.defaultTab || 'all'
+  )
+
+  const router = useRouter()
+
   const {
     isOpen,
     closeModal,
     messageId = '',
-    chatId = '',
-    hubId = '',
+    chatId = tabsConfig ? chatIdByTab[tabsConfig.defaultTab] : '',
+    hubId = tabsConfig ? defaultHubId : '',
     address = '',
+    openModal,
   } = useProfilePostsModal()
 
   const { mutate: moderate } = useModerateWithSuccessToast(messageId, chatId)
@@ -51,6 +76,10 @@ const ProfilePostsListModal = () => {
 
     closeModal()
   }
+
+  useEffect(() => {
+    closeModal()
+  }, [closeModal, router.asPath])
 
   return createPortal(
     <>
@@ -119,6 +148,41 @@ const ProfilePostsListModal = () => {
             )}
           </div>
           <div className='relative mx-auto flex h-full max-h-full min-h-[400px] w-full flex-col items-center px-4'>
+            {tabsConfig && (
+              <div className='sticky top-14 mb-2 grid h-12 w-full grid-flow-col items-center gap-4 bg-background px-4'>
+                <TabButton
+                  tab='all'
+                  selectedTab={selectedTab}
+                  setSelectedTab={(tab) => {
+                    setSelectedTab(tab as any)
+                    openModal({
+                      address,
+                      chatId: chatIdByTab[tab as Tab],
+                      hubId: defaultHubId,
+                    })
+                  }}
+                  size={'md'}
+                >
+                  All memes
+                </TabButton>
+                <TabButton
+                  className='flex flex-col items-center justify-center text-center'
+                  tab='contest'
+                  selectedTab={selectedTab}
+                  setSelectedTab={(tab) => {
+                    setSelectedTab(tab as any)
+                    openModal({
+                      address,
+                      chatId: chatIdByTab[tab as Tab],
+                      hubId: defaultHubId,
+                    })
+                  }}
+                  size={'md'}
+                >
+                  Contest
+                </TabButton>
+              </div>
+            )}
             <ProfilePostsList address={address} chatId={chatId} hubId={hubId} />
           </div>
         </div>
