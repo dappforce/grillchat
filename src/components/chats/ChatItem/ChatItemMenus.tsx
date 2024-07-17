@@ -1,5 +1,4 @@
 import Button from '@/components/Button'
-import LinkText from '@/components/LinkText'
 import MenuList from '@/components/MenuList'
 import { useName } from '@/components/Name'
 import Toast from '@/components/Toast'
@@ -37,7 +36,6 @@ import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FaCheck } from 'react-icons/fa6'
 import {
   HiChevronRight,
-  HiMiniArrowUturnLeft,
   HiOutlineEyeSlash,
   HiOutlineInformationCircle,
 } from 'react-icons/hi2'
@@ -398,16 +396,16 @@ export function useModerateWithSuccessToast(messageId: string, chatId: string) {
         const args =
           variables.args as SocialCallDataArgs<'synth_moderation_block_resource'>
         const isBlockingOwner = args.resourceId === ownerId
-        const undo = () =>
-          moderationMutation.mutate({
-            callName: 'synth_moderation_unblock_resource',
-            args: {
-              resourceId: args.resourceId,
-              ctxPostIds: ['*'],
-              ctxAppIds: ['*'],
-            },
-            chatId,
-          })
+        // const undo = () =>
+        //   moderationMutation.mutate({
+        //     callName: 'synth_moderation_unblock_resource',
+        //     args: {
+        //       resourceId: args.resourceId,
+        //       ctxPostIds: ['*'],
+        //       ctxAppIds: ['*'],
+        //     },
+        //     chatId,
+        //   })
 
         toast.custom((t) => (
           <Toast
@@ -421,18 +419,18 @@ export function useModerateWithSuccessToast(messageId: string, chatId: string) {
                 user {name}
               </span>
             }
-            action={
-              <LinkText
-                onClick={() => {
-                  undo()
-                  toast.dismiss(t)
-                }}
-                variant='primary'
-                className='flex items-center gap-1 text-sm'
-              >
-                <HiMiniArrowUturnLeft /> Undo
-              </LinkText>
-            }
+            // action={
+            //   <LinkText
+            //     onClick={() => {
+            //       undo()
+            //       toast.dismiss(t)
+            //     }}
+            //     variant='primary'
+            //     className='flex items-center gap-1 text-sm'
+            //   >
+            //     <HiMiniArrowUturnLeft /> Undo
+            //   </LinkText>
+            // }
           />
         ))
       } else if (variables.callName === 'synth_moderation_unblock_resource') {
