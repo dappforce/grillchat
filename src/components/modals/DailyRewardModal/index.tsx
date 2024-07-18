@@ -62,7 +62,10 @@ export default function DailyRewardModal({
         enterTo='opacity-100'
         leaveFrom='h-auto'
         leaveTo='opacity-0 !duration-150'
-        onClick={close}
+        onClick={(e) => {
+          e.stopPropagation()
+          close()
+        }}
       />
       {isOpenAnimation && isOpen && selectedClaim && (
         <RewardAnimation claim={selectedClaim} close={closeModal} />
@@ -70,6 +73,7 @@ export default function DailyRewardModal({
       <Transition
         show={isOpen && !isOpenAnimation}
         appear
+        onClick={(e) => e.stopPropagation()}
         className='fixed bottom-0 left-1/2 z-40 mx-auto flex h-auto w-full max-w-screen-md -translate-x-1/2 rounded-t-[10px] bg-background-light outline-none transition duration-300'
         enterFrom={cx('opacity-0 translate-y-48')}
         enterTo='opacity-100 translate-y-0'
