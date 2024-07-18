@@ -498,6 +498,8 @@ export type FindPostsFilter = {
   OR?: InputMaybe<Array<FindPostsFilter>>
   activeStaking?: InputMaybe<Scalars['Boolean']['input']>
   approvedInRootPost?: InputMaybe<Scalars['Boolean']['input']>
+  /** Do not provide this parameter if you do not need include moderation filter in response. */
+  blockedByModeration?: InputMaybe<Scalars['Boolean']['input']>
   createdAtTime?: InputMaybe<Scalars['String']['input']>
   /** Datetime as ISO 8601 string */
   createdAtTimeGt?: InputMaybe<Scalars['String']['input']>

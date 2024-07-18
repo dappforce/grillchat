@@ -22,7 +22,8 @@ import BN from 'bignumber.js'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import Link from 'next/link'
-import { TouchEvent, TouchList, useEffect, useRef, useState } from 'react'
+import { TouchEvent, TouchList, memo, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { HiXMark } from 'react-icons/hi2'
 import {
   getEnergyStateStore,
@@ -230,7 +231,7 @@ const PointsClicker = ({ className }: PointsClickerProps) => {
           }}
         />
       </div>
-      <LikeMemesInfoMessage
+      <LikeMemesInfoMessageMemo
         showMemesInfoMessage={showMemeMessage}
         setShowMemesInfoMessage={setShowMemeMessage}
       />
@@ -247,10 +248,15 @@ const LikeMemesInfoMessage = ({
   showMemesInfoMessage,
   setShowMemesInfoMessage,
 }: LikeMemesInfoMessageProps) => {
+  const [domReady, setDomReady] = useState(false)
   const { data: tokenomicMetadata, isLoading: isTokenomicMetadataLoading } =
     getActiveStakingTokenomicMetadataQuery.useQuery({})
 
   const sendEvent = useSendEvent()
+
+  useEffect(() => {
+    setDomReady(true)
+  }, [])
 
   if (!showMemesInfoMessage) return null
 
@@ -266,59 +272,64 @@ const LikeMemesInfoMessage = ({
           .toString()
       : '0'
 
-  return (
-    <div className='absolute bottom-[75px] w-full animate-fade px-2 pb-2'>
-      <Link
-        href='/tg'
-        className='flex items-center gap-[10px] rounded-[20px] bg-slate-800 p-[10px] pr-4'
-        onClick={() => {
-          const { day } = getDayAndWeekTimestamp()
-
-          likeMemesInfoMessageStorage.set(day.toString())
-          sendEvent('tooltip_like_memes_clicked')
-        }}
-      >
-        <span className='text-[40px]'>💡</span>
-        <div className='flex flex-col gap-[10px]'>
-          <span className='text-base font-bold leading-none'>
-            Like memes and earn more
-          </span>
-          <span
-            className={cx(
-              mutedTextColorStyles,
-              'text-sm font-medium leading-none'
-            )}
-          >
-            Each like on a meme brings{' '}
-            {
-              <FormatBalance
-                value={userLikeWeight}
-                loading={isTokenomicMetadataLoading}
-              />
-            }{' '}
-            points
-          </span>
-        </div>
-        <div className='flex min-w-fit flex-1 items-center justify-end'>
-          <Button
-            className='m-0 justify-self-end p-0 text-2xl text-text-muted'
-            variant='transparent'
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-
+  return domReady
+    ? createPortal(
+        <div className='absolute bottom-0 w-full animate-fade px-2 pb-2'>
+          <Link
+            href='/tg'
+            className='flex items-center gap-[10px] rounded-[20px] bg-slate-800 p-[10px] pr-4'
+            onClick={() => {
               const { day } = getDayAndWeekTimestamp()
+
               likeMemesInfoMessageStorage.set(day.toString())
-              sendEvent('tooltip_like_memes_closed')
-              setShowMemesInfoMessage(false)
+              sendEvent('tooltip_like_memes_clicked')
             }}
           >
-            <HiXMark />
-          </Button>
-        </div>
-      </Link>
-    </div>
-  )
+            <span className='text-[40px]'>💡</span>
+            <div className='flex flex-col gap-[10px]'>
+              <span className='text-base font-bold leading-none'>
+                Like memes and earn more
+              </span>
+              <span
+                className={cx(
+                  mutedTextColorStyles,
+                  'text-sm font-medium leading-none'
+                )}
+              >
+                Each like on a meme brings{' '}
+                {
+                  <FormatBalance
+                    value={userLikeWeight}
+                    loading={isTokenomicMetadataLoading}
+                  />
+                }{' '}
+                points
+              </span>
+            </div>
+            <div className='flex min-w-fit flex-1 items-center justify-end'>
+              <Button
+                className='m-0 justify-self-end p-0 text-2xl text-text-muted'
+                variant='transparent'
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+
+                  const { day } = getDayAndWeekTimestamp()
+                  likeMemesInfoMessageStorage.set(day.toString())
+                  sendEvent('tooltip_like_memes_closed')
+                  setShowMemesInfoMessage(false)
+                }}
+              >
+                <HiXMark />
+              </Button>
+            </div>
+          </Link>
+        </div>,
+        document.getElementById('tap-page-container')!
+      )
+    : null
 }
+
+const LikeMemesInfoMessageMemo = memo(LikeMemesInfoMessage)
 
 export default PointsClicker

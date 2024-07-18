@@ -12,16 +12,12 @@ import { getProfilesServer } from '../api/profiles'
 async function prefetchChatData(client: QueryClient, chatId: string) {
   if (!chatId) return
 
+  // as now this query without myAddress is only used as placeholder data, no need to invalidate it
   const firstPageData = await getPaginatedPostIdsByPostId.fetchFirstPageQuery(
     client,
     { postId: chatId, onlyDisplayUnapprovedMessages: false, myAddress: '' },
     1
   )
-  getPaginatedPostIdsByPostId.invalidateFirstQuery(client, {
-    postId: chatId,
-    onlyDisplayUnapprovedMessages: false,
-    myAddress: '',
-  })
   const ownerIds = firstPageData.data
     .map((id) => {
       const post = getPostQuery.getQueryData(client, id)

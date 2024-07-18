@@ -11,6 +11,7 @@ import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike, {
   SuperLikeButton,
 } from '@/components/content-staking/SuperLike'
+import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
@@ -24,6 +25,7 @@ import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
+import dayjs from 'dayjs'
 import Linkify from 'linkify-react'
 import { useInView } from 'react-intersection-observer'
 import { ExtensionChatItemProps } from '../types'
@@ -428,11 +430,16 @@ function ApproveUserButton({
 
 function ApproveMemeButton({
   messageId,
+  chatId,
 }: {
   chatId: string
   messageId: string
 }) {
   const { mutate, isLoading } = useApproveMessage()
+  const isInContest = chatId === env.NEXT_PUBLIC_CONTEST_CHAT_ID
+  const isContestEnded = dayjs().isAfter(env.NEXT_PUBLIC_CONTEST_END_TIME)
+  const isInEndedContest = isInContest && isContestEnded
+
   return (
     <Button
       variant='greenOutline'
@@ -440,6 +447,7 @@ function ApproveMemeButton({
       className='whitespace-nowrap px-0 text-xs disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
       loadingText='Approving...'
       isLoading={isLoading}
+      disabled={isInEndedContest}
       onClick={(e) => {
         e.stopPropagation()
         mutate({

@@ -32,11 +32,16 @@ export default function usePaginatedMessageIds({
   const myAddress = useMyMainAddress() ?? ''
   // because from server it doesn't have access to myAddress, so we need to use the data without users' unapproved posts as placeholder
   const { data: placeholderData } =
-    getPaginatedPostIdsByPostId.useInfiniteQuery({
-      postId: chatId,
-      onlyDisplayUnapprovedMessages: !!onlyDisplayUnapprovedMessages,
-      myAddress: '',
-    })
+    getPaginatedPostIdsByPostId.useInfiniteQuery(
+      {
+        postId: chatId,
+        onlyDisplayUnapprovedMessages: !!onlyDisplayUnapprovedMessages,
+        myAddress: '',
+      },
+      {
+        enabled: false,
+      }
+    )
   const { data, fetchNextPage, isLoading } =
     getPaginatedPostIdsByPostId.useInfiniteQuery(
       {

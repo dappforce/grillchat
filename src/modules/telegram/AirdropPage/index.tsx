@@ -23,6 +23,7 @@ import { MdContentCopy } from 'react-icons/md'
 import { RiPencilFill } from 'react-icons/ri'
 import { toast } from 'sonner'
 import RemoveLinkedIdentityModal from './RemoveLinkedIdentityModal'
+import SearchUser from './SearchUser'
 
 export default function AirdropPage() {
   useTgNoScroll()
@@ -51,6 +52,7 @@ export default function AirdropPage() {
             </span>
           </div>
         </div>
+        {isAdmin && <SearchUser />}
         <div className='px-4'>
           <Card className='flex flex-col items-center gap-4 bg-background-light'>
             <AddressAvatar address={myAddress ?? ''} className='h-16 w-16' />

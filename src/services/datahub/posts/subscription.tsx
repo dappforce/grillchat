@@ -284,7 +284,6 @@ async function processMessage(
   if (!rootPostId) return
 
   const isApproved = entity.approvedInRootPost
-  // To show the user's unapproved message in approved tab
   if (isCreationEvent && !isApproved && isCurrentOwner) {
     getPaginatedPostIdsByPostId.setQueryFirstPageData(
       queryClient,
@@ -297,62 +296,60 @@ async function processMessage(
         if (!oldData) return [newestId]
         const oldIdsSet = new Set(oldData)
         if (oldIdsSet.has(newestId)) return oldData
+
         const newIds = [...oldData]
-        const index = oldData.findIndex((id) => {
-          const data = getPostQuery.getQueryData(queryClient, id)
-          if (!data) return false
-          if (data.struct.createdAtTime <= eventData.entity.createdAtTime) {
-            newIds.unshift(newestId)
-            return true
-          }
-          return false
-        })
-        if (index !== -1 || oldData.length <= 0) {
-          newIds.splice(index, 0, newestId)
-        }
+        newIds.unshift(newestId)
+
         return newIds
       }
     )
   }
 
-  getPaginatedPostIdsByPostId.setQueryFirstPageData(
-    queryClient,
-    {
+  if (isApproved) {
+    getPaginatedPostIdsByPostId.setQueryFirstPageData(
+      queryClient,
+      {
+        postId: rootPostId,
+        onlyDisplayUnapprovedMessages: !isApproved,
+        myAddress: getMyMainAddress() ?? '',
+      },
+      (oldData) => {
+        if (!oldData) return [newestId]
+        const oldIdsSet = new Set(oldData)
+        if (oldIdsSet.has(newestId)) return oldData
+
+        const newIds = [...oldData]
+
+        const usedAsClientOptimisticId = entity.optimisticId || entity.id
+        const clientOptimisticId = commentIdsOptimisticEncoder.encode(
+          usedAsClientOptimisticId ?? ''
+        )
+        if (oldIdsSet.has(clientOptimisticId)) {
+          const optimisticIdIndex = newIds.findIndex(
+            (id) => id === clientOptimisticId
+          )
+          newIds.splice(optimisticIdIndex, 1, newestId)
+          return newIds
+        }
+
+        if (entity.persistentId && oldIdsSet.has(entity.id)) {
+          const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
+          newIds.splice(optimisticIdIndex, 1, newestId)
+
+          return newIds
+        }
+
+        newIds.unshift(newestId)
+        return newIds
+      }
+    )
+  } else {
+    getPaginatedPostIdsByPostId.invalidateLastQuery(queryClient, {
       postId: rootPostId,
       onlyDisplayUnapprovedMessages: !isApproved,
       myAddress: getMyMainAddress() ?? '',
-    },
-    (oldData) => {
-      if (!oldData) return [newestId]
-      const oldIdsSet = new Set(oldData)
-      if (oldIdsSet.has(newestId)) return oldData
-
-      const newIds = [...oldData]
-
-      const usedAsClientOptimisticId = entity.optimisticId || entity.id
-      const clientOptimisticId = commentIdsOptimisticEncoder.encode(
-        usedAsClientOptimisticId ?? ''
-      )
-      if (oldIdsSet.has(clientOptimisticId)) {
-        const optimisticIdIndex = newIds.findIndex(
-          (id) => id === clientOptimisticId
-        )
-        newIds.splice(optimisticIdIndex, 1, newestId)
-        return newIds
-      }
-
-      if (entity.persistentId && oldIdsSet.has(entity.id)) {
-        const optimisticIdIndex = newIds.findIndex((id) => id === entity.id)
-        newIds.splice(optimisticIdIndex, 1, newestId)
-
-        return newIds
-      }
-
-      newIds.unshift(newestId)
-
-      return newIds
-    }
-  )
+    })
+  }
 
   getPostMetadataQuery.invalidate(queryClient, rootPostId)
 }

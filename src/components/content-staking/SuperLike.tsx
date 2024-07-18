@@ -1,4 +1,5 @@
 import Thumbsup from '@/assets/emojis/thumbsup.png'
+import { env } from '@/env.mjs'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery, getServerTimeQuery } from '@/services/api/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
@@ -63,6 +64,13 @@ export function SuperLikeWrapper({
   const { mutate: createSuperLike } = useCreateSuperLike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(postId)
 
+  const isInContest =
+    post?.struct.rootPostId === env.NEXT_PUBLIC_CONTEST_CHAT_ID
+  const isContestEnded = dayjs().isAfter(
+    dayjs(env.NEXT_PUBLIC_CONTEST_END_TIME)
+  )
+  const isInEndedContest = isInContest && isContestEnded
+
   const { canBeLiked: canBeSuperliked, isLoading: loadingCanBeLiked } =
     useClientValidationOfPostSuperLike(post?.struct.createdAtTime ?? 0)
 
@@ -94,7 +102,8 @@ export function SuperLikeWrapper({
       loadingTodayCount ||
       loadingCanBeLiked ||
       hasLikedMoreThanLimit ||
-      !message) &&
+      !message ||
+      isInEndedContest) &&
     !hasILiked
 
   let disabledCause = ''
@@ -106,6 +115,7 @@ export function SuperLikeWrapper({
     disabledCause = `You've liked 10 ${entity} today. Come back tomorrow for more fun!`
   else if (!canBeSuperliked)
     disabledCause = `You cannot like ${entity}s that are older than 7 days`
+  else if (isInEndedContest) disabledCause = `Contest has ended`
 
   const handleClick = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     // prevent chat menu from opening when clicking this button
