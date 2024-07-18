@@ -59,6 +59,9 @@ type Data = {
   onlyDisplayUnapprovedMessages: boolean
   myAddress: string
 }
+export const blockedCountOffset = {
+  blocked: 0,
+}
 async function getPaginatedPostIdsByRootPostId({
   page,
   postId,
@@ -77,14 +80,20 @@ async function getPaginatedPostIdsByRootPostId({
     onlyDisplayUnapprovedMessages,
     myAddress,
   })
-  const firstPageDataLength = oldIds?.length || CHAT_PER_PAGE
+
+  const chatPerPage = onlyDisplayUnapprovedMessages ? 50 : CHAT_PER_PAGE
+  const firstPageDataLength = oldIds?.length || chatPerPage
 
   // only first page that has dynamic content, where its length can increase from:
   // - subscription
   // - invalidation
   // so the offset has to accommodate the length of the current first page
-  let offset = Math.max((page - 2) * CHAT_PER_PAGE + firstPageDataLength, 0)
+  let offset = Math.max((page - 2) * chatPerPage + firstPageDataLength, 0)
   if (page === 1) offset = 0
+  if (onlyDisplayUnapprovedMessages) {
+    // no need to check for first page for pending tabs, to avoid skipped data
+    offset = Math.max((page - 1) * chatPerPage - blockedCountOffset.blocked, 0)
+  }
 
   const res = await datahubQueryRequest<
     GetCommentIdsInPostIdQuery,
@@ -118,7 +127,7 @@ async function getPaginatedPostIdsByRootPostId({
         orderDirection: onlyDisplayUnapprovedMessages
           ? QueryOrder.Asc
           : QueryOrder.Desc,
-        pageSize: CHAT_PER_PAGE,
+        pageSize: chatPerPage,
         offset,
       },
     },
@@ -198,6 +207,10 @@ export const getPaginatedPostIdsByPostId = {
     const cachedData = client?.getQueryData(getQueryKey(data))
     return ((cachedData as any)?.pages?.[0] as PaginatedPostsData | undefined)
       ?.data
+  },
+  getCurrentPageNumber: (client: QueryClient, data: Data) => {
+    const cachedData = client?.getQueryData(getQueryKey(data))
+    return (cachedData as any)?.pages?.length
   },
   fetchFirstPageQuery: async (
     client: QueryClient | null,
