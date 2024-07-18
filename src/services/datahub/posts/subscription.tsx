@@ -298,18 +298,7 @@ async function processMessage(
         if (oldIdsSet.has(newestId)) return oldData
 
         const newIds = [...oldData]
-        const index = oldData.findIndex((id) => {
-          const data = getPostQuery.getQueryData(queryClient, id)
-          if (!data) return false
-          if (data.struct.createdAtTime <= eventData.entity.createdAtTime) {
-            newIds.unshift(newestId)
-            return true
-          }
-          return false
-        })
-        if (index !== -1 || oldData.length <= 0) {
-          newIds.splice(index, 0, newestId)
-        }
+        newIds.unshift(newestId)
 
         return newIds
       }
@@ -350,22 +339,7 @@ async function processMessage(
           return newIds
         }
 
-        const index = oldData.findIndex((id) => {
-          const data = getPostQuery.getQueryData(queryClient, id)
-          if (!data) return false
-          if (
-            new Date(data.struct.createdAtTime) <=
-            new Date(eventData.entity.createdAtTime)
-          ) {
-            newIds.unshift(newestId)
-            return true
-          }
-          return false
-        })
-        if (index !== -1 || oldData.length <= 0) {
-          newIds.splice(index, 0, newestId)
-        }
-
+        newIds.unshift(newestId)
         return newIds
       }
     )
