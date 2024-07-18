@@ -9,10 +9,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import {
+  HiMiniArrowUturnLeft,
+  HiOutlineInformationCircle,
+} from 'react-icons/hi2'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import FormButton from '../FormButton'
+import LinkText from '../LinkText'
 import { useName } from '../Name'
 import Toast from '../Toast'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
@@ -80,17 +84,17 @@ export default function ModerationForm({
         const args =
           variables.args as SocialCallDataArgs<'synth_moderation_block_resource'>
         const isBlockingOwner = args.resourceId === ownerId
-        // const undo = () =>
-        //   mutate({
-        //     withoutRevalidateCurrentPath: isFromWidget,
-        //     callName: 'synth_moderation_unblock_resource',
-        //     args: {
-        //       resourceId: args.resourceId,
-        //       ctxPostIds: ['*'],
-        //       ctxAppIds: ['*'],
-        //     },
-        //     chatId: chatId ?? '',
-        //   })
+        const undo = () =>
+          mutate({
+            withoutRevalidateCurrentPath: isFromWidget,
+            callName: 'synth_moderation_unblock_resource',
+            args: {
+              resourceId: args.resourceId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+            chatId: chatId ?? '',
+          })
 
         toast.custom((t) => (
           <Toast
@@ -104,18 +108,18 @@ export default function ModerationForm({
                 user {name}
               </span>
             }
-            // action={
-            //   <LinkText
-            //     onClick={() => {
-            //       undo()
-            //       toast.dismiss(t)
-            //     }}
-            //     variant='primary'
-            //     className='flex items-center gap-1 text-sm'
-            //   >
-            //     <HiMiniArrowUturnLeft /> Undo
-            //   </LinkText>
-            // }
+            action={
+              <LinkText
+                onClick={() => {
+                  undo()
+                  toast.dismiss(t)
+                }}
+                variant='primary'
+                className='flex items-center gap-1 text-sm'
+              >
+                <HiMiniArrowUturnLeft /> Undo
+              </LinkText>
+            }
           />
         ))
       } else if (variables.callName === 'synth_moderation_unblock_resource') {
