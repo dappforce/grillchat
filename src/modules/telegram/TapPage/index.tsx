@@ -1,7 +1,9 @@
+import Diamond from '@/assets/emojis/diamond.png'
 import TapFromMobileImage from '@/assets/graphics/tap-from-mobile.png'
 import SkeletonFallback from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import useTgNoScroll from '@/hooks/useTgNoScroll'
+import Points from '@/modules/points/PointsPreview'
 import PointsWidget from '@/modules/points/PointsWidget'
 import {
   FULL_ENERGY_VALUE,
@@ -40,9 +42,26 @@ const TapPageContent = () => {
   }
 
   return (
-    <div className='grid flex-1 grid-rows-[2fr,0.5fr] items-center justify-items-center'>
-      <PointsClicker className='h-full justify-self-center' />
+    <div
+      id='tap-page-container'
+      className='relative grid flex-1 grid-rows-[2fr,0.2fr] items-center justify-items-center'
+    >
+      <div className='relative w-full'>
+        <PointsPreview />
+        <PointsClicker className='h-full justify-self-center' />
+      </div>
       <EnergyState />
+    </div>
+  )
+}
+
+const PointsPreview = () => {
+  return (
+    <div className='absolute left-0 right-0 top-8 mx-auto flex w-fit items-center gap-2'>
+      <Image className='h-[67px] w-[67px]' src={Diamond} alt='' />
+      <span className='text-[40px] font-bold'>
+        <Points withPointsAnimation={false} />
+      </span>
     </div>
   )
 }

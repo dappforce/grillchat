@@ -21,7 +21,7 @@ import {
   getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
   getTimeLeftUntilCanPostQuery,
-  getUnapprovedMemesCountQuery,
+  getUserPostedMemesForCountQuery,
 } from './query'
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
@@ -212,22 +212,27 @@ async function processMessage(
         processUnapprovedMeme()
         async function processUnapprovedMeme() {
           if (ownerId) {
-            const cachedCount = getUnapprovedMemesCountQuery.getQueryData(
+            const cached = getUserPostedMemesForCountQuery.getQueryData(
               queryClient,
               { address: ownerId, chatId: rootPostId ?? '' }
             )
-            if (cachedCount) {
-              getUnapprovedMemesCountQuery.setQueryData(
+            if (cached) {
+              getUserPostedMemesForCountQuery.setQueryData(
                 queryClient,
                 { address: ownerId, chatId: rootPostId ?? '' },
-                (count) => ({
-                  ids: [...(count?.ids ?? []), entity.id],
-                  unapproved: (count?.unapproved ?? 0) + 1,
-                  approved: count?.approved ?? 0,
-                })
+                (old) => {
+                  if (!old) return old
+                  return [
+                    ...old,
+                    {
+                      id: entity.id,
+                      approvedInRootPost: entity.approvedInRootPost,
+                    },
+                  ]
+                }
               )
             } else if (isCurrentOwner) {
-              await getUnapprovedMemesCountQuery.fetchQuery(queryClient, {
+              await getUserPostedMemesForCountQuery.fetchQuery(queryClient, {
                 address: ownerId,
                 chatId: rootPostId ?? '',
               })
@@ -238,11 +243,11 @@ async function processMessage(
             getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
             lastSentMessageStorage.remove()
 
-            const count = getUnapprovedMemesCountQuery.getQueryData(
+            const postedMeme = getUserPostedMemesForCountQuery.getQueryData(
               queryClient,
               { address: myAddress, chatId: rootPostId ?? '' }
             )
-            const sentMeme = count.approved + count.unapproved
+            const sentMeme = postedMeme.length
             if (sentMeme === 1 || sentMeme === 3) {
               useMessageData.getState().setOpenMessageModal('on-review')
             } else {

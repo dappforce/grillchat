@@ -20,7 +20,7 @@ import {
 } from '../generated-query'
 import { getSocialProfileQuery } from '../identity/query'
 import { callIdToPostIdMap } from '../posts/mutation'
-import { getUnapprovedMemesCountQuery } from '../posts/query'
+import { getUserPostedMemesForCountQuery } from '../posts/query'
 import { getProfileQuery } from '../profiles/query'
 import { getGamificationTasksErrorQuery } from '../tasks/query'
 import { datahubSubscription } from '../utils'
@@ -236,7 +236,9 @@ async function processSubscriptionEvent(
   if (eventData.meta.callName === SocialCallName.SynthSetPostApproveStatus) {
     const extension = eventData.meta.extension
     const creatorAddress = extension?.creatorAddress ?? ''
+    const postId = extension?.postId ?? ''
     const rootPostId = extension?.rootPostId ?? ''
+    const newStatus = extension?.newStatus ?? false
     const profile = getProfileQuery.getQueryData(client, creatorAddress)
     toast.custom((t) => (
       <Toast
@@ -247,16 +249,19 @@ async function processSubscriptionEvent(
         }`}
       />
     ))
-    getUnapprovedMemesCountQuery.setQueryData(
+    getUserPostedMemesForCountQuery.setQueryData(
       client,
       { address: creatorAddress, chatId: rootPostId },
-      (oldCount) => {
-        if (!oldCount) return oldCount
-        return {
-          ...oldCount,
-          approved: oldCount.approved + 1,
-          unapproved: oldCount.unapproved - 1,
-        }
+      (oldData) => {
+        if (!oldData) return oldData
+        const index = oldData.findIndex((meme) => meme.id === postId)
+        if (index === -1) return oldData
+        const meme = oldData[index]
+        return [
+          ...oldData.slice(0, index),
+          { ...meme, approvedInRootPost: newStatus },
+          ...oldData.slice(index + 1),
+        ]
       }
     )
     return

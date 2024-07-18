@@ -195,8 +195,13 @@ function NewMemeNotice() {
   return null
 }
 
-const RedDot = () => (
-  <div className='absolute right-0 top-0 h-2 w-2 translate-x-[150%] rounded-full bg-red-500' />
+export const RedDot = ({ className }: { className?: string }) => (
+  <div
+    className={cx(
+      'absolute right-0 top-0 h-2 w-2 translate-x-[150%] rounded-full bg-red-500',
+      className
+    )}
+  />
 )
 
 export default MobileNavigation

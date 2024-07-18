@@ -36,6 +36,7 @@ import { MdContentCopy } from 'react-icons/md'
 import { RiPencilFill } from 'react-icons/ri'
 import { toast } from 'sonner'
 import { LeaderboardContent } from '../telegram/StatsPage/LeaderboardSection'
+import CheckInTaskPreview from './CheckInTaskPreview'
 import LikeCount from './LikePreview'
 import Points from './PointsPreview'
 
@@ -84,10 +85,11 @@ export default function PointsWidget({
             /10
           </span>
         </div>
+        <CheckInTaskPreview />
         <div className='flex items-center gap-2'>
           <Image className='h-7 w-7' src={Diamond} alt='' />
           <span className='flex items-center text-xl font-bold'>
-            <Points withPointsAnimation={withPointsAnimation} />
+            <Points withPointsAnimation={withPointsAnimation} shorten />
           </span>
           <FaChevronDown className='relative' />
         </div>

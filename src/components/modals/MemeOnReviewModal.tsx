@@ -2,7 +2,7 @@ import Check from '@/assets/emojis/check.png'
 import Time from '@/assets/emojis/time.png'
 import { MIN_MEME_FOR_REVIEW } from '@/constants/chat'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
-import { getUnapprovedMemesCountQuery } from '@/services/datahub/posts/query'
+import { getUserPostedMemesForCountQuery } from '@/services/datahub/posts/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import Image from 'next/image'
 import Button from '../Button'
@@ -14,13 +14,13 @@ export default function MemeOnReviewModal({
 }: ModalFunctionalityProps & { chatId: string }) {
   const myAddress = useMyMainAddress() ?? ''
   const { data: tokenomics } = getTokenomicsMetadataQuery.useQuery(null)
-  const { data: count } = getUnapprovedMemesCountQuery.useQuery(
+  const { data: postedMemes } = getUserPostedMemesForCountQuery.useQuery(
     { address: myAddress, chatId },
     {
       enabled: props.isOpen,
     }
   )
-  const sentMeme = (count?.unapproved ?? 0) + (count?.approved ?? 0)
+  const sentMeme = postedMemes?.length ?? 0
   const remaining = MIN_MEME_FOR_REVIEW - sentMeme
 
   const description =
