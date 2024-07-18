@@ -7,7 +7,6 @@ import { SuperLikeWrapper } from '@/components/content-staking/SuperLike'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
-import PopOver from '@/components/floating/PopOver'
 import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
 import ModerationModal from '@/components/moderation/ModerationModal'
@@ -192,9 +191,9 @@ export default function ChatItemMenus({
           !isOptimisticMessage && (
             <SuperLikeWrapper postId={messageId} withPostReward={false}>
               {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
-                if (hasILiked) return null
-                const menus: FloatingMenusProps['menus'] = [
-                  {
+                const menus: FloatingMenusProps['menus'] = []
+                if (!hasILiked && !disabledCause) {
+                  menus.push({
                     icon: IoDiamondOutline,
                     text: 'Like Message',
                     disabled: isDisabled,
@@ -212,8 +211,8 @@ export default function ChatItemMenus({
                       handleClick()
                       setIsOpenChatMenu(null)
                     },
-                  },
-                ]
+                  })
+                }
 
                 const imageExt = message?.content?.extensions?.find(
                   (ext) => ext.id === 'subsocial-image'
@@ -244,19 +243,7 @@ export default function ChatItemMenus({
                     </div>
                   </div>
                 )
-                return disabledCause ? (
-                  <PopOver
-                    triggerClassName='w-full'
-                    trigger={menuList}
-                    panelSize='sm'
-                    triggerOnHover
-                    placement='top'
-                  >
-                    <p>{disabledCause}</p>
-                  </PopOver>
-                ) : (
-                  menuList
-                )
+                return menuList
               }}
             </SuperLikeWrapper>
           )

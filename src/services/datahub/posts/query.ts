@@ -107,10 +107,11 @@ async function getPaginatedPostIdsByRootPostId({
                   },
                 ],
               }
-            : {
+            : ({
                 rootPostId: postId,
                 approvedInRootPost: !onlyDisplayUnapprovedMessages,
-              },
+                blockedByModeration: false,
+              } as any),
         orderBy: onlyDisplayUnapprovedMessages
           ? 'createdAtTime'
           : 'approvedInRootPostAtTime',
