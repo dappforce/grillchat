@@ -46,6 +46,7 @@ const chatIdsBasedOnSelectedTab = {
 
 export default function ChatContent({ className }: Props) {
   const { query } = useRouter()
+  const isAdmin = useIsModerationAdmin()
   let [selectedTab, setSelectedTab] = useLocalStorage<TabState>(
     'memes-tab',
     'all'
@@ -58,6 +59,12 @@ export default function ChatContent({ className }: Props) {
   } else if (selectedTab === 'not-approved-contest' && getIsContestEnded()) {
     selectedTab = 'not-approved'
   }
+  if (
+    !isAdmin &&
+    (selectedTab === 'not-approved' || selectedTab === 'not-approved-contest')
+  ) {
+    setSelectedTab('all')
+  }
 
   useLayoutEffect(() => {
     if (query.tab === 'contest') {
@@ -69,7 +76,6 @@ export default function ChatContent({ className }: Props) {
     }
   }, [query.tab, setSelectedTab])
 
-  const isAdmin = useIsModerationAdmin()
   const [isOpenRules, setIsOpenRules] = useState(false)
   const { data: serverTime } = getServerTimeQuery.useQuery(null)
   const isContestEnded =
