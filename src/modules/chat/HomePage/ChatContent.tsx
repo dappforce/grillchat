@@ -10,6 +10,7 @@ import Meme2EarnIntroModal, {
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useIsAddressBlockedInChat from '@/hooks/useIsAddressBlockedInChat'
+import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import useLinkedEvmAddress from '@/hooks/useLinkedEvmAddress'
 import usePostMemeThreshold from '@/hooks/usePostMemeThreshold'
 import PointsWidget from '@/modules/points/PointsWidget'
@@ -20,6 +21,8 @@ import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
+import { getIsContestEnded } from '@/utils/contest'
 import { useLocalStorage } from '@uidotdev/usehooks'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
@@ -47,8 +50,13 @@ export default function ChatContent({ className }: Props) {
     'memes-tab',
     'all'
   )
-  if (!tabStates.includes(selectedTab)) {
+  if (
+    !tabStates.includes(selectedTab) ||
+    (selectedTab === 'contest' && getIsContestEnded())
+  ) {
     selectedTab = 'all'
+  } else if (selectedTab === 'not-approved-contest' && getIsContestEnded()) {
+    selectedTab = 'not-approved'
   }
 
   useLayoutEffect(() => {
@@ -61,6 +69,7 @@ export default function ChatContent({ className }: Props) {
     }
   }, [query.tab, setSelectedTab])
 
+  const isAdmin = useIsModerationAdmin()
   const [isOpenRules, setIsOpenRules] = useState(false)
   const { data: serverTime } = getServerTimeQuery.useQuery(null)
   const isContestEnded =
@@ -79,8 +88,12 @@ export default function ChatContent({ className }: Props) {
 
   return (
     <>
-      <PointsWidget isNoTgScroll className='sticky top-0' />
-      <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+      {!isAdmin && <PointsWidget isNoTgScroll className='sticky top-0' />}
+      <Tabs
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+        className={cx(isAdmin && 'top-0')}
+      />
       <ChatRoom
         scrollableContainerClassName='pt-12'
         asContainer
