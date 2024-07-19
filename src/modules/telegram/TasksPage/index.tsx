@@ -1,8 +1,6 @@
 import Diamond from '@/assets/emojis/diamond.png'
 import Calendar from '@/assets/graphics/tasks/calendar.png'
 import Like from '@/assets/graphics/tasks/like.png'
-import Present from '@/assets/graphics/tasks/present.png'
-import Alarm from '@/assets/icons/alarm.svg'
 import Check from '@/assets/icons/check.svg'
 import Card from '@/components/Card'
 import { Skeleton } from '@/components/SkeletonFallback'
@@ -47,7 +45,7 @@ export default function TasksPage() {
         className='sticky top-0'
       />
       <div className='flex flex-1 flex-col gap-8 overflow-auto px-4 py-8'>
-        <LimitedTasks />
+        {/* <LimitedTasks /> */}
         <BasicTasks />
         <DailyTasks />
         <NewTasks />
@@ -56,34 +54,34 @@ export default function TasksPage() {
   )
 }
 
-function LimitedTasks() {
-  const sendEvent = useSendEvent()
-  return (
-    <div className='flex flex-col gap-2'>
-      <TaskCard
-        topBanner={{
-          icon: <Alarm />,
-          text: 'LIMITED TASK',
-          className: cx('bg-[#895EFD]/10 text-[#A584FE]'),
-          textClassName: cx('bg-clip-text block text-transparent'),
-          textStyle: {
-            backgroundImage: 'linear-gradient(91deg, #A683FD 0%, #798AFC 100%)',
-            WebkitTextFillColor: 'transparent',
-          },
-        }}
-        href='/tg?tab=contest'
-        onClick={() => {
-          sendEvent('tasks_contest_open')
-        }}
-        withoutDiamondIcon
-        image={Present}
-        title='$300 MEME CONTEST'
-        reward='Post memes to win crypto rewards!'
-        completed={false}
-      />
-    </div>
-  )
-}
+// function LimitedTasks() {
+//   const sendEvent = useSendEvent()
+//   return (
+//     <div className='flex flex-col gap-2'>
+//       <TaskCard
+//         topBanner={{
+//           icon: <Alarm />,
+//           text: 'LIMITED TASK',
+//           className: cx('bg-[#895EFD]/10 text-[#A584FE]'),
+//           textClassName: cx('bg-clip-text block text-transparent'),
+//           textStyle: {
+//             backgroundImage: 'linear-gradient(91deg, #A683FD 0%, #798AFC 100%)',
+//             WebkitTextFillColor: 'transparent',
+//           },
+//         }}
+//         href='/tg?tab=contest'
+//         onClick={() => {
+//           sendEvent('tasks_contest_open')
+//         }}
+//         withoutDiamondIcon
+//         image={Present}
+//         title='$300 MEME CONTEST'
+//         reward='Post memes to win crypto rewards!'
+//         completed={false}
+//       />
+//     </div>
+//   )
+// }
 
 function DailyTasks() {
   const sendEvent = useSendEvent()
