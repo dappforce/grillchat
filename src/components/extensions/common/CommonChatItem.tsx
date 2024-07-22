@@ -5,7 +5,6 @@ import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatIte
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
-import UnapprovedMemeCount from '@/components/chats/UnapprovedMemeCount'
 import UnapprovedUserChip from '@/components/chats/UnapprovedUserChip'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike, {
@@ -209,14 +208,6 @@ export default function CommonChatItem({
             cx(isOthersMessageChildrenOnBottom && 'text-white')
           )}
         </div>
-      )}
-
-      {showApproveButton && !isMyMessage && inView && (
-        <UnapprovedMemeCount
-          className='absolute bottom-14 right-1.5 z-10 bg-black/50 text-white'
-          address={ownerId}
-          chatId={chatId}
-        />
       )}
 
       <div
