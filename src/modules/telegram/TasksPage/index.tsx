@@ -3,6 +3,7 @@ import Calendar from '@/assets/graphics/tasks/calendar.png'
 import Like from '@/assets/graphics/tasks/like.png'
 import Check from '@/assets/icons/check.svg'
 import Card from '@/components/Card'
+import LinkText from '@/components/LinkText'
 import { Skeleton } from '@/components/SkeletonFallback'
 import LayoutWithBottomNavigation from '@/components/layouts/LayoutWithBottomNavigation'
 import DailyRewardModal from '@/components/modals/DailyRewardModal'
@@ -15,6 +16,7 @@ import {
   getTodaySuperLikeCountQuery,
   getTokenomicsMetadataQuery,
 } from '@/services/datahub/content-staking/query'
+import { getUserReferralStatsQuery } from '@/services/datahub/leaderboard/query'
 import {
   clearGamificationTasksError,
   getGamificationTasksQuery,
@@ -45,43 +47,14 @@ export default function TasksPage() {
         className='sticky top-0'
       />
       <div className='flex flex-1 flex-col gap-8 overflow-auto px-4 py-8'>
-        {/* <LimitedTasks /> */}
         <BasicTasks />
         <DailyTasks />
+        <InviteFriendsTasks />
         <NewTasks />
       </div>
     </LayoutWithBottomNavigation>
   )
 }
-
-// function LimitedTasks() {
-//   const sendEvent = useSendEvent()
-//   return (
-//     <div className='flex flex-col gap-2'>
-//       <TaskCard
-//         topBanner={{
-//           icon: <Alarm />,
-//           text: 'LIMITED TASK',
-//           className: cx('bg-[#895EFD]/10 text-[#A584FE]'),
-//           textClassName: cx('bg-clip-text block text-transparent'),
-//           textStyle: {
-//             backgroundImage: 'linear-gradient(91deg, #A683FD 0%, #798AFC 100%)',
-//             WebkitTextFillColor: 'transparent',
-//           },
-//         }}
-//         href='/tg?tab=contest'
-//         onClick={() => {
-//           sendEvent('tasks_contest_open')
-//         }}
-//         withoutDiamondIcon
-//         image={Present}
-//         title='$300 MEME CONTEST'
-//         reward='Post memes to win crypto rewards!'
-//         completed={false}
-//       />
-//     </div>
-//   )
-// }
 
 function DailyTasks() {
   const sendEvent = useSendEvent()
@@ -173,6 +146,86 @@ function DailyTasks() {
   )
 }
 
+const inviteFriendsTasksName = 'INVITE_REFERRALS'
+
+function InviteFriendsTasks() {
+  const myAddress = useMyMainAddress()
+  const sendEvent = useSendEvent()
+  const [modalVariant, setModalVariant] = useState<ClaimModalVariant>(null)
+  const client = useQueryClient()
+  const { data: refStats } = getUserReferralStatsQuery.useQuery(myAddress || '')
+
+  const { refCount } = refStats || {}
+
+  const { data: gamificationTasks } = getGamificationTasksQuery.useQuery(
+    myAddress || ''
+  )
+
+  const data =
+    gamificationTasks?.data?.filter(
+      (item) => item.name === inviteFriendsTasksName
+    ) || []
+
+  const { aim } =
+    modalConfigByVariant[modalVariant || 'JOIN_TELEGRAM_CHANNEL_EpicAppNet']
+
+  return (
+    <div className='flex flex-col gap-5'>
+      <div className='flex flex-col gap-0.5'>
+        <span className='self-center text-lg font-bold text-slate-300'>
+          Invite friends
+        </span>
+        <span className='self-center text-center text-sm text-slate-400'>
+          For each{' '}
+          <LinkText
+            variant='primary'
+            className='hover:no-underline'
+            href='/tg/friends'
+          >
+            friend you invite
+          </LinkText>
+          , you earn 200K Points. You can earn additional points by completing
+          the tasks:
+        </span>
+      </div>
+      <div className='flex flex-col gap-2'>
+        {data.map((task, index) => {
+          const tag = task.tag as Exclude<ClaimModalVariant, null>
+
+          const { image, title, event } = modalConfigByVariant[tag]
+
+          return (
+            <TaskCard
+              key={index}
+              image={image}
+              onClick={() => {
+                sendEvent(event)
+
+                if (task !== undefined && !task.claimed) {
+                  clearGamificationTasksError(client)
+                  setModalVariant(tag)
+                }
+              }}
+              title={title}
+              openInNewTab
+              reward={parseInt(task.rewardPoints ?? '0')}
+              completed={task.claimed ?? false}
+            />
+          )
+        })}
+      </div>
+      <ClaimTasksTokensModal
+        modalVariant={modalVariant}
+        close={() => setModalVariant(null)}
+        data={data || []}
+        disableButton={aim && refCount ? refCount < aim : undefined}
+      />
+    </div>
+  )
+}
+
+const basicTasksNames = ['JOIN_TELEGRAM_CHANNEL', 'JOIN_TWITTER']
+
 function BasicTasks() {
   const sendEvent = useSendEvent()
   const [modalVariant, setModalVariant] = useState<ClaimModalVariant>(null)
@@ -183,7 +236,10 @@ function BasicTasks() {
     myAddress || ''
   )
 
-  const data = gamificationTasks?.data || []
+  const data =
+    gamificationTasks?.data?.filter((item) =>
+      basicTasksNames.includes(item.name)
+    ) || []
 
   return (
     <div className='flex flex-col gap-5'>
@@ -244,7 +300,7 @@ function TaskCard({
   topBanner,
 }: {
   image: ImageProps['src']
-  title: string
+  title: React.ReactNode
   reward: number | string
   completed: boolean
   customAction?: React.ReactNode

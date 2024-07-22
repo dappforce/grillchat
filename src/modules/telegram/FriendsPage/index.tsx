@@ -9,11 +9,14 @@ import PointsWidget from '@/modules/points/PointsWidget'
 import { getUserReferralStatsQuery } from '@/services/datahub/leaderboard/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
+import { isTouchDevice } from '@/utils/device'
 import { copyToClipboard, formatNumber } from '@/utils/strings'
+import { initUtils } from '@tma.js/sdk-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { MdCheck, MdOutlineContentCopy } from 'react-icons/md'
 import SkeletonFallback from '../../../components/SkeletonFallback'
+import ReferralTable from './ReferralTable'
 
 export default function FriendsPage() {
   useTgNoScroll()
@@ -84,19 +87,36 @@ const FriendsPageContent = () => {
           refCount={refCount ?? 0}
         />
       </div>
-      <div className='sticky bottom-1 flex items-center gap-2'>
+      <div
+        className='sticky bottom-0 z-10 flex items-center gap-2 pb-2 pt-4'
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(17, 23, 41, 0.00) 0%, #111729 100%)',
+        }}
+      >
         <Button
           className='w-full'
           size={'lg'}
           variant='primary'
           onClick={() => {
-            navigator
-              .share({
-                url: referralLink,
-              })
-              .catch((error) => {
-                console.error('Error sharing:', error)
-              })
+            if (isTouchDevice()) {
+              navigator
+                .share({
+                  url: referralLink,
+                })
+                .catch((error) => {
+                  console.error('Error sharing:', error)
+                })
+            } else {
+              const utils = initUtils()
+
+              try {
+                utils.openTelegramLink(`
+                  https://t.me/share/url?url=${referralLink}`)
+              } catch (e) {
+                console.error('Error opening telegram:')
+              }
+            }
           }}
         >
           Invite frens
@@ -104,7 +124,7 @@ const FriendsPageContent = () => {
         <Button
           size='lg'
           variant={'bgLighter'}
-          className='h-full px-4'
+          className='h-full bg-slate-700 px-4 text-white'
           onClick={() => onCopyClick(referralLink)}
         >
           {isCopied ? <MdCheck /> : <MdOutlineContentCopy />}
@@ -132,7 +152,7 @@ const ReferralCards = ({
           <span className='text-2xl font-bold'>{formatNumber(refCount)}</span>
         </SkeletonFallback>
         <span className='text-sm font-medium text-slate-400'>
-          Points Earned from friends activity
+          Points earned from your friends activity
         </span>
       </Card>
       <Card className='flex flex-col gap-2 bg-background-light px-4'>
@@ -142,7 +162,7 @@ const ReferralCards = ({
           </span>
         </SkeletonFallback>
         <span className='text-sm font-medium text-slate-400'>
-          Points Earned from 3 invited friends
+          Points earned from {formatNumber(refCount)} invited friends
         </span>
       </Card>
     </div>
@@ -152,7 +172,7 @@ const ReferralCards = ({
 const EarnInfoSection = () => {
   return (
     <Card className='flex flex-col gap-4 bg-background-light px-4'>
-      <div className='flex flex-col gap-1'>
+      <div className='flex flex-col gap-2'>
         <span className='text-lg font-semibold leading-[150%]'>
           <span className='font-extrabold text-text-primary'>💎 +200,000</span>{' '}
           when your friend joined
@@ -165,35 +185,6 @@ const EarnInfoSection = () => {
       <Button href='/tg/tasks' variant={'primaryOutline'}>
         Go to tasks
       </Button>
-    </Card>
-  )
-}
-
-type ReferralTableProps = {
-  referrals?: {
-    timestamp: string
-    socialProfileId: string
-  }[]
-  isLoading?: boolean
-  refCount: number
-}
-
-const ReferralTable = ({
-  isLoading,
-  refCount,
-  referrals,
-}: ReferralTableProps) => {
-  return (
-    <Card className='flex flex-col gap-4 bg-background-light px-4'>
-      <div className='flex flex-col gap-4'>
-        <span className='flex items-center gap-2 text-lg font-semibold'>
-          <SkeletonFallback isLoading={isLoading} className='w-8'>
-            {refCount}
-          </SkeletonFallback>{' '}
-          referrals
-        </span>
-        Here will be the table
-      </div>
     </Card>
   )
 }

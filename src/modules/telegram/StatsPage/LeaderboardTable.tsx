@@ -184,24 +184,31 @@ export const UserReward = ({ reward }: UserRewardProps) => {
 type UserPreviewProps = {
   address: string
   desc?: React.ReactNode
+  className?: string
+  nameClassName?: string
 }
 
 export const UserPreview = ({
   address,
   desc,
   loading,
+  className,
+  nameClassName,
 }: UserPreviewProps & { loading?: ImageProps['loading'] }) => {
   return (
-    <div className='flex items-center gap-2'>
+    <div className={cx('flex items-center gap-2', className)}>
       <AddressAvatar
         address={address}
         className='h-[38px] w-[38px]'
         loading={loading}
       />
-      <div className='flex flex-col gap-2'>
+      <div className={cx('flex flex-col gap-2')}>
         <Name
           address={address}
-          className='text-sm font-medium leading-none !text-text'
+          className={cx(
+            'text-sm font-medium leading-none !text-text',
+            nameClassName
+          )}
         />
         {desc && (
           <div
