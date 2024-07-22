@@ -4,11 +4,20 @@ import {
   getLeaderboardData,
   getUserData,
   getUserReferrals,
+  getUserReferralStats,
 } from '.'
 
 export const getUserReferralsQuery = createQuery({
   key: 'getUserReferrals',
   fetcher: getUserReferrals,
+  defaultConfigGenerator: (data) => ({
+    enabled: !!data,
+  }),
+})
+
+export const getUserReferralStatsQuery = createQuery({
+  key: 'getUserReferralStats',
+  fetcher: getUserReferralStats,
   defaultConfigGenerator: (data) => ({
     enabled: !!data,
   }),

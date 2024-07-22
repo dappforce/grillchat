@@ -147,6 +147,74 @@ export async function getUserReferrals(
   }
 }
 
+const GET_USER_REFERRAL_STATS = gql`
+  query getUserReferralsStats($address: String!) {
+    userReferralsStats(
+      args: {
+        where: { referrerId: $address }
+        responseParams: {
+          withReferralsList: true
+          withDistributedRewards: true
+        }
+        referralsListParams: { pageSize: 100 }
+      }
+    ) {
+      referrerId
+      distributedRewards {
+        totalPoints
+      }
+      referrals {
+        total
+        pageSize
+        offset
+        data {
+          timestamp
+          socialProfile {
+            id
+          }
+        }
+      }
+    }
+  }
+`
+
+export async function getUserReferralStats(address: string) {
+  const res = await datahubQueryRequest<
+    {
+      userReferralsStats: {
+        referrerId: string
+        distributedRewards: {
+          totalPoints: string
+        }
+        referrals: {
+          total: number
+          data: {
+            timestamp: string
+            socialProfile: {
+              id: string
+            }
+          }[]
+        }
+      }
+    },
+    GetUserReferralsQueryVariables
+  >({
+    document: GET_USER_REFERRAL_STATS,
+    variables: { address },
+  })
+
+  const data = res.userReferralsStats
+
+  return {
+    refCount: data.referrals.total ?? 0,
+    pointsEarned: data.distributedRewards.totalPoints.toString() ?? '0',
+    referrals: data.referrals.data.map((referral) => ({
+      timestamp: referral.timestamp,
+      socialProfileId: referral.socialProfile.id,
+    })),
+  }
+}
+
 const GET_ACTIVE_STAKING_TOKENOMIC_METADATA = gql`
   query GetTokenomicMetadata {
     activeStakingTokenomicMetadata {
