@@ -120,12 +120,7 @@ Sounds too good to be true? Join me and see for yourself! 😉
                     urlJoin(getCurrentUrlOrigin(), '/tg', `?ref=${myAddress}`),
                     twitterShareText,
                     {
-                      tags: [
-                        'meme2earn',
-                        'tap2earn',
-                        'memecoins',
-                        'memetokens',
-                      ],
+                      tags: ['meme2earn', 'memecoin', 'meme'],
                     }
                   )
                 )
