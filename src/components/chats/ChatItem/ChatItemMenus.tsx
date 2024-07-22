@@ -127,9 +127,19 @@ export default function ChatItemMenus({
     }
     if (isMessageOwner && !isOptimisticMessage) {
       menus.unshift(hideMenu)
+
+      const approvedTime = message?.struct.approvedInRootPostAtTime
+      const createdTime = message?.struct.createdAtTime
+      const isApproved = message?.struct.approvedInRootPost
+
+      const isAutoApproved = isApproved && approvedTime === createdTime
+      const isAfter5MinsOfCreation =
+        dayjs(createdTime).diff(dayjs(), 'minute') < 5
+
       if (
         (message?.content?.body.trim().length ?? 0) > 0 &&
-        dayjs(message?.struct.createdAtTime).diff(dayjs(), 'minute') < 5
+        ((!isAutoApproved && isAfter5MinsOfCreation && !isApproved) ||
+          (isAutoApproved && isAfter5MinsOfCreation))
       )
         menus.unshift(editItem)
     }
