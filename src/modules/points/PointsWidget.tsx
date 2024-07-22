@@ -176,9 +176,9 @@ function PointsDrawerContent({
             <div className='flex items-center gap-2'>
               {withBackButton && (
                 <Button
-                  size='circle'
+                  size='circleSm'
                   variant='transparent'
-                  className='-ml-2 mr-2 text-lg text-text-muted'
+                  className='-ml-1 mr-2 text-2xl text-text-muted'
                   onClick={() => setDrawerContentState('stats')}
                 >
                   <HiOutlineChevronLeft />
@@ -196,10 +196,10 @@ function PointsDrawerContent({
                 setIsOpen(false)
               }}
             >
-              <HiXMark className='text-3xl' />
+              <HiXMark className='text-2xl text-text-muted' />
             </Button>
           </div>
-          <div className='relative mx-auto flex h-full w-full flex-col items-center px-4 pt-6'>
+          <div className='relative mx-auto flex h-full w-full flex-col items-center px-4 pt-0'>
             <Content />
           </div>
         </div>
