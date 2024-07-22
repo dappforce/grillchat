@@ -629,6 +629,7 @@ export type GamificationTaskMetadata = {
 }
 
 export enum GamificationTaskName {
+  InviteReferrals = 'INVITE_REFERRALS',
   JoinTelegramChannel = 'JOIN_TELEGRAM_CHANNEL',
   JoinTwitter = 'JOIN_TWITTER',
 }
@@ -1151,6 +1152,7 @@ export type Query = {
   spaces: FindSpacesWithFilterResponseDto
   unreadMessages: Array<UnreadPostsCountResponse>
   userReferrals: UserReferralsResponse
+  userReferralsStats: UserReferralsStatsResponse
 }
 
 export type QueryActiveStakingAccountActivityMetricsForFixedPeriodArgs = {
@@ -1337,6 +1339,10 @@ export type QueryUnreadMessagesArgs = {
 
 export type QueryUserReferralsArgs = {
   args: UserReferralsInput
+}
+
+export type QueryUserReferralsStatsArgs = {
+  args: UserReferralsStatsInput
 }
 
 export enum QueryOrder {
@@ -1962,9 +1968,51 @@ export type UserReferralsInputWhereArgs = {
   referrerIds: Array<Scalars['String']['input']>
 }
 
+export type UserReferralsList = {
+  __typename?: 'UserReferralsList'
+  data?: Maybe<Array<UserReferrerDetail>>
+  offset?: Maybe<Scalars['Int']['output']>
+  pageSize?: Maybe<Scalars['Int']['output']>
+  total?: Maybe<Scalars['Int']['output']>
+}
+
+export type UserReferralsListParams = {
+  offset?: InputMaybe<Scalars['Int']['input']>
+  orderBy?: InputMaybe<Scalars['String']['input']>
+  orderDirection?: InputMaybe<QueryOrder>
+  pageSize?: InputMaybe<Scalars['Int']['input']>
+}
+
 export type UserReferralsResponse = {
   __typename?: 'UserReferralsResponse'
   data: Array<UserReferralsDataItem>
+}
+
+export type UserReferralsStatsDistributedRewards = {
+  __typename?: 'UserReferralsStatsDistributedRewards'
+  totalPoints?: Maybe<Scalars['String']['output']>
+}
+
+export type UserReferralsStatsInput = {
+  referralsListParams?: InputMaybe<UserReferralsListParams>
+  responseParams?: InputMaybe<UserReferralsStatsInputResponseParams>
+  where: UserReferralsStatsInputWhereArgs
+}
+
+export type UserReferralsStatsInputResponseParams = {
+  withDistributedRewards?: InputMaybe<Scalars['Boolean']['input']>
+  withReferralsList?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type UserReferralsStatsInputWhereArgs = {
+  referrerId: Scalars['String']['input']
+}
+
+export type UserReferralsStatsResponse = {
+  __typename?: 'UserReferralsStatsResponse'
+  distributedRewards?: Maybe<UserReferralsStatsDistributedRewards>
+  referrals?: Maybe<UserReferralsList>
+  referrerId: Scalars['String']['output']
 }
 
 export type UserReferrerDetail = {
@@ -2642,6 +2690,7 @@ export type DatahubPostFragmentFragment = {
   __typename?: 'Post'
   id: string
   createdAtTime?: any | null
+  updatedAtTime?: any | null
   title?: string | null
   body?: string | null
   approvedInRootPost: boolean
@@ -2676,6 +2725,7 @@ export type GetPostsQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2711,6 +2761,7 @@ export type GetOptimisticPostsQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2745,6 +2796,7 @@ export type GetCommentIdsInPostIdQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2811,6 +2863,7 @@ export type GetOwnedPostsQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2844,6 +2897,7 @@ export type GetPostsBySpaceIdQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -3024,6 +3078,7 @@ export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
     createdAtTime
+    updatedAtTime
     createdByAccount {
       id
     }

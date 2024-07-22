@@ -53,7 +53,7 @@ export const mapDatahubPostFragment = (
     spaceId: '',
     approvedInRootPost: post.approvedInRootPost ?? false,
     approvedInRootPostAtTime: new Date(post.approvedInRootPostAtTime).getTime(),
-    isUpdated: false,
+    isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.persistentId ?? '',
     parentPostId: null,
     followersCount: 0,

@@ -24,6 +24,8 @@ import { useApproveUser } from '@/services/datahub/posts/mutation'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
+import { useExtensionData } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -42,7 +44,7 @@ import {
   HiOutlineInformationCircle,
 } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
-import { LuShield } from 'react-icons/lu'
+import { LuPencil, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { useInView } from 'react-intersection-observer'
 import { toast } from 'sonner'
@@ -84,6 +86,10 @@ export default function ChatItemMenus({
       enabled: inView && isAdmin,
     })
   const { mutate: approveUser } = useApproveUser()
+  const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
+  const openExtensionModal = useExtensionData(
+    (state) => state.openExtensionModal
+  )
 
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
@@ -109,7 +115,20 @@ export default function ChatItemMenus({
       icon: HiOutlineEyeSlash,
       onClick: () => setModalState('hide'),
     }
-    if (isMessageOwner && !isOptimisticMessage) menus.unshift(hideMenu)
+    const editItem: FloatingMenusProps['menus'][number] = {
+      text: 'Edit',
+      icon: LuPencil,
+      onClick: () => {
+        sendEvent('edit_message', { hubId, chatId })
+        setMessageToEdit(messageId)
+        openExtensionModal('subsocial-image', null)
+      },
+    }
+    if (isMessageOwner && !isOptimisticMessage) {
+      menus.unshift(hideMenu)
+      if ((message?.content?.body.trim().length ?? 0) > 0)
+        menus.unshift(editItem)
+    }
 
     if (isAuthorized) {
       menus.unshift({
