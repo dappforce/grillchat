@@ -5,7 +5,7 @@ import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatIte
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
-import UnapprovedUserChip from '@/components/chats/UnapprovedUserChip'
+import ApprovedUserChip from '@/components/chats/UnapprovedUserChip'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike, {
   SuperLikeButton,
@@ -225,7 +225,7 @@ export default function CommonChatItem({
         {!isMyMessage && (
           <div
             className={cx(
-              'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5'
+              'flex items-center gap-2 overflow-hidden px-2.5 first:pt-1.5'
             )}
           >
             <ProfilePreviewModalName
@@ -242,7 +242,7 @@ export default function CommonChatItem({
             />
             {/* <SubTeamLabel address={ownerId} /> */}
             {inView && isAdmin && !showApproveButton && (
-              <UnapprovedUserChip chatId={chatId} address={ownerId} />
+              <ApprovedUserChip chatId={chatId} address={ownerId} />
             )}
             {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
