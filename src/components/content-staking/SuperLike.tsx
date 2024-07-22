@@ -1,5 +1,4 @@
 import Thumbsup from '@/assets/emojis/thumbsup.png'
-import { env } from '@/env.mjs'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
 import { getPostQuery, getServerTimeQuery } from '@/services/api/query'
 import { useCreateSuperLike } from '@/services/datahub/content-staking/mutation'
@@ -16,6 +15,7 @@ import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getIsContestEnded, getIsInContest } from '@/utils/contest'
 import { currentNetwork } from '@/utils/network'
 import { LocalStorage } from '@/utils/storage'
 import dayjs from 'dayjs'
@@ -64,11 +64,8 @@ export function SuperLikeWrapper({
   const { mutate: createSuperLike } = useCreateSuperLike()
   const { data: superLikeCount } = getSuperLikeCountQuery.useQuery(postId)
 
-  const isInContest =
-    post?.struct.rootPostId === env.NEXT_PUBLIC_CONTEST_CHAT_ID
-  const isContestEnded = dayjs().isAfter(
-    dayjs(env.NEXT_PUBLIC_CONTEST_END_TIME)
-  )
+  const isInContest = getIsInContest(post?.struct.rootPostId ?? '')
+  const isContestEnded = getIsContestEnded()
   const isInEndedContest = isInContest && isContestEnded
 
   const { canBeLiked: canBeSuperliked, isLoading: loadingCanBeLiked } =

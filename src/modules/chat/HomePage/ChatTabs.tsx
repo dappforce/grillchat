@@ -4,6 +4,7 @@ import { env } from '@/env.mjs'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import { getServerTimeQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
+import { getIsContestEnded } from '@/utils/contest'
 import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 
@@ -22,6 +23,7 @@ export function TabButton({
   children,
   className,
   size = 'md',
+  highlightSelected,
 }: {
   tab: TabState
   selectedTab: TabState
@@ -29,6 +31,7 @@ export function TabButton({
   children: ReactNode
   className?: string
   size?: 'md' | 'sm'
+  highlightSelected?: boolean
 }) {
   const isSelected = selectedTab === tab
   return (
@@ -37,7 +40,11 @@ export function TabButton({
       className={cx(
         'h-10 py-0 text-sm',
         size === 'sm' ? 'px-2' : 'h-10',
-        isSelected ? 'bg-background-primary/30' : '',
+        isSelected
+          ? highlightSelected
+            ? 'bg-orange-500/80'
+            : 'bg-background-primary/30'
+          : '',
         className
       )}
       onClick={() => setSelectedTab(tab)}
@@ -50,9 +57,11 @@ export function TabButton({
 export function Tabs({
   setSelectedTab,
   selectedTab,
+  className,
 }: {
   selectedTab: TabState
   setSelectedTab: (tab: TabState) => void
+  className?: string
 }) {
   const isAdmin = useIsModerationAdmin()
   const { data: serverTime, isLoading } = getServerTimeQuery.useQuery(null)
@@ -62,12 +71,19 @@ export function Tabs({
   )
 
   const tabSize: 'sm' | 'md' = isAdmin ? 'sm' : 'md'
+  if (!isAdmin && getIsContestEnded()) return null
 
   return (
-    <div className='sticky top-14 grid h-12 grid-flow-col items-center gap-1 bg-background px-4'>
+    <div
+      className={cx(
+        'sticky top-14 grid h-12 grid-flow-col items-center gap-1 bg-background px-4',
+        className
+      )}
+    >
       {isAdmin && (
         <>
           <TabButton
+            highlightSelected
             tab='not-approved'
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
@@ -75,14 +91,17 @@ export function Tabs({
           >
             Pending
           </TabButton>
-          <TabButton
-            tab='not-approved-contest'
-            selectedTab={selectedTab}
-            setSelectedTab={setSelectedTab}
-            size={tabSize}
-          >
-            Pending Contest
-          </TabButton>
+          {!getIsContestEnded() && (
+            <TabButton
+              highlightSelected
+              tab='not-approved-contest'
+              selectedTab={selectedTab}
+              setSelectedTab={setSelectedTab}
+              size={tabSize}
+            >
+              Pending Contest
+            </TabButton>
+          )}
         </>
       )}
       <TabButton
@@ -93,43 +112,45 @@ export function Tabs({
       >
         {isAdmin ? 'Approved' : 'All memes'}
       </TabButton>
-      <TabButton
-        className='flex flex-col items-center justify-center text-center'
-        tab='contest'
-        selectedTab={selectedTab}
-        setSelectedTab={setSelectedTab}
-        size={tabSize}
-      >
-        {!isAdmin ? (
-          <>
-            <span>{env.NEXT_PUBLIC_CONTEST_NAME}</span>
-            <span className='text-xs font-medium text-text-primary'>
-              {(() => {
-                if (isLoading || !serverTime)
-                  return <Skeleton className='w-16' />
-                if (env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime)
-                  return <span className='text-text-red'>Contest ended</span>
-                if (daysLeft === 0) {
-                  const hoursLeft = dayjs(
-                    env.NEXT_PUBLIC_CONTEST_END_TIME
-                  ).diff(dayjs(serverTime ?? undefined), 'hours')
-                  if (hoursLeft < 1) {
-                    return <span>Less than an hour left</span>
+      {!getIsContestEnded() && (
+        <TabButton
+          className='flex flex-col items-center justify-center text-center'
+          tab='contest'
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          size={tabSize}
+        >
+          {!isAdmin ? (
+            <>
+              <span>{env.NEXT_PUBLIC_CONTEST_NAME}</span>
+              <span className='text-xs font-medium text-text-primary'>
+                {(() => {
+                  if (isLoading || !serverTime)
+                    return <Skeleton className='w-16' />
+                  if (env.NEXT_PUBLIC_CONTEST_END_TIME < serverTime)
+                    return <span className='text-text-red'>Contest ended</span>
+                  if (daysLeft === 0) {
+                    const hoursLeft = dayjs(
+                      env.NEXT_PUBLIC_CONTEST_END_TIME
+                    ).diff(dayjs(serverTime ?? undefined), 'hours')
+                    if (hoursLeft < 1) {
+                      return <span>Less than an hour left</span>
+                    }
+                    return <span>{hoursLeft} hours left</span>
                   }
-                  return <span>{hoursLeft} hours left</span>
-                }
-                return (
-                  <span>
-                    {daysLeft} day{daysLeft > 1 ? 's' : ''} left
-                  </span>
-                )
-              })()}
-            </span>
-          </>
-        ) : (
-          <span>Contest</span>
-        )}
-      </TabButton>
+                  return (
+                    <span>
+                      {daysLeft} day{daysLeft > 1 ? 's' : ''} left
+                    </span>
+                  )
+                })()}
+              </span>
+            </>
+          ) : (
+            <span>Contest</span>
+          )}
+        </TabButton>
+      )}
     </div>
   )
 }
