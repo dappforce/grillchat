@@ -199,7 +199,9 @@ function BasicTasks() {
         {data.map((task, index) => {
           const tag = task.tag as Exclude<ClaimModalVariant, null>
 
-          const { image, title, event } = modalConfigByVariant[tag]
+          const variant = modalConfigByVariant[tag]
+          if (!variant) return null
+          const { image, title, event } = variant || {}
 
           return (
             <TaskCard
