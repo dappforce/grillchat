@@ -177,7 +177,7 @@ function ChatListContent({
                   sendEvent('load_more_messages', { currentPage })
                 }}
                 className={cx(
-                  'relative flex w-full flex-col-reverse !overflow-hidden pb-2',
+                  'relative flex w-full flex-col-reverse !overflow-hidden',
                   // need to have enough room to open message menu
                   'min-h-[400px]'
                 )}

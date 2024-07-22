@@ -1,5 +1,6 @@
+import BottomDrawer from '@/components/BottomDrawer'
 import ChatForm, { ChatFormProps } from '@/components/chats/ChatForm'
-import Modal, { ModalProps } from '@/components/modals/Modal'
+import { ModalProps } from '@/components/modals/Modal'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { useSendEvent } from '@/stores/analytics'
@@ -7,6 +8,8 @@ import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { PostContentExtension } from '@subsocial/api/types'
+import { useViewportRaw } from '@tma.js/sdk-react'
+import { usePrevious } from '@uidotdev/usehooks'
 import { useEffect } from 'react'
 
 export type BeforeMessageResult = {
@@ -58,20 +61,17 @@ export default function CommonExtensionModal({
     setShowEmptyPrimaryChatInput(props.isOpen)
   }, [props.isOpen, setShowEmptyPrimaryChatInput])
 
-  const commonClassName = cx('px-5 md:px-6')
+  const viewport = useViewportRaw(true)
+  const viewportHeight = viewport?.result?.stableHeight
+  const prevHeight = usePrevious(viewportHeight)
+  const offset = Math.max(0, (prevHeight ?? 0) - (viewportHeight ?? 0))
 
   const isUsingBigButton = !!sendButtonText
 
   return (
-    <Modal
-      {...props}
-      withCloseButton
-      contentClassName='!pb-0 !px-0'
-      titleClassName={commonClassName}
-      descriptionClassName={commonClassName}
-    >
+    <BottomDrawer {...props}>
       <div
-        className={cx(commonClassName, {
+        className={cx({
           ['border-b border-border-gray pb-6']: withDivider,
         })}
       >
@@ -89,13 +89,12 @@ export default function CommonExtensionModal({
           className='pb-1 pt-0.5'
           inputProps={{
             className: cx(
-              'rounded-none bg-transparent pl-4 md:pl-5 py-4 pr-20 !ring-0',
+              'rounded-none bg-transparent py-4 pl-2 pr-20 !ring-0',
               !isUsingBigButton && 'rounded-b-2xl'
             ),
           }}
           sendButtonProps={{
             disabled: disableSendButton,
-            className: cx(!isUsingBigButton ? 'mr-4' : 'mx-5 md:px-6'),
           }}
           buildAdditionalTxParams={buildAdditionalTxParams}
           onSubmit={() => {
@@ -114,6 +113,8 @@ export default function CommonExtensionModal({
           }}
         />
       )}
-    </Modal>
+      {/* blank space offset so the input got pushed up, because in telegram apps, virtual keyboard doesn't push the content up when opened */}
+      <div style={{ height: offset }} />
+    </BottomDrawer>
   )
 }

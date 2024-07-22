@@ -104,7 +104,7 @@ function ChatInputWrapper({
 
   return (
     <>
-      <Component className={cx('mt-auto flex py-0')}>
+      <Component className={cx('mt-auto flex py-0 pt-2')}>
         <div className='flex flex-1 flex-col'>
           {/* <ActionDetailBar
             chatId={chatId}

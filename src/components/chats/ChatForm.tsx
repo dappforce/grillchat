@@ -230,6 +230,19 @@ export default function ChatForm({
       return
     }
 
+    const linkRegex = /(https?:\/\/[^\s]+)/g
+    if (linkRegex.test(messageParams.message ?? '')) {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          type='error'
+          title='No Links Allowed!'
+          description="Looks like you tried to send a link. We're keeping it link-free here! Please remove the link and try again. 😊"
+        />
+      ))
+      return
+    }
+
     unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')
 

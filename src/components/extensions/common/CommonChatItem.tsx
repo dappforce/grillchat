@@ -1,5 +1,4 @@
 import Button from '@/components/Button'
-import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatItemMenus'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
@@ -24,7 +23,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIsContestEnded, getIsInContest } from '@/utils/contest'
 import { getTimeRelativeToNow } from '@/utils/date'
-import Linkify from 'linkify-react'
 import { useInView } from 'react-intersection-observer'
 import { ExtensionChatItemProps } from '../types'
 
@@ -277,7 +275,7 @@ export default function CommonChatItem({
               'whitespace-pre-wrap break-words px-2.5 text-base first:pt-1.5 last:pb-1.5'
             )}
           >
-            <Linkify
+            {/* <Linkify
               options={{
                 render: ({ content, attributes }) => (
                   <LinkText
@@ -295,9 +293,9 @@ export default function CommonChatItem({
                   </LinkText>
                 ),
               }}
-            >
-              {body}
-            </Linkify>
+            > */}
+            {body}
+            {/* </Linkify> */}
             {!isMyMessage && othersMessage.checkMark === 'bottom' && (
               <span className='pointer-events-none ml-3 select-none opacity-0'>
                 {otherMessageCheckMarkElement()}
