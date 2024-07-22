@@ -86,6 +86,9 @@ export default function ChatItemMenus({
     getSocialProfileQuery.useQuery(ownerId, {
       enabled: inView && isAdmin,
     })
+  const isVerifiedUser =
+    socialProfile?.allowedCreateCommentRootPostIds.includes(chatId)
+
   const { mutate: approveUser } = useApproveUser()
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
   const openExtensionModal = useExtensionData(
@@ -128,18 +131,16 @@ export default function ChatItemMenus({
     if (isMessageOwner && !isOptimisticMessage) {
       menus.unshift(hideMenu)
 
-      const approvedTime = message?.struct.approvedInRootPostAtTime
       const createdTime = message?.struct.createdAtTime
       const isApproved = message?.struct.approvedInRootPost
 
-      const isAutoApproved = isApproved && approvedTime === createdTime
       const isAfter5MinsOfCreation =
         dayjs(createdTime).diff(dayjs(), 'minute') < 5
 
       if (
         (message?.content?.body.trim().length ?? 0) > 0 &&
-        ((!isAutoApproved && isAfter5MinsOfCreation && !isApproved) ||
-          (isAutoApproved && isAfter5MinsOfCreation))
+        ((!isVerifiedUser && isAfter5MinsOfCreation && !isApproved) ||
+          (isVerifiedUser && isAfter5MinsOfCreation))
       )
         menus.unshift(editItem)
     }
@@ -187,10 +188,7 @@ export default function ChatItemMenus({
           })
         },
       })
-      if (
-        !loadingSocialProfile &&
-        !socialProfile?.allowedCreateCommentRootPostIds.includes(chatId)
-      ) {
+      if (!loadingSocialProfile && !isVerifiedUser) {
         menus.unshift({
           text: 'Approve User',
           icon: FaCheck,
