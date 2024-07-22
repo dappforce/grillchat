@@ -59,6 +59,17 @@ export default function ImageModal({
     loadedLink: null,
   })
 
+  useEffect(() => {
+    setImageLinkStatus({
+      isShowingImage: false,
+      loadedLink: null,
+    })
+    setImageUploadStatus({
+      isShowingImage: false,
+      loadedLink: null,
+    })
+  }, [isOpen])
+
   const isImageLoaded =
     imageLinkStatus.loadedLink || imageUploadStatus.loadedLink
 
@@ -252,7 +263,7 @@ function ImageUpload({
     if (currentLoadedImage.current === imageUrl) {
       setUploadedImageLink((prev) => ({ ...prev, isShowingImage }))
     } else {
-      setUploadedImageLink({ isShowingImage, loadedLink: null })
+      setUploadedImageLink({ isShowingImage: false, loadedLink: null })
     }
   }, [setUploadedImageLink, imageUrl, isLoading, isError])
 
