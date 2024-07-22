@@ -34,6 +34,7 @@ import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { ImageProperties, PostData } from '@subsocial/api/types'
 import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
+import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FaCheck } from 'react-icons/fa6'
@@ -126,7 +127,10 @@ export default function ChatItemMenus({
     }
     if (isMessageOwner && !isOptimisticMessage) {
       menus.unshift(hideMenu)
-      if ((message?.content?.body.trim().length ?? 0) > 0)
+      if (
+        (message?.content?.body.trim().length ?? 0) > 0 &&
+        dayjs(message?.struct.createdAtTime).diff(dayjs(), 'minute') < 5
+      )
         menus.unshift(editItem)
     }
 
