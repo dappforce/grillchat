@@ -31,10 +31,11 @@ export default function RewardPerDayModal({
   const stakerReward = Number(data?.earned.staker ?? '0')
   const creatorReward = Number(data?.earned.creator ?? '0')
 
-  const twitterShareText = `💰 Turn your love of memes into rewards! 
-Epic lets you earn tokens simply by liking and posting memes. 
+  const twitterShareText = `💰 Turn your love of memes into rewards!
+@EpicAppNet lets you earn tokens simply by liking and posting memes.
 
-Sounds too good to be true? Join me and see for yourself! 😉`
+Sounds too good to be true? Join me and see for yourself! 😉
+`
 
   useHotkeys('esc', close)
 
