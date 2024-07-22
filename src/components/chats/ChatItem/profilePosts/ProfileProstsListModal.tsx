@@ -1,10 +1,13 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import Button from '@/components/Button'
 import Name from '@/components/Name'
+import SkeletonFallback from '@/components/SkeletonFallback'
 import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
+import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
 import { TabButton } from '@/modules/chat/HomePage/ChatTabs'
 import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
+import { getUserPostedMemesForCountQuery } from '@/services/datahub/posts/query'
 import { getPaginatedPostIdsByPostIdAndAccount } from '@/services/datahub/posts/queryByAccount'
 import { useSendEvent } from '@/stores/analytics'
 import { useProfilePostsModal } from '@/stores/profile-posts-modal'
@@ -13,9 +16,13 @@ import { Transition } from '@headlessui/react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { HiOutlineChevronLeft } from 'react-icons/hi2'
-import SkeletonFallback from '../../../SkeletonFallback'
+import {
+  HiOutlineChevronLeft,
+  HiOutlineInformationCircle,
+} from 'react-icons/hi2'
+import UnapprovedMemeCount from '../../UnapprovedMemeCount'
 import { useModerateWithSuccessToast } from '../ChatItemMenus'
+import ProfileDetailModal from './ProfileDetailModal'
 import ProfilePostsList from './ProfilePostsList'
 
 type Tab = 'all' | 'contest'
@@ -33,6 +40,7 @@ const chatIdByTab = {
 }
 
 const ProfilePostsListModal = ({ tabsConfig }: ProfilePostsListModalProps) => {
+  const [isOpenDetail, setIsOpenDetail] = useState(false)
   const [selectedTab, setSelectedTab] = useState<Tab>(
     tabsConfig?.defaultTab || 'all'
   )
@@ -51,15 +59,23 @@ const ProfilePostsListModal = ({ tabsConfig }: ProfilePostsListModalProps) => {
 
   const { mutate: moderate } = useModerateWithSuccessToast(messageId, chatId)
   const sendEvent = useSendEvent()
+  const isAdmin = useIsModerationAdmin()
   const { isAuthorized } = useAuthorizedForModeration(chatId)
-
-  const { data: reasons } = getModerationReasonsQuery.useQuery(null)
-  const firstReasonId = reasons?.[0].id
+  const { data: userPostedMemes, isLoading: loadingMemes } =
+    getUserPostedMemesForCountQuery.useQuery(
+      {
+        address,
+        chatId,
+      },
+      { enabled: isOpen }
+    )
 
   const { data, isLoading } =
     getPaginatedPostIdsByPostIdAndAccount.useInfiniteQuery(chatId, address)
-
   const totalPostsCount = data?.pages[0].totalData || 0
+
+  const { data: reasons } = getModerationReasonsQuery.useQuery(null)
+  const firstReasonId = reasons?.[0].id
 
   const onBlockUserClick = () => {
     sendEvent('block_user', { hubId, chatId })
@@ -102,8 +118,13 @@ const ProfilePostsListModal = ({ tabsConfig }: ProfilePostsListModalProps) => {
         leaveFrom='h-auto'
         leaveTo='opacity-0 -translate-y-24 !duration-150'
       >
+        <ProfileDetailModal
+          isOpen={isOpenDetail}
+          closeModal={() => setIsOpenDetail(false)}
+          address={address}
+        />
         <div className='mx-auto flex w-full max-w-screen-md flex-1 flex-col overflow-auto'>
-          <div className='relative mx-auto flex w-full items-center justify-between gap-2 px-4 py-4'>
+          <div className='relative mx-auto flex w-full items-center justify-between gap-2 px-4 py-3'>
             <div className='flex flex-1 items-center gap-2'>
               <Button
                 variant='transparent'
@@ -122,29 +143,51 @@ const ProfilePostsListModal = ({ tabsConfig }: ProfilePostsListModalProps) => {
                 address={address}
                 className='flex-shrink-0 cursor-pointer'
               />
-              <div className='flex flex-col gap-1'>
+              <div
+                className='flex flex-col gap-0.5'
+                onClick={() => {
+                  if (isAdmin) setIsOpenDetail(true)
+                }}
+              >
                 <Name address={address} className='!text-text' clipText />
-                <span className='flex items-center gap-1 text-xs font-medium leading-[normal] text-slate-400'>
-                  <span>Memes:</span>
-                  <SkeletonFallback
-                    isLoading={isLoading}
-                    className='my-0 w-fit min-w-8'
-                  >
-                    {totalPostsCount}
-                  </SkeletonFallback>
-                </span>
+                {isAdmin ? (
+                  <UnapprovedMemeCount
+                    className='bg-transparent p-0 text-text-muted'
+                    address={address}
+                    chatId={chatId}
+                  />
+                ) : (
+                  <span className='flex items-center gap-1 text-xs font-medium leading-[normal] text-slate-400'>
+                    <span>Memes:</span>
+                    <SkeletonFallback
+                      isLoading={isLoading}
+                      className='my-0 w-fit min-w-8'
+                    >
+                      {totalPostsCount}
+                    </SkeletonFallback>
+                  </span>
+                )}
               </div>
             </div>
 
             {isAuthorized && (
-              <Button
-                size='md'
-                variant='redOutline'
-                className='w-fit text-red-400'
-                onClick={onBlockUserClick}
-              >
-                Block user
-              </Button>
+              <div className='flex items-center gap-2'>
+                <Button
+                  size='circleSm'
+                  variant='transparent'
+                  onClick={() => setIsOpenDetail(true)}
+                >
+                  <HiOutlineInformationCircle className='text-lg text-text-muted' />
+                </Button>
+                <Button
+                  size='md'
+                  variant='redOutline'
+                  className='w-fit text-red-400'
+                  onClick={onBlockUserClick}
+                >
+                  Block user
+                </Button>
+              </div>
             )}
           </div>
           <div className='relative mx-auto flex h-full max-h-full min-h-[400px] w-full flex-col items-center px-4'>

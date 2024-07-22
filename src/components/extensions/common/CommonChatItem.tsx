@@ -11,7 +11,6 @@ import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike, {
   SuperLikeButton,
 } from '@/components/content-staking/SuperLike'
-import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import useIsModerationAdmin from '@/hooks/useIsModerationAdmin'
@@ -24,8 +23,8 @@ import {
 import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getIsContestEnded, getIsInContest } from '@/utils/contest'
 import { getTimeRelativeToNow } from '@/utils/date'
-import dayjs from 'dayjs'
 import Linkify from 'linkify-react'
 import { useInView } from 'react-intersection-observer'
 import { ExtensionChatItemProps } from '../types'
@@ -343,7 +342,7 @@ export default function CommonChatItem({
               }}
               size='sm'
               className={cx(
-                'w-full whitespace-nowrap px-0 text-xs !text-text-red',
+                'w-full whitespace-nowrap px-0 text-sm !text-text-red',
                 {
                   ['!bg-[#EF4444] disabled:border-none disabled:!text-white disabled:!ring-0 disabled:!brightness-100']:
                     isMessageBlocked,
@@ -436,15 +435,15 @@ function ApproveMemeButton({
   messageId: string
 }) {
   const { mutate, isLoading } = useApproveMessage()
-  const isInContest = chatId === env.NEXT_PUBLIC_CONTEST_CHAT_ID
-  const isContestEnded = dayjs().isAfter(env.NEXT_PUBLIC_CONTEST_END_TIME)
+  const isInContest = getIsInContest(chatId)
+  const isContestEnded = getIsContestEnded()
   const isInEndedContest = isInContest && isContestEnded
 
   return (
     <Button
       variant='greenOutline'
       size='sm'
-      className='whitespace-nowrap px-0 text-xs disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
+      className='whitespace-nowrap px-0 text-sm disabled:!border-text-muted disabled:!text-text-muted disabled:!ring-text-muted'
       loadingText='Approving...'
       isLoading={isLoading}
       disabled={isInEndedContest}
