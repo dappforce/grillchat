@@ -9,19 +9,14 @@ import { UserPreview } from '../StatsPage/LeaderboardTable'
 
 export const tableColumns = (): Column[] => [
   {
-    index: 'id',
-    align: 'left',
-    className: cx('p-0 py-2 pl-2 w-[10%] text-slate-400 '),
-  },
-  {
     index: 'user',
     align: 'left',
-    className: cx('p-0 py-2 pr-2 w-[55%]'),
+    className: cx('p-0 py-2 pr-2'),
   },
   {
-    index: 'date',
+    index: 'id',
     align: 'right',
-    className: cx('p-0 py-2 pr-2'),
+    className: cx('p-0 py-2 pl-2 w-[15%] text-slate-400 '),
   },
 ]
 
@@ -47,12 +42,12 @@ const ReferralTable = ({
           <UserPreview
             address={item.socialProfileId}
             nameClassName='[&>span]:overflow-hidden [&>span]:whitespace-nowrap [&>span]:text-ellipsis'
+            desc={
+              <span className='text-sm text-slate-400'>
+                {dayjs(item.timestamp).format('DD MMM')}
+              </span>
+            }
           />
-        ),
-        date: (
-          <span className='text-slate-400'>
-            {dayjs(item.timestamp).format('DD MMM, YYYY')}
-          </span>
         ),
       })) || []
     )

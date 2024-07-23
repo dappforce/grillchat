@@ -35,3 +35,83 @@ export const getReferrerIdQuery = createQuery({
     enabled: !!address,
   }),
 })
+
+const GET_REFERRAL_LEADERBOARD = gql`
+  query GetReferralLeaderboard {
+    referrersRankedByReferralsCountForPeriod(
+      args: { filter: { period: ALL_TIME } }
+    ) {
+      total
+      limit
+      offset
+      data {
+        address
+        count
+        rank
+      }
+    }
+  }
+`
+async function getReferralLeaderboard() {
+  const res = await datahubQueryRequest<
+    {
+      referrersRankedByReferralsCountForPeriod: {
+        data: {
+          address: string
+          count: number
+          rank: number
+        }[]
+      }
+    },
+    {}
+  >({
+    document: GET_REFERRAL_LEADERBOARD,
+  })
+
+  return res.referrersRankedByReferralsCountForPeriod.data
+}
+
+export const getReferralLeaderboardQuery = createQuery({
+  key: 'getReferralLeaderboard',
+  fetcher: getReferralLeaderboard,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+const GET_REFERRER_RANK = gql`
+  query GetReferrerRank($address: String!) {
+    referrerRankByReferralsCountForPeriod(
+      args: { address: $address, period: ALL_TIME, withCount: true }
+    ) {
+      count
+      maxIndex
+      rankIndex
+    }
+  }
+`
+async function getReferrerRank(address: string) {
+  const res = await datahubQueryRequest<
+    {
+      referrerRankByReferralsCountForPeriod: {
+        count: number
+        maxIndex: number
+        rankIndex: number
+      }
+    },
+    { address: string }
+  >({
+    document: GET_REFERRER_RANK,
+    variables: { address },
+  })
+
+  return res.referrerRankByReferralsCountForPeriod
+}
+
+export const getReferrerRankQuery = createQuery({
+  key: 'getReferrerRank',
+  fetcher: getReferrerRank,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})

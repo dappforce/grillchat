@@ -17,6 +17,7 @@ import { useState } from 'react'
 import { MdCheck, MdOutlineContentCopy } from 'react-icons/md'
 import SkeletonFallback from '../../../components/SkeletonFallback'
 import ReferralTable from './ReferralTable'
+import ReferrerStats from './ReferrerStats'
 
 export default function FriendsPage() {
   useTgNoScroll()
@@ -75,7 +76,7 @@ const FriendsPageContent = () => {
         </div>
       </div>
       <div className='flex flex-col gap-4'>
-        <ReferralCards
+        <ReferrerStats
           refCount={refCount ?? 0}
           pointsEarned={pointsEarned ?? '0'}
           isLoading={isLoading}
