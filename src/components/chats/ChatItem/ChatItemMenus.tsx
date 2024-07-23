@@ -110,7 +110,7 @@ export default function ChatItemMenus({
 
   const isOptimisticMessage = !dataType
 
-  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
+  // const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const menus: FloatingMenusProps['menus'] = []
 
@@ -146,32 +146,24 @@ export default function ChatItemMenus({
     }
 
     if (isAuthorized) {
-      menus.unshift({
-        icon: LuShield,
-        text: 'Moderate ...',
-        onClick: () => {
-          sendEvent('open_moderate_action_modal', { hubId, chatId })
-          setModalState('moderate')
-        },
+      menus.push({
+        isSeparator: true,
+        text: '',
       })
-      menus.unshift({
-        icon: LuShield,
-        text: 'Block message',
-        onClick: () => {
-          sendEvent('block_message', { hubId, chatId })
-          moderate({
-            callName: 'synth_moderation_block_resource',
-            args: {
-              reasonId: firstReasonId,
-              resourceId: messageId,
-              ctxPostIds: ['*'],
-              ctxAppIds: ['*'],
-            },
-            chatId: chatId ?? '',
-          })
-        },
-      })
-      menus.unshift({
+      if (!loadingSocialProfile && !isVerifiedUser) {
+        menus.push({
+          text: 'Approve User',
+          icon: FaCheck,
+          onClick: () => {
+            sendEvent('approve_user', { hubId, chatId })
+            approveUser({
+              address: ownerId,
+              allow: { createCommentRootPostIds: [chatId] },
+            })
+          },
+        })
+      }
+      menus.push({
         icon: LuShield,
         text: 'Block user',
         onClick: () => {
@@ -188,24 +180,36 @@ export default function ChatItemMenus({
           })
         },
       })
-      if (!loadingSocialProfile && !isVerifiedUser) {
-        menus.unshift({
-          text: 'Approve User',
-          icon: FaCheck,
-          onClick: () => {
-            sendEvent('approve_user', { hubId, chatId })
-            approveUser({
-              address: ownerId,
-              allow: { createCommentRootPostIds: [chatId] },
-            })
-          },
-        })
-      }
+      menus.push({
+        icon: LuShield,
+        text: 'Block message',
+        onClick: () => {
+          sendEvent('block_message', { hubId, chatId })
+          moderate({
+            callName: 'synth_moderation_block_resource',
+            args: {
+              reasonId: firstReasonId,
+              resourceId: messageId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+            chatId: chatId ?? '',
+          })
+        },
+      })
+      menus.push({
+        icon: LuShield,
+        text: 'Moderate ...',
+        onClick: () => {
+          sendEvent('open_moderate_action_modal', { hubId, chatId })
+          setModalState('moderate')
+        },
+      })
     }
 
     if (isOptimisticMessage) return menus
 
-    if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    // if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
 
     return menus
   }

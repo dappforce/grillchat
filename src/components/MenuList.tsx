@@ -46,6 +46,7 @@ const menuListItemStyles = cva<MenuListVariants>(
 )
 
 type Menu = {
+  isSeparator?: boolean
   text: string | JSX.Element
   iconClassName?: string
   icon?: React.ComponentType<{ className?: string }>
@@ -69,14 +70,24 @@ export default function MenuList({
 }: MenuListProps) {
   return (
     <div {...props} className={cx(menuListStyles({ size }), props.className)}>
-      {menus.map((menu, idx) => (
-        <MenuButton
-          key={idx}
-          menu={menu}
-          size={size}
-          closeFloatingMenu={closeFloatingMenu}
-        />
-      ))}
+      {menus.map((menu, idx) => {
+        if (menu.isSeparator) {
+          return (
+            <div
+              key={idx}
+              className='mx-2 my-1.5 border-b border-border-gray'
+            />
+          )
+        }
+        return (
+          <MenuButton
+            key={idx}
+            menu={menu}
+            size={size}
+            closeFloatingMenu={closeFloatingMenu}
+          />
+        )
+      })}
     </div>
   )
 }
