@@ -21,7 +21,12 @@ type ModerationCallNames =
   | (typeof socialCallName)['synth_moderation_unblock_resource']
 type ModerationActionsParams<T extends ModerationCallNames> = DatahubParams<
   SocialCallDataArgs<T>
-> & { callName: T; withoutRevalidateCurrentPath?: boolean; chatId: string }
+> & {
+  callName: T
+  withoutRevalidateCurrentPath?: boolean
+  chatId: string
+  isUndo?: boolean
+}
 async function moderationActions<T extends ModerationCallNames>(
   data: ModerationActionsParams<T>
 ) {

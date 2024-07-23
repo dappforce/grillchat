@@ -314,31 +314,43 @@ export default function CommonChatItem({
             <Button
               variant='redOutline'
               isLoading={loadingModeration}
-              loadingText='Blocking...'
-              disabled={isMessageBlocked}
+              loadingText={isMessageBlocked ? 'Unblocking...' : 'Blocking...'}
               onClick={(e) => {
                 e.stopPropagation()
-                moderate({
-                  callName: 'synth_moderation_block_resource',
-                  args: {
-                    reasonId: firstReasonId,
-                    resourceId: message.id,
-                    ctxPostIds: ['*'],
-                    ctxAppIds: ['*'],
-                  },
-                  chatId,
-                })
+                if (isMessageBlocked) {
+                  moderate({
+                    callName: 'synth_moderation_unblock_resource',
+                    args: {
+                      resourceId: message.id,
+                      ctxPostIds: ['*'],
+                      ctxAppIds: ['*'],
+                    },
+                    chatId,
+                    isUndo: true,
+                  })
+                } else {
+                  moderate({
+                    callName: 'synth_moderation_block_resource',
+                    args: {
+                      reasonId: firstReasonId,
+                      resourceId: message.id,
+                      ctxPostIds: ['*'],
+                      ctxAppIds: ['*'],
+                    },
+                    chatId,
+                  })
+                }
               }}
               size='sm'
               className={cx(
                 'w-full whitespace-nowrap px-0 text-sm !text-text-red',
                 {
-                  ['!bg-[#EF4444] disabled:border-none disabled:!text-white disabled:!ring-0 disabled:!brightness-100']:
+                  ['border-transparent bg-[#EF4444] !text-white ring-0']:
                     isMessageBlocked,
                 }
               )}
             >
-              {isMessageBlocked ? 'Blocked' : 'Block meme'}
+              {isMessageBlocked ? 'Unblock meme' : 'Block meme'}
             </Button>
             {showApproveButton && (
               <>

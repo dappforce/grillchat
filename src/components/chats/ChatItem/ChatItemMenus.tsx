@@ -438,6 +438,7 @@ export function useModerateWithSuccessToast(messageId: string, chatId: string) {
               ctxAppIds: ['*'],
             },
             chatId,
+            isUndo: true,
           })
 
         toast.custom((t) => (
@@ -473,7 +474,11 @@ export function useModerateWithSuccessToast(messageId: string, chatId: string) {
             icon={(classNames) => (
               <HiOutlineInformationCircle className={classNames} />
             )}
-            title='Undo moderation success'
+            title={
+              variables.isUndo
+                ? 'Undo moderation success'
+                : 'Unblock meme success'
+            }
           />
         ))
       }
