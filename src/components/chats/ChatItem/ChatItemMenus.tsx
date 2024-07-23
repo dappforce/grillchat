@@ -146,10 +146,12 @@ export default function ChatItemMenus({
     }
 
     if (isAuthorized) {
-      menus.push({
-        isSeparator: true,
-        text: '',
-      })
+      if (menus.length > 0) {
+        menus.push({
+          isSeparator: true,
+          text: '',
+        })
+      }
       if (!loadingSocialProfile && !isVerifiedUser) {
         menus.push({
           text: 'Approve User',
