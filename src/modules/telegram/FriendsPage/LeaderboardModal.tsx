@@ -87,7 +87,7 @@ const LeaderboardModalContent = () => {
       id: 'contest',
       text: 'Contest',
       content: () => (
-        <div className='flex flex-col gap-4'>
+        <div className='flex h-full flex-col gap-4'>
           <span className='text-sm text-slate-400'>
             Top 10 users who invite the most friends during the week will be
             rewarded.{' '}
@@ -103,7 +103,7 @@ const LeaderboardModalContent = () => {
       id: 'allTime',
       text: 'All-Time',
       content: () => (
-        <div className='flex flex-col gap-4'>
+        <div className='flex h-full flex-col gap-4'>
           <span className='text-sm text-slate-400'>
             All users who invite the most friends.
           </span>
@@ -117,7 +117,8 @@ const LeaderboardModalContent = () => {
     <div className='flex h-full w-full flex-col gap-4'>
       <Tabs
         className='rounded-full bg-slate-900 p-[2px]'
-        panelClassName='mt-0 w-full max-w-full px-0 z-0'
+        panelClassName='mt-0 w-full h-full max-w-full px-0 z-0'
+        containerClassName='h-full'
         tabClassName={(selected) =>
           cx(
             {
@@ -214,7 +215,7 @@ const LeaderboardTable = ({ isContest }: LeaderboardTableProps) => {
           <Loading title='Loading table data' className='p-7' />
         ) : (
           <div
-            className='flex flex-col items-center justify-center p-4 text-center'
+            className='flex h-full flex-col items-center justify-center p-4 text-center'
             style={{ gridColumn: '1/4' }}
           >
             <Image

@@ -125,7 +125,7 @@ const FriendsPageContent = () => {
         <Button
           size='lg'
           variant={'bgLighter'}
-          className='h-full bg-slate-700 px-4 text-white'
+          className='flex h-[48px] min-w-[48px] items-center justify-center bg-slate-700 p-0 text-white'
           onClick={() => onCopyClick(referralLink)}
         >
           {isCopied ? <MdCheck /> : <MdOutlineContentCopy />}

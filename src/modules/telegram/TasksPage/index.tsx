@@ -47,9 +47,9 @@ export default function TasksPage() {
         className='sticky top-0'
       />
       <div className='flex flex-1 flex-col gap-8 overflow-auto px-4 py-8'>
-        <BasicTasks />
-        <DailyTasks />
         <InviteFriendsTasks />
+        <DailyTasks />
+        <BasicTasks />
         <NewTasks />
       </div>
     </LayoutWithBottomNavigation>
