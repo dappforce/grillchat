@@ -152,7 +152,7 @@ const ProfilePostsListModal = ({ tabsConfig }: ProfilePostsListModalProps) => {
                 <Name address={address} className='!text-text' clipText />
                 {isAdmin ? (
                   <UnapprovedMemeCount
-                    className='bg-transparent p-0 text-text-muted'
+                    className='flex-shrink-0 bg-transparent p-0 text-text-muted'
                     address={address}
                     chatId={chatId}
                   />
@@ -182,7 +182,7 @@ const ProfilePostsListModal = ({ tabsConfig }: ProfilePostsListModalProps) => {
                 <Button
                   size='md'
                   variant='redOutline'
-                  className='w-fit text-red-400'
+                  className='w-fit px-3 text-red-400'
                   onClick={onBlockUserClick}
                 >
                   Block user

@@ -11,9 +11,9 @@ import ChatInputBar from './ChatInputBar'
 const ChatList = dynamic(() => import('../ChatList/ChatList'), {
   ssr: false,
 })
-const ActionDetailBar = dynamic(() => import('./ActionDetailBar'), {
-  ssr: false,
-})
+// const ActionDetailBar = dynamic(() => import('./ActionDetailBar'), {
+//   ssr: false,
+// })
 
 export type ChatRoomProps = ComponentProps<'div'> & {
   asContainer?: boolean
@@ -104,13 +104,13 @@ function ChatInputWrapper({
 
   return (
     <>
-      <Component className={cx('mt-auto flex py-0')}>
+      <Component className={cx('mt-auto flex py-0 pt-2')}>
         <div className='flex flex-1 flex-col'>
-          <ActionDetailBar
+          {/* <ActionDetailBar
             chatId={chatId}
             hubId={hubId}
             scrollContainer={scrollContainerRef}
-          />
+          /> */}
           {(() => {
             if (customAction) return customAction
 

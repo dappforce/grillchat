@@ -2,6 +2,7 @@ import {
   extensionInitialDataTypes,
   MessageExtensionIds,
 } from '@/components/extensions/config'
+import { useMessageData } from './message'
 import { create, createSelectors } from './utils'
 
 type State = {
@@ -77,7 +78,12 @@ export function useCloseExtensionModal<Id extends MessageExtensionIds>(id: Id) {
     (state) => state.closeExtensionModal
   )
 
-  return () => closeExtensionModal(id)
+  return () => {
+    closeExtensionModal(id)
+    const { setMessageBody, setMessageToEdit } = useMessageData.getState()
+    setMessageToEdit('')
+    setMessageBody('')
+  }
 }
 
 export function useExtensionModalState<Id extends MessageExtensionIds>(id: Id) {

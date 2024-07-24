@@ -12,7 +12,7 @@ export default function ProfileDetailModal({
   address,
   ...props
 }: ModalFunctionalityProps & { address: string }) {
-  const { telegramLink, isLoading } = useTgLink(address)
+  const { telegramLink, isLoading } = useTgLink(address, true)
   const { data: referralData } = getUserReferralsQuery.useQuery(address || '')
   const isAdmin = useIsModerationAdmin()
   if (!isAdmin) return null

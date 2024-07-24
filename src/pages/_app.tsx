@@ -247,7 +247,13 @@ function DatahubSubscriber() {
 }
 
 function ToasterConfig() {
-  return <Toaster position='top-center' className='!top-16 [&>*]:w-full' />
+  return (
+    <Toaster
+      position='top-center'
+      visibleToasts={2}
+      className='!top-16 [&>*]:w-full'
+    />
+  )
 }
 
 function SessionAccountChecker() {

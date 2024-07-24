@@ -1,12 +1,10 @@
 import Button from '@/components/Button'
-import LinkText from '@/components/LinkText'
 import { ProfilePreviewModalName } from '@/components/ProfilePreviewModalWrapper'
 import { useModerateWithSuccessToast } from '@/components/chats/ChatItem/ChatItemMenus'
 import ChatRelativeTime from '@/components/chats/ChatItem/ChatRelativeTime'
 import MessageStatusIndicator from '@/components/chats/ChatItem/MessageStatusIndicator'
 import RepliedMessagePreview from '@/components/chats/ChatItem/RepliedMessagePreview'
-import UnapprovedMemeCount from '@/components/chats/UnapprovedMemeCount'
-import UnapprovedUserChip from '@/components/chats/UnapprovedUserChip'
+import ApprovedUserChip from '@/components/chats/UnapprovedUserChip'
 import { getRepliedMessageId } from '@/components/chats/utils'
 import SuperLike, {
   SuperLikeButton,
@@ -25,7 +23,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIsContestEnded, getIsInContest } from '@/utils/contest'
 import { getTimeRelativeToNow } from '@/utils/date'
-import Linkify from 'linkify-react'
 import { useInView } from 'react-intersection-observer'
 import { ExtensionChatItemProps } from '../types'
 
@@ -210,14 +207,6 @@ export default function CommonChatItem({
         </div>
       )}
 
-      {showApproveButton && !isMyMessage && inView && (
-        <UnapprovedMemeCount
-          className='absolute bottom-14 right-1.5 z-10 bg-black/50 text-white'
-          address={ownerId}
-          chatId={chatId}
-        />
-      )}
-
       <div
         className={cx(
           'relative flex flex-col gap-0.5 overflow-hidden rounded-2xl',
@@ -234,7 +223,7 @@ export default function CommonChatItem({
         {!isMyMessage && (
           <div
             className={cx(
-              'flex items-baseline gap-2 overflow-hidden px-2.5 first:pt-1.5'
+              'flex items-center gap-2 overflow-hidden px-2.5 first:pt-1.5'
             )}
           >
             <ProfilePreviewModalName
@@ -251,7 +240,7 @@ export default function CommonChatItem({
             />
             {/* <SubTeamLabel address={ownerId} /> */}
             {inView && isAdmin && !showApproveButton && (
-              <UnapprovedUserChip chatId={chatId} address={ownerId} />
+              <ApprovedUserChip chatId={chatId} address={ownerId} />
             )}
             {othersMessage.checkMark === 'top' &&
               otherMessageCheckMarkElement()}
@@ -286,7 +275,7 @@ export default function CommonChatItem({
               'whitespace-pre-wrap break-words px-2.5 text-base first:pt-1.5 last:pb-1.5'
             )}
           >
-            <Linkify
+            {/* <Linkify
               options={{
                 render: ({ content, attributes }) => (
                   <LinkText
@@ -304,9 +293,9 @@ export default function CommonChatItem({
                   </LinkText>
                 ),
               }}
-            >
-              {body}
-            </Linkify>
+            > */}
+            {body}
+            {/* </Linkify> */}
             {!isMyMessage && othersMessage.checkMark === 'bottom' && (
               <span className='pointer-events-none ml-3 select-none opacity-0'>
                 {otherMessageCheckMarkElement()}
@@ -325,31 +314,43 @@ export default function CommonChatItem({
             <Button
               variant='redOutline'
               isLoading={loadingModeration}
-              loadingText='Blocking...'
-              disabled={isMessageBlocked}
+              loadingText={isMessageBlocked ? 'Unblocking...' : 'Blocking...'}
               onClick={(e) => {
                 e.stopPropagation()
-                moderate({
-                  callName: 'synth_moderation_block_resource',
-                  args: {
-                    reasonId: firstReasonId,
-                    resourceId: message.id,
-                    ctxPostIds: ['*'],
-                    ctxAppIds: ['*'],
-                  },
-                  chatId,
-                })
+                if (isMessageBlocked) {
+                  moderate({
+                    callName: 'synth_moderation_unblock_resource',
+                    args: {
+                      resourceId: message.id,
+                      ctxPostIds: ['*'],
+                      ctxAppIds: ['*'],
+                    },
+                    chatId,
+                    isUndo: true,
+                  })
+                } else {
+                  moderate({
+                    callName: 'synth_moderation_block_resource',
+                    args: {
+                      reasonId: firstReasonId,
+                      resourceId: message.id,
+                      ctxPostIds: ['*'],
+                      ctxAppIds: ['*'],
+                    },
+                    chatId,
+                  })
+                }
               }}
               size='sm'
               className={cx(
                 'w-full whitespace-nowrap px-0 text-sm !text-text-red',
                 {
-                  ['!bg-[#EF4444] disabled:border-none disabled:!text-white disabled:!ring-0 disabled:!brightness-100']:
+                  ['border-transparent bg-[#EF4444] !text-white ring-0']:
                     isMessageBlocked,
                 }
               )}
             >
-              {isMessageBlocked ? 'Blocked' : 'Block meme'}
+              {isMessageBlocked ? 'Unblock meme' : 'Block meme'}
             </Button>
             {showApproveButton && (
               <>

@@ -1,7 +1,9 @@
+import { useViewportRaw } from '@tma.js/sdk-react'
 import { useEffect } from 'react'
 
 // Solution from https://github.com/deptyped/vue-telegram/issues/11#issuecomment-1999265843
 export default function useTgNoScroll() {
+  const viewport = useViewportRaw(true)
   useEffect(() => {
     const overflow = 750
     document.body.style.overflow = 'hidden'
@@ -16,5 +18,5 @@ export default function useTgNoScroll() {
       document.body.style.height = 'auto'
       document.body.style.paddingBottom = '0'
     }
-  }, [])
+  }, [viewport?.result?.stableHeight])
 }

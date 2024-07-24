@@ -24,6 +24,8 @@ import { useApproveUser } from '@/services/datahub/posts/mutation'
 import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
+import { useExtensionData } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
@@ -32,6 +34,7 @@ import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { ImageProperties, PostData } from '@subsocial/api/types'
 import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
+import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FaCheck } from 'react-icons/fa6'
@@ -42,7 +45,7 @@ import {
   HiOutlineInformationCircle,
 } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
-import { LuShield } from 'react-icons/lu'
+import { LuPencil, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { useInView } from 'react-intersection-observer'
 import { toast } from 'sonner'
@@ -83,7 +86,14 @@ export default function ChatItemMenus({
     getSocialProfileQuery.useQuery(ownerId, {
       enabled: inView && isAdmin,
     })
+  const isVerifiedUser =
+    socialProfile?.allowedCreateCommentRootPostIds.includes(chatId)
+
   const { mutate: approveUser } = useApproveUser()
+  const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
+  const openExtensionModal = useExtensionData(
+    (state) => state.openExtensionModal
+  )
 
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
@@ -100,7 +110,7 @@ export default function ChatItemMenus({
 
   const isOptimisticMessage = !dataType
 
-  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
+  // const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const menus: FloatingMenusProps['menus'] = []
 
@@ -109,35 +119,53 @@ export default function ChatItemMenus({
       icon: HiOutlineEyeSlash,
       onClick: () => setModalState('hide'),
     }
-    if (isMessageOwner && !isOptimisticMessage) menus.unshift(hideMenu)
+    const editItem: FloatingMenusProps['menus'][number] = {
+      text: 'Edit',
+      icon: LuPencil,
+      onClick: () => {
+        sendEvent('edit_message', { hubId, chatId })
+        setMessageToEdit(messageId)
+        openExtensionModal('subsocial-image', null)
+      },
+    }
+    if (isMessageOwner && !isOptimisticMessage) {
+      menus.unshift(hideMenu)
+
+      const createdTime = message?.struct.createdAtTime
+      const isApproved = message?.struct.approvedInRootPost
+
+      const isAfter5MinsOfCreation =
+        dayjs(createdTime).diff(dayjs(), 'minute') < 5
+
+      if (
+        (message?.content?.body.trim().length ?? 0) > 0 &&
+        ((!isVerifiedUser && isAfter5MinsOfCreation && !isApproved) ||
+          (isVerifiedUser && isAfter5MinsOfCreation))
+      )
+        menus.unshift(editItem)
+    }
 
     if (isAuthorized) {
-      menus.unshift({
-        icon: LuShield,
-        text: 'Moderate ...',
-        onClick: () => {
-          sendEvent('open_moderate_action_modal', { hubId, chatId })
-          setModalState('moderate')
-        },
-      })
-      menus.unshift({
-        icon: LuShield,
-        text: 'Block message',
-        onClick: () => {
-          sendEvent('block_message', { hubId, chatId })
-          moderate({
-            callName: 'synth_moderation_block_resource',
-            args: {
-              reasonId: firstReasonId,
-              resourceId: messageId,
-              ctxPostIds: ['*'],
-              ctxAppIds: ['*'],
-            },
-            chatId: chatId ?? '',
-          })
-        },
-      })
-      menus.unshift({
+      if (menus.length > 0) {
+        menus.push({
+          isSeparator: true,
+          text: '',
+        })
+      }
+      if (!loadingSocialProfile && !isVerifiedUser) {
+        menus.push({
+          text: 'Approve User',
+          icon: FaCheck,
+          onClick: () => {
+            sendEvent('approve_user', { hubId, chatId })
+            approveUser({
+              address: ownerId,
+              allow: { createCommentRootPostIds: [chatId] },
+            })
+          },
+        })
+      }
+      menus.push({
         icon: LuShield,
         text: 'Block user',
         onClick: () => {
@@ -154,27 +182,36 @@ export default function ChatItemMenus({
           })
         },
       })
-      if (
-        !loadingSocialProfile &&
-        !socialProfile?.allowedCreateCommentRootPostIds.includes(chatId)
-      ) {
-        menus.unshift({
-          text: 'Approve User',
-          icon: FaCheck,
-          onClick: () => {
-            sendEvent('approve_user', { hubId, chatId })
-            approveUser({
-              address: ownerId,
-              allow: { createCommentRootPostIds: [chatId] },
-            })
-          },
-        })
-      }
+      menus.push({
+        icon: LuShield,
+        text: 'Block message',
+        onClick: () => {
+          sendEvent('block_message', { hubId, chatId })
+          moderate({
+            callName: 'synth_moderation_block_resource',
+            args: {
+              reasonId: firstReasonId,
+              resourceId: messageId,
+              ctxPostIds: ['*'],
+              ctxAppIds: ['*'],
+            },
+            chatId: chatId ?? '',
+          })
+        },
+      })
+      menus.push({
+        icon: LuShield,
+        text: 'Moderate ...',
+        onClick: () => {
+          sendEvent('open_moderate_action_modal', { hubId, chatId })
+          setModalState('moderate')
+        },
+      })
     }
 
     if (isOptimisticMessage) return menus
 
-    if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
+    // if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
 
     return menus
   }
@@ -407,6 +444,7 @@ export function useModerateWithSuccessToast(messageId: string, chatId: string) {
               ctxAppIds: ['*'],
             },
             chatId,
+            isUndo: true,
           })
 
         toast.custom((t) => (
@@ -442,7 +480,11 @@ export function useModerateWithSuccessToast(messageId: string, chatId: string) {
             icon={(classNames) => (
               <HiOutlineInformationCircle className={classNames} />
             )}
-            title='Undo moderation success'
+            title={
+              variables.isUndo
+                ? 'Undo moderation success'
+                : 'Unblock meme success'
+            }
           />
         ))
       }

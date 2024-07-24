@@ -1,6 +1,7 @@
 import { getSocialProfileQuery } from '@/services/datahub/identity/query'
+import { MdVerified } from 'react-icons/md'
 
-export default function UnapprovedUserChip({
+export default function ApprovedUserChip({
   address,
   chatId,
 }: {
@@ -8,7 +9,11 @@ export default function UnapprovedUserChip({
   chatId: string
 }) {
   const { data, isLoading } = getSocialProfileQuery.useQuery(address)
-  if (isLoading || data?.allowedCreateCommentRootPostIds.includes(chatId))
+  if (isLoading || !data?.allowedCreateCommentRootPostIds.includes(chatId))
     return null
-  return <span>⏳</span>
+  return (
+    <div className='flex items-center'>
+      <MdVerified className='text-blue-400' />
+    </div>
+  )
 }

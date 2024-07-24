@@ -57,18 +57,18 @@ export default function UnapprovedMemeCount({
         className
       )}
     >
-      <div className='flex items-center gap-1'>
-        <div className='flex items-center gap-1'>
+      <div className='flex flex-shrink-0 items-center gap-1'>
+        <div className='flex flex-shrink-0 items-center gap-1'>
           <Image src={CheckImage} className='h-4 w-4' alt='' />
           <span>{approved}</span>
         </div>
-        <span className='text-text-muted'>/</span>
-        <div className='flex items-center gap-1'>
+        <span className='flex-shrink-0 text-text-muted'>/</span>
+        <div className='flex flex-shrink-0 items-center gap-1'>
           <Image src={ForbiddenImage} className='h-4 w-4' alt='' />
           <span>{blocked}</span>
         </div>
-        <span className='text-text-muted'>/</span>
-        <div className='flex items-center gap-1'>
+        <span className='flex-shrink-0 text-text-muted'>/</span>
+        <div className='flex flex-shrink-0 items-center gap-1'>
           <Image src={TimeImage} className='h-4 w-4' alt='' />
           <span>{unapproved}</span>
         </div>

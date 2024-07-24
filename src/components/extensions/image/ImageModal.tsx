@@ -11,8 +11,10 @@ import {
 } from '@/constants/image'
 import useDebounce from '@/hooks/useDebounce'
 import { useSaveImage } from '@/services/api/mutation'
+import { getPostQuery } from '@/services/api/query'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { useExtensionModalState } from '@/stores/extension'
+import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
 import React, { useEffect, useRef, useState } from 'react'
@@ -21,6 +23,7 @@ import { HiTrash } from 'react-icons/hi2'
 import { z } from 'zod'
 import { ExtensionModalsProps } from '..'
 import CommonExtensionModal from '../common/CommonExtensionModal'
+import { getPostExtension } from '../utils'
 
 const urlSchema = z.string().url('Please enter a valid URL.')
 
@@ -37,6 +40,15 @@ export default function ImageModal({
     getTokenomicsMetadataQuery.useQuery(null)
   const { closeModal, initialData, isOpen } =
     useExtensionModalState('subsocial-image')
+  const messageToEdit = useMessageData.use.messageToEdit()
+  const { data: messageEdit } = getPostQuery.useQuery(messageToEdit ?? '')
+  const imageExt = getPostExtension(
+    messageEdit?.content?.extensions ?? [],
+    'subsocial-image'
+  )
+
+  const isEditing = !!imageExt?.properties.image
+  const usedInitialData = imageExt?.properties.image || initialData || null
 
   const [imageLinkStatus, setImageLinkStatus] = useState<ImageStatus>({
     isShowingImage: false,
@@ -47,10 +59,19 @@ export default function ImageModal({
     loadedLink: null,
   })
 
+  useEffect(() => {
+    setImageLinkStatus({
+      isShowingImage: false,
+      loadedLink: null,
+    })
+    setImageUploadStatus({
+      isShowingImage: false,
+      loadedLink: null,
+    })
+  }, [isOpen])
+
   const isImageLoaded =
     imageLinkStatus.loadedLink || imageUploadStatus.loadedLink
-  const isAnyShowingImage =
-    imageLinkStatus.isShowingImage || imageUploadStatus.isShowingImage
 
   const generateAdditionalTxParams = async () => {
     let imageUrl: string | null = ''
@@ -113,14 +134,20 @@ export default function ImageModal({
       <div className='mt-2 flex flex-col gap-4'>
         {!imageUploadStatus.isShowingImage && (
           <ImageLinkInput
-            initialUrl={typeof initialData === 'string' ? initialData : null}
+            isEditing={isEditing}
+            initialUrl={
+              typeof usedInitialData === 'string' ? usedInitialData : null
+            }
             setImageLinkStatus={setImageLinkStatus}
           />
         )}
 
         {!imageLinkStatus.isShowingImage && (
           <ImageUpload
-            initialImage={typeof initialData !== 'string' ? initialData : null}
+            isEditing={isEditing}
+            initialImage={
+              typeof usedInitialData !== 'string' ? usedInitialData : null
+            }
             setUploadedImageLink={setImageUploadStatus}
           />
         )}
@@ -132,10 +159,12 @@ export default function ImageModal({
 type ImageLinkInputProps = {
   setImageLinkStatus: React.Dispatch<React.SetStateAction<ImageStatus>>
   initialUrl: string | null
+  isEditing: boolean
 }
 function ImageLinkInput({
   initialUrl,
   setImageLinkStatus,
+  isEditing,
 }: ImageLinkInputProps) {
   const [imageLink, setImageLink] = useState('')
   const [isImageLinkError, setIsImageLinkError] = useState(false)
@@ -184,6 +213,7 @@ function ImageLinkInput({
       )}
       {shouldShowImage && (
         <ImageLoader
+          isEditing={isEditing}
           clearImage={() => setImageLink('')}
           src={debouncedImageLink}
           onError={onImageLinkError}
@@ -202,8 +232,13 @@ function ImageLinkInput({
 type ImageUploadProps = {
   initialImage: File | null
   setUploadedImageLink: React.Dispatch<React.SetStateAction<ImageStatus>>
+  isEditing: boolean
 }
-function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
+function ImageUpload({
+  initialImage,
+  setUploadedImageLink,
+  isEditing,
+}: ImageUploadProps) {
   const [errorMsg, setErrorMsg] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const {
@@ -228,7 +263,7 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
     if (currentLoadedImage.current === imageUrl) {
       setUploadedImageLink((prev) => ({ ...prev, isShowingImage }))
     } else {
-      setUploadedImageLink({ isShowingImage, loadedLink: null })
+      setUploadedImageLink({ isShowingImage: false, loadedLink: null })
     }
   }, [setUploadedImageLink, imageUrl, isLoading, isError])
 
@@ -236,6 +271,7 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
     return (
       <ImageLoader
         clearImage={() => setImageUrl('')}
+        isEditing={isEditing}
         src={imageUrl}
         onLoad={() => {
           setTimeout(() => {
@@ -300,13 +336,15 @@ function ImageUpload({ initialImage, setUploadedImageLink }: ImageUploadProps) {
 
 function ImageLoader({
   clearImage,
+  isEditing,
   ...props
-}: MediaLoaderProps & { clearImage: () => void }) {
+}: MediaLoaderProps & { clearImage: () => void; isEditing: boolean }) {
   return (
     <div className='relative overflow-hidden rounded-2xl'>
       <Button
         className='absolute right-4 top-4 z-20 bg-background-light text-xl text-text-red'
         size='circle'
+        disabled={isEditing}
         onClick={clearImage}
       >
         <HiTrash />

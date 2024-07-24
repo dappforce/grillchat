@@ -2789,6 +2789,7 @@ export type DatahubPostFragmentFragment = {
   __typename?: 'Post'
   id: string
   createdAtTime?: any | null
+  updatedAtTime?: any | null
   title?: string | null
   body?: string | null
   approvedInRootPost: boolean
@@ -2823,6 +2824,7 @@ export type GetPostsQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2858,6 +2860,7 @@ export type GetOptimisticPostsQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2892,6 +2895,7 @@ export type GetCommentIdsInPostIdQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2958,6 +2962,7 @@ export type GetOwnedPostsQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -2991,6 +2996,7 @@ export type GetPostsBySpaceIdQuery = {
       __typename?: 'Post'
       id: string
       createdAtTime?: any | null
+      updatedAtTime?: any | null
       title?: string | null
       body?: string | null
       approvedInRootPost: boolean
@@ -3205,6 +3211,7 @@ export const DatahubPostFragment = gql`
   fragment DatahubPostFragment on Post {
     id
     createdAtTime
+    updatedAtTime
     createdByAccount {
       id
     }
