@@ -554,9 +554,11 @@ async function getTimeLeftUntilCanPost(address: string) {
     }
   }
 
-  if (!lastPosted) return Infinity
+  if (!lastPosted) return { timeLeft: Infinity }
   const timeLeft = lastPosted + env.NEXT_PUBLIC_TIME_CONSTRAINT - serverTime
-  return Math.min(Math.max(timeLeft, 0), env.NEXT_PUBLIC_TIME_CONSTRAINT)
+  return {
+    timeLeft: Math.min(Math.max(timeLeft, 0), env.NEXT_PUBLIC_TIME_CONSTRAINT),
+  }
 }
 export const getTimeLeftUntilCanPostQuery = createQuery({
   key: 'lastPostedMeme',

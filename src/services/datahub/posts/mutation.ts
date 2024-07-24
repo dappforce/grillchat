@@ -254,11 +254,9 @@ export function useSendMessage(
       config?.onMutate?.(data)
       const myAddress = getMyMainAddress()
       if (queryClient && myAddress) {
-        getTimeLeftUntilCanPostQuery.setQueryData(
-          queryClient,
-          myAddress,
-          env.NEXT_PUBLIC_TIME_CONSTRAINT
-        )
+        getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, {
+          timeLeft: env.NEXT_PUBLIC_TIME_CONSTRAINT,
+        })
       }
     },
     onError: async (err, data, context) => {
@@ -279,7 +277,10 @@ export function useSendMessage(
       const myAddress = getMyMainAddress()
       if (queryClient && myAddress) {
         lastSentMessageStorage.remove()
-        getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
+        console.log('error')
+        getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, {
+          timeLeft: 0,
+        })
       }
     },
     onSuccess: async (...params) => {
