@@ -108,7 +108,7 @@ function ProfilePostsListContent({
         id={scrollableContainerId}
         ref={scrollContainerRef}
         className={cx(
-          'flex flex-col-reverse overflow-x-hidden overflow-y-scroll @container',
+          'flex flex-col overflow-x-hidden overflow-y-scroll @container',
           scrollableContainerClassName
         )}
       >
@@ -124,19 +124,18 @@ function ProfilePostsListContent({
                 sendEvent('load_more_messages', { currentPage })
               }}
               className={cx(
-                'relative flex w-full flex-col-reverse !overflow-hidden pb-2',
+                'relative flex w-full flex-col !overflow-hidden pb-2',
                 // need to have enough room to open message menu
                 'min-h-[400px]'
               )}
               hasMore={hasMore}
-              inverse
               scrollableTarget={scrollableContainerId}
               loader={<Loading className='pb-2 pt-4' />}
               endMessage={
                 renderedMessageQueries.length === 0 ? null : (
                   <ChatTopNotice
                     className='pb-2 pt-4'
-                    label='You have reached the first message of this user!'
+                    label='You have seen all memes from this user!'
                   />
                 )
               }

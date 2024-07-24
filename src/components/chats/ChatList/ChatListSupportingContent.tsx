@@ -16,7 +16,6 @@ import urlJoin from 'url-join'
 import { ChatListProps } from './ChatList'
 import { NewMessageNotice } from './NewMessageNotice'
 import { getNearestMessageIdToTimeFromRenderedIds } from './hooks/useGetChatElement'
-import useIsAtBottom from './hooks/useIsAtBottom'
 import useLastFocusedMessageTime from './hooks/useLastFocusedMessageId'
 import { ScrollToMessage } from './hooks/useScrollToMessage'
 
@@ -169,32 +168,6 @@ export default function ChatListSupportingContent({
           )}
         </div>
       </Component>
-      <ScrollToBottom
-        renderedMessageLength={renderedMessageLength}
-        scrollContainerRef={scrollContainerRef}
-      />
     </>
   )
-}
-
-function ScrollToBottom({
-  scrollContainerRef,
-  renderedMessageLength,
-}: {
-  scrollContainerRef: React.RefObject<HTMLDivElement>
-  renderedMessageLength: number
-}) {
-  const isAtBottom = useIsAtBottom(scrollContainerRef, 100)
-  const replyTo = useMessageData((state) => state.replyTo)
-
-  const isAtBottomRef = useWrapInRef(isAtBottom)
-  useEffect(() => {
-    if (!isAtBottomRef.current) return
-    scrollContainerRef.current?.scrollTo({
-      top: scrollContainerRef.current?.scrollHeight,
-      behavior: 'auto',
-    })
-  }, [renderedMessageLength, isAtBottomRef, scrollContainerRef, replyTo])
-
-  return null
 }
