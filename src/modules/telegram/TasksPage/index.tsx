@@ -218,7 +218,9 @@ function InviteFriendsTasks() {
         modalVariant={modalVariant}
         close={() => setModalVariant(null)}
         data={data || []}
-        disableButton={aim && refCount ? refCount < aim : undefined}
+        disableButton={
+          aim && refCount !== undefined ? refCount < aim : undefined
+        }
       />
     </div>
   )
