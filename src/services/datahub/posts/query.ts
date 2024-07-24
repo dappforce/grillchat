@@ -506,13 +506,14 @@ const GET_LAST_POSTED_MEME = gql`
   query GetLastPostedMeme($address: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
-        pageSize: 1
+        filter: { createdByAccountAddress: $address }
+        pageSize: 4
         orderBy: "createdAtTime"
         orderDirection: DESC
       }
     ) {
       data {
+        approvedInRootPost
         createdAtTime
       }
     }
@@ -536,7 +537,13 @@ async function getTimeLeftUntilCanPost(address: string) {
       ? serverTimePromise.value
       : Date.now()
 
-  const lastPostedTime = lastPost?.posts.data?.[0]?.createdAtTime
+  const hasSentMoreThan3Memes = (lastPost?.posts.data.length ?? 0) > 3
+  const lastPostedPost = lastPost?.posts.data[0]
+  const usedPost = hasSentMoreThan3Memes
+    ? lastPostedPost
+    : lastPost?.posts.data.find((post) => post.approvedInRootPost)
+
+  const lastPostedTime = usedPost?.createdAtTime
   const lastSentFromStorage = lastSentMessageStorage.get()
 
   let lastPosted = lastPostedTime ? new Date(lastPostedTime).getTime() : null
@@ -547,9 +554,11 @@ async function getTimeLeftUntilCanPost(address: string) {
     }
   }
 
-  if (!lastPosted) return Infinity
+  if (!lastPosted) return { timeLeft: Infinity }
   const timeLeft = lastPosted + env.NEXT_PUBLIC_TIME_CONSTRAINT - serverTime
-  return Math.min(Math.max(timeLeft, 0), env.NEXT_PUBLIC_TIME_CONSTRAINT)
+  return {
+    timeLeft: Math.min(Math.max(timeLeft, 0), env.NEXT_PUBLIC_TIME_CONSTRAINT),
+  }
 }
 export const getTimeLeftUntilCanPostQuery = createQuery({
   key: 'lastPostedMeme',

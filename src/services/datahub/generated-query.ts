@@ -3026,7 +3026,11 @@ export type GetLastPostedMemeQuery = {
   __typename?: 'Query'
   posts: {
     __typename?: 'FindPostsResponseDto'
-    data: Array<{ __typename?: 'Post'; createdAtTime?: any | null }>
+    data: Array<{
+      __typename?: 'Post'
+      approvedInRootPost: boolean
+      createdAtTime?: any | null
+    }>
   }
 }
 
@@ -3875,13 +3879,14 @@ export const GetLastPostedMeme = gql`
   query GetLastPostedMeme($address: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
-        pageSize: 1
+        filter: { createdByAccountAddress: $address }
+        pageSize: 4
         orderBy: "createdAtTime"
         orderDirection: DESC
       }
     ) {
       data {
+        approvedInRootPost
         createdAtTime
       }
     }

@@ -239,8 +239,6 @@ async function processMessage(
             }
           }
           if (isCurrentOwner) {
-            // reset timer because its unapproved meme
-            getTimeLeftUntilCanPostQuery.setQueryData(queryClient, myAddress, 0)
             lastSentMessageStorage.remove()
 
             const postedMeme = getUserPostedMemesForCountQuery.getQueryData(
@@ -248,6 +246,15 @@ async function processMessage(
               { address: myAddress, chatId: rootPostId ?? '' }
             )
             const sentMeme = postedMeme.length
+            if (sentMeme < 3) {
+              // reset timer because its unapproved meme
+              getTimeLeftUntilCanPostQuery.setQueryData(
+                queryClient,
+                myAddress,
+                { timeLeft: 0 }
+              )
+            }
+
             if (sentMeme === 1 || sentMeme === 3) {
               useMessageData.getState().setOpenMessageModal('on-review')
             } else {

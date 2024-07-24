@@ -13,7 +13,7 @@ export default function useLinkedEvmAddress(
 
   const { data: myLinkedIdentity, isLoading: isLoadingMy } =
     getLinkedIdentityQuery.useQuery(myGrillAddress ?? '', {
-      enabled: !address && config.enabled,
+      enabled: !address && config.enabled && !!myGrillAddress,
     })
   const { data: linkedIdentity, isLoading: isLoadingMainAddress } =
     getLinkedIdentityFromMainAddressQuery.useQuery(address ?? '', {

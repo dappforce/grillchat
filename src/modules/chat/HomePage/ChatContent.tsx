@@ -192,8 +192,8 @@ function PostMemeButton({
 
   const [timeLeft, setTimeLeft] = useState<number>(Infinity)
   useEffect(() => {
-    if (typeof timeLeftFromApi === 'number') {
-      setTimeLeft(Math.max(timeLeftFromApi, 0))
+    if (typeof timeLeftFromApi?.timeLeft === 'number') {
+      setTimeLeft(Math.max(timeLeftFromApi.timeLeft, 0))
       const interval = setInterval(() => {
         setTimeLeft((prev) => {
           const next = Math.max(prev - 1000, 0)
@@ -230,7 +230,7 @@ function PostMemeButton({
           loadingTimeLeft ||
           isTimeConstrained ||
           loadingIsBlocked ||
-          loadingEvmAddress
+          (isContestTab && loadingEvmAddress)
         }
         type='button'
         className='flex items-center justify-center gap-2 px-0 py-2.5 disabled:border-none disabled:bg-background-light/30 disabled:text-text-muted/50 disabled:!brightness-100'
