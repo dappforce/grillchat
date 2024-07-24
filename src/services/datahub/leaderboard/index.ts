@@ -10,6 +10,7 @@ const GET_LEADERBOARD_DATA_BY_ALL_TIME = gql`
     activeStakingAddressesRankedByTotalRewardsForPeriod(
       args: { filter: { period: ALL_TIME }, limit: 100 }
     ) {
+      total
       data {
         reward
         rank
@@ -24,6 +25,7 @@ const GET_LEADERBOARD_DATA_BY_WEEK = gql`
     activeStakingAddressesRankedByTotalRewardsForPeriod(
       args: { filter: { period: WEEK, timestamp: $timestamp }, limit: 100 }
     ) {
+      total
       data {
         reward
         rank
@@ -47,11 +49,14 @@ export async function getLeaderboardData(period: Period): Promise<any> {
 
   const data = res.activeStakingAddressesRankedByTotalRewardsForPeriod.data
 
-  return data.map((item: any) => ({
-    rank: item.rank + 1,
-    reward: item.reward,
-    address: item.address,
-  }))
+  return {
+    totalCount: res.activeStakingAddressesRankedByTotalRewardsForPeriod.total,
+    leaderboardData: data.map((item: any) => ({
+      rank: item.rank + 1,
+      reward: item.reward,
+      address: item.address,
+    })),
+  }
 }
 
 const GET_USER_DATA_BY_ALL_TIME = gql`

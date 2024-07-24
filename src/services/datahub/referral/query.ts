@@ -1,8 +1,10 @@
+import { env } from '@/env.mjs'
 import { createQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
 import {
   GetReferrerIdQuery,
   GetReferrerIdQueryVariables,
+  ReferrersRankedListCustomPeriodKey,
 } from '../generated-query'
 import { datahubQueryRequest } from '../utils'
 
@@ -36,26 +38,47 @@ export const getReferrerIdQuery = createQuery({
   }),
 })
 
-const GET_REFERRAL_LEADERBOARD = gql`
-  query GetReferralLeaderboard {
-    referrersRankedByReferralsCountForPeriod(
-      args: { filter: { period: ALL_TIME } }
-    ) {
-      total
-      limit
-      offset
-      data {
-        address
-        count
-        rank
-      }
+const REFERRAL_LEADERBOARD_FRAGMENT = gql`
+  fragment ReferralLeaderboardFragment on ReferrersRankedByReferralsCountForPeriodResponseDto {
+    total
+    limit
+    offset
+    data {
+      address
+      count
+      rank
     }
   }
 `
-async function getReferralLeaderboard() {
+
+const GET_REFERRAL_LEADERBOARD_BY_ALL_TIME = gql`
+  ${REFERRAL_LEADERBOARD_FRAGMENT}
+  query GetReferralLeaderboard {
+    referrersRankedByReferralsCountForPeriod(
+      args: { filter: { period: ALL_TIME }, limit: 100 }
+    ) {
+      ...ReferralLeaderboardFragment
+    }
+  }
+`
+
+const GET_REFERRAL_LEADERBOARD_BY_CUSTOM_RANGE_KEY = gql`
+  ${REFERRAL_LEADERBOARD_FRAGMENT}
+  query GetReferralLeaderboard(
+    $customRangeKey: ReferrersRankedListCustomPeriodKey
+  ) {
+    referrersRankedByReferralsCountForPeriod(
+      args: { filter: { customRangeKey: $customRangeKey }, limit: 100 }
+    ) {
+      ...ReferralLeaderboardFragment
+    }
+  }
+`
+async function getReferralLeaderboard(isContest: boolean) {
   const res = await datahubQueryRequest<
     {
       referrersRankedByReferralsCountForPeriod: {
+        total: number
         data: {
           address: string
           count: number
@@ -63,34 +86,76 @@ async function getReferralLeaderboard() {
         }[]
       }
     },
-    {}
+    { customRangeKey?: string }
   >({
-    document: GET_REFERRAL_LEADERBOARD,
+    document: isContest
+      ? GET_REFERRAL_LEADERBOARD_BY_CUSTOM_RANGE_KEY
+      : GET_REFERRAL_LEADERBOARD_BY_ALL_TIME,
+    variables: isContest
+      ? {
+          customRangeKey:
+            ReferrersRankedListCustomPeriodKey[
+              env.NEXT_PUBLIC_CONTEST_RANGE_KEY as keyof typeof ReferrersRankedListCustomPeriodKey
+            ],
+        }
+      : {},
   })
 
-  return res.referrersRankedByReferralsCountForPeriod.data
+  return {
+    leaderboardData: res.referrersRankedByReferralsCountForPeriod.data,
+    totalCount: res.referrersRankedByReferralsCountForPeriod.total,
+  }
 }
 
-export const getReferralLeaderboardQuery = createQuery({
-  key: 'getReferralLeaderboard',
-  fetcher: getReferralLeaderboard,
-  defaultConfigGenerator: (address) => ({
-    enabled: !!address,
-  }),
-})
+export const getReferralLeaderboardQuery = (isContest: boolean) =>
+  createQuery({
+    key: `getReferralLeaderboard-${isContest ? 'contest' : 'allTime'} `,
+    fetcher: () => getReferralLeaderboard(isContest),
+    defaultConfigGenerator: (address) => ({
+      enabled: !!address,
+    }),
+  })
 
-const GET_REFERRER_RANK = gql`
+const REFERRER_RANK_FRAGMENT = gql`
+  fragment ReferrerRankFragment on ReferrerRankByReferralsCountForPeriodResponseDto {
+    count
+    maxIndex
+    rankIndex
+  }
+`
+
+const GET_REFERRER_RANK_BY_ALL_TIME = gql`
+  ${REFERRER_RANK_FRAGMENT}
   query GetReferrerRank($address: String!) {
     referrerRankByReferralsCountForPeriod(
       args: { address: $address, period: ALL_TIME, withCount: true }
     ) {
-      count
-      maxIndex
-      rankIndex
+      ...ReferrerRankFragment
     }
   }
 `
-async function getReferrerRank(address: string) {
+
+const GET_REFERRER_RANK_BY_CUSTOM_RANGE_KEY = gql`
+  ${REFERRER_RANK_FRAGMENT}
+  query GetReferrerRank(
+    $address: String!
+    $customRangeKey: ReferrersRankedListCustomPeriodKey
+  ) {
+    referrerRankByReferralsCountForPeriod(
+      args: {
+        address: $address
+        customRangeKey: $customRangeKey
+        withCount: true
+      }
+    ) {
+      ...ReferrerRankFragment
+    }
+  }
+`
+
+async function getReferrerRank(address: string, isContest: boolean) {
+  const commonVariable = { address }
+
   const res = await datahubQueryRequest<
     {
       referrerRankByReferralsCountForPeriod: {
@@ -99,19 +164,30 @@ async function getReferrerRank(address: string) {
         rankIndex: number
       }
     },
-    { address: string }
+    { address: string; customRangeKey?: string }
   >({
-    document: GET_REFERRER_RANK,
-    variables: { address },
+    document: isContest
+      ? GET_REFERRER_RANK_BY_CUSTOM_RANGE_KEY
+      : GET_REFERRER_RANK_BY_ALL_TIME,
+    variables: isContest
+      ? {
+          ...commonVariable,
+          customRangeKey:
+            ReferrersRankedListCustomPeriodKey[
+              env.NEXT_PUBLIC_CONTEST_RANGE_KEY as keyof typeof ReferrersRankedListCustomPeriodKey
+            ],
+        }
+      : commonVariable,
   })
 
   return res.referrerRankByReferralsCountForPeriod
 }
 
-export const getReferrerRankQuery = createQuery({
-  key: 'getReferrerRank',
-  fetcher: getReferrerRank,
-  defaultConfigGenerator: (address) => ({
-    enabled: !!address,
-  }),
-})
+export const getReferrerRankQuery = (isContest: boolean) =>
+  createQuery({
+    key: `getReferrerRank-${isContest ? 'contest' : 'allTime'}`,
+    fetcher: (address: string) => getReferrerRank(address, isContest),
+    defaultConfigGenerator: (address) => ({
+      enabled: !!address,
+    }),
+  })

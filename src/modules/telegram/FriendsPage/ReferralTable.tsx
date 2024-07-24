@@ -79,6 +79,15 @@ const ReferralTable = ({
               })}
             </tbody>
           </table>
+          {refCount && refCount > 100 && (
+            <div className='flex items-center gap-2 py-2'>
+              <span className='w-full border border-slate-600'></span>
+              <span className='min-w-max text-sm font-medium text-slate-400'>
+                AND {refCount - 100} MORE MEMBERS
+              </span>
+              <span className='w-full border border-slate-600'></span>
+            </div>
+          )}
         </div>
       </div>
     </Card>

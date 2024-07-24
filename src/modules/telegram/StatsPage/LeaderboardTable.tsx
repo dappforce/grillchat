@@ -84,6 +84,8 @@ const LeaderboardTable = ({
       refetchOnMount: refetchTab[period] ? 'always' : false,
     })
 
+  const { leaderboardData, totalCount } = leaderboardDataResult || {}
+
   const { data: userStats } = userDataQueryByPeriod[period].useQuery(
     myAddress || '',
     { refetchOnMount: refetchTab[period] ? 'always' : false }
@@ -114,10 +116,10 @@ const LeaderboardTable = ({
       : undefined
 
     return [
-      ...parseTableRows(leaderboardDataResult || [], TABLE_LIMIT, userStats),
+      ...parseTableRows(leaderboardData || [], TABLE_LIMIT, userStats),
       currentUserRankItem,
     ].filter(Boolean)
-  }, [userStats, leaderboardDataResult])
+  }, [userStats, leaderboardData])
 
   return (
     <>
@@ -156,6 +158,15 @@ const LeaderboardTable = ({
               })}
             </tbody>
           </table>
+          {totalCount && totalCount > 100 && (
+            <div className='flex items-center gap-2 py-2'>
+              <span className='w-full border border-slate-600'></span>
+              <span className='min-w-max text-sm font-medium text-slate-400'>
+                AND {totalCount - 100} MORE MEMBERS
+              </span>
+              <span className='w-full border border-slate-600'></span>
+            </div>
+          )}
         </div>
       )}
     </>

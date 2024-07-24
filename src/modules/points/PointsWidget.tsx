@@ -199,7 +199,7 @@ function PointsDrawerContent({
               <HiXMark className='text-3xl' />
             </Button>
           </div>
-          <div className='relative mx-auto flex h-full w-full flex-col items-center px-4 pt-6'>
+          <div className='relative mx-auto flex h-full w-full flex-col items-center px-4'>
             <Content />
           </div>
         </div>
@@ -297,16 +297,6 @@ const UserStatsSection = ({
                 </Button>
               </div>
             </div>
-            {/* <LinkText
-              variant='primary'
-              className='mr-1'
-              onClick={() => {
-                sendEvent('edit_evm_address_click')
-                setOpenEvmLinkModal(true)
-              }}
-            >
-              Edit
-            </LinkText> */}
           </Card>
         )}
         <div className='flex w-full items-center gap-4 px-4'>

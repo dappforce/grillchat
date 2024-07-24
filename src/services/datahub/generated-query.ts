@@ -629,6 +629,7 @@ export type GamificationTaskMetadata = {
 }
 
 export enum GamificationTaskName {
+  InviteReferrals = 'INVITE_REFERRALS',
   JoinTelegramChannel = 'JOIN_TELEGRAM_CHANNEL',
   JoinTwitter = 'JOIN_TWITTER',
 }
@@ -1146,11 +1147,14 @@ export type Query = {
   postMetadata: Array<PostMetadataResponse>
   posts: FindPostsResponseDto
   postsViewsCounts: Array<PostViewsCountResponse>
+  referrerRankByReferralsCountForPeriod?: Maybe<ReferrerRankByReferralsCountForPeriodResponseDto>
+  referrersRankedByReferralsCountForPeriod: ReferrersRankedByReferralsCountForPeriodResponseDto
   socialProfileBalances?: Maybe<SocialProfileBalances>
   socialProfiles: SocialProfilesResponse
   spaces: FindSpacesWithFilterResponseDto
   unreadMessages: Array<UnreadPostsCountResponse>
   userReferrals: UserReferralsResponse
+  userReferralsStats: UserReferralsStatsResponse
 }
 
 export type QueryActiveStakingAccountActivityMetricsForFixedPeriodArgs = {
@@ -1319,6 +1323,14 @@ export type QueryPostsViewsCountsArgs = {
   where: PostsViewsCountsInput
 }
 
+export type QueryReferrerRankByReferralsCountForPeriodArgs = {
+  args: ReferrerRankByReferralsCountForPeriodInput
+}
+
+export type QueryReferrersRankedByReferralsCountForPeriodArgs = {
+  args: ReferrersRankedByReferralsCountForPeriodInput
+}
+
 export type QuerySocialProfileBalancesArgs = {
   args: BalancesInput
 }
@@ -1337,6 +1349,10 @@ export type QueryUnreadMessagesArgs = {
 
 export type QueryUserReferralsArgs = {
   args: UserReferralsInput
+}
+
+export type QueryUserReferralsStatsArgs = {
+  args: UserReferralsStatsInput
 }
 
 export enum QueryOrder {
@@ -1378,6 +1394,68 @@ export type RankedPostIdsByActiveStakingActivityResponse = {
   limit: Scalars['Int']['output']
   offset: Scalars['Int']['output']
   total: Scalars['Int']['output']
+}
+
+export type RankedReferrerWithDetails = {
+  __typename?: 'RankedReferrerWithDetails'
+  address: Scalars['String']['output']
+  count: Scalars['Int']['output']
+  rank: Scalars['Int']['output']
+}
+
+export type ReferrerRankByReferralsCountCompetitorResponseDto = {
+  __typename?: 'ReferrerRankByReferralsCountCompetitorResponseDto'
+  address: Scalars['String']['output']
+  count?: Maybe<Scalars['Int']['output']>
+  rankIndex: Scalars['Int']['output']
+}
+
+export type ReferrerRankByReferralsCountForPeriodInput = {
+  aboveCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  address: Scalars['String']['input']
+  belowCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  customRangeKey?: InputMaybe<ReferrersRankedListCustomPeriodKey>
+  period?: InputMaybe<ActiveStakingPeriod>
+  timestamp?: InputMaybe<Scalars['String']['input']>
+  withCount?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type ReferrerRankByReferralsCountForPeriodResponseDto = {
+  __typename?: 'ReferrerRankByReferralsCountForPeriodResponseDto'
+  aboveCompetitors?: Maybe<
+    Array<ReferrerRankByReferralsCountCompetitorResponseDto>
+  >
+  belowCompetitors?: Maybe<
+    Array<ReferrerRankByReferralsCountCompetitorResponseDto>
+  >
+  count?: Maybe<Scalars['Int']['output']>
+  maxIndex: Scalars['Int']['output']
+  rankIndex: Scalars['Int']['output']
+}
+
+export type ReferrersRankedByReferralsCountForPeriodFilter = {
+  customRangeKey?: InputMaybe<ReferrersRankedListCustomPeriodKey>
+  period?: InputMaybe<ActiveStakingPeriod>
+  timestamp?: InputMaybe<Scalars['String']['input']>
+}
+
+export type ReferrersRankedByReferralsCountForPeriodInput = {
+  filter: ReferrersRankedByReferralsCountForPeriodFilter
+  limit?: InputMaybe<Scalars['Int']['input']>
+  offset?: InputMaybe<Scalars['Int']['input']>
+  order?: InputMaybe<ActiveStakingListOrder>
+}
+
+export type ReferrersRankedByReferralsCountForPeriodResponseDto = {
+  __typename?: 'ReferrersRankedByReferralsCountForPeriodResponseDto'
+  data: Array<RankedReferrerWithDetails>
+  limit: Scalars['Int']['output']
+  offset: Scalars['Int']['output']
+  total: Scalars['Int']['output']
+}
+
+export enum ReferrersRankedListCustomPeriodKey {
+  ReferrersRankedListByReferralsCountCp_20240722_20240728 = 'REFERRERS_RANKED_LIST_BY_REFERRALS_COUNT_CP_20240722_20240728',
 }
 
 export type RewardsByPostDetails = {
@@ -1962,9 +2040,51 @@ export type UserReferralsInputWhereArgs = {
   referrerIds: Array<Scalars['String']['input']>
 }
 
+export type UserReferralsList = {
+  __typename?: 'UserReferralsList'
+  data?: Maybe<Array<UserReferrerDetail>>
+  offset?: Maybe<Scalars['Int']['output']>
+  pageSize?: Maybe<Scalars['Int']['output']>
+  total?: Maybe<Scalars['Int']['output']>
+}
+
+export type UserReferralsListParams = {
+  offset?: InputMaybe<Scalars['Int']['input']>
+  orderBy?: InputMaybe<Scalars['String']['input']>
+  orderDirection?: InputMaybe<QueryOrder>
+  pageSize?: InputMaybe<Scalars['Int']['input']>
+}
+
 export type UserReferralsResponse = {
   __typename?: 'UserReferralsResponse'
   data: Array<UserReferralsDataItem>
+}
+
+export type UserReferralsStatsDistributedRewards = {
+  __typename?: 'UserReferralsStatsDistributedRewards'
+  totalPoints?: Maybe<Scalars['String']['output']>
+}
+
+export type UserReferralsStatsInput = {
+  referralsListParams?: InputMaybe<UserReferralsListParams>
+  responseParams?: InputMaybe<UserReferralsStatsInputResponseParams>
+  where: UserReferralsStatsInputWhereArgs
+}
+
+export type UserReferralsStatsInputResponseParams = {
+  withDistributedRewards?: InputMaybe<Scalars['Boolean']['input']>
+  withReferralsList?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type UserReferralsStatsInputWhereArgs = {
+  referrerId: Scalars['String']['input']
+}
+
+export type UserReferralsStatsResponse = {
+  __typename?: 'UserReferralsStatsResponse'
+  distributedRewards?: Maybe<UserReferralsStatsDistributedRewards>
+  referrals?: Maybe<UserReferralsList>
+  referrerId: Scalars['String']['output']
 }
 
 export type UserReferrerDetail = {
@@ -2429,6 +2549,33 @@ export type GetUserReferralsQuery = {
         totalPoints?: string | null
       } | null
     }>
+  }
+}
+
+export type GetUserReferralsStatsQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetUserReferralsStatsQuery = {
+  __typename?: 'Query'
+  userReferralsStats: {
+    __typename?: 'UserReferralsStatsResponse'
+    referrerId: string
+    distributedRewards?: {
+      __typename?: 'UserReferralsStatsDistributedRewards'
+      totalPoints?: string | null
+    } | null
+    referrals?: {
+      __typename?: 'UserReferralsList'
+      total?: number | null
+      pageSize?: number | null
+      offset?: number | null
+      data?: Array<{
+        __typename?: 'UserReferrerDetail'
+        timestamp: string
+        socialProfile: { __typename?: 'SocialProfile'; id: string }
+      }> | null
+    } | null
   }
 }
 
@@ -2957,6 +3104,40 @@ export type GetReferrerIdQuery = {
   }
 }
 
+export type GetReferralLeaderboardQueryVariables = Exact<{
+  args: ReferrersRankedByReferralsCountForPeriodInput
+}>
+
+export type GetReferralLeaderboardQuery = {
+  __typename?: 'Query'
+  referrersRankedByReferralsCountForPeriod: {
+    __typename?: 'ReferrersRankedByReferralsCountForPeriodResponseDto'
+    total: number
+    limit: number
+    offset: number
+    data: Array<{
+      __typename?: 'RankedReferrerWithDetails'
+      address: string
+      count: number
+      rank: number
+    }>
+  }
+}
+
+export type GetReferrerRankQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetReferrerRankQuery = {
+  __typename?: 'Query'
+  referrerRankByReferralsCountForPeriod?: {
+    __typename?: 'ReferrerRankByReferralsCountForPeriodResponseDto'
+    count?: number | null
+    maxIndex: number
+    rankIndex: number
+  } | null
+}
+
 export type SpaceFragmentFragment = {
   __typename?: 'Space'
   name?: string | null
@@ -3431,6 +3612,36 @@ export const GetUserReferrals = gql`
     }
   }
 `
+export const GetUserReferralsStats = gql`
+  query getUserReferralsStats($address: String!) {
+    userReferralsStats(
+      args: {
+        where: { referrerId: $address }
+        responseParams: {
+          withReferralsList: true
+          withDistributedRewards: true
+        }
+        referralsListParams: { pageSize: 100 }
+      }
+    ) {
+      referrerId
+      distributedRewards {
+        totalPoints
+      }
+      referrals {
+        total
+        pageSize
+        offset
+        data {
+          timestamp
+          socialProfile {
+            id
+          }
+        }
+      }
+    }
+  }
+`
 export const GetTokenomicMetadata = gql`
   query GetTokenomicMetadata {
     activeStakingTokenomicMetadata {
@@ -3737,6 +3948,33 @@ export const GetReferrerId = gql`
           referrerId
         }
       }
+    }
+  }
+`
+export const GetReferralLeaderboard = gql`
+  query GetReferralLeaderboard(
+    $args: ReferrersRankedByReferralsCountForPeriodInput!
+  ) {
+    referrersRankedByReferralsCountForPeriod(args: $args) {
+      total
+      limit
+      offset
+      data {
+        address
+        count
+        rank
+      }
+    }
+  }
+`
+export const GetReferrerRank = gql`
+  query GetReferrerRank($address: String!) {
+    referrerRankByReferralsCountForPeriod(
+      args: { address: $address, period: ALL_TIME, withCount: true }
+    ) {
+      count
+      maxIndex
+      rankIndex
     }
   }
 `
