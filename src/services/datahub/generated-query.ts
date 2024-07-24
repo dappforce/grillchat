@@ -1147,6 +1147,8 @@ export type Query = {
   postMetadata: Array<PostMetadataResponse>
   posts: FindPostsResponseDto
   postsViewsCounts: Array<PostViewsCountResponse>
+  referrerRankByReferralsCountForPeriod?: Maybe<ReferrerRankByReferralsCountForPeriodResponseDto>
+  referrersRankedByReferralsCountForPeriod: ReferrersRankedByReferralsCountForPeriodResponseDto
   socialProfileBalances?: Maybe<SocialProfileBalances>
   socialProfiles: SocialProfilesResponse
   spaces: FindSpacesWithFilterResponseDto
@@ -1321,6 +1323,14 @@ export type QueryPostsViewsCountsArgs = {
   where: PostsViewsCountsInput
 }
 
+export type QueryReferrerRankByReferralsCountForPeriodArgs = {
+  args: ReferrerRankByReferralsCountForPeriodInput
+}
+
+export type QueryReferrersRankedByReferralsCountForPeriodArgs = {
+  args: ReferrersRankedByReferralsCountForPeriodInput
+}
+
 export type QuerySocialProfileBalancesArgs = {
   args: BalancesInput
 }
@@ -1384,6 +1394,68 @@ export type RankedPostIdsByActiveStakingActivityResponse = {
   limit: Scalars['Int']['output']
   offset: Scalars['Int']['output']
   total: Scalars['Int']['output']
+}
+
+export type RankedReferrerWithDetails = {
+  __typename?: 'RankedReferrerWithDetails'
+  address: Scalars['String']['output']
+  count: Scalars['Int']['output']
+  rank: Scalars['Int']['output']
+}
+
+export type ReferrerRankByReferralsCountCompetitorResponseDto = {
+  __typename?: 'ReferrerRankByReferralsCountCompetitorResponseDto'
+  address: Scalars['String']['output']
+  count?: Maybe<Scalars['Int']['output']>
+  rankIndex: Scalars['Int']['output']
+}
+
+export type ReferrerRankByReferralsCountForPeriodInput = {
+  aboveCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  address: Scalars['String']['input']
+  belowCompetitorsNumber?: InputMaybe<Scalars['Int']['input']>
+  customRangeKey?: InputMaybe<ReferrersRankedListCustomPeriodKey>
+  period?: InputMaybe<ActiveStakingPeriod>
+  timestamp?: InputMaybe<Scalars['String']['input']>
+  withCount?: InputMaybe<Scalars['Boolean']['input']>
+}
+
+export type ReferrerRankByReferralsCountForPeriodResponseDto = {
+  __typename?: 'ReferrerRankByReferralsCountForPeriodResponseDto'
+  aboveCompetitors?: Maybe<
+    Array<ReferrerRankByReferralsCountCompetitorResponseDto>
+  >
+  belowCompetitors?: Maybe<
+    Array<ReferrerRankByReferralsCountCompetitorResponseDto>
+  >
+  count?: Maybe<Scalars['Int']['output']>
+  maxIndex: Scalars['Int']['output']
+  rankIndex: Scalars['Int']['output']
+}
+
+export type ReferrersRankedByReferralsCountForPeriodFilter = {
+  customRangeKey?: InputMaybe<ReferrersRankedListCustomPeriodKey>
+  period?: InputMaybe<ActiveStakingPeriod>
+  timestamp?: InputMaybe<Scalars['String']['input']>
+}
+
+export type ReferrersRankedByReferralsCountForPeriodInput = {
+  filter: ReferrersRankedByReferralsCountForPeriodFilter
+  limit?: InputMaybe<Scalars['Int']['input']>
+  offset?: InputMaybe<Scalars['Int']['input']>
+  order?: InputMaybe<ActiveStakingListOrder>
+}
+
+export type ReferrersRankedByReferralsCountForPeriodResponseDto = {
+  __typename?: 'ReferrersRankedByReferralsCountForPeriodResponseDto'
+  data: Array<RankedReferrerWithDetails>
+  limit: Scalars['Int']['output']
+  offset: Scalars['Int']['output']
+  total: Scalars['Int']['output']
+}
+
+export enum ReferrersRankedListCustomPeriodKey {
+  ReferrersRankedListByReferralsCountCp_20240722_20240728 = 'REFERRERS_RANKED_LIST_BY_REFERRALS_COUNT_CP_20240722_20240728',
 }
 
 export type RewardsByPostDetails = {
@@ -2927,7 +2999,11 @@ export type GetLastPostedMemeQuery = {
   __typename?: 'Query'
   posts: {
     __typename?: 'FindPostsResponseDto'
-    data: Array<{ __typename?: 'Post'; createdAtTime?: any | null }>
+    data: Array<{
+      __typename?: 'Post'
+      approvedInRootPost: boolean
+      createdAtTime?: any | null
+    }>
   }
 }
 
@@ -3712,13 +3788,14 @@ export const GetLastPostedMeme = gql`
   query GetLastPostedMeme($address: String!) {
     posts(
       args: {
-        filter: { createdByAccountAddress: $address, approvedInRootPost: true }
-        pageSize: 1
+        filter: { createdByAccountAddress: $address }
+        pageSize: 4
         orderBy: "createdAtTime"
         orderDirection: DESC
       }
     ) {
       data {
+        approvedInRootPost
         createdAtTime
       }
     }
