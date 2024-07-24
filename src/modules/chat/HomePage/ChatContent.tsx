@@ -101,7 +101,6 @@ export default function ChatContent({ className }: Props) {
         className={cx(isAdmin && 'top-0')}
       />
       <ChatRoom
-        scrollableContainerClassName='pt-12'
         asContainer
         chatId={chatId}
         hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
