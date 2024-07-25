@@ -7,9 +7,9 @@ import { cx } from '@/utils/class-names'
 import { useQueryClient } from '@tanstack/react-query'
 import { ComponentProps, forwardRef, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
-import ChatItem, { ChatItemProps } from '../ChatItem'
+import MemeChatItem, { MemeChatItemProps } from '../ChatItem/MemeChatItem'
 
-export type ChatItemContainerProps = Omit<ChatItemProps, 'isMyMessage'> & {
+export type ChatItemContainerProps = Omit<MemeChatItemProps, 'isMyMessage'> & {
   containerProps?: ComponentProps<'div'>
   enableProfileModal?: boolean
   showBlockedMessage?: boolean
@@ -59,17 +59,12 @@ function ChatItemContainer(
       // to prevent chat item from disappearing in IOS
       // ref: https://stackoverflow.com/a/54582980
       style={{ transform: 'translate3d(0, 0, 0)' }}
-      className={cx(
-        'w-11/12 @3xl:w-8/12',
-        isMyMessage && 'self-end',
-        containerProps?.className
-      )}
+      className={cx(containerProps?.className)}
     >
       <UnreadMessageChecker messageId={message.id} />
-      <ChatItem
+      <MemeChatItem
         {...props}
         chatId={chatId}
-        isMyMessage={isMyMessage}
         enableProfileModal={enableProfileModal}
         disableSuperLike={disableSuperLike}
         hubId={hubId}
