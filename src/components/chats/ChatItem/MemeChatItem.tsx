@@ -39,6 +39,7 @@ export type MemeChatItemProps = Omit<ComponentProps<'div'>, 'children'> & {
   disableSuperLike?: boolean
   menuIdPrefix?: string
   dummySuperLike?: SuperLikeButtonProps
+  noBorder?: boolean
 }
 
 export default function MemeChatItem({
@@ -53,6 +54,7 @@ export default function MemeChatItem({
   enableProfileModal = true,
   menuIdPrefix,
   dummySuperLike,
+  noBorder,
   ...props
 }: MemeChatItemProps) {
   const { ref, inView } = useInView()
@@ -93,7 +95,12 @@ export default function MemeChatItem({
                   messageBubbleId={messageBubbleId}
                   disableSuperLike={disableSuperLike}
                 >
-                  <div className='flex flex-col gap-2 border-b border-border-gray py-2'>
+                  <div
+                    className={cx(
+                      'flex flex-col gap-2 border-b border-border-gray py-2',
+                      noBorder && 'border-none'
+                    )}
+                  >
                     <div className='flex items-center justify-between px-2'>
                       <div
                         className={cx(

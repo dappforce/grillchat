@@ -3,6 +3,7 @@ import HandPoint from '@/assets/graphics/hand-point.svg'
 import LikeButtonImage from '@/assets/graphics/like-button.png'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
+import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { formatNumber } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
@@ -179,9 +180,10 @@ export default function LikeIntroModal() {
               message={current.message}
               chatId='0x123'
               hubId='0x123'
-              className='max-w-none'
+              className='max-w-none rounded-lg bg-background-lighter'
+              noBorder
               dummySuperLike={{
-                className: 'outline-none',
+                className: cx('outline-none !bg-background-lightest'),
                 disabled: !tokenomics,
                 hasILiked,
                 superLikeCount: current.superLikeCount + (hasILiked ? 1 : 0),
