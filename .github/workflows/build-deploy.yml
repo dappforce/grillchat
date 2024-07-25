@@ -71,7 +71,7 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=762898090466
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:762898090466:web:8b27ce87e8cb476f95d1bb
             GH_NEXT_PUBLIC_PROPOSALS_HUB=27942
-            GH_SERVER_MNEMONIC="wall trophy travel slush injury misery loan chat uncle film universe ancient"
+            GH_SERVER_MNEMONIC=${{ secrets.GH_SERVER_MNEMONIC }}
             GH_NEXT_PUBLIC_NEYNAR_CLIENT_ID=e8dc01b0-046c-4698-98ac-05432050961d
             GH_NEXT_PUBLIC_TELEGRAM_BOT_ID=6523818125
             GH_NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=EpicAppBot
