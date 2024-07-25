@@ -98,9 +98,14 @@ function DailyTasks() {
     getServerDayQuery.useQuery(null)
   const { data: dailyReward, isLoading: loadingDailyReward } =
     getDailyRewardQuery.useQuery(myAddress ?? '')
-  const todayRewardIndex = dailyReward?.claims.findIndex(
+  let todayRewardIndex = dailyReward?.claims.findIndex(
     (claim) => Number(claim.claimValidDay) === serverDay?.day
   )
+  // if today is not in the list, then its a case where the fe invalidates the claim data after claimed the last day
+  todayRewardIndex =
+    todayRewardIndex === -1
+      ? (dailyReward?.claims.length ?? 1) - 1
+      : todayRewardIndex
 
   const todayReward = dailyReward?.claims[todayRewardIndex || 0]
   const isTodayRewardClaimed = !!todayReward && !todayReward.openToClaim

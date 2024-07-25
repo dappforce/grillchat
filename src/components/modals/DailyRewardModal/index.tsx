@@ -51,6 +51,9 @@ export default function DailyRewardModal({
       Number(claim.claimValidDay) === serverDay?.day && claim.openToClaim
   )
   const isMysteryBoxClaimable = claimable?.hiddenClaimReward
+  const isAfterReset = isLoading
+    ? false
+    : parseInt(data?.claims?.[0]?.claimValidDay ?? '') > (serverDay?.day ?? 0)
 
   return createPortal(
     <>
@@ -98,9 +101,10 @@ export default function DailyRewardModal({
           <div className='grid w-full grid-cols-4 gap-4 gap-x-2 gap-y-6'>
             {data?.claims.map((claim) => {
               const isClaimed =
-                claim.claimValidDay &&
-                !claim.openToClaim &&
-                Number(claim.claimValidDay) <= (serverDay?.day ?? 0)
+                (claim.claimValidDay &&
+                  !claim.openToClaim &&
+                  Number(claim.claimValidDay) <= (serverDay?.day ?? 0)) ||
+                isAfterReset
               const isClaimable =
                 Number(claim.claimValidDay) === serverDay?.day &&
                 claim.openToClaim
