@@ -110,13 +110,7 @@ export default function CommonChatItem({
     message,
     chatId
   )
-  const isMessageBlockedInOriginalHub = useIsMessageBlocked(
-    message.struct.spaceId ?? '',
-    message,
-    chatId
-  )
-  const isMessageBlocked =
-    isMessageBlockedInCurrentHub || isMessageBlockedInOriginalHub
+  const isMessageBlocked = isMessageBlockedInCurrentHub
 
   const childrenElement =
     typeof children === 'function'

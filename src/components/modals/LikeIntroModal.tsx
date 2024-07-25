@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from 'react'
 import SlotCounter from 'react-slot-counter'
 import Button from '../Button'
 import Card from '../Card'
-import ImageChatItem from '../extensions/image/ImageChatItem'
+import MemeChatItem from '../chats/ChatItem/MemeChatItem'
 import Modal from './Modal'
 
 const hasOpenedModal = new LocalStorage(() => 'has-opened-like-intro-modal')
@@ -175,12 +175,11 @@ export default function LikeIntroModal() {
       ) : (
         <>
           <div className='relative'>
-            <ImageChatItem
+            <MemeChatItem
               message={current.message}
               chatId='0x123'
               hubId='0x123'
               className='max-w-none'
-              bg='background-lighter'
               dummySuperLike={{
                 className: 'outline-none',
                 disabled: !tokenomics,

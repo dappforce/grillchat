@@ -7,6 +7,7 @@ import { getUserPostedMemesForCountQuery } from '@/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import Image from 'next/image'
 import { useMemo } from 'react'
+import { Skeleton } from '../SkeletonFallback'
 
 export default function UnapprovedMemeCount({
   address,
@@ -48,15 +49,11 @@ export default function UnapprovedMemeCount({
     return { blocked, approved, unapproved }
   }, [data, blockedInApp, blockedInChat, isLoading])
 
-  if (isLoading || loadingBlockedInApp || loadingBlockedInContest) return null
+  if (isLoading || loadingBlockedInApp || loadingBlockedInContest)
+    return <Skeleton className={cx('my-0.5', className)} />
 
   return (
-    <div
-      className={cx(
-        'rounded-full bg-background-lightest px-1.5 py-0 text-sm',
-        className
-      )}
-    >
+    <div className={cx('rounded-full text-sm text-text-muted', className)}>
       <div className='flex flex-shrink-0 items-center gap-1'>
         <div className='flex flex-shrink-0 items-center gap-1'>
           <Image src={CheckImage} className='h-4 w-4' alt='' />

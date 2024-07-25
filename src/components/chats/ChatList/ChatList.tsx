@@ -220,7 +220,6 @@ function ChatListContent({
                         </div>
                       )}
                       <ChatItemWithMenu
-                        chatItemClassName='mt-2'
                         chatId={chatId}
                         hubId={hubId}
                         message={message}
