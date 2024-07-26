@@ -110,7 +110,10 @@ export default function LikeIntroModal() {
     const hasVisited = hasOpenedModal.get() === 'true'
     if (!hasVisited) {
       sendEvent('like_intro_modal_opened')
-      setIsOpenModal(true)
+      // need to have timeout so that the scrollTo from useTgNoScroll is done first, it is using 100 so that it is opened after welcome modal
+      setTimeout(() => {
+        setIsOpenModal(true)
+      }, 100)
     }
   }, [sendEvent])
 
