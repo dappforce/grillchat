@@ -350,7 +350,7 @@ export function SuperLikeButton({
         className={cx(
           // identifier for toggle chat menu checker in ChatItemMenus
           'superlike',
-          'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-text-muted transition dark:bg-background-lighter',
+          'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-3 py-1 text-text-muted transition dark:bg-background-lighter',
           'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
           'disabled:!opacity-50',
           isMyMessage &&

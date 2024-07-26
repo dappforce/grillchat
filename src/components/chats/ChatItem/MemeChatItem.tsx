@@ -59,7 +59,7 @@ export default function MemeChatItem({
 }: MemeChatItemProps) {
   const { ref, inView } = useInView()
   const { ownerId, id: messageId } = message.struct
-  const { body, extensions, link } = message.content || {}
+  const { body, extensions } = message.content || {}
   const { openModal } = useProfilePostsModal()
 
   const isAdmin = useIsModerationAdmin()
@@ -107,7 +107,23 @@ export default function MemeChatItem({
                           'flex items-center gap-2 overflow-hidden'
                         )}
                       >
-                        <AddressAvatar address={ownerId} />
+                        <AddressAvatar
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+
+                            if (enableProfileModal) {
+                              openModal({
+                                chatId,
+                                hubId,
+                                messageId,
+                                address: ownerId,
+                              })
+                            }
+                          }}
+                          address={ownerId}
+                          className='flex-shrink-0 cursor-pointer'
+                        />
                         <ProfilePreviewModalName
                           clipText
                           showModeratorChip
@@ -134,8 +150,8 @@ export default function MemeChatItem({
                     </div>
                     <MediaLoader
                       containerClassName='overflow-hidden w-full cursor-pointer'
-                      placeholderClassName={cx('w-[320px] aspect-square')}
-                      className='w-[320px] object-contain'
+                      placeholderClassName={cx('w-full aspect-square')}
+                      className='w-full object-contain'
                       src={imageExt?.image}
                     />
                     {body && (
@@ -147,7 +163,7 @@ export default function MemeChatItem({
                         {body}
                       </p>
                     )}
-                    <div className='flex items-center justify-between px-2'>
+                    <div className='flex items-center justify-between px-2 py-0.5'>
                       {dummySuperLike ? (
                         <SuperLikeButton
                           {...dummySuperLike}

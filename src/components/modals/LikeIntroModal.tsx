@@ -180,7 +180,7 @@ export default function LikeIntroModal() {
               message={current.message}
               chatId='0x123'
               hubId='0x123'
-              className='max-w-none rounded-lg bg-background-lighter'
+              className='max-w-none rounded-2xl bg-background-lighter'
               noBorder
               dummySuperLike={{
                 className: cx('outline-none !bg-background-lightest'),
