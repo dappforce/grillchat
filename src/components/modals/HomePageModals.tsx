@@ -35,7 +35,10 @@ export default function HomePageModals() {
     if (!hasVisited) {
       sendEvent('open_welcome_modal')
       hasVisitedHomeStorage.set('true')
-      setIsOpenWelcomeModal(true)
+      // need to have timeout so that the scrollTo from useTgNoScroll is done first
+      setTimeout(() => {
+        setIsOpenWelcomeModal(true)
+      })
     } else {
       setCanModalBeOpened('yesterday-reward')
     }
