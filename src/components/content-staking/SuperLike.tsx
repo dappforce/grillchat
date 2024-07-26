@@ -289,7 +289,7 @@ export default function SuperLike({
               <PopOver
                 yOffset={6}
                 panelSize='sm'
-                placement='top'
+                placement='top-start'
                 triggerOnHover
                 trigger={button}
               >
