@@ -297,20 +297,10 @@ const UserStatsSection = ({
                 </Button>
               </div>
             </div>
-            {/* <LinkText
-              variant='primary'
-              className='mr-1'
-              onClick={() => {
-                sendEvent('edit_evm_address_click')
-                setOpenEvmLinkModal(true)
-              }}
-            >
-              Edit
-            </LinkText> */}
           </Card>
         )}
-        <div className='flex w-full items-center gap-4 p-4'>
-          <div className='flex w-full flex-col gap-1'>
+        <div className='flex w-full items-center gap-4 px-4'>
+          <div className='flex w-full flex-col gap-1 border-r border-slate-700 py-4'>
             <span className='text-text-muted'>LIKES LEFT TODAY:</span>
             <div className='flex items-center gap-3'>
               <Image src={Thumbsup} alt='' className='h-8 w-8' />
@@ -325,7 +315,7 @@ const UserStatsSection = ({
               </LinkText>
             </div>
           </div>
-          <div className='flex w-full flex-col gap-1'>
+          <div className='flex w-full flex-col gap-1 py-4'>
             <span className='text-text-muted'>POINTS EARNED:</span>
             <div
               className='mr-1 flex items-center gap-3'

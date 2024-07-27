@@ -10,6 +10,7 @@ const GET_LEADERBOARD_DATA_BY_ALL_TIME = gql`
     activeStakingAddressesRankedByTotalRewardsForPeriod(
       args: { filter: { period: ALL_TIME }, limit: 100 }
     ) {
+      total
       data {
         reward
         rank
@@ -24,6 +25,7 @@ const GET_LEADERBOARD_DATA_BY_WEEK = gql`
     activeStakingAddressesRankedByTotalRewardsForPeriod(
       args: { filter: { period: WEEK, timestamp: $timestamp }, limit: 100 }
     ) {
+      total
       data {
         reward
         rank
@@ -47,11 +49,14 @@ export async function getLeaderboardData(period: Period): Promise<any> {
 
   const data = res.activeStakingAddressesRankedByTotalRewardsForPeriod.data
 
-  return data.map((item: any) => ({
-    rank: item.rank + 1,
-    reward: item.reward,
-    address: item.address,
-  }))
+  return {
+    totalCount: res.activeStakingAddressesRankedByTotalRewardsForPeriod.total,
+    leaderboardData: data.map((item: any) => ({
+      rank: item.rank + 1,
+      reward: item.reward,
+      address: item.address,
+    })),
+  }
 }
 
 const GET_USER_DATA_BY_ALL_TIME = gql`
@@ -144,6 +149,74 @@ export async function getUserReferrals(
     pointsEarned: parseInt(
       data.distributedRewards?.totalPoints?.toString() ?? '0'
     ),
+  }
+}
+
+const GET_USER_REFERRAL_STATS = gql`
+  query getUserReferralsStats($address: String!) {
+    userReferralsStats(
+      args: {
+        where: { referrerId: $address }
+        responseParams: {
+          withReferralsList: true
+          withDistributedRewards: true
+        }
+        referralsListParams: { pageSize: 100 }
+      }
+    ) {
+      referrerId
+      distributedRewards {
+        totalPoints
+      }
+      referrals {
+        total
+        pageSize
+        offset
+        data {
+          timestamp
+          socialProfile {
+            id
+          }
+        }
+      }
+    }
+  }
+`
+
+export async function getUserReferralStats(address: string) {
+  const res = await datahubQueryRequest<
+    {
+      userReferralsStats: {
+        referrerId: string
+        distributedRewards: {
+          totalPoints: string
+        }
+        referrals: {
+          total: number
+          data: {
+            timestamp: string
+            socialProfile: {
+              id: string
+            }
+          }[]
+        }
+      }
+    },
+    GetUserReferralsQueryVariables
+  >({
+    document: GET_USER_REFERRAL_STATS,
+    variables: { address },
+  })
+
+  const data = res.userReferralsStats
+
+  return {
+    refCount: data.referrals.total ?? 0,
+    pointsEarned: data.distributedRewards.totalPoints.toString() ?? '0',
+    referrals: data.referrals.data.map((referral) => ({
+      timestamp: referral.timestamp,
+      socialProfileId: referral.socialProfile.id,
+    })),
   }
 }
 

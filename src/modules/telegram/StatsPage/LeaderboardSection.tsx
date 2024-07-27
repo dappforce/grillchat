@@ -36,7 +36,7 @@ export const LeaderboardContent = () => {
   return (
     <div className='flex w-full flex-col gap-4'>
       <Tabs
-        className='p-0'
+        className='rounded-full bg-slate-900 p-[2px]'
         panelClassName='mt-0 w-full max-w-full px-0 z-0'
         tabClassName={(selected) =>
           cx(
@@ -44,7 +44,7 @@ export const LeaderboardContent = () => {
               ['bg-background-primary/50 rounded-full [&>span]:!text-text']:
                 selected,
             },
-            '[&>span]:text-slate-300 leading-6 font-medium p-[10px] [&>span]:text-sm border-none'
+            '[&>span]:text-slate-300 leading-6 font-medium p-[6px] [&>span]:text-sm border-none'
           )
         }
         asContainer

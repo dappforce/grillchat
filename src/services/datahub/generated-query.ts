@@ -2552,6 +2552,33 @@ export type GetUserReferralsQuery = {
   }
 }
 
+export type GetUserReferralsStatsQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetUserReferralsStatsQuery = {
+  __typename?: 'Query'
+  userReferralsStats: {
+    __typename?: 'UserReferralsStatsResponse'
+    referrerId: string
+    distributedRewards?: {
+      __typename?: 'UserReferralsStatsDistributedRewards'
+      totalPoints?: string | null
+    } | null
+    referrals?: {
+      __typename?: 'UserReferralsList'
+      total?: number | null
+      pageSize?: number | null
+      offset?: number | null
+      data?: Array<{
+        __typename?: 'UserReferrerDetail'
+        timestamp: string
+        socialProfile: { __typename?: 'SocialProfile'; id: string }
+      }> | null
+    } | null
+  }
+}
+
 export type GetTokenomicMetadataQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetTokenomicMetadataQuery = {
@@ -3087,6 +3114,40 @@ export type GetReferrerIdQuery = {
   }
 }
 
+export type GetReferralLeaderboardQueryVariables = Exact<{
+  args: ReferrersRankedByReferralsCountForPeriodInput
+}>
+
+export type GetReferralLeaderboardQuery = {
+  __typename?: 'Query'
+  referrersRankedByReferralsCountForPeriod: {
+    __typename?: 'ReferrersRankedByReferralsCountForPeriodResponseDto'
+    total: number
+    limit: number
+    offset: number
+    data: Array<{
+      __typename?: 'RankedReferrerWithDetails'
+      address: string
+      count: number
+      rank: number
+    }>
+  }
+}
+
+export type GetReferrerRankQueryVariables = Exact<{
+  address: Scalars['String']['input']
+}>
+
+export type GetReferrerRankQuery = {
+  __typename?: 'Query'
+  referrerRankByReferralsCountForPeriod?: {
+    __typename?: 'ReferrerRankByReferralsCountForPeriodResponseDto'
+    count?: number | null
+    maxIndex: number
+    rankIndex: number
+  } | null
+}
+
 export type SpaceFragmentFragment = {
   __typename?: 'Space'
   name?: string | null
@@ -3562,6 +3623,36 @@ export const GetUserReferrals = gql`
     }
   }
 `
+export const GetUserReferralsStats = gql`
+  query getUserReferralsStats($address: String!) {
+    userReferralsStats(
+      args: {
+        where: { referrerId: $address }
+        responseParams: {
+          withReferralsList: true
+          withDistributedRewards: true
+        }
+        referralsListParams: { pageSize: 100 }
+      }
+    ) {
+      referrerId
+      distributedRewards {
+        totalPoints
+      }
+      referrals {
+        total
+        pageSize
+        offset
+        data {
+          timestamp
+          socialProfile {
+            id
+          }
+        }
+      }
+    }
+  }
+`
 export const GetTokenomicMetadata = gql`
   query GetTokenomicMetadata {
     activeStakingTokenomicMetadata {
@@ -3869,6 +3960,33 @@ export const GetReferrerId = gql`
           referrerId
         }
       }
+    }
+  }
+`
+export const GetReferralLeaderboard = gql`
+  query GetReferralLeaderboard(
+    $args: ReferrersRankedByReferralsCountForPeriodInput!
+  ) {
+    referrersRankedByReferralsCountForPeriod(args: $args) {
+      total
+      limit
+      offset
+      data {
+        address
+        count
+        rank
+      }
+    }
+  }
+`
+export const GetReferrerRank = gql`
+  query GetReferrerRank($address: String!) {
+    referrerRankByReferralsCountForPeriod(
+      args: { address: $address, period: ALL_TIME, withCount: true }
+    ) {
+      count
+      maxIndex
+      rankIndex
     }
   }
 `
