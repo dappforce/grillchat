@@ -157,6 +157,7 @@ async function processMessage(
       ...dataFromEntityId,
       struct: {
         ...dataFromEntityId.struct,
+        approvedInRootPost: eventData.entity.approvedInRootPost,
         approvedInRootPostAtTime: eventData.entity.approvedInRootPostAtTime,
         dataType: eventData.entity.dataType,
       },

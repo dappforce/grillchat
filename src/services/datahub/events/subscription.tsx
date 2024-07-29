@@ -1,5 +1,6 @@
 import Toast from '@/components/Toast'
 import { claimTaskErrorStore } from '@/modules/telegram/TasksPage/ClaimTaskTokensModal'
+import { getPostQuery } from '@/services/api/query'
 import { deleteOptimisticData } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
@@ -264,6 +265,16 @@ async function processSubscriptionEvent(
         ]
       }
     )
+    getPostQuery.setQueryData(client, postId, (oldData) => {
+      if (!oldData) return oldData
+      return {
+        ...oldData,
+        struct: {
+          ...oldData.struct,
+          approvedInRootPost: newStatus,
+        },
+      }
+    })
     return
   }
 
