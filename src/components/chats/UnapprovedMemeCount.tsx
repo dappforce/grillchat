@@ -54,17 +54,20 @@ export default function UnapprovedMemeCount({
 
   return (
     <div className={cx('rounded-full text-sm text-text-muted', className)}>
-      <div className='flex flex-shrink-0 items-center gap-1'>
+      <div className='flex flex-shrink-0 items-center gap-2'>
+        {(data?.length ?? 0) >= 5 && (
+          <div className='mr-1 flex flex-shrink-0 items-center gap-1 rounded-full border-2 border-yellow-600 px-2 py-0.5 text-yellow-500'>
+            💩 {((blocked / (approved + blocked)) * 100).toFixed(0)}%
+          </div>
+        )}
         <div className='flex flex-shrink-0 items-center gap-1'>
           <Image src={CheckImage} className='h-4 w-4' alt='' />
           <span>{approved}</span>
         </div>
-        <span className='flex-shrink-0 text-text-muted'>/</span>
         <div className='flex flex-shrink-0 items-center gap-1'>
           <Image src={ForbiddenImage} className='h-4 w-4' alt='' />
           <span>{blocked}</span>
         </div>
-        <span className='flex-shrink-0 text-text-muted'>/</span>
         <div className='flex flex-shrink-0 items-center gap-1'>
           <Image src={TimeImage} className='h-4 w-4' alt='' />
           <span>{unapproved}</span>
