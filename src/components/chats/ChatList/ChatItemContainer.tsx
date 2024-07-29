@@ -2,7 +2,6 @@ import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import usePrevious from '@/hooks/usePrevious'
 import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
-import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useQueryClient } from '@tanstack/react-query'
 import { ComponentProps, forwardRef, useEffect } from 'react'
@@ -42,15 +41,9 @@ function ChatItemContainer(
 
   const { content } = message
   const { body, extensions } = content || {}
-  const myAddress = useMyMainAddress()
 
   if ((isMessageBlocked && !showBlockedMessage) || (!body && !extensions))
     return null
-
-  const ownerId = message.struct.ownerId
-  const senderAddress = ownerId ?? ''
-
-  const isMyMessage = myAddress === senderAddress
 
   return (
     <div
