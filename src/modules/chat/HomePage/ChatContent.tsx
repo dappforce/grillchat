@@ -101,8 +101,6 @@ export default function ChatContent({ className }: Props) {
         className={cx(isAdmin && 'top-0')}
       />
       <ChatRoom
-        scrollableContainerClassName='pt-12'
-        asContainer
         chatId={chatId}
         hubId={env.NEXT_PUBLIC_MAIN_SPACE_ID}
         className='overflow-hidden'
@@ -112,7 +110,7 @@ export default function ChatContent({ className }: Props) {
           isCannotPost ? (
             <></>
           ) : (
-            <div className='grid grid-cols-[max-content_1fr] gap-2'>
+            <div className='grid grid-cols-[max-content_1fr] gap-2 px-2'>
               <Button
                 type='button'
                 size='lg'

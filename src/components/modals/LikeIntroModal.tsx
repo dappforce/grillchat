@@ -3,6 +3,7 @@ import HandPoint from '@/assets/graphics/hand-point.svg'
 import LikeButtonImage from '@/assets/graphics/like-button.png'
 import { getTokenomicsMetadataQuery } from '@/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
+import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'
 import { formatNumber } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
@@ -12,7 +13,7 @@ import { useEffect, useMemo, useState } from 'react'
 import SlotCounter from 'react-slot-counter'
 import Button from '../Button'
 import Card from '../Card'
-import ImageChatItem from '../extensions/image/ImageChatItem'
+import MemeChatItem from '../chats/ChatItem/MemeChatItem'
 import Modal from './Modal'
 
 const hasOpenedModal = new LocalStorage(() => 'has-opened-like-intro-modal')
@@ -178,14 +179,14 @@ export default function LikeIntroModal() {
       ) : (
         <>
           <div className='relative'>
-            <ImageChatItem
+            <MemeChatItem
               message={current.message}
               chatId='0x123'
               hubId='0x123'
-              className='max-w-none'
-              bg='background-lighter'
+              className='max-w-none rounded-2xl bg-background-lighter'
+              noBorder
               dummySuperLike={{
-                className: 'outline-none',
+                className: cx('outline-none !bg-background-lightest'),
                 disabled: !tokenomics,
                 hasILiked,
                 superLikeCount: current.superLikeCount + (hasILiked ? 1 : 0),

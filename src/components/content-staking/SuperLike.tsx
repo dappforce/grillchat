@@ -6,6 +6,7 @@ import {
   PostRewards,
   getAddressLikeCountToPostQuery,
   getConfirmationMsgQuery,
+  getPostRewardsQuery,
   getSuperLikeCountQuery,
   getTodaySuperLikeCountQuery,
 } from '@/services/datahub/content-staking/query'
@@ -25,6 +26,7 @@ import { ComponentProps, ReactNode } from 'react'
 import { toast } from 'sonner'
 import PopOver from '../floating/PopOver'
 import { sendEventWithRef } from '../referral/analytics'
+import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
   withPostReward: boolean
@@ -38,6 +40,7 @@ export type SuperLikeProps = ComponentProps<'div'> & {
 export function SuperLikeWrapper({
   postId,
   children,
+  withPostReward,
 }: {
   postId: string
   withPostReward: boolean
@@ -51,9 +54,9 @@ export function SuperLikeWrapper({
   }) => ReactNode
 }) {
   const setOpenMessageModal = useMessageData.use.setOpenMessageModal()
-  // const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
-  // enabled: withPostReward,
-  // })
+  const { data: postRewards } = getPostRewardsQuery.useQuery(postId, {
+    enabled: withPostReward,
+  })
 
   const { isBlocked, isLoading: loadingBlocked } = useIsAddressBlockedInApp()
   const { setIsOpen } = useLoginModal()
@@ -160,6 +163,7 @@ export function SuperLikeWrapper({
         handleClick,
         hasILiked,
         superLikeCount: superLikeCount?.count ?? 0,
+        postRewards,
       })}
     </>
   )
@@ -246,6 +250,7 @@ export default function SuperLike({
         disabledCause,
         hasILiked,
         superLikeCount,
+        postRewards,
       }) => {
         if (superLikeCount <= 0 && !showWhenZero) return null
         const button = (
@@ -284,7 +289,7 @@ export default function SuperLike({
               <PopOver
                 yOffset={6}
                 panelSize='sm'
-                placement='top'
+                placement='top-start'
                 triggerOnHover
                 trigger={button}
               >
@@ -293,14 +298,14 @@ export default function SuperLike({
             ) : (
               button
             )}
-            {/* {postRewards?.isNotZero && (
+            {postRewards?.isNotZero && (
               <PostRewardStat
                 className={cx(
                   isMyMessage && 'text-text-muted-on-primary-light'
                 )}
                 postId={postId}
               />
-            )} */}
+            )}
           </div>
         )
       }}
@@ -345,7 +350,7 @@ export function SuperLikeButton({
         className={cx(
           // identifier for toggle chat menu checker in ChatItemMenus
           'superlike',
-          'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-2 py-0.5 text-text-muted transition dark:bg-background-lighter',
+          'flex cursor-pointer items-center gap-2 rounded-full border border-transparent bg-[#EFF4FA] px-3 py-1 text-text-muted transition dark:bg-background-lighter',
           'enabled:hover:border-[#7779F3] enabled:focus-visible:border-[#7779F3]',
           'disabled:!opacity-50',
           isMyMessage &&

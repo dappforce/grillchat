@@ -76,7 +76,7 @@ export function Tabs({
   return (
     <div
       className={cx(
-        'sticky top-14 grid h-12 grid-flow-col items-center gap-1 bg-background px-4',
+        'sticky top-14 grid h-12 grid-flow-col items-center gap-1 bg-background px-2',
         className
       )}
     >
