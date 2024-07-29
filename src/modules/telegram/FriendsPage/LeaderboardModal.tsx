@@ -12,20 +12,19 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx, mutedTextColorStyles } from '@/utils/class-names'
 import { Transition } from '@headlessui/react'
 import { isDef } from '@subsocial/utils'
-import dayjs from 'dayjs'
 import Image from 'next/image'
 import { useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { HiXMark } from 'react-icons/hi2'
 import { UserPreview } from '../StatsPage/LeaderboardTable'
 
-const DISTRIBUTION_DAY = 0
+// const DISTRIBUTION_DAY = 0
 const DEFAULT_LIST_COUNT = 100
 
-const getDistributionDaysLeft = () => {
-  // monday: 7 days, tuesday: 6 days, ..., sunday: 1 day
-  return ((DISTRIBUTION_DAY + 7 - dayjs.utc().get('day')) % 7) + 1
-}
+// const getDistributionDaysLeft = () => {
+//   // monday: 7 days, tuesday: 6 days, ..., sunday: 1 day
+//   return ((DISTRIBUTION_DAY + 7 - dayjs.utc().get('day')) % 7) + 1
+// }
 
 type LeaderboardModalProps = {
   isOpen: boolean
@@ -90,10 +89,7 @@ const LeaderboardModalContent = () => {
         <div className='flex h-full flex-col gap-4'>
           <span className='text-sm text-slate-400'>
             Top 10 users who invite the most friends during the week will be
-            rewarded.{' '}
-            <span className='font-bold text-[#FF9331]'>
-              ⏳ {getDistributionDaysLeft()} days left
-            </span>
+            rewarded. <span className='font-bold text-[#FF9331]'>Finished</span>
           </span>
           <LeaderboardTable isContest />
         </div>
