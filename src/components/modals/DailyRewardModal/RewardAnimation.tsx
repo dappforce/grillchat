@@ -5,7 +5,7 @@ import { cx } from '@/utils/class-names'
 import { formatNumber } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Lottie, { LottieProps } from 'react-lottie'
 
 export type DailyRewardClaim = NonNullable<
@@ -25,18 +25,22 @@ export default function RewardAnimation({
   const isMysteryBox = !!claim.hiddenClaimReward
 
   const [showPointsEarned, setShowPointsEarned] = useState(!isMysteryBox)
-  const [isPaused, setIsPaused] = useState(true)
   const defaultOptions: LottieProps = {
     ...props,
     options: {
       loop: false,
-      autoplay: false,
+      autoplay: true,
       animationData: PresentAnimation,
       rendererSettings: {
         preserveAspectRatio: 'xMidYMid slice',
       },
     },
   }
+  useEffect(() => {
+    setTimeout(() => {
+      setShowPointsEarned(true)
+    }, 800)
+  }, [])
 
   return (
     <>
@@ -49,28 +53,14 @@ export default function RewardAnimation({
           enterTo={cx('opacity-100 scale-100')}
           leaveFrom={cx('opacity-100 scale-100')}
           leaveTo={cx('opacity-0 scale-75')}
-          onClick={() => {
-            setIsPaused(!isPaused)
-            setTimeout(() => {
-              setShowPointsEarned(true)
-            }, 800)
-          }}
         >
           <div className='absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 animate-[pulse_3s_ease-in-out_infinite] rounded-full bg-background-primary/20 blur-3xl' />
           <Lottie
             {...defaultOptions}
-            isPaused={isPaused}
-            height={250 || props.height}
-            width={250 || props.width}
+            isPaused={false}
+            height={props.height || 250}
+            width={props.width || 250}
           />
-          <span
-            className={cx(
-              'text-text/50 opacity-100 transition',
-              !isPaused && 'opacity-0'
-            )}
-          >
-            Tap to open
-          </span>
         </Transition>
       )}
       {showPointsEarned && (
