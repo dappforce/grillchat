@@ -48,8 +48,8 @@ jobs:
           build-args: |
             GH_NEXTAUTH_URL=https://grillapp.net/c/api/auth
             GH_NEXT_PUBLIC_BASE_PATH=/c
-            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.subsocial.network
-            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.subsocial.network
+            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://api-subsocial.dwellir.com/d3b15e09-ebc8-48de-94af-907466466d10
+            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://api-subsocial.dwellir.com/d3b15e09-ebc8-48de-94af-907466466d10
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://sub-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://sub-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://sub-queue-data-hub.subsocial.network/graphql
