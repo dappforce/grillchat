@@ -39,7 +39,7 @@ jobs:
 
       - name: Build mainnet production image
         if: matrix.apps == 'main'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
@@ -79,7 +79,7 @@ jobs:
 
       - name: Build staging docker image
         if: matrix.apps == 'deploy'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
