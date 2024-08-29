@@ -25,7 +25,7 @@ type ResponseData = {
 export type ApiProfilesResponse = ApiResponse<ResponseData>
 export type ApiProfilesInvalidationResponse = ApiResponse<{}>
 
-const INVALIDATED_MAX_AGE = 1 * 60 // 1 minute
+const INVALIDATED_MAX_AGE = 2 * 60 // 2 minutes
 const getInvalidatedProfileRedisKey = (id: string) => {
   return `profiles-invalidated:${id}`
 }

@@ -37,9 +37,14 @@ const GET_ENS_NAMES = gql(`
   }
 `)
 
-const MAX_AGE = 60 * 60 // 1 hour
+const MAX_AGE = 15 * 60 // 15 minutes
 const getRedisKey = (address: string) => {
   return `accounts-data:${address}`
+}
+
+const INVALIDATED_MAX_AGE = 5 * 60 // 5 minutes
+const getInvalidatedAccountsDataRedisKey = (id: string) => {
+  return `accounts-data-invalidated:${id}`
 }
 
 export default async function handler(
@@ -78,7 +83,15 @@ export default async function handler(
 
 function invalidateCache(addresses: string[]) {
   addresses.forEach((address) => {
-    redisCallWrapper((redis) => redis?.del(getRedisKey(address)))
+    redisCallWrapper(async (redis) => {
+      await redis?.del(getRedisKey(address))
+      return redis?.set(
+        getInvalidatedAccountsDataRedisKey(address),
+        address,
+        'EX',
+        INVALIDATED_MAX_AGE
+      )
+    })
   })
 }
 
@@ -183,9 +196,13 @@ export async function getAccountsDataFromCache(
   let newlyFetchedData: AccountData[] = []
 
   const promises = addresses.map(async (address) => {
-    const cachedData = await redisCallWrapper((redis) =>
-      redis?.get(getRedisKey(address))
-    )
+    const cachedData = await redisCallWrapper(async (redis) => {
+      const isInvalidated = await redis?.get(
+        getInvalidatedAccountsDataRedisKey(address)
+      )
+      if (!isInvalidated) return redis?.get(getRedisKey(address))
+      return null
+    })
 
     if (cachedData) {
       const parsedData = JSON.parse(cachedData) as AccountData

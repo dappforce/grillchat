@@ -69,9 +69,11 @@ export function useLinkEvmAddress({
     config,
     {
       txCallbacks: {
-        onStart: () => setOnCallbackLoading(true),
+        onStart: ({ address }) => {
+          setOnCallbackLoading(true)
+          mutateAccountsDataCache(address)
+        },
         onSuccess: async ({ address }) => {
-          await mutateAccountsDataCache(address)
           getAccountDataQuery.invalidate(client, address)
 
           setOnCallbackLoading(false)
