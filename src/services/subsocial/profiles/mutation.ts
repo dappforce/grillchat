@@ -76,6 +76,7 @@ export function useUpsertProfile(
       txCallbacks: {
         onStart: ({ data, address }) => {
           preventWindowUnload()
+          invalidateProfileServerCache(address)
           getProfileQuery.setQueryData(client, address, (oldData) => {
             const oldProfileSpaceId = oldData?.profileSpace?.id
             const oldProfileContent = oldData?.profileSpace?.content || {}
@@ -99,11 +100,6 @@ export function useUpsertProfile(
         },
         onError: async ({ address }) => {
           getProfileQuery.invalidate(client, address)
-        },
-        onSuccess: async ({ address }) => {
-          await invalidateProfileServerCache(address)
-          // Remove invalidation because the data will be same, and sometimes IPFS errors out, making the profile gone
-          // getProfileQuery.invalidate(client, address)
         },
       },
     }
