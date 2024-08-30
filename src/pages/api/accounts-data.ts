@@ -1,5 +1,6 @@
 import { redisCallWrapper } from '@/server/cache'
 import { getEvmAddressesFromSubsocial } from '@/services/subsocial/evmAddresses/fetcher'
+import { toSubsocialAddress } from '@subsocial/utils'
 import { request } from 'graphql-request'
 import gql from 'graphql-tag'
 
@@ -39,12 +40,20 @@ const GET_ENS_NAMES = gql(`
 
 const MAX_AGE = 15 * 60 // 15 minutes
 const getRedisKey = (address: string) => {
-  return `accounts-data:${address}`
+  try {
+    return `accounts-data:${toSubsocialAddress(address)}`
+  } catch {
+    return ''
+  }
 }
 
 const INVALIDATED_MAX_AGE = 5 * 60 // 5 minutes
 const getInvalidatedAccountsDataRedisKey = (id: string) => {
-  return `accounts-data-invalidated:${id}`
+  try {
+    return `accounts-data-invalidated:${toSubsocialAddress(id)}`
+  } catch {
+    return ''
+  }
 }
 
 export default async function handler(
