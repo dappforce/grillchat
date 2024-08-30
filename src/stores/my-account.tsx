@@ -203,7 +203,11 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     const { connectedWallet } = get()
     if (!connectedWallet) return
     parentProxyAddressStorage.set(connectedWallet.address)
-    set({ parentProxyAddress: connectedWallet.address })
+    set({
+      parentProxyAddress: convertAddressToSubsocialAddress(
+        connectedWallet.address
+      ),
+    })
   },
   disconnectProxy: () => {
     get().connectedWallet?._unsubscribeEnergy?.()
@@ -393,7 +397,8 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     set({
       isInitialized: true,
-      parentProxyAddress: parentProxyAddress ?? undefined,
+      parentProxyAddress:
+        convertAddressToSubsocialAddress(parentProxyAddress ?? '') ?? undefined,
     })
 
     if (parentProxyAddress) {

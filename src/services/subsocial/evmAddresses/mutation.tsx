@@ -5,6 +5,7 @@ import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
 import { useSendEvent } from '@/stores/analytics'
 import { MutationConfig } from '@/subsocial-query'
 import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
+import { convertAddressToSubsocialAddress } from '@/utils/account'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useDisconnect } from 'wagmi'
@@ -74,7 +75,10 @@ export function useLinkEvmAddress({
           mutateAccountsDataCache(address)
         },
         onSuccess: async ({ address }) => {
-          getAccountDataQuery.invalidate(client, address)
+          getAccountDataQuery.invalidate(
+            client,
+            convertAddressToSubsocialAddress(address)
+          )
 
           setOnCallbackLoading(false)
           sendEvent('evm-address-linked', undefined, { evmLinked: true })
@@ -126,21 +130,29 @@ export function useUnlinkEvmAddress(config?: MutationConfig<UnlinkEvmAddress>) {
     config,
     {
       txCallbacks: {
-        onStart: () => setOnCallbackLoading(true),
+        onStart: ({ address }) => {
+          setOnCallbackLoading(true)
+          mutateAccountsDataCache(address)
+        },
         onSend: ({ address }) => {
-          getAccountDataQuery.setQueryData(client, address, (data) => {
-            if (!data) return data
-            return {
-              ...data,
-              evmAddress: null,
-              ensNames: null,
+          getAccountDataQuery.setQueryData(
+            client,
+            convertAddressToSubsocialAddress(address),
+            (data) => {
+              if (!data) return data
+              return {
+                ...data,
+                evmAddress: null,
+                ensNames: null,
+              }
             }
-          })
+          )
         },
         onSuccess: async ({ address }) => {
-          await mutateAccountsDataCache(address)
-
-          getAccountDataQuery.invalidate(client, address)
+          getAccountDataQuery.invalidate(
+            client,
+            convertAddressToSubsocialAddress(address)
+          )
 
           setOnCallbackLoading(false)
           disconnect()
