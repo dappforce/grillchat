@@ -149,7 +149,12 @@ async function fetchAccountsData(addresses: string[], method: 'POST' | 'GET') {
       )
     }
 
-    const domains = await getEnsNames(evmAddressesHuman)
+    let domains: Record<string, string[]> = {}
+    try {
+      domains = await getEnsNames(evmAddressesHuman)
+    } catch (err) {
+      console.error('Error fetching ENS names', err)
+    }
 
     const needToFetchIdsPromise = addresses.map(async (address, i) => {
       const evmAddress = evmAddressesHuman[i]

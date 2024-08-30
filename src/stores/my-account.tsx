@@ -26,7 +26,7 @@ import { waitNewBlock } from '@/utils/blockchain'
 import { currentNetwork } from '@/utils/network'
 import { wait } from '@/utils/promise'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
-import { isWebNotificationsEnabled } from '@/utils/window'
+import { getIsInIframe, isWebNotificationsEnabled } from '@/utils/window'
 import { Wallet, WalletAccount, getWallets } from '@talismn/connect-wallets'
 import dayjs from 'dayjs'
 import toast from 'react-hot-toast'
@@ -635,6 +635,15 @@ export async function enableWallet({
       if (typeof unsub === 'function') unsub()
     }
   } catch (err) {
+    if (getIsInIframe() && preferredWallet.title === 'Polkadot.js') {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          title='Please retry this action in "Chat" page'
+          description='Click on "Chat" menu in the sidebar and retry your action in that page'
+        />
+      ))
+    }
     console.error('Error enabling wallet', err)
     onError(err)
   }
