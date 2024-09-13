@@ -1,6 +1,7 @@
 import CustomToast from '@/components/Toast'
+import truncate from 'lodash.truncate'
 import { ReactNode, useEffect, useRef } from 'react'
-import { toast, Toast, ToastOptions } from 'react-hot-toast'
+import { Toast, ToastOptions, toast } from 'react-hot-toast'
 
 export function showErrorToast<ErrorType>(
   error: unknown,
@@ -13,15 +14,18 @@ export function showErrorToast<ErrorType>(
   }
 ) {
   const { actionButton, getMessage, toastConfig } = config ?? {}
-  // TODO: this error message should be sent to logger for debugging purposes, but not shown to user
-  // let message: string | undefined = (error as any)?.message
+  let message: string | undefined = (error as any)?.message
 
-  // const response = (error as any)?.response?.data
-  // message = response?.message ?? message
-  // if (getMessage) {
-  //   const responseMessage = getMessage(response)
-  //   if (responseMessage) message = responseMessage
-  // }
+  const response = (error as any)?.response?.data
+  message = response?.message ?? message
+  if (getMessage) {
+    const responseMessage = getMessage(response)
+    if (responseMessage) message = responseMessage
+  }
+
+  message = truncate(typeof message === 'string' ? message : '', {
+    length: 150,
+  })
 
   toast.custom(
     (t) => (
@@ -29,7 +33,7 @@ export function showErrorToast<ErrorType>(
         t={t}
         type='error'
         title={errorTitle}
-        // subtitle={message}
+        subtitle={message}
         description={config?.getDescription?.(t)}
         action={actionButton?.(t)}
       />
