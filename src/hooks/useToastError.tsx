@@ -23,7 +23,9 @@ export function showErrorToast<ErrorType>(
     if (responseMessage) message = responseMessage
   }
 
-  message = truncate(message, { length: 150 })
+  message = truncate(typeof message === 'string' ? message : '', {
+    length: 150,
+  })
 
   toast.custom(
     (t) => (
