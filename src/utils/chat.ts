@@ -1,4 +1,4 @@
-import { SubsocialProfile } from '@/services/subsocial/profiles/fetcher'
+import { SubsocialProfile } from '@/old/services/subsocial/profiles/fetcher'
 import { PostData } from '@subsocial/api/types'
 import Router from 'next/router'
 import { getIdFromSlug } from './slug'

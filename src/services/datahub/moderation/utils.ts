@@ -1,4 +1,4 @@
-import { isAddress } from '@polkadot/util-crypto'
+import { isAddress } from 'ethers'
 import { CID } from 'ipfs-http-client'
 
 export type ResourceTypes = 'cid' | 'address' | 'postId'
@@ -23,13 +23,13 @@ export function mapBlockedResources<T>(
 export function getBlockedResourceType(
   resourceId: string
 ): ResourceTypes | null {
+  if (isValidAddress(resourceId)) return 'address'
   if (isPostId(resourceId) || resourceId.startsWith('0x')) return 'postId'
-  if (isValidSubstrateAddress(resourceId)) return 'address'
   if (isValidCID(resourceId)) return 'cid'
 
   return null
 }
-function isValidSubstrateAddress(maybeAddress: string) {
+function isValidAddress(maybeAddress: string) {
   try {
     return isAddress(maybeAddress)
   } catch (error) {

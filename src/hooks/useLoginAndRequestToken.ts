@@ -1,6 +1,6 @@
-import { useRequestToken } from '@/services/api/mutation'
+import { useRequestToken } from '@/old/services/api/mutation'
+import { MutationConfig } from '@/old/subsocial-query'
 import { useMyAccount } from '@/stores/my-account'
-import { MutationConfig } from '@/subsocial-query'
 import { useMutation } from '@tanstack/react-query'
 
 export default function useLoginAndRequestToken(

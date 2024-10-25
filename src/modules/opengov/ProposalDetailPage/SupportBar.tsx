@@ -1,5 +1,5 @@
 import PopOver from '@/components/floating/PopOver'
-import { CurveType, Proposal } from '@/server/opengov/mapper'
+import { CurveType, Proposal } from '@/old/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 
 const THRESHOLD_UI_EDGE = 13 // 13% of container

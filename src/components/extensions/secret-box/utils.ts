@@ -1,7 +1,7 @@
+import { apiInstance } from '@/old/services/api/utils'
+import mutationWrapper from '@/old/subsocial-query/base'
 import { DecryptRespose } from '@/pages/api/promo-message/decrypt'
 import { EncryptRespose } from '@/pages/api/promo-message/encrypt'
-import { apiInstance } from '@/services/api/utils'
-import mutationWrapper from '@/subsocial-query/base'
 
 export const canUsePromoExtensionAccounts = [
   '3tFT2KDqmyfBU7hoGTNSJ8j2aBXQvvSQS5ncBdgtMM6SBQBS',

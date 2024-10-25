@@ -1,16 +1,16 @@
 import { gql } from 'graphql-request'
 import {
+  ApproveMessageMutation,
+  ApproveMessageMutationVariables,
+  ApproveUserMutation,
+  ApproveUserMutationVariables,
   CanAccountDoArgsInput,
-  CreatePostOptimisticInput,
-  CreatePostOptimisticMutation,
-  CreatePostOptimisticMutationVariables,
+  CreatePostOffChainInput,
+  CreatePostOffChainMutation,
+  CreatePostOffChainMutationVariables,
   GetCanAccountDoQuery,
   GetCanAccountDoQueryVariables,
-  NotifyCreatePostTxFailedOrRetryStatusMutation,
-  NotifyCreatePostTxFailedOrRetryStatusMutationVariables,
-  NotifyUpdatePostTxFailedOrRetryStatusMutation,
-  NotifyUpdatePostTxFailedOrRetryStatusMutationVariables,
-  UpdatePostBlockchainSyncStatusInput,
+  SocialProfileAddReferrerIdInput,
   UpdatePostOptimisticInput,
   UpdatePostOptimisticMutation,
   UpdatePostOptimisticMutationVariables,
@@ -37,29 +37,29 @@ export async function getCanAccountDo(input: CanAccountDoArgsInput) {
   return canAccountDo.isAllowed
 }
 
-const CREATE_POST_OPTIMISTIC_MUTATION = gql`
-  mutation CreatePostOptimistic(
-    $createPostOptimisticInput: CreatePostOptimisticInput!
+const CREATE_POST_OFFCHAIN_MUTATION = gql`
+  mutation CreatePostOffChain(
+    $createPostOffChainInput: CreatePostOffChainInput!
   ) {
-    createPostOptimistic(
-      createPostOptimisticInput: $createPostOptimisticInput
-    ) {
+    createPostOffChain(createPostOffChainInput: $createPostOffChainInput) {
       processed
+      callId
       message
     }
   }
 `
-export async function createPostData(input: CreatePostOptimisticInput) {
+export async function createPostData(input: CreatePostOffChainInput) {
   const res = await datahubQueueRequest<
-    CreatePostOptimisticMutation,
-    CreatePostOptimisticMutationVariables
+    CreatePostOffChainMutation,
+    CreatePostOffChainMutationVariables
   >({
-    document: CREATE_POST_OPTIMISTIC_MUTATION,
+    document: CREATE_POST_OFFCHAIN_MUTATION,
     variables: {
-      createPostOptimisticInput: input,
+      createPostOffChainInput: input,
     },
   })
-  throwErrorIfNotProcessed(res.createPostOptimistic, 'Failed to create post')
+  throwErrorIfNotProcessed(res.createPostOffChain, 'Failed to create post')
+  return res.createPostOffChain.callId
 }
 
 const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
@@ -70,6 +70,7 @@ const UPDATE_POST_OPTIMISTIC_MUTATION = gql`
       updatePostOptimisticInput: $updatePostOptimisticInput
     ) {
       processed
+      callId
       message
     }
   }
@@ -85,64 +86,57 @@ export async function updatePostData(input: UpdatePostOptimisticInput) {
     },
   })
   throwErrorIfNotProcessed(res.updatePostOptimistic, 'Failed to update post')
+  return res.updatePostOptimistic.callId
 }
 
-const NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
-  mutation NotifyCreatePostTxFailedOrRetryStatus(
-    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
-  ) {
-    updatePostBlockchainSyncStatus(
-      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-    ) {
+const APPROVE_USER_MUTATION = gql`
+  mutation ApproveUser($input: SocialProfileAddReferrerIdInput!) {
+    socialProfileSetActionPermissions(args: $input) {
       processed
+      callId
       message
     }
   }
 `
-export async function notifyCreatePostFailedOrRetryStatus(
-  input: UpdatePostBlockchainSyncStatusInput
-) {
+export async function approveUser(input: SocialProfileAddReferrerIdInput) {
   const res = await datahubQueueRequest<
-    NotifyCreatePostTxFailedOrRetryStatusMutation,
-    NotifyCreatePostTxFailedOrRetryStatusMutationVariables
+    ApproveUserMutation,
+    ApproveUserMutationVariables
   >({
-    document: NOTIFY_CREATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
+    document: APPROVE_USER_MUTATION,
     variables: {
-      updatePostBlockchainSyncStatusInput: input,
+      input,
     },
   })
   throwErrorIfNotProcessed(
-    res.updatePostBlockchainSyncStatus,
-    'Failed to notify create post'
+    res.socialProfileSetActionPermissions,
+    'Failed to approve user'
   )
+  return res.socialProfileSetActionPermissions.callId
 }
 
-const NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION = gql`
-  mutation NotifyUpdatePostTxFailedOrRetryStatus(
-    $updatePostBlockchainSyncStatusInput: UpdatePostBlockchainSyncStatusInput!
-  ) {
-    updatePostBlockchainSyncStatus(
-      updatePostBlockchainSyncStatusInput: $updatePostBlockchainSyncStatusInput
-    ) {
+const APPROVE_MESSAGE_MUTATION = gql`
+  mutation ApproveMessage($input: CreateMutatePostOffChainDataInput!) {
+    setPostApproveStatus(args: $input) {
       processed
+      callId
       message
     }
   }
 `
-export async function notifyUpdatePostFailedOrRetryStatus(
-  input: UpdatePostBlockchainSyncStatusInput
-) {
+export async function approveMessage(input: SocialProfileAddReferrerIdInput) {
   const res = await datahubQueueRequest<
-    NotifyUpdatePostTxFailedOrRetryStatusMutation,
-    NotifyUpdatePostTxFailedOrRetryStatusMutationVariables
+    ApproveMessageMutation,
+    ApproveMessageMutationVariables
   >({
-    document: NOTIFY_UPDATE_POST_TX_FAILED_OR_RETRY_STATUS_MUTATION,
+    document: APPROVE_MESSAGE_MUTATION,
     variables: {
-      updatePostBlockchainSyncStatusInput: input,
+      input,
     },
   })
   throwErrorIfNotProcessed(
-    res.updatePostBlockchainSyncStatus,
-    'Failed to notify update post'
+    res.setPostApproveStatus,
+    'Failed to approve message'
   )
+  return res.setPostApproveStatus.callId
 }

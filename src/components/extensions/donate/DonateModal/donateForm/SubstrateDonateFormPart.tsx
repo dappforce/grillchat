@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { getBalancesQuery } from '@/old/services/substrateBalances/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'

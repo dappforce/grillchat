@@ -1,4 +1,4 @@
-import { AccountInfoByChain } from '@/services/substrateBalances/types'
+import { AccountInfoByChain } from '@/old/services/substrateBalances/types'
 import BN from 'bignumber.js'
 
 export const ACTIVE_STAKING_SPACE_ID = '12361'

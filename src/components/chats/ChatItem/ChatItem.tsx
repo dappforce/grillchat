@@ -1,7 +1,7 @@
 import AddressAvatar from '@/components/AddressAvatar'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import { env } from '@/env.mjs'
-import { isMessageSent } from '@/services/subsocial/commentIds/optimistic'
+import { isMessageSent } from '@/old/services/subsocial/commentIds/optimistic'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types'

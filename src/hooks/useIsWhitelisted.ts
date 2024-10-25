@@ -1,5 +1,5 @@
 import { constantsConfig } from '@/constants/config'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
 
 export default function useIsWhitelisted(chatId: string) {

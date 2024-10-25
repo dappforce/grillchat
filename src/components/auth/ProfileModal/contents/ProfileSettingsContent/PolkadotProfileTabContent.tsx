@@ -3,18 +3,18 @@ import KusamaIcon from '@/assets/icons/kusama.svg'
 import PolkadotIcon from '@/assets/icons/polkadot.svg'
 import SubsocialIcon from '@/assets/icons/subsocial.svg'
 import Button from '@/components/Button'
-import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
 import LinkText from '@/components/LinkText'
 import { useName } from '@/components/Name'
-import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
-import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
+import SelectInput, { ListItem } from '@/components/inputs/SelectInput'
+import { getIdentityQuery, getProfileQuery } from '@/old/services/api/query'
+import { UpsertProfileWrapper } from '@/old/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import {
+  ProfileSource,
   decodeProfileSource,
   encodeProfileSource,
-  ProfileSource,
 } from '@/utils/profile'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ProfileModalContentProps } from '../../types'

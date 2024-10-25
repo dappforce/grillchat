@@ -1,4 +1,4 @@
-import { ApiResponse, handlerWrapper } from '@/server/common'
+import { ApiResponse, handlerWrapper } from '@/old/server/common'
 import { z } from 'zod'
 
 export type ApiTimeResponse = ApiResponse<{ time: number }>

@@ -6,8 +6,8 @@ import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import { toast } from 'react-hot-toast'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
+import { toast } from 'sonner'
 import {
   DataHubSubscriptionEventEnum,
   GetBlockedInPostIdDetailedQuery,
@@ -15,9 +15,9 @@ import {
   SubscribeOrganizationSubscription,
 } from '../generated-query'
 import { isPersistentId } from '../posts/fetcher'
+import { blockedCountOffset } from '../posts/query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
-  getBlockedInAppDetailedQuery,
   getBlockedInPostIdDetailedQuery,
   getBlockedResourcesQuery,
   getModeratorQuery,
@@ -59,7 +59,7 @@ const SUBSCRIBE_ORGANIZATION = gql`
       entity {
         organizationModerators {
           moderator {
-            substrateAccount {
+            account {
               id
             }
           }
@@ -205,7 +205,7 @@ async function processOrganization(
   const moderators = entity.organizationModerators
 
   moderators?.forEach((moderator) => {
-    const address = moderator.moderator.substrateAccount.id
+    const address = moderator.moderator.account.id
     getModeratorQuery.setQueryData(queryClient, address, (oldData) => {
       if (!oldData) return null
       const postIdsSet = new Set(oldData.postIds)
@@ -241,6 +241,14 @@ async function processBlockedResources(
     ctxAppIds?.includes(appId) &&
     (isBlockedInAppContext || !isNowBlocked)
 
+  // if the post id was rendered before, and its unapproved, add the blocked offset to pending tabs pagination
+  if (resourceType === 'postId') {
+    const post = getPostQuery.getQueryData(queryClient, resourceId)
+    if (post && !post.struct.approvedInRootPost) {
+      blockedCountOffset.blocked++
+    }
+  }
+
   if (isAppContextRelated) {
     getBlockedResourcesQuery.setQueryData(queryClient, { appId }, (oldData) => {
       if (oldData === undefined) return undefined
@@ -255,16 +263,16 @@ async function processBlockedResources(
         blockedResources: newResources,
       }
     })
-    getBlockedInAppDetailedQuery.setQueryData(queryClient, null, (oldData) => {
-      if (oldData === undefined) return undefined
-      return updateBlockedResourceDetailedData(oldData, {
-        isNowBlocked,
-        reason: entity.reason,
-        resourceId,
-        resourceType,
-        createdAt,
-      })
-    })
+    // getBlockedInAppDetailedQuery.setQueryData(queryClient, null, (oldData) => {
+    //   if (oldData === undefined) return undefined
+    //   return updateBlockedResourceDetailedData(oldData, {
+    //     isNowBlocked,
+    //     reason: entity.reason,
+    //     resourceId,
+    //     resourceType,
+    //     createdAt,
+    //   })
+    // })
   } else {
     ctxPostIds?.forEach((id) => {
       getBlockedResourcesQuery.setQueryData(
@@ -285,20 +293,20 @@ async function processBlockedResources(
         }
       )
 
-      getBlockedInPostIdDetailedQuery.setQueryData(
-        queryClient,
-        id,
-        (oldData) => {
-          if (oldData === undefined) return undefined
-          return updateBlockedResourceDetailedData(oldData, {
-            isNowBlocked,
-            reason: entity.reason,
-            resourceId,
-            resourceType,
-            createdAt,
-          })
-        }
-      )
+      // getBlockedInPostIdDetailedQuery.setQueryData(
+      //   queryClient,
+      //   id,
+      //   (oldData) => {
+      //     if (oldData === undefined) return undefined
+      //     return updateBlockedResourceDetailedData(oldData, {
+      //       isNowBlocked,
+      //       reason: entity.reason,
+      //       resourceId,
+      //       resourceType,
+      //       createdAt,
+      //     })
+      //   }
+      // )
     })
   }
 

@@ -1,6 +1,6 @@
 import usePaginatedMessageIds from '@/components/chats/hooks/usePaginatedMessageIds'
 import { env } from '@/env.mjs'
-import { Proposal } from '@/server/opengov/mapper'
+import { Proposal } from '@/old/server/opengov/mapper'
 import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
 import { replaceUrl } from '@/utils/window'
 import { useEffect, useState } from 'react'

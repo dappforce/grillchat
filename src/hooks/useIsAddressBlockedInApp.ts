@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
+import { getBlockedResourcesQuery } from '@/old/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useMemo } from 'react'
 

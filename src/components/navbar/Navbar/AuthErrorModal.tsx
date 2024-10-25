@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import Modal from '@/components/modals/Modal'
 import ProfilePreview from '@/components/ProfilePreview'
-import { getBlockedInAppDetailedQuery } from '@/services/datahub/moderation/query'
+import { getBlockedInAppDetailedQuery } from '@/old/services/datahub/moderation/query'
 import { getUrlQuery } from '@/utils/links'
 import { useEffect, useMemo, useState } from 'react'
 

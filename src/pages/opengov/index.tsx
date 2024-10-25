@@ -1,6 +1,6 @@
 import { PROPOSALS_PER_PAGE } from '@/constants/proposals'
 import OpengovProposalListPage from '@/modules/opengov/OpengovProposalListPage'
-import { getPaginatedProposalsQuery } from '@/services/api/opengov/query'
+import { getPaginatedProposalsQuery } from '@/old/services/api/opengov/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 import { getProposalsServer } from '../api/opengov/proposals'

@@ -1,6 +1,6 @@
 import FormatBalance from '@/components/FormatBalance'
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
-import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
+import { useGetChainDataByNetwork } from '@/old/services/chainsInfo/query'
+import { getBackerLedgerQuery } from '@/old/services/contentStaking/backerLedger/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'

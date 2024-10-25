@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { ApiResponse, convertNonce, handlerWrapper } from '@/server/common'
+import { ApiResponse, convertNonce, handlerWrapper } from '@/old/server/common'
 import { hexToU8a, stringToU8a, u8aToHex } from '@polkadot/util'
 import { naclEncrypt } from '@polkadot/util-crypto'
 import { NextApiRequest } from 'next'
@@ -55,7 +55,7 @@ export default handlerWrapper({
 
 async function getNonce(address: string) {
   const { getSubsocialApi } = await import(
-    '@/subsocial-query/subsocial/connection'
+    '@/old/subsocial-query/subsocial/connection'
   )
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi

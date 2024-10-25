@@ -1,4 +1,4 @@
-import { getBackerInfoQuery } from '@/services/contentStaking/backerInfo/query'
+import { getBackerInfoQuery } from '@/old/services/contentStaking/backerInfo/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { isEmptyObj } from '@subsocial/utils'
 import BN from 'bignumber.js'

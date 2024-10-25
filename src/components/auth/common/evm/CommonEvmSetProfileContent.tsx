@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
 import ProfilePreview from '@/components/ProfilePreview'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
 
 export default function CommonEvmSetProfileContent({

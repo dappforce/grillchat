@@ -12,6 +12,7 @@ export type UserStatistics = {
     earnedByPeriod: string
     earnedTotal: string
     rank: number | null
+    earnedPointsByPeriod: number
   }
   creator: {
     likesCountByPeriod: number
@@ -19,6 +20,7 @@ export type UserStatistics = {
     earnedByPeriod: string
     earnedTotal: string
     rank: number | null
+    earnedPointsByPeriod: number
   }
 }
 
@@ -27,16 +29,18 @@ export type GeneralStatistics = {
   creatorsLiked: number
   stakersEarnedTotal: string
   creatorsEarnedTotal: string
+  creatorEarnedPointsTotal: string
+  stakersEarnedPointsTotal: string
 }
 
-export type LeaderboardRole = 'staker' | 'creator'
+export type LeaderboardDataPeriod = 'allTime' | 'week'
 
 export type LeaderboardData = {
   total: number
   page: number
   data: { reward: string; rank: number | null; address: string }[]
   hasMore: boolean
-  role: LeaderboardRole
+  role: LeaderboardDataPeriod
 }
 
 export type RewardHistory = {

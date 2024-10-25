@@ -11,8 +11,8 @@ import {
   Proposal,
   ProposalConfirmationPeriod,
   ProposalDecisionPeriod,
-} from '@/server/opengov/mapper'
-import { getPostMetadataQuery } from '@/services/datahub/posts/query'
+} from '@/old/server/opengov/mapper'
+import { getPostMetadataQuery } from '@/old/services/datahub/posts/query'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import dayjs from 'dayjs'

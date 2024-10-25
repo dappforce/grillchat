@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import Container from '@/components/Container'
 import ScrollableContainer from '@/components/ScrollableContainer'
-import { Proposal, ProposalComment } from '@/server/opengov/mapper'
+import { Proposal, ProposalComment } from '@/old/server/opengov/mapper'
 import { useRef } from 'react'
 import ExternalChatItem from './ExternalChatItem'
 

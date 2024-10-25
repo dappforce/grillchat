@@ -1,4 +1,4 @@
-import { PostContent } from '@subsocial/api/types'
+import type { PostContent } from '@subsocial/api/types'
 
 export type SendMessageParams = {
   hubId: string

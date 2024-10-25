@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { ApiResponse, convertNonce, handlerWrapper } from '@/server/common'
+import { ApiResponse, convertNonce, handlerWrapper } from '@/old/server/common'
 import { hexToU8a, u8aToString } from '@polkadot/util'
 import { naclDecrypt } from '@polkadot/util-crypto'
 import { NextApiRequest } from 'next'

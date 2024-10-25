@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
-import { RemoveProxyWrapper } from '@/services/subsocial/proxy/mutation'
-import { getProxiesQuery } from '@/services/subsocial/proxy/query'
+import { RemoveProxyWrapper } from '@/old/services/subsocial/proxy/mutation'
+import { getProxiesQuery } from '@/old/services/subsocial/proxy/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { ProfileModalContentProps } from '../../types'

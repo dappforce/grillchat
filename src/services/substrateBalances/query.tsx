@@ -1,5 +1,4 @@
 import { createQuery, poolQuery } from '@/subsocial-query'
-import { isDef } from '@subsocial/utils'
 import { getSubIdRequest } from '../external'
 import { AccountInfoByChain } from './types'
 import { buildBalancesKey } from './utils'
@@ -42,7 +41,7 @@ const getBalancesCall = poolQuery<
       .map((balance) =>
         balance.status === 'fulfilled' ? balance.value : undefined
       )
-      .filter(isDef)
+      .filter(Boolean)
   },
   resultMapper: {
     paramToKey: ({ address, chainName }) =>

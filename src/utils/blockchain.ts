@@ -7,7 +7,7 @@ export async function getNewIdFromTxResult(txResult: any) {
 
 export async function waitNewBlock() {
   const { getSubsocialApi } = await import(
-    '@/subsocial-query/subsocial/connection'
+    '@/old/subsocial-query/subsocial/connection'
   )
   const subsocialApi = await getSubsocialApi()
   const substrateApi = await subsocialApi.substrateApi

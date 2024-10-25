@@ -1,13 +1,17 @@
-import { getPostQuery } from '@/services/api/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { PostContent, PostData } from '@subsocial/api/types'
+// import { getPostQuery } from '@/services/api/query'
+import type { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
+// import {
+//   getPaginatedPostIdsByPostId,
+//   getPostMetadataQuery,
+// } from '../../datahub/posts/query'
+import { getPostQuery } from '@/services/api/query'
 import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
+  getPaginatedPostIdsByPostId,
   getPostMetadataQuery,
-} from '../../datahub/posts/query'
-import { getCommentIdsByPostIdFromChainQuery } from './query'
-import { SendMessageParams } from './types'
+} from '@/services/datahub/posts/query'
+import { getMyMainAddress } from '@/stores/my-account'
+import type { SendMessageParams } from './types'
 
 export const commentIdsOptimisticEncoder = {
   encode: (id: string) => `optimistic-${id}`,
@@ -20,81 +24,66 @@ type OptimisticGeneratorParams = {
   params: SendMessageParams
   ipfsContent: PostContent
   address: string
-  customId?: string
+  newId: string
 }
 export function addOptimisticData({
   client,
   params,
   ipfsContent,
-  customId,
+  newId,
   address,
 }: OptimisticGeneratorParams) {
-  const id = customId || ipfsContent.optimisticId
-  if (!id) return
+  if (!newId) return
 
-  const tempId = commentIdsOptimisticEncoder.encode(id)
-  getPostQuery.setQueryData(client, tempId, {
-    id: tempId,
+  getPostQuery.setQueryData(client, newId, {
+    id: newId,
     struct: {
       createdAtTime: Date.now(),
+      approvedInRootPostAtTime: Date.now(),
       ownerId: address,
       rootPostId: params.chatId,
       parentPostId: params.replyTo,
     },
     content: ipfsContent,
   } as unknown as PostData)
-  if (isDatahubAvailable) {
-    getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
-      client,
-      params.chatId,
-      (oldData) => {
-        return [tempId, ...(oldData ?? [])]
-      }
-    )
-    getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
-      if (!oldData) return oldData
-      return {
-        ...oldData,
-        totalCommentsCount: oldData.totalCommentsCount + 1,
-        lastCommentId: tempId,
-      }
-    })
-  } else {
-    getCommentIdsByPostIdFromChainQuery.setQueryData(
-      client,
-      params.chatId,
-      (ids) => {
-        return [...(ids ?? []), tempId]
-      }
-    )
-  }
+  getPaginatedPostIdsByPostId.setQueryFirstPageData(
+    client,
+    {
+      onlyDisplayUnapprovedMessages: false,
+      postId: params.chatId,
+      myAddress: getMyMainAddress() || '',
+    },
+    (oldData) => {
+      return [newId, ...(oldData ?? [])]
+    }
+  )
+  getPostMetadataQuery.setQueryData(client, params.chatId, (oldData) => {
+    if (!oldData) return oldData
+    return {
+      ...oldData,
+      totalCommentsCount: oldData.totalCommentsCount + 1,
+      lastCommentId: newId,
+    }
+  })
 }
 export function deleteOptimisticData({
   client,
-  chatId,
   idToDelete,
 }: {
   client: QueryClient
-  chatId: string
   idToDelete: string
 }) {
-  const tempId = commentIdsOptimisticEncoder.encode(idToDelete)
+  getPostQuery.invalidate(client, idToDelete)
 
-  if (isDatahubAvailable) {
-    getPaginatedPostsByPostIdFromDatahubQuery.setQueryFirstPageData(
-      client,
-      chatId,
-      (oldData) => {
-        return oldData?.filter((id) => id !== tempId)
-      }
-    )
-  } else {
-    getCommentIdsByPostIdFromChainQuery.setQueryData(client, chatId, (ids) => {
-      return ids?.filter((id) => id !== tempId)
-    })
-  }
+  // getPaginatedPostIdsByPostId.setQueryFirstPageData(
+  //   client,
+  //   chatId,
+  //   (oldData) => {
+  //     return oldData?.filter((id) => id !== tempId)
+  //   }
+  // )
 
-  getPostMetadataQuery.invalidate(client, chatId)
+  // getPostMetadataQuery.invalidate(client, chatId)
 }
 
 export function isClientGeneratedOptimisticId(id?: string) {

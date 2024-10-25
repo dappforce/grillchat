@@ -1,6 +1,6 @@
-import { ApiResponse, handlerWrapper } from '@/server/common'
-import { getTelegramAccountsLinked } from '@/server/notifications'
-import { GetTelegramAccountsLinkedQuery } from '@/server/notifications/generated'
+import { ApiResponse, handlerWrapper } from '@/old/server/common'
+import { getTelegramAccountsLinked } from '@/old/server/notifications'
+import { GetTelegramAccountsLinkedQuery } from '@/old/server/notifications/generated'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 

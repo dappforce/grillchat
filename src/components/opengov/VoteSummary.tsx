@@ -1,4 +1,4 @@
-import { Proposal } from '@/server/opengov/mapper'
+import { Proposal } from '@/old/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { ArcElement, Chart } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'

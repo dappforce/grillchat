@@ -1,4 +1,4 @@
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import type { Meta, StoryObj } from '@storybook/react'
 
 import UpsertChatForm, { UpsertChatFormProps } from './content/UpsertChatForm'

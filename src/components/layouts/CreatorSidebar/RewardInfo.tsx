@@ -7,7 +7,7 @@ import {
   RewardReport,
   getRewardReportQuery,
   getTotalStakeQuery,
-} from '@/services/datahub/content-staking/query'
+} from '@/old/services/datahub/content-staking/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'

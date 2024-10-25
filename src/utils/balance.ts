@@ -1,4 +1,4 @@
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { useGetChainDataByNetwork } from '@/old/services/chainsInfo/query'
 import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 

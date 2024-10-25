@@ -1,4 +1,4 @@
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import { useMyMainAddress } from '@/stores/my-account'
 
 export default function useIsOwnerOfPost(postId: string, address?: string) {

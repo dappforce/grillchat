@@ -1,7 +1,7 @@
 import { ProfileModalContentProps } from '@/components/auth/ProfileModal/types'
 import Button from '@/components/Button'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { UnlinkEvmAddressWrapper } from '@/services/subsocial/evmAddresses/mutation'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
+import { UnlinkEvmAddressWrapper } from '@/old/services/subsocial/evmAddresses/mutation'
 
 function UnlinkEvmConfirmationContent({
   setCurrentState,

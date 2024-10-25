@@ -1,11 +1,12 @@
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
+import {
+  GetGeneralStatsQuery,
+  GetGeneralStatsQueryVariables,
+} from '../generated-query'
 import { datahubQueryRequest } from '../utils'
 
 const generalStatsId = 'generalStatsId'
-
-export const getGeneralStatsData = () =>
-  getGeneralStatsQuery.useQuery(generalStatsId)
 
 const GET_GENERAL_STATS = gql`
   query GetGeneralStats {
@@ -35,15 +36,8 @@ const getGeneralStats = poolQuery<string, GeneralStats>({
   name: 'getGeneralStats',
   multiCall: async () => {
     const res = await datahubQueryRequest<
-      {
-        activeStakingTotalActivityMetricsForFixedPeriod: {
-          likedPostsCount: number
-          likedCreatorsCount: number
-          stakersEarnedTotal: string
-          creatorEarnedTotal: string
-        }
-      },
-      {}
+      GetGeneralStatsQuery,
+      GetGeneralStatsQueryVariables
     >({
       document: GET_GENERAL_STATS,
       variables: {},
@@ -53,10 +47,10 @@ const getGeneralStats = poolQuery<string, GeneralStats>({
 
     return [
       {
-        postsLiked: data.likedPostsCount,
-        creatorsLiked: data.likedCreatorsCount,
-        stakersEarnedTotal: data.stakersEarnedTotal,
-        creatorsEarnedTotal: data.creatorEarnedTotal,
+        postsLiked: data.likedPostsCount ?? 0,
+        creatorsLiked: data.likedCreatorsCount ?? 0,
+        stakersEarnedTotal: data.stakersEarnedTotal ?? '',
+        creatorsEarnedTotal: data.creatorEarnedTotal ?? '',
       },
     ]
   },

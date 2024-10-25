@@ -1,6 +1,6 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { getProfileQuery } from '@/services/api/query'
-import { UpsertProfileWrapper } from '@/services/subsocial/profiles/mutation'
+import { getProfileQuery } from '@/old/services/api/query'
+import { UpsertProfileWrapper } from '@/old/services/subsocial/profiles/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'

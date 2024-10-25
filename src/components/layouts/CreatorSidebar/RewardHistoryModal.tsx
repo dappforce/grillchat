@@ -3,7 +3,7 @@ import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
 import {
   RewardHistory,
   getRewardHistoryQuery,
-} from '@/services/datahub/content-staking/query'
+} from '@/old/services/datahub/content-staking/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import clsx from 'clsx'

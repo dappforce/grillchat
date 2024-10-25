@@ -2,16 +2,16 @@ import Toast from '@/components/Toast'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
-import { IdentityProvider } from '@/services/datahub/generated-query'
-import { linkIdentity } from '@/services/datahub/identity/mutation'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { getReferrerIdQuery } from '@/services/datahub/referral/query'
-import { queryClient } from '@/services/provider'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import { getOwnedPostIdsQuery } from '@/services/subsocial/posts'
-import { getProxiesQuery } from '@/services/subsocial/proxy/query'
+import { IdentityProvider } from '@/old/services/datahub/generated-query'
+import { linkIdentity } from '@/old/services/datahub/identity/mutation'
+import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
+import { getReferrerIdQuery } from '@/old/services/datahub/referral/query'
+import { queryClient } from '@/old/services/provider'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
+import { getOwnedPostIdsQuery } from '@/old/services/subsocial/posts'
+import { getProxiesQuery } from '@/old/services/subsocial/proxy/query'
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { useParentData } from '@/stores/parent'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import {
   Signer,
   convertAddressToSubsocialAddress,
@@ -539,7 +539,7 @@ async function subscribeEnergy(
   if (!address) return
 
   const { getSubsocialApi } = await import(
-    '@/subsocial-query/subsocial/connection'
+    '@/old/subsocial-query/subsocial/connection'
   )
 
   const subsocialApi = await getSubsocialApi()

@@ -2,7 +2,7 @@ import LeaderboardPage from '@/modules/LeaderboardPage'
 import {
   getGeneralStatisticsQuery,
   getLeaderboardDataQuery,
-} from '@/services/datahub/leaderboard/query'
+} from '@/old/services/datahub/leaderboard/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 import { AppCommonProps } from '../_app'

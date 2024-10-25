@@ -1,54 +1,21 @@
 import {
-  DecodedPromoExtension,
-  DonateExtension,
   ImageExtension,
-  NftExtension,
-  PinsExtension,
   PostContent,
   PostContentExtension,
   PostData,
+  SpaceData,
 } from '@subsocial/api/types'
 import {
   ContentExtensionSchemaId,
   DatahubPostFragmentFragment,
+  SpaceFragmentFragment,
 } from './generated-query'
-
-const SQUID_SEPARATOR = ','
-const getTokensFromUnifiedString = (data: string | null) =>
-  data?.split(SQUID_SEPARATOR).filter(Boolean) ?? []
 
 const mapPostExtensions = (
   extensions: DatahubPostFragmentFragment['extensions']
 ): PostContentExtension[] | undefined => {
   const mappedExtensions = extensions?.map((ext) => {
     switch (ext.extensionSchemaId) {
-      case ContentExtensionSchemaId.SubsocialEvmNft:
-        const nftExtension: NftExtension = {
-          id: 'subsocial-evm-nft',
-          properties: {
-            chain: ext.chain ?? '',
-            collectionId: ext.collectionId ?? '',
-            nftId: ext.nftId ?? '',
-            url: ext.url ?? '',
-          },
-        }
-        return nftExtension
-
-      case ContentExtensionSchemaId.SubsocialDonations:
-        const donationExtension: DonateExtension = {
-          id: 'subsocial-donations',
-          properties: {
-            chain: ext?.chain ?? '',
-            from: ext?.fromEvm?.id ?? ext.fromSubstrate?.id ?? '',
-            to: ext?.toEvm?.id ?? ext.toSubstrate?.id ?? '',
-            token: ext?.token ?? '',
-            decimals: ext?.decimals ?? 0,
-            amount: ext?.amount ?? '',
-            txHash: ext?.txHash ?? '',
-          },
-        }
-        return donationExtension
-
       case ContentExtensionSchemaId.SubsocialImage:
         const imageExtension: ImageExtension = {
           id: 'subsocial-image',
@@ -57,29 +24,6 @@ const mapPostExtensions = (
           },
         }
         return imageExtension
-
-      case ContentExtensionSchemaId.SubsocialDecodedPromo:
-        const decodedPromoExtension: DecodedPromoExtension = {
-          id: 'subsocial-decoded-promo',
-          properties: {
-            message: ext?.message ?? '',
-            recipient: ext?.recipient?.id ?? '',
-            nonce: ext?.nonce ? parseInt(ext.nonce) : 0,
-          },
-        }
-        return decodedPromoExtension
-
-      case ContentExtensionSchemaId.SubsocialPinnedPosts:
-        const pinsExtension: PinsExtension = {
-          id: 'subsocial-pinned-posts',
-          properties: {
-            ids:
-              (ext.pinnedResources
-                ?.map((pinned) => pinned.post?.persistentId || pinned.post?.id)
-                .filter(Boolean) as [string]) ?? [],
-          },
-        }
-        return pinsExtension
     }
   })
   const exts = mappedExtensions.filter((ext) => !!ext) as PostContentExtension[]
@@ -91,43 +35,44 @@ export const mapDatahubPostFragment = (
   post: DatahubPostFragmentFragment
 ): PostData => {
   const struct: PostData['struct'] = {
-    createdAtBlock: parseInt(post.createdAtBlock?.toString() ?? '0'),
+    createdAtBlock: 0,
     createdAtTime: new Date(post.createdAtTime).getTime(),
     createdByAccount: post.createdByAccount?.id ?? '',
     downvotesCount: 0,
-    dataType: post.dataType,
-    hidden: post.hidden,
-    id: post.persistentId || post.id,
-    isComment: post.isComment,
-    isRegularPost: post.kind === 'RegularPost',
-    isSharedPost: post.kind === 'SharedPost',
+    dataType: 'offChain',
+    hidden: false,
+    id: post.id,
+    isComment: true,
+    isRegularPost: true,
+    isSharedPost: false,
     ownerId: post.ownedByAccount.id,
     upvotesCount: 0,
-    contentId: post.content ?? '',
+    contentId: '',
     repliesCount: 0,
     sharesCount: 0,
-    spaceId: post.space?.id ?? post.rootPost?.space?.id ?? '',
+    spaceId: '',
+    approvedInRootPost: post.approvedInRootPost ?? false,
+    approvedInRootPostAtTime: new Date(post.approvedInRootPostAtTime).getTime(),
     isUpdated: !!post.updatedAtTime,
     rootPostId: post.rootPost?.persistentId ?? '',
-    parentPostId: post.parentPost?.persistentId ?? null,
-    followersCount: post.followersCount ?? 0,
-    blockchainSyncFailed: post.blockchainSyncFailed,
+    parentPostId: null,
+    followersCount: 0,
+    blockchainSyncFailed: true,
   }
 
   const data = {
-    id: post.persistentId || post.id,
+    id: post.id,
     struct,
     entityId: post.id,
     content: {
-      summary: post.summary ?? '',
-      image: post.image ?? '',
+      summary: post.body,
+      image: '',
       title: post.title ?? '',
-      link: post.link ?? '',
+      link: '',
       body: (post.body || '').replace(/\n{3,}/g, '\n\n'),
-      canonical: post.canonical ?? '',
-      isShowMore: post.isShowMore ?? false,
-      tags: getTokensFromUnifiedString(post.tagsOriginal ?? ''),
-      optimisticId: post.optimisticId,
+      canonical: '',
+      isShowMore: false,
+      tags: [],
     } as PostContent,
   } satisfies PostData
 
@@ -136,16 +81,34 @@ export const mapDatahubPostFragment = (
     data.content.extensions = extensions
   }
 
-  const replyToId = post.inReplyToPost?.persistentId
-  const replyData =
-    replyToId &&
-    ({
-      kind: post.inReplyToKind ?? 'Post',
-      id: replyToId,
-    } as PostContent['inReplyTo'])
-  if (replyData) {
-    data.content.inReplyTo = replyData
-  }
-
   return data
+}
+
+export const mapDatahubSpaceFragment = (
+  space: SpaceFragmentFragment
+): SpaceData => {
+  return {
+    id: space.id,
+    content: {
+      summary: space.about ?? '',
+      isShowMore: false,
+      name: space.name ?? '',
+      image: space.image ?? '',
+      about: space.about ?? '',
+      email: '',
+      links: [],
+      tags: [],
+    },
+    struct: {
+      hidden: space.hidden ?? false,
+      canEveryoneCreatePosts: false,
+      canFollowerCreatePosts: false,
+      createdAtBlock: space.createdAtBlock ?? 0,
+      createdAtTime: space.createdAtTime ?? 0,
+      createdByAccount: space.createdByAccount.id,
+      id: space.id,
+      ownerId: space.ownedByAccount.id,
+      contentId: space.content ?? '',
+    },
+  }
 }

@@ -3,6 +3,8 @@ import { ApiDatahubSuperLikeGetResponse } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
 import { getSubIdRequest } from '@/services/external'
 import { createQuery, poolQuery } from '@/subsocial-query'
+import { LocalStorage } from '@/utils/storage'
+import { parseJSONData } from '@/utils/strings'
 import { AxiosResponse } from 'axios'
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
@@ -11,13 +13,20 @@ import {
   GetAddressLikeCountToPostsQueryVariables,
   GetCanPostsSuperLikedQuery,
   GetCanPostsSuperLikedQueryVariables,
+  GetDailyRewardQuery,
+  GetDailyRewardQueryVariables,
   GetPostRewardsQuery,
   GetPostRewardsQueryVariables,
   GetSuperLikeCountsQuery,
   GetSuperLikeCountsQueryVariables,
+  GetTodaySuperLikeCountQuery,
+  GetTodaySuperLikeCountQueryVariables,
+  GetTokenomicsMetadataQuery,
+  GetTokenomicsMetadataQueryVariables,
+  GetUserYesterdayRewardQuery,
+  GetUserYesterdayRewardQueryVariables,
 } from '../generated-query'
-import { datahubQueryRequest } from '../utils'
-import { getDayAndWeekTimestamp } from './utils'
+import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 
 const GET_SUPER_LIKE_COUNTS = gql`
   query GetSuperLikeCounts($postIds: [String!]!) {
@@ -165,7 +174,6 @@ const getCanPostsSuperLiked = poolQuery<string, CanPostSuperLiked>({
 
     const resultMap = new Map<string, CanPostSuperLiked>()
     res.activeStakingCanDoSuperLikeByPost.forEach((item) => {
-      if (!item.persistentPostId) return
       resultMap.set(item.persistentPostId, {
         postId: item.persistentPostId,
         validByCreationDate: item.validByCreationDate,
@@ -205,18 +213,14 @@ export const getCanPostSuperLikedQuery = createQuery({
 const GET_POST_REWARDS = gql`
   query GetPostRewards($postIds: [String!]!) {
     activeStakingRewardsByPosts(args: { postPersistentIds: $postIds }) {
-      persistentPostId
-      rewardTotal
-      draftRewardTotal
-      rewardsBySource {
+      postId
+      draftPointsRewardTotal
+      pointsRewardTotal
+      pointsRewardsBySource {
         fromDirectSuperLikes
-        fromCommentSuperLikes
-        fromShareSuperLikes
       }
-      draftRewardsBySource {
+      draftPointsRewardsBySource {
         fromDirectSuperLikes
-        fromCommentSuperLikes
-        fromShareSuperLikes
       }
     }
   }
@@ -235,8 +239,6 @@ export type PostRewards = {
   }
   rewardsBySource: {
     fromDirectSuperLikes: string
-    fromCommentSuperLikes: string
-    fromShareSuperLikes: string
   }
 }
 const getPostRewards = poolQuery<string, PostRewards>({
@@ -253,34 +255,27 @@ const getPostRewards = poolQuery<string, PostRewards>({
     const resultMap = new Map<string, PostRewards>()
     res.activeStakingRewardsByPosts.forEach((item) => {
       const {
-        draftRewardsBySource,
-        rewardsBySource,
-        draftRewardTotal,
-        rewardTotal,
+        pointsRewardTotal,
+        pointsRewardsBySource,
+        draftPointsRewardsBySource,
+        draftPointsRewardTotal,
       } = item
-      const total = parseToBigInt(rewardTotal) + parseToBigInt(draftRewardTotal)
-      if (!item.persistentPostId) return
+      const total =
+        parseToBigInt(pointsRewardTotal) + parseToBigInt(draftPointsRewardTotal)
+      if (!item.postId) return
 
-      resultMap.set(item.persistentPostId, {
-        postId: item.persistentPostId,
+      resultMap.set(item.postId, {
+        postId: item.postId,
         reward: total.toString(),
         isNotZero: total > 0,
         rewardDetail: {
-          draftReward: draftRewardTotal,
-          finalizedReward: rewardTotal,
+          draftReward: draftPointsRewardTotal,
+          finalizedReward: pointsRewardTotal,
         },
         rewardsBySource: {
-          fromCommentSuperLikes: (
-            parseToBigInt(rewardsBySource?.fromCommentSuperLikes) +
-            parseToBigInt(draftRewardsBySource?.fromCommentSuperLikes)
-          ).toString(),
           fromDirectSuperLikes: (
-            parseToBigInt(rewardsBySource?.fromDirectSuperLikes) +
-            parseToBigInt(draftRewardsBySource?.fromDirectSuperLikes)
-          ).toString(),
-          fromShareSuperLikes: (
-            parseToBigInt(rewardsBySource?.fromShareSuperLikes) +
-            parseToBigInt(draftRewardsBySource?.fromShareSuperLikes)
+            parseToBigInt(pointsRewardsBySource?.fromDirectSuperLikes) +
+            parseToBigInt(draftPointsRewardsBySource?.fromDirectSuperLikes)
           ).toString(),
         },
       })
@@ -298,9 +293,7 @@ const getPostRewards = poolQuery<string, PostRewards>({
             finalizedReward: '0',
           },
           rewardsBySource: {
-            fromCommentSuperLikes: '0',
             fromDirectSuperLikes: '0',
-            fromShareSuperLikes: '0',
           },
         }
     )
@@ -445,6 +438,37 @@ export const getRewardReportQuery = createQuery({
   }),
 })
 
+const GET_TODAY_SUPER_LIKE_COUNT = gql`
+  query GetTodaySuperLikeCount($address: String!, $day: Int!) {
+    activeStakingDailyStatsByStaker(
+      args: { address: $address, dayTimestamp: $day }
+    ) {
+      superLikesCount
+    }
+  }
+`
+export async function getTodaySuperLikeCount(
+  address: string
+): Promise<{ count: number }> {
+  const res = await datahubQueryRequest<
+    GetTodaySuperLikeCountQuery,
+    GetTodaySuperLikeCountQueryVariables
+  >({
+    document: GET_TODAY_SUPER_LIKE_COUNT,
+    variables: { address, ...getDayAndWeekTimestamp() },
+  })
+  return {
+    count: res.activeStakingDailyStatsByStaker.superLikesCount,
+  }
+}
+export const getTodaySuperLikeCountQuery = createQuery({
+  key: 'getTodaySuperLikeCount',
+  fetcher: getTodaySuperLikeCount,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
 export type RewardHistory = {
   address: string
   rewards: {
@@ -518,4 +542,130 @@ export const getRewardHistoryQuery = createQuery({
   defaultConfigGenerator: (address) => ({
     enabled: !!address,
   }),
+})
+
+const GET_USER_YESTERDAY_REWARD = gql`
+  query GetUserYesterdayReward($address: String!, $timestamp: String!) {
+    activeStakingAccountActivityMetricsForFixedPeriod(
+      args: {
+        address: $address
+        period: DAY
+        periodValue: $timestamp
+        staker: { likedPosts: true, earnedPointsByPeriod: true }
+        creator: { earnedPointsByPeriod: true }
+      }
+    ) {
+      creator {
+        earnedPointsByPeriod
+      }
+      staker {
+        likedPosts
+        earnedPointsByPeriod
+      }
+    }
+  }
+`
+async function getUserYesterdayReward({ address }: { address: string }) {
+  const yesterday = dayjs.utc().subtract(1, 'day')
+  const { day } = getDayAndWeekTimestamp(yesterday.toDate())
+
+  const res = await datahubQueryRequest<
+    GetUserYesterdayRewardQuery,
+    GetUserYesterdayRewardQueryVariables
+  >({
+    document: GET_USER_YESTERDAY_REWARD,
+    variables: {
+      address,
+      timestamp: day.toString(),
+    },
+  })
+  const data = res.activeStakingAccountActivityMetricsForFixedPeriod
+
+  return {
+    address,
+    earned: {
+      creator: data.creator?.earnedPointsByPeriod ?? '0',
+      staker: data.staker?.earnedPointsByPeriod ?? '0',
+    },
+    likedPosts: data.staker?.likedPosts,
+  }
+}
+export const getUserYesterdayRewardQuery = createQuery({
+  key: 'getUserYesterdayReward',
+  fetcher: getUserYesterdayReward,
+  defaultConfigGenerator: (param) => ({
+    enabled: !!param?.address,
+  }),
+})
+
+export const GET_DAILY_REWARD = gql`
+  query GetDailyReward($address: String!) {
+    gamificationEntranceDailyRewardSequence(
+      args: { where: { address: $address } }
+    ) {
+      claimsCount
+      claims {
+        index
+        openToClaim
+        claimRewardPoints
+        claimRewardPointsRange
+        claimValidDay
+        hiddenClaimReward
+      }
+    }
+  }
+`
+async function getDailyReward(address: string) {
+  const res = await datahubQueryRequest<
+    GetDailyRewardQuery,
+    GetDailyRewardQueryVariables
+  >({
+    document: GET_DAILY_REWARD,
+    variables: { address },
+  })
+  return res.gamificationEntranceDailyRewardSequence
+}
+export const getDailyRewardQuery = createQuery({
+  key: 'getDailyReward',
+  fetcher: getDailyReward,
+  defaultConfigGenerator: (address) => ({
+    enabled: !!address,
+  }),
+})
+
+export const GET_TOKENOMICS_METADATA = gql`
+  query GetTokenomicsMetadata {
+    activeStakingTokenomicMetadata {
+      maxTapsPerDay
+      superLikeWeightPoints
+      likerRewardDistributionPercent
+    }
+  }
+`
+// NOTE: need to be careful when changing the structure of these cached data, because it can cause the app to crash if you access unavailable data
+const getTokenomicsMetadataCache = new LocalStorage(
+  () => 'tokenomics-metadata-cache'
+)
+export async function getTokenomicsMetadata() {
+  const res = await datahubQueryRequest<
+    GetTokenomicsMetadataQuery,
+    GetTokenomicsMetadataQueryVariables
+  >({
+    document: GET_TOKENOMICS_METADATA,
+  })
+  getTokenomicsMetadataCache.set(
+    JSON.stringify(res.activeStakingTokenomicMetadata)
+  )
+  return res.activeStakingTokenomicMetadata
+}
+export const getTokenomicsMetadataQuery = createQuery({
+  key: 'getTokenomicsMetadata',
+  fetcher: getTokenomicsMetadata,
+  defaultConfigGenerator: () => {
+    const cache = getTokenomicsMetadataCache.get()
+    return {
+      placeholderData:
+        parseJSONData<Awaited<ReturnType<typeof getTokenomicsMetadata>>>(cache),
+    }
+  },
 })

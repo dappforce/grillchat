@@ -1,23 +1,23 @@
-import { ApiResponse, handlerWrapper } from '@/server/common'
+import { ApiResponse, handlerWrapper } from '@/old/server/common'
 import {
   CanUserDoAction,
   CreatePostOptimisticInput,
   UpdatePostBlockchainSyncStatusInput,
   UpdatePostOptimisticInput,
-} from '@/server/datahub-queue/generated'
+} from '@/old/server/datahub-queue/generated'
 import {
   createPostData,
   getCanAccountDo,
   notifyCreatePostFailedOrRetryStatus,
   notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
-} from '@/server/datahub-queue/post'
+} from '@/old/server/datahub-queue/post'
 import {
   CreateChatPermissionDeniedError,
   CreateMessagePermissionDeniedError,
   RateLimitError,
   datahubMutationWrapper,
-} from '@/server/datahub-queue/utils'
+} from '@/old/server/datahub-queue/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 

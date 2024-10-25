@@ -4,12 +4,12 @@ import Toast from '@/components/Toast'
 import Modal from '@/components/modals/Modal'
 import { env } from '@/env.mjs'
 import useRerender from '@/hooks/useRerender'
-import { isPersistentId } from '@/services/datahub/posts/fetcher'
-import { ResendFailedMessageWrapper } from '@/services/subsocial/commentIds/mutation'
+import { isPersistentId } from '@/old/services/datahub/posts/fetcher'
+import { ResendFailedMessageWrapper } from '@/old/services/subsocial/commentIds/mutation'
 import {
   isClientGeneratedOptimisticId,
   isMessageSent,
-} from '@/services/subsocial/commentIds/optimistic'
+} from '@/old/services/subsocial/commentIds/optimistic'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { estimatedWaitTime } from '@/utils/network'

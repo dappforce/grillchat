@@ -1,6 +1,6 @@
-import { getUnreadCountQuery } from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getMessagesCountAfterTimeQuery } from '@/services/subsocial/commentIds'
+import { getUnreadCountQuery } from '@/old/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/old/services/datahub/utils'
+import { getMessagesCountAfterTimeQuery } from '@/old/services/subsocial/commentIds'
 
 export default function useUnreadCount(chatId: string, lastReadTime: number) {
   if (isDatahubAvailable) {

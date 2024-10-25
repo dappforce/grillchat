@@ -1,12 +1,12 @@
-import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
+import { getBackerLedgerQuery } from '@/old/services/contentStaking/backerLedger/query'
 import {
   Status,
   createMutationWrapper,
-} from '@/services/subsocial/utils/mutation'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
+} from '@/old/services/subsocial/utils/mutation'
+import { getBalancesQuery } from '@/old/services/substrateBalances/query'
+import { useSubsocialMutation } from '@/old/subsocial-query/subsocial/mutation'
+import { SubsocialMutationConfig } from '@/old/subsocial-query/subsocial/types'
 import { useSendEvent } from '@/stores/analytics'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { useQueryClient } from '@tanstack/react-query'
 
 export function useWithdrawTx(config?: SubsocialMutationConfig<{}>) {

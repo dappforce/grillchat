@@ -1,7 +1,7 @@
 import Button from '@/components/Button'
 import { SubstrateDonationWrapper } from '@/components/extensions/donate/DonateModal/donateForm/mutation'
 import { ChainListItem } from '@/components/extensions/donate/DonateModal/types'
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { useGetChainDataByNetwork } from '@/old/services/chainsInfo/query'
 import { parseUnits } from 'ethers'
 import { ProfileModalState } from '../../types'
 

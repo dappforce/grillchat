@@ -2,15 +2,14 @@ import {
   ApiDatahubPostGetResponse,
   DatahubPostQueryInput,
 } from '@/pages/api/datahub/post'
-import { Identities } from '@/pages/api/identities'
+import { ApiDayResponse } from '@/pages/api/day'
 import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
 import { ApiTimeResponse } from '@/pages/api/time'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { PostData } from '@subsocial/api/types'
 import { useMemo } from 'react'
-import { SubsocialProfile } from '../subsocial/profiles/fetcher'
-import { getIdentities, getPosts, getProfiles } from './fetcher'
+import { getPosts } from './fetcher'
 import { apiInstance } from './utils'
 
 const getPost = poolQuery<string, PostData>({
@@ -106,44 +105,6 @@ export const getNftQuery = createQuery({
   fetcher: getNft,
 })
 
-const getProfile = poolQuery<string, SubsocialProfile>({
-  name: 'getProfile',
-  multiCall: async (addresses) => {
-    if (addresses.length === 0) return []
-    return getProfiles(addresses)
-  },
-  resultMapper: {
-    paramToKey: (address) => address,
-    resultToKey: (result) => result?.address ?? '',
-  },
-})
-export const getProfileQuery = createQuery({
-  key: 'profile',
-  fetcher: getProfile,
-  defaultConfigGenerator: (data) => ({
-    enabled: !!data,
-  }),
-})
-
-const getIdentity = poolQuery<string, Identities>({
-  name: 'getIdentity',
-  multiCall: async (addresses) => {
-    if (addresses.length === 0) return []
-    return getIdentities(addresses)
-  },
-  resultMapper: {
-    paramToKey: (address) => address,
-    resultToKey: (result) => result?.address ?? '',
-  },
-})
-export const getIdentityQuery = createQuery({
-  key: 'identities',
-  fetcher: getIdentity,
-  defaultConfigGenerator: (data) => ({
-    enabled: !!data,
-  }),
-})
-
 async function getCanUserDoDatahubAction(input: DatahubPostQueryInput) {
   const urlParams = new URLSearchParams(input)
   const res = await apiInstance.get('/api/datahub/post?' + urlParams.toString())
@@ -168,6 +129,30 @@ export const getHasUserStakedQuery = createQuery({
 })
 
 export async function getServerTime() {
-  const res = await apiInstance.get('/api/time')
-  return (res.data as ApiTimeResponse).time
+  try {
+    const res = await apiInstance.get('/api/time')
+    return (res.data as ApiTimeResponse).time
+  } catch (err) {
+    console.error('Failed to get server time', err)
+    throw new Error('Failed to get server time')
+  }
 }
+export const getServerTimeQuery = createQuery({
+  key: 'server-time',
+  fetcher: getServerTime,
+})
+
+async function getServerDay() {
+  try {
+    const res = await apiInstance.get('/api/day')
+    const data = res.data as ApiDayResponse
+    return { day: data.day, week: data.week }
+  } catch (err) {
+    console.error('Failed to get server day', err)
+    throw new Error('Failed to get server day')
+  }
+}
+export const getServerDayQuery = createQuery({
+  key: 'server-day',
+  fetcher: getServerDay,
+})

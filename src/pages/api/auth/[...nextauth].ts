@@ -1,6 +1,6 @@
 import { env } from '@/env.mjs'
-import { getLinkedIdentityFromTwitterId } from '@/services/datahub/identity/fetcher'
-import { getBlockedResources } from '@/services/datahub/moderation/query'
+import { getLinkedIdentityFromTwitterId } from '@/old/services/datahub/identity/fetcher'
+import { getBlockedResources } from '@/old/services/datahub/moderation/query'
 import type {
   GetServerSidePropsContext,
   NextApiRequest,

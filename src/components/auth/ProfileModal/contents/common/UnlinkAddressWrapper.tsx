@@ -1,6 +1,6 @@
 import PopOver from '@/components/floating/PopOver'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 
 export type UnlinkAddressWrapperProps = {

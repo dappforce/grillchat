@@ -1,10 +1,10 @@
-import { useRequestToken } from '@/services/api/mutation'
+import { useRequestToken } from '@/old/services/api/mutation'
 import {
   SendMessageParams,
   useSendMessage,
-} from '@/services/subsocial/commentIds'
+} from '@/old/services/subsocial/commentIds'
 import { useMyMainAddress } from '@/stores/my-account'
-import { useMutation, UseMutationOptions } from '@tanstack/react-query'
+import { UseMutationOptions, useMutation } from '@tanstack/react-query'
 import useLoginOption from './useLoginOption'
 
 type Params = SendMessageParams

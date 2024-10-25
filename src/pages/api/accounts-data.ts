@@ -1,5 +1,5 @@
-import { redisCallWrapper } from '@/server/cache'
-import { getEvmAddressesFromSubsocial } from '@/services/subsocial/evmAddresses/fetcher'
+import { redisCallWrapper } from '@/old/server/cache'
+import { getEvmAddressesFromSubsocial } from '@/old/services/subsocial/evmAddresses/fetcher'
 import { toSubsocialAddress } from '@subsocial/utils'
 import { request } from 'graphql-request'
 import gql from 'graphql-tag'

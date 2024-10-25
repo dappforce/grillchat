@@ -1,7 +1,7 @@
 import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
-import { Proposal } from '@/server/opengov/mapper'
-import { useCreateDiscussion } from '@/services/api/mutation'
+import { Proposal } from '@/old/server/opengov/mapper'
+import { useCreateDiscussion } from '@/old/services/api/mutation'
 import { Resource } from '@subsocial/resource-discussions'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 

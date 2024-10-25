@@ -12,14 +12,14 @@ import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import {
   HideUnhideChatWrapper,
   JoinChatParams,
   JoinChatWrapper,
   LeaveChatWrapper,
-} from '@/services/subsocial/posts/mutation'
-import { getSpaceQuery } from '@/services/subsocial/spaces'
+} from '@/old/services/subsocial/posts/mutation'
+import { getSpaceQuery } from '@/old/services/subsocial/spaces'
 import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'

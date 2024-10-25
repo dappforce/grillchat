@@ -1,4 +1,4 @@
-import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
+import { getFollowedPostIdsByAddressQuery } from '@/old/services/subsocial/posts'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useMemo } from 'react'
 import useIsInIframe from './useIsInIframe'

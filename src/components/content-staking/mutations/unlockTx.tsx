@@ -1,24 +1,24 @@
 import {
   getBackerInfoBySpaceIds,
   getBackerInfoQuery,
-} from '@/services/contentStaking/backerInfo/query'
-import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
-import { getCreatorsListData } from '@/services/contentStaking/creatorsList/query'
+} from '@/old/services/contentStaking/backerInfo/query'
+import { getBackerLedgerQuery } from '@/old/services/contentStaking/backerLedger/query'
+import { getCreatorsListData } from '@/old/services/contentStaking/creatorsList/query'
 import {
   generalEraInfoId,
   getGeneralEraInfoQuery,
-} from '@/services/contentStaking/generalErainfo/query'
-import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
+} from '@/old/services/contentStaking/generalErainfo/query'
+import { getStakingConstsData } from '@/old/services/contentStaking/stakingConsts/query'
 import {
   Status,
   createMutationWrapper,
-} from '@/services/subsocial/utils/mutation'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
+} from '@/old/services/subsocial/utils/mutation'
+import { getBalancesQuery } from '@/old/services/substrateBalances/query'
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
+import { useSubsocialMutation } from '@/old/subsocial-query/subsocial/mutation'
+import { SubsocialMutationConfig } from '@/old/subsocial-query/subsocial/types'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
-import { useSubsocialMutation } from '@/subsocial-query/subsocial/mutation'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
 import { balanceWithDecimal, isDef } from '@subsocial/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { useGetMyCreatorsIds } from '../hooks/useGetMyCreatorsIds'

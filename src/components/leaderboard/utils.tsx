@@ -1,4 +1,4 @@
-import { LeaderboardRole } from '@/services/datahub/leaderboard'
+import { LeaderboardRole } from '@/old/services/datahub/leaderboard'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 

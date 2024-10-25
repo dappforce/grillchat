@@ -1,5 +1,5 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef } from 'react'

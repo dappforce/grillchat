@@ -1,13 +1,13 @@
-import { getTxSubDispatchErrorMessage } from '@/server/blockchain'
-import { redisCallWrapper } from '@/server/cache'
+import { getTxSubDispatchErrorMessage } from '@/old/server/blockchain'
+import { redisCallWrapper } from '@/old/server/cache'
 import {
   ApiResponse,
   getCommonErrorMessage,
   handlerWrapper,
-} from '@/server/common'
-import { getIpfsApi } from '@/server/ipfs'
-import { WalletManager } from '@/server/wallet-client'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+} from '@/old/server/common'
+import { getIpfsApi } from '@/old/server/ipfs'
+import { WalletManager } from '@/old/server/wallet-client'
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { IpfsWrapper } from '@/utils/ipfs'
 import { wait } from '@/utils/promise'
 import { ApiPromise, SubmittableResult } from '@polkadot/api'

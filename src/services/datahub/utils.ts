@@ -1,14 +1,12 @@
 import { env } from '@/env.mjs'
 import { Signer } from '@/utils/account'
 import { wait } from '@/utils/promise'
-import { u8aToHex } from '@polkadot/util'
 import { PostContent } from '@subsocial/api/types'
 import {
   SocialCallDataArgs,
   SocialEventDataApiInput,
   SocialEventDataType,
   socialCallName,
-  socialEventProtVersion,
 } from '@subsocial/data-hub-sdk'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
@@ -87,9 +85,8 @@ export function signDatahubPayload(
 ) {
   if (!signer) throw new Error('Signer is not defined')
   const sortedPayload = sortKeysRecursive(payload)
-  const sig = signer.sign(JSON.stringify(sortedPayload))
-  const hexSig = u8aToHex(sig)
-  payload.sig = hexSig
+  const sig = signer.signMessageSync(JSON.stringify(sortedPayload))
+  payload.sig = sig
 }
 
 export async function createSocialDataEventPayload<
@@ -97,30 +94,26 @@ export async function createSocialDataEventPayload<
 >(
   callName: T,
   {
-    isOffchain,
     timestamp,
     address,
     uuid,
     proxyToAddress,
   }: Pick<
     DatahubParams<{}>,
-    'isOffchain' | 'timestamp' | 'address' | 'uuid' | 'proxyToAddress'
+    'timestamp' | 'address' | 'uuid' | 'proxyToAddress'
   >,
-  eventArgs: SocialCallDataArgs<T>,
+  eventArgs: SocialCallDataArgs<T> | undefined,
   content?: PostContent
 ) {
   const owner = proxyToAddress || address
-  const serverTime = await getServerTime()
   const payload: SocialEventDataApiInput = {
-    protVersion: socialEventProtVersion['0.1'],
-    dataType: isOffchain
-      ? SocialEventDataType.offChain
-      : SocialEventDataType.optimistic,
+    protVersion: '0.1',
+    dataType: SocialEventDataType.offChain,
     callData: {
       name: callName,
       signer: owner || '',
-      args: JSON.stringify(eventArgs),
-      timestamp: timestamp || serverTime,
+      args: eventArgs ? JSON.stringify(eventArgs) : undefined,
+      timestamp: timestamp || (await getServerTime()),
       uuid: uuid || crypto.randomUUID(),
       proxy: proxyToAddress ? address : undefined,
     },
@@ -135,9 +128,12 @@ export async function createSignedSocialDataEvent<
   T extends keyof typeof socialCallName
 >(
   callName: T,
-  params: DatahubParams<{}>,
-  eventArgs: SocialCallDataArgs<T>,
-  content?: PostContent
+  params: Pick<
+    DatahubParams<{}>,
+    'timestamp' | 'address' | 'uuid' | 'proxyToAddress' | 'signer'
+  >,
+  eventArgs: SocialCallDataArgs<T> | undefined,
+  content?: any
 ) {
   const payload = await createSocialDataEventPayload(
     callName,
@@ -148,4 +144,15 @@ export async function createSignedSocialDataEvent<
   signDatahubPayload(params.signer, payload)
 
   return payload
+}
+
+export async function augmentDatahubParams<T>(
+  params: T
+): Promise<{ uuid: string; timestamp: number } & T> {
+  const timestamp = await getServerTime()
+  return {
+    ...params,
+    uuid: crypto.randomUUID(),
+    timestamp,
+  }
 }

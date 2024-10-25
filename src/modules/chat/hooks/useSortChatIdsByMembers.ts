@@ -1,4 +1,4 @@
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import { useMemo } from 'react'
 
 export default function useSortChatIdsByMembers(chatIds: string[]) {

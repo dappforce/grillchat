@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { ApiResponse, handlerWrapper } from '@/server/common'
+import { ApiResponse, handlerWrapper } from '@/old/server/common'
 import { createHash } from 'crypto'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'

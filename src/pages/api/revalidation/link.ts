@@ -1,4 +1,4 @@
-import { handlerWrapper } from '@/server/common'
+import { handlerWrapper } from '@/old/server/common'
 import { z } from 'zod'
 import { getLinkMetadata } from '../posts'
 

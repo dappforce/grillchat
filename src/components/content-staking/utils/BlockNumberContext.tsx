@@ -1,4 +1,4 @@
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { ApiPromise } from '@polkadot/api'
 import BN from 'bignumber.js'
 import { createContext, useContext, useEffect, useState } from 'react'

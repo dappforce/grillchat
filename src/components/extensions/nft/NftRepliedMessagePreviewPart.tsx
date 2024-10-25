@@ -1,5 +1,5 @@
 import MediaLoader from '@/components/MediaLoader'
-import { getNftQuery } from '@/services/api/query'
+import { getNftQuery } from '@/old/services/api/query'
 import { cx } from '@/utils/class-names'
 import { NftExtension } from '@subsocial/api/types'
 import { RepliedMessagePreviewPartProps } from '../types'

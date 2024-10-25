@@ -1,4 +1,4 @@
-import { Proposal } from '@/server/opengov/mapper'
+import { Proposal } from '@/old/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { getDurationWithPredefinedUnit } from '@/utils/date'
 import { ReactNode } from 'react'

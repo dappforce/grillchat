@@ -1,5 +1,5 @@
-import { getPostQuery } from '@/services/api/query'
-import { getModeratorQuery } from '@/services/datahub/moderation/query'
+import { getPostQuery } from '@/old/services/api/query'
+import { getModeratorQuery } from '@/old/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import useIsModerationAdmin from './useIsModerationAdmin'
 

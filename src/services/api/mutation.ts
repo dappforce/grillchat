@@ -1,38 +1,12 @@
 import { CreateUserIdResponse } from '@/pages/api/create-user-id'
-import {
-  ApiDiscussionInput,
-  ApiDiscussionResponse,
-} from '@/pages/api/discussion'
-import { ApiPostsInvalidationResponse } from '@/pages/api/posts'
-import {
-  ApiRequestTokenBody,
-  ApiRequestTokenResponse,
-} from '@/pages/api/request-token'
+import { ApiDatahubRemoveIdentityBody } from '@/pages/api/datahub/remove-identity'
+import { ApiEncryptResponseData } from '@/pages/api/encrypt'
 import { RevalidateChatInput } from '@/pages/api/revalidation/chat'
 import { SaveFileRequest, SaveFileResponse } from '@/pages/api/save-file'
 import { SaveImageResponse } from '@/pages/api/save-image'
-import { useTransactions } from '@/stores/transactions'
+import { signMessage, useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { apiInstance } from './utils'
-
-export async function requestToken({ address }: ApiRequestTokenBody) {
-  if (!address) return
-  // make request token as pending transaction so websocket won't disconnect for 10 secs after request token
-  // this is to make energy subscription work
-  const requestTokenId = `request-token-${Date.now()}`
-  useTransactions.getState().addPendingTransaction(requestTokenId)
-  setTimeout(() => {
-    useTransactions.getState().removePendingTransaction(requestTokenId)
-  }, 10_000)
-
-  const res = await apiInstance.post('/api/request-token', {
-    address,
-  })
-  const data = res.data as ApiRequestTokenResponse
-  if (!data.success) throw new Error(data.message)
-  return res
-}
-export const useRequestToken = mutationWrapper(requestToken)
 
 export async function saveFile(content: SaveFileRequest) {
   const res = await apiInstance.post('/api/save-file', content)
@@ -48,14 +22,6 @@ export async function createUserId(address: string) {
   if (!data.success || !data.userId) throw new Error(data.errors)
   return data.userId
 }
-
-export async function createDiscussion(content: ApiDiscussionInput) {
-  const res = await apiInstance.post('/api/discussion', content)
-  const data = res.data as ApiDiscussionResponse
-  if (!data.success) throw new Error(data.errors)
-  return data
-}
-export const useCreateDiscussion = mutationWrapper(createDiscussion)
 
 export async function saveImage(content: File) {
   const formData = new FormData()
@@ -73,17 +39,27 @@ export const useSaveImage = mutationWrapper(saveImage, {
   retry: 2,
 })
 
-// NOTE: this invalidations won't work if server doesn't have redis
-export async function invalidatePostServerCache(postId: string) {
-  const res = await apiInstance.post('/api/posts', { postId })
-  return res.data as ApiPostsInvalidationResponse
-}
-export async function invalidateProfileServerCache(address: string) {
-  const res = await apiInstance.post('/api/profiles', { address })
-  return res.data as ApiPostsInvalidationResponse
-}
-
 export function revalidateChatPage(input: RevalidateChatInput) {
   return apiInstance.post('/api/revalidation/chat', input)
 }
 export const useRevalidateChatPage = mutationWrapper(revalidateChatPage)
+
+async function removeMyLinkedIdentity() {
+  const { address, parentProxyAddress, signer } = useMyAccount.getState()
+  if (!address || !parentProxyAddress || !signer)
+    throw new Error('No address or parentProxyAddress')
+
+  const data: ApiDatahubRemoveIdentityBody = {
+    id: parentProxyAddress,
+    sessionAddress: address,
+    sig: await signMessage(parentProxyAddress),
+  }
+  return apiInstance.post('/api/datahub/remove-identity', data)
+}
+export const useRemoveMyLinkedIdentity = mutationWrapper(removeMyLinkedIdentity)
+
+async function encryptData(data: string) {
+  const res = await apiInstance.post('/api/encrypt', { data })
+  return res.data as ApiEncryptResponseData
+}
+export const useEncryptData = mutationWrapper(encryptData)

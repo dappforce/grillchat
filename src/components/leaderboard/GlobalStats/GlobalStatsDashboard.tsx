@@ -1,4 +1,4 @@
-import { getGeneralStatisticsQuery } from '@/services/datahub/leaderboard/query'
+import { getGeneralStatisticsQuery } from '@/old/services/datahub/leaderboard/query'
 import { UserStatsCard } from '../MyStats/LeaderboardStatsData'
 
 const GlobalStatsDashboard = () => {

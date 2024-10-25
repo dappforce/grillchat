@@ -25,15 +25,10 @@ async function setReferrerId(params: DatahubParams<SetReferrerIdArgs>) {
 }
 
 export const useSetReferrerId = mutationWrapper(
-  async ({
-    walletType,
-    ...data
-  }: Omit<SetReferrerIdArgs, 'clientId'> & {
-    walletType?: 'injected' | 'grill'
-  }) => {
+  async ({ ...data }: Omit<SetReferrerIdArgs, 'clientId'>) => {
     if (!data.refId) return
     await setReferrerId({
-      ...getCurrentWallet(walletType),
+      ...getCurrentWallet(),
       args: { ...data, clientId: DataHubClientId.GRILLSO },
     })
   }

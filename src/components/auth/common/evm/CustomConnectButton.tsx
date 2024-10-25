@@ -6,7 +6,7 @@ import {
   openMobileWallet,
 } from '@/components/extensions/donate/api/utils'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 import { useMyMainAddress } from '@/stores/my-account'
 import { isTouchDevice } from '@/utils/device'
 import { ConnectButton } from '@rainbow-me/rainbowkit'

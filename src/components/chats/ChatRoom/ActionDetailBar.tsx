@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { ComponentProps } from 'react'
 import { HiXMark } from 'react-icons/hi2'

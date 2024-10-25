@@ -1,5 +1,5 @@
-import { getProfileQuery } from '@/services/api/query'
-import { isClientGeneratedOptimisticId } from '@/services/subsocial/commentIds/optimistic'
+import { getProfileQuery } from '@/old/services/api/query'
+import { isClientGeneratedOptimisticId } from '@/old/services/subsocial/commentIds/optimistic'
 import { useMyMainAddress } from '@/stores/my-account'
 import {
   getCurrentSearchParams,

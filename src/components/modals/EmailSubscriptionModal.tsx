@@ -1,5 +1,5 @@
 import useToastError from '@/hooks/useToastError'
-import { useSubscribeWithEmail } from '@/services/subsocial-offchain/mutation'
+import { useSubscribeWithEmail } from '@/old/services/subsocial-offchain/mutation'
 import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { LocalStorage } from '@/utils/storage'

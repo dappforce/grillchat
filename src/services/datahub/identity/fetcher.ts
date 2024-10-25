@@ -1,7 +1,7 @@
 import { gql } from 'graphql-request'
 import {
-  GetLinkedIdentitiesFromTwitterIdQuery,
-  GetLinkedIdentitiesFromTwitterIdQueryVariables,
+  GetLinkedIdentitiesFromProviderIdQuery,
+  GetLinkedIdentitiesFromProviderIdQueryVariables,
   GetLinkedIdentitiesQuery,
   GetLinkedIdentitiesQueryVariables,
   IdentityProvider,
@@ -9,28 +9,34 @@ import {
 import { datahubQueryRequest } from '../utils'
 
 export type Identity = {
-  id: string
-  externalId: string
-  provider: IdentityProvider
-  substrateAccount: string
+  mainAddress: string
+  externalProviders: {
+    id: string
+    provider: IdentityProvider
+    externalId: string
+    username?: string | null
+    createdAtTime: string
+    enabled: boolean
+  }[]
 }
 
-// TODO: need batch call pool query to improve performance
 const GET_LINKED_IDENTITIES = gql`
-  query GetLinkedIdentities($substrateAddress: String!) {
-    linkedIdentities(where: { substrateAddress: $substrateAddress }) {
+  query GetLinkedIdentities($where: LinkedIdentityArgs!) {
+    linkedIdentity(where: $where) {
       id
-      externalId
-      provider
-      enabled
-      substrateAccount {
+      externalProviders {
         id
+        externalId
+        username
+        provider
+        enabled
+        createdAtTime
       }
     }
   }
 `
 export async function getLinkedIdentity(
-  address: string
+  where: GetLinkedIdentitiesQueryVariables['where']
 ): Promise<Identity | null> {
   const data = await datahubQueryRequest<
     GetLinkedIdentitiesQuery,
@@ -38,63 +44,50 @@ export async function getLinkedIdentity(
   >({
     document: GET_LINKED_IDENTITIES,
     variables: {
-      substrateAddress: address,
+      where,
     },
   })
 
-  const identities = data.linkedIdentities.filter(
+  const identities = data.linkedIdentity?.externalProviders?.filter(
     (identity) => identity.enabled
   )
-  const identityPriorityOrder = [
-    IdentityProvider.Polkadot,
-    IdentityProvider.Twitter,
-    IdentityProvider.Google,
-    IdentityProvider.Facebook,
-    IdentityProvider.Evm,
-    IdentityProvider.Email,
-  ]
-  const identitiesSorted = identities.toSorted((a, b) => {
-    const aIndex = identityPriorityOrder.indexOf(a.provider)
-    const bIndex = identityPriorityOrder.indexOf(b.provider)
-    return aIndex - bIndex
-  })
-  const identity = identitiesSorted[0]
 
-  if (!identity) return null
+  if (!data.linkedIdentity) return null
+
   return {
-    externalId: identity.externalId,
-    id: identity.id,
-    provider: identity.provider,
-    substrateAccount: identity.substrateAccount.id,
+    mainAddress: data.linkedIdentity.id,
+    externalProviders: identities ?? [],
   }
 }
 
-const GET_LINKED_IDENTITIES_FROM_TWITTER_ID = gql`
-  query GetLinkedIdentitiesFromTwitterId($twitterId: String!) {
-    linkedIdentities(where: { externalId: $twitterId, provider: TWITTER }) {
+const GET_LINKED_IDENTITIES_FROM_PROVIDER_ID = gql`
+  query GetLinkedIdentitiesFromProviderId(
+    $provider: IdentityProvider!
+    $externalId: String!
+  ) {
+    linkedIdentity(
+      where: {
+        externalProvider: { provider: $provider, externalId: $externalId }
+      }
+    ) {
       id
-      externalId
-      provider
-      enabled
-      substrateAccount {
-        id
+      externalProviders {
+        enabled
       }
     }
   }
 `
-export async function getLinkedIdentityFromTwitterId(
-  twitterId: string
-): Promise<string[]> {
+export async function getLinkedIdentityFromProviderId(args: {
+  provider: IdentityProvider
+  externalId: string
+}): Promise<string | null> {
   const data = await datahubQueryRequest<
-    GetLinkedIdentitiesFromTwitterIdQuery,
-    GetLinkedIdentitiesFromTwitterIdQueryVariables
+    GetLinkedIdentitiesFromProviderIdQuery,
+    GetLinkedIdentitiesFromProviderIdQueryVariables
   >({
-    document: GET_LINKED_IDENTITIES_FROM_TWITTER_ID,
-    variables: { twitterId },
+    document: GET_LINKED_IDENTITIES_FROM_PROVIDER_ID,
+    variables: args,
   })
 
-  const identities = data.linkedIdentities.filter(
-    (identity) => identity.enabled
-  )
-  return identities.map((identity) => identity.substrateAccount.id)
+  return data.linkedIdentity?.id ?? null
 }

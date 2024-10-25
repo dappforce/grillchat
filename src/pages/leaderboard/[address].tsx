@@ -1,10 +1,10 @@
 import LeaderboardPage from '@/modules/LeaderboardPage'
-import { getRewardHistoryQuery } from '@/services/datahub/content-staking/query'
+import { getRewardHistoryQuery } from '@/old/services/datahub/content-staking/query'
 import {
   getGeneralStatisticsQuery,
   getLeaderboardDataQuery,
   getUserStatisticsQuery,
-} from '@/services/datahub/leaderboard/query'
+} from '@/old/services/datahub/leaderboard/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 import { AppCommonProps } from '../_app'

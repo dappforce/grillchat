@@ -1,6 +1,6 @@
 import Button, { ButtonProps } from '@/components/Button'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
-import { getPostQuery, getProfileQuery } from '@/services/api/query'
+import { getPostQuery, getProfileQuery } from '@/old/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyMainAddress } from '@/stores/my-account'

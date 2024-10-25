@@ -1,13 +1,13 @@
 import ProfilePreview, { ForceProfileSource } from '@/components/ProfilePreview'
+import Tabs from '@/components/Tabs'
 import SubsocialProfileForm, {
   validateNickname,
 } from '@/components/subsocial-profile/SubsocialProfileForm'
-import Tabs from '@/components/Tabs'
-import { getIdentityQuery, getProfileQuery } from '@/services/api/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getIdentityQuery, getProfileQuery } from '@/old/services/api/query'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 import { useMyAccount } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
-import { decodeProfileSource, ProfileSource } from '@/utils/profile'
+import { ProfileSource, decodeProfileSource } from '@/utils/profile'
 import { ProfileContent } from '@subsocial/api/types'
 import { useCallback, useEffect, useState } from 'react'
 import { forceBackFlowStorage } from '../../ProfileModal'

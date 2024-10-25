@@ -1,6 +1,6 @@
-import { ApiResponse, handlerWrapper } from '@/server/common'
-import { linkIdentity } from '@/server/datahub-queue/identity'
-import { datahubMutationWrapper } from '@/server/datahub-queue/utils'
+import { ApiResponse, handlerWrapper } from '@/old/server/common'
+import { linkIdentity } from '@/old/server/datahub-queue/identity'
+import { datahubMutationWrapper } from '@/old/server/datahub-queue/utils'
 import {
   IdentityProvider,
   SocialEventDataApiInput,

@@ -1,5 +1,5 @@
-import { useLinkEvmAddress } from '@/services/subsocial/evmAddresses/mutation'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import { useLinkEvmAddress } from '@/old/services/subsocial/evmAddresses/mutation'
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { decodeAddress } from '@polkadot/keyring'
 import { u8aToHex } from '@polkadot/util'
 import { useEffect, useState } from 'react'

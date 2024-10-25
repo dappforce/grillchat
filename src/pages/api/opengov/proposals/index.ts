@@ -1,11 +1,11 @@
-import { redisCallWrapper } from '@/server/cache'
-import { handlerWrapper } from '@/server/common'
+import { redisCallWrapper } from '@/old/server/cache'
+import { handlerWrapper } from '@/old/server/common'
 import {
   Proposal,
   SubsquareProposal,
   mapSubsquareProposalToProposal,
-} from '@/server/opengov/mapper'
-import { subsquareApi } from '@/server/opengov/utils'
+} from '@/old/server/opengov/mapper'
+import { subsquareApi } from '@/old/server/opengov/utils'
 import { z } from 'zod'
 
 const handler = handlerWrapper({

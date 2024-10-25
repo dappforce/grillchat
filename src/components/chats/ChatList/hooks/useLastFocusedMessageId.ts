@@ -1,6 +1,6 @@
 import useLastReadTimeFromStorage from '@/components/chats/hooks/useLastReadMessageTimeFromStorage'
-import { getPostQuery } from '@/services/api/query'
-import { isClientGeneratedOptimisticId } from '@/services/subsocial/commentIds/optimistic'
+import { getPostQuery } from '@/old/services/api/query'
+import { isClientGeneratedOptimisticId } from '@/old/services/subsocial/commentIds/optimistic'
 import { useEffect, useRef, useState } from 'react'
 
 export default function useLastFocusedMessageTime(

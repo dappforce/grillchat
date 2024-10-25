@@ -1,8 +1,9 @@
+import useLoginOption from '@/hooks/useLoginOption'
 import useToastError from '@/hooks/useToastError'
-import { SubsocialMutationConfig } from '@/subsocial-query/subsocial/types'
+import { getMyMainAddress } from '@/stores/my-account'
+import { MutationConfig } from '@/subsocial-query'
 import { UseMutationResult } from '@tanstack/react-query'
-import { useState } from 'react'
-import useCommonTxSteps from '../hooks'
+import { useCallback } from 'react'
 
 export type Status =
   | 'idle'
@@ -11,87 +12,61 @@ export type Status =
   | 'broadcasting'
   | 'success'
   | 'error'
+
+function mutationWrapper<Args extends unknown[], Return>(
+  mutation: (...args: Args) => Return,
+  myAddress: string | null,
+  promptForLogin: () => void
+): (...params: Args) => Return | undefined {
+  return (...params: Args) => {
+    if (!myAddress) {
+      promptForLogin()
+      return
+    }
+    return mutation(...params)
+  }
+}
 export function createMutationWrapper<Data, ReturnValue, OtherProps>(
   useMutationHook: (
-    config?: SubsocialMutationConfig<Data, any>,
+    config?: MutationConfig<Data, any>,
     otherProps?: OtherProps
   ) => UseMutationResult<ReturnValue, Error, Data, unknown>,
-  errorMessage: string,
-  isUsingConnectedWallet?: boolean
+  errorMessage: string
 ) {
-  return function MutationWrapper({
-    children,
-    config,
-    loadingUntilTxSuccess,
-    otherProps,
-  }: {
-    children: (params: {
-      mutateAsync: (variables: Data) => Promise<ReturnValue | undefined>
-      isLoading: boolean
-      status: Status
-      loadingText: string | undefined
-    }) => JSX.Element
-    config?: SubsocialMutationConfig<Data>
-    loadingUntilTxSuccess?: boolean
+  return function useWrappedMutation(
+    config?: MutationConfig<Data, ReturnValue>,
     otherProps?: OtherProps
-  }) {
-    const [status, setStatus] = useState<Status>('idle')
+  ) {
+    const { promptUserForLogin } = useLoginOption()
+    const mutation = useMutationHook(config, otherProps)
+    useToastError(mutation.error, errorMessage)
 
-    const {
-      mutation: { mutateAsync, isLoading, error },
-    } = useCommonTxSteps(
-      useMutationHook,
-      {
-        ...config,
-        txCallbacks: {
-          onStart: (...params) => {
-            setStatus('starting')
-            config?.txCallbacks?.onStart?.(...params)
-          },
-          onSend: (...params) => {
-            setStatus('sending')
-            config?.txCallbacks?.onSend?.(...params)
-          },
-          onBroadcast: (...params) => {
-            setStatus('broadcasting')
-            config?.txCallbacks?.onBroadcast?.(...params)
-          },
-          onSuccess: (...params) => {
-            setStatus('success')
-            config?.txCallbacks?.onSuccess?.(...params)
-          },
-          onError: (...params) => {
-            setStatus('error')
-            config?.txCallbacks?.onError?.(...params)
-          },
-        },
+    const { mutate: rawMutate, mutateAsync: rawMutateAsync } = mutation
+    const mutate = useCallback(
+      (...args: Parameters<typeof rawMutate>) => {
+        return mutationWrapper(
+          rawMutate,
+          getMyMainAddress(),
+          promptUserForLogin
+        )(...args)
       },
-      isUsingConnectedWallet,
-      otherProps
+      [rawMutate, promptUserForLogin]
     )
-    useToastError(error, errorMessage)
-
-    let loadingText: string | undefined = undefined
-    switch (status) {
-      case 'sending':
-        loadingText = 'Sending'
-        break
-      case 'broadcasting':
-        loadingText = 'Broadcasting'
-        break
-    }
-
-    const loadingStatuses: Status[] = ['starting', 'sending', 'broadcasting']
-
-    return children({
-      mutateAsync: async (data) => {
-        return mutateAsync(data)
+    const mutateAsync = useCallback(
+      (...args: Parameters<typeof rawMutateAsync>) => {
+        return mutationWrapper(
+          rawMutateAsync,
+          getMyMainAddress(),
+          promptUserForLogin
+        )(...args)
       },
-      isLoading: loadingUntilTxSuccess
-        ? loadingStatuses.includes(status)
-        : isLoading,
-      status,
-      loadingText,
-    })
+      [rawMutateAsync, promptUserForLogin]
+    )
+
+    return {
+      ...mutation,
+      mutate,
+      mutateAsync,
+    }
   }
 }

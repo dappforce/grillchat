@@ -1,15 +1,14 @@
 import { useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
-import { DataHubSubscriptionEventEnum } from '@subsocial/data-hub-sdk'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import { datahubSubscription, isDatahubAvailable } from '../utils'
 import {
-  getAddressLikeCountToPostQuery,
-  getRewardReportQuery,
-  getSuperLikeCountQuery,
-} from './query'
+  DataHubSubscriptionEventEnum,
+  SubscribeSuperLikeSubscription,
+} from '../generated-query'
+import { datahubSubscription, isDatahubAvailable } from '../utils'
+import { toastSuperLikeNotification } from './utils'
 
 export function useDatahubContentStakingSubscriber() {
   const queryClient = useQueryClient()
@@ -54,6 +53,9 @@ const SUBSCRIBE_SUPER_LIKE = gql`
   subscription SubscribeSuperLike {
     activeStakingSuperLike {
       event
+      meta {
+        stakerDistributedRewardPoints
+      }
       entity {
         staker {
           id
@@ -75,7 +77,7 @@ export function subscription(
   isSubscribed = true
 
   const client = datahubSubscription()
-  let unsub = client.subscribe(
+  let unsub = client.subscribe<SubscribeSuperLikeSubscription>(
     {
       query: SUBSCRIBE_SUPER_LIKE,
     },
@@ -101,28 +103,16 @@ export function subscription(
 
 async function processSubscriptionEvent(
   queryClient: QueryClient,
-  eventData: {
-    event: DataHubSubscriptionEventEnum
-    entity: { staker: { id: string }; post: { persistentId: string } }
-  },
+  eventData: SubscribeSuperLikeSubscription['activeStakingSuperLike'],
   myAddress: string | undefined
 ) {
   if (
     eventData.event !==
-      DataHubSubscriptionEventEnum.ACTIVE_STAKING_SUPER_LIKE_CREATED &&
+      DataHubSubscriptionEventEnum.ActiveStakingSuperLikeCreated &&
     eventData.event !==
-      DataHubSubscriptionEventEnum.ACTIVE_STAKING_SUPER_LIKE_STATE_UPDATED
+      DataHubSubscriptionEventEnum.ActiveStakingSuperLikeStateUpdated
   )
     return
 
-  const { post, staker } = eventData.entity
-
-  getSuperLikeCountQuery.invalidate(queryClient, post.persistentId)
-  if (staker.id === myAddress) {
-    getAddressLikeCountToPostQuery.invalidate(queryClient, {
-      address: myAddress,
-      postId: post.persistentId,
-    })
-    getRewardReportQuery.invalidate(queryClient, myAddress)
-  }
+  toastSuperLikeNotification(queryClient, eventData, myAddress)
 }

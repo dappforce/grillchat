@@ -1,6 +1,6 @@
-import { getPostMetadataQuery } from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+import { getPostMetadataQuery } from '@/old/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/old/services/datahub/utils'
+import { getCommentIdsByPostIdFromChainQuery } from '@/old/services/subsocial/commentIds'
 
 export function useMessagesCount(chatId: string) {
   const { data } = getPostMetadataQuery.useQuery(chatId, {

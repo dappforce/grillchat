@@ -1,4 +1,4 @@
-import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
+import { getGeneralEraInfoData } from '@/old/services/contentStaking/generalErainfo/query'
 import { cx } from '@/utils/class-names'
 import { pluralize } from '@subsocial/utils'
 import BN from 'bignumber.js'

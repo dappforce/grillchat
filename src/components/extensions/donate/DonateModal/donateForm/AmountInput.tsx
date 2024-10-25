@@ -1,17 +1,17 @@
 import Button from '@/components/Button'
 import Input from '@/components/inputs/Input'
 import useGetTheme from '@/hooks/useGetTheme'
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { useGetChainDataByNetwork } from '@/old/services/chainsInfo/query'
+import { getBalancesQuery } from '@/old/services/substrateBalances/query'
+import { getSubstrateChainApi } from '@/old/subsocial-query/subsocial/connection'
 import { useMyMainAddress } from '@/stores/my-account'
-import { getSubstrateChainApi } from '@/subsocial-query/subsocial/connection'
 import { cx } from '@/utils/class-names'
 import { ApiPromise } from '@polkadot/api'
 import { BigNumber } from 'bignumber.js'
 import { formatUnits, parseUnits } from 'ethers'
 import { ChangeEventHandler, useEffect } from 'react'
-import { useGetBalance } from '../../api/hooks'
 import { useDonateModalContext } from '../../DonateModalContext'
+import { useGetBalance } from '../../api/hooks'
 
 type CommonProps = {
   setAmount: (amount: string) => void

@@ -1,5 +1,5 @@
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { useTransactions } from '@/stores/transactions'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { ApiPromise } from '@polkadot/api'
 import { useCallback, useEffect, useState } from 'react'
 import useWrapInRef from './useWrapInRef'

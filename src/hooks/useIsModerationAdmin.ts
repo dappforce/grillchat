@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { getModeratorQuery } from '@/services/datahub/moderation/query'
+import { getModeratorQuery } from '@/old/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
 
 export default function useIsModerationAdmin(address?: string) {

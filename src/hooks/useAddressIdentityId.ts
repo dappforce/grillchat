@@ -1,5 +1,5 @@
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 
 export default function useAddressIdentityId(
   address: string,

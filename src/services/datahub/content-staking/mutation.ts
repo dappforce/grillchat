@@ -1,3 +1,4 @@
+import { ApiDatahubContentStakingMutationBody } from '@/pages/api/datahub/content-staking'
 import { ApiDatahubSuperLikeMutationBody } from '@/pages/api/datahub/super-like'
 import { apiInstance } from '@/services/api/utils'
 import { queryClient } from '@/services/provider'
@@ -6,8 +7,17 @@ import { getMyMainAddress } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SocialCallDataArgs, socialCallName } from '@subsocial/data-hub-sdk'
-import { DatahubParams, createSocialDataEventPayload } from '../utils'
-import { getAddressLikeCountToPostQuery, getSuperLikeCountQuery } from './query'
+import {
+  DatahubParams,
+  createSignedSocialDataEvent,
+  createSocialDataEventPayload,
+} from '../utils'
+import {
+  getAddressLikeCountToPostQuery,
+  getDailyRewardQuery,
+  getSuperLikeCountQuery,
+  getTodaySuperLikeCountQuery,
+} from './query'
 
 type CreateSuperLikeArgs =
   SocialCallDataArgs<'synth_active_staking_create_super_like'>
@@ -24,6 +34,7 @@ async function createSuperLike(params: DatahubParams<CreateSuperLikeArgs>) {
   )
 }
 
+export const pendingSuperLikes = new Set<string>()
 export const useCreateSuperLike = mutationWrapper(
   async (data: CreateSuperLikeArgs) => {
     await createSuperLike({
@@ -36,40 +47,109 @@ export const useCreateSuperLike = mutationWrapper(
       preventWindowUnload()
       const mainAddress = getMyMainAddress()
       if (!mainAddress) return
-      getSuperLikeCountQuery.setQueryData(queryClient, postId, (oldData) => {
-        if (!oldData)
+      if (queryClient) {
+        getSuperLikeCountQuery.setQueryData(queryClient, postId, (oldData) => {
+          if (!oldData)
+            return {
+              count: 1,
+              postId,
+            }
           return {
-            count: 1,
-            postId,
+            ...oldData,
+            count: oldData.count + 1,
           }
-        return {
-          ...oldData,
-          count: oldData.count + 1,
-        }
-      })
-      getAddressLikeCountToPostQuery.setQueryData(
-        queryClient,
-        { address: mainAddress, postId },
-        () => {
-          return {
-            address: mainAddress,
-            count: 1,
-            postId,
+        })
+        getAddressLikeCountToPostQuery.setQueryData(
+          queryClient,
+          { address: mainAddress, postId },
+          () => {
+            return {
+              address: mainAddress,
+              count: 1,
+              postId,
+            }
           }
-        }
-      )
+        )
+
+        getTodaySuperLikeCountQuery.setQueryData(
+          queryClient,
+          mainAddress,
+          (oldData) => {
+            if (!oldData) return { count: 1 }
+            return {
+              ...oldData,
+              count: oldData.count + 1,
+            }
+          }
+        )
+      }
     },
     onError: (_, { postId }) => {
       const mainAddress = getMyMainAddress()
       if (!mainAddress) return
-      getAddressLikeCountToPostQuery.invalidate(queryClient, {
-        postId,
-        address: mainAddress,
-      })
+      if (queryClient) {
+        getAddressLikeCountToPostQuery.invalidate(queryClient, {
+          postId,
+          address: mainAddress,
+        })
+
+        getTodaySuperLikeCountQuery.setQueryData(
+          queryClient,
+          mainAddress,
+          (oldData) => {
+            if (!oldData) return oldData
+            return {
+              ...oldData,
+              count: oldData.count - 1,
+            }
+          }
+        )
+      }
       allowWindowUnload()
     },
     onSuccess: () => {
       allowWindowUnload()
+    },
+  }
+)
+
+type ClaimDailyRewardArgs =
+  SocialCallDataArgs<'synth_gamification_claim_entrance_daily_reward'>
+async function claimDailyReward(params: DatahubParams<ClaimDailyRewardArgs>) {
+  const input = await createSignedSocialDataEvent(
+    socialCallName.synth_gamification_claim_entrance_daily_reward,
+    params,
+    undefined
+  )
+
+  await apiInstance.post<any, any, ApiDatahubContentStakingMutationBody>(
+    '/api/datahub/content-staking',
+    input as any
+  )
+}
+
+export const useClaimDailyReward = mutationWrapper(
+  async () => {
+    await claimDailyReward({
+      ...getCurrentWallet(),
+      args: undefined as any,
+    })
+  },
+  {
+    onSuccess: () => {
+      const myAddress = getMyMainAddress()
+      if (!myAddress || !queryClient) return
+      getDailyRewardQuery.setQueryData(queryClient, myAddress, (oldData) => {
+        if (!oldData) return oldData
+        const newClaims = [...oldData.claims]
+        const todayClaim = newClaims.find((claim) => claim.openToClaim)
+        if (todayClaim) todayClaim.openToClaim = false
+        return {
+          ...oldData,
+          claims: newClaims,
+          claimsCount: oldData.claimsCount + 1,
+        }
+      })
     },
   }
 )

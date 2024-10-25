@@ -6,6 +6,7 @@ import {
   UseMutationOptions,
   useQueries,
   useQuery,
+  useQueryClient,
   UseQueryResult,
 } from '@tanstack/react-query'
 import { QueryConfig } from './types'
@@ -90,20 +91,24 @@ export function createQuery<Data, ReturnValue>({
   defaultConfigGenerator,
 }: {
   key: string
-  fetcher: (data: Data) => Promise<ReturnValue>
+  fetcher: (data: Data, queryClient: QueryClient | null) => Promise<ReturnValue>
   defaultConfigGenerator?: (
     params: Data | null
   ) => QueryConfig<Data, ReturnValue>
 }) {
   const getQueryKey = createQueryKeys<Data>(key)
 
-  async function fetchQuery(client: QueryClient | null, data: Data) {
+  async function fetchQuery(
+    client: QueryClient | null,
+    data: Data,
+    noCacheCheck = false
+  ) {
     const cachedData = client?.getQueryData(getQueryKey(data))
-    if (cachedData) {
+    if (cachedData && !noCacheCheck) {
       return cachedData as ReturnValue
     }
 
-    const res = await fetcher(data)
+    const res = await fetcher(data, client)
     if (client) client.setQueryData(getQueryKey(data), res ?? null)
 
     return res
@@ -115,16 +120,18 @@ export function createQuery<Data, ReturnValue>({
     useQuery: (data: Data, config?: QueryConfig<Data, ReturnValue>) => {
       const defaultConfig = defaultConfigGenerator?.(data)
       const mergedConfig = mergeQueryConfig(config, defaultConfig)
+      const queryClient = useQueryClient()
       return useQuery(
         [key, data],
         queryWrapper<ReturnValue, Data, void>(
-          ({ data }) => fetcher(data),
+          ({ data }) => fetcher(data, queryClient),
           async () => undefined
         ),
         mergedConfig
       )
     },
     useQueries: (data: Data[], config?: QueryConfig<Data, ReturnValue>) => {
+      const queryClient = useQueryClient()
       const defaultConfig = defaultConfigGenerator?.(null)
       if (defaultConfig) defaultConfig.enabled = data.length > 0
 
@@ -134,7 +141,7 @@ export function createQuery<Data, ReturnValue>({
           return {
             queryKey: [key, singleData],
             queryFn: queryWrapper<ReturnValue, Data, void>(
-              ({ data }) => fetcher(data),
+              ({ data }) => fetcher(data, queryClient),
               async () => undefined
             ),
             ...mergedConfig,

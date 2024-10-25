@@ -1,4 +1,4 @@
-import { getUserStatisticsQuery } from '@/services/datahub/leaderboard/query'
+import { getUserStatisticsQuery } from '@/old/services/datahub/leaderboard/query'
 import { useGetLeaderboardRole } from '../utils'
 import IncreaseStakeBanner from './IncreaseStakeBanner'
 import LeaderboardProfilePreview from './LeaderboardProfilePreview'

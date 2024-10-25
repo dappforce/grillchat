@@ -1,11 +1,11 @@
 import Button from '@/components/Button'
 import FormatBalance from '@/components/FormatBalance'
 import Input from '@/components/inputs/Input'
-import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
-import { getStakingConstsData } from '@/services/contentStaking/stakingConsts/query'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
+import { getBackerLedgerQuery } from '@/old/services/contentStaking/backerLedger/query'
+import { getStakingConstsData } from '@/old/services/contentStaking/stakingConsts/query'
+import { getBalancesQuery } from '@/old/services/substrateBalances/query'
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { useMyMainAddress } from '@/stores/my-account'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
 import { parseBalance } from '@/utils/formatBalance'
 import {
   balanceWithDecimal,

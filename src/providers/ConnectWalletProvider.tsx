@@ -5,13 +5,13 @@ import PolkadotConnectWalletContent from '@/components/auth/common/polkadot-conn
 import useAccountsFromPreferredWallet from '@/components/auth/common/polkadot-connect/hooks/useAccountsFromPreferredWallet'
 import { PolkadotConnectSteps } from '@/components/auth/common/polkadot-connect/types'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
+import { WalletAccount } from '@/old/subsocial-query/subsocial/types'
 import {
   enableWalletOnce,
   getMyMainAddress,
   useMyAccount,
   useMyMainAddress,
 } from '@/stores/my-account'
-import { WalletAccount } from '@/subsocial-query/subsocial/types'
 import { Signer, convertAddressToSubsocialAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
 import { generateManuallyTriggeredPromise } from '@/utils/promise'

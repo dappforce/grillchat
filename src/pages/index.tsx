@@ -4,10 +4,10 @@ import HomePage, {
   HomePageProps,
   homePageAdditionalTabs,
 } from '@/modules/chat/HomePage'
+import { prefetchChatPreviewsData } from '@/old/server/chats'
+import { getPostIdsBySpaceIdQuery } from '@/old/services/subsocial/posts'
+import { getSpaceQuery } from '@/old/services/subsocial/spaces'
 import { AppCommonProps } from '@/pages/_app'
-import { prefetchChatPreviewsData } from '@/server/chats'
-import { getPostIdsBySpaceIdQuery } from '@/services/subsocial/posts'
-import { getSpaceQuery } from '@/services/subsocial/spaces'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 

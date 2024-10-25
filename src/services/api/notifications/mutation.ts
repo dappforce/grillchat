@@ -15,10 +15,11 @@ import {
   ApiNotificationsLinkMessageResponse,
 } from '@/pages/api/notifications/link-message'
 import { queryClient } from '@/services/provider'
-import { useMyAccount } from '@/stores/my-account'
+import { signMessage, useMyAccount } from '@/stores/my-account'
 import mutationWrapper from '@/subsocial-query/base'
 import { AxiosResponse } from 'axios'
-import { apiInstance, processMessageTpl } from '../utils'
+import sortKeysRecursive from 'sort-keys-recursive'
+import { apiInstance } from '../utils'
 import { getLinkedTelegramAccountsQuery } from './query'
 
 async function linkTelegramAccount(
@@ -59,9 +60,11 @@ export const useLinkTelegramAccount = mutationWrapper(linkTelegramAccount, {
       const mainAddress = parentProxyAddress || address
       if (!mainAddress) return
 
-      getLinkedTelegramAccountsQuery.invalidate(queryClient, {
-        address: mainAddress,
-      })
+      if (queryClient) {
+        getLinkedTelegramAccountsQuery.invalidate(queryClient, {
+          address: mainAddress,
+        })
+      }
     }
   },
 })
@@ -99,3 +102,58 @@ async function linkFcm(
   return resData.message
 }
 export const useLinkFcm = mutationWrapper(linkFcm)
+
+function parseMessageTpl(messageTpl: string) {
+  const decodedMessage = decodeURIComponent(messageTpl)
+
+  const parsedMessage = JSON.parse(decodedMessage) as any
+  const sortedPayload = sortKeysRecursive(parsedMessage.payload)
+  return {
+    payloadToSign: JSON.stringify(sortedPayload),
+    messageData: parsedMessage,
+  }
+}
+
+export async function processMessageTpl(encodedMessage: string) {
+  const parsedMessage = parseMessageTpl(encodedMessage)
+
+  const signedPayload = await signMessage(parsedMessage.payloadToSign)
+  // if (!parentProxyAddress) {
+  //   signedPayload = await signMessage(parsedMessage.payloadToSign)
+  // } else {
+  //   let currentAccountSigner: InjectedSigner | undefined
+
+  //   if (connectedWallet?.address !== parentProxyAddress) {
+  //     const accounts = await enableWalletOnce()
+  //     const foundAcc = accounts.find(
+  //       ({ address }) => toSubsocialAddress(address)! === parentProxyAddress
+  //     )
+  //     if (!foundAcc)
+  //       throw new Error(
+  //         `Cannot find your account in your ${preferredWallet} wallet. If you use another wallet, please unlink and link your wallet again`
+  //       )
+
+  //     connectWallet(foundAcc.address, foundAcc.signer as Signer)
+  //     currentAccountSigner = foundAcc.signer as InjectedSigner
+  //   } else {
+  //     currentAccountSigner = connectedWallet.signer as InjectedSigner
+  //   }
+
+  //   const payload: { signature: string } | undefined =
+  //     await currentAccountSigner.signRaw?.({
+  //       address: parentProxyAddress,
+  //       data: parsedMessage.payloadToSign,
+  //       type: 'bytes',
+  //     })
+
+  //   if (!payload) throw new Error('Failed to sign message')
+  //   signedPayload = payload.signature
+  // }
+
+  parsedMessage.messageData['signature'] = signedPayload
+
+  const signedMessage = encodeURIComponent(
+    JSON.stringify(sortKeysRecursive(parsedMessage.messageData))
+  )
+  return signedMessage
+}

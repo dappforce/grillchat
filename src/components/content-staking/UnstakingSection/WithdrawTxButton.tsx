@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
-import { getBackerLedgerQuery } from '@/services/contentStaking/backerLedger/query'
-import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
+import { getBackerLedgerQuery } from '@/old/services/contentStaking/backerLedger/query'
+import { getGeneralEraInfoData } from '@/old/services/contentStaking/generalErainfo/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { isEmptyArray } from '@subsocial/utils'
 import BN from 'bignumber.js'

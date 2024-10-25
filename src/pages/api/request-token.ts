@@ -1,6 +1,10 @@
 import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
-import { ApiResponse, getServerAccount, handlerWrapper } from '@/server/common'
-import { getSubsocialApi } from '@/subsocial-query/subsocial/connection'
+import {
+  ApiResponse,
+  getServerAccount,
+  handlerWrapper,
+} from '@/old/server/common'
+import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { validateAddress } from '@/utils/account'
 import { z } from 'zod'
 
@@ -65,7 +69,7 @@ export default handlerWrapper({
 
 async function getIsAddressNeedEnergy(address: string) {
   const { getSubsocialApi } = await import(
-    '@/subsocial-query/subsocial/connection'
+    '@/old/subsocial-query/subsocial/connection'
   )
 
   const subsocialApi = await getSubsocialApi()

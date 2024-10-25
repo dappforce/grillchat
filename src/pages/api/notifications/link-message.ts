@@ -1,8 +1,8 @@
-import { ApiResponse, handlerWrapper } from '@/server/common'
+import { ApiResponse, handlerWrapper } from '@/old/server/common'
 import {
   createLinkingMessageForTelegram,
   createUnlinkingMessageForTelegram,
-} from '@/server/notifications'
+} from '@/old/server/notifications'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 

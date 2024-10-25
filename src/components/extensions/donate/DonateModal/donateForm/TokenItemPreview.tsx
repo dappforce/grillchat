@@ -1,9 +1,9 @@
-import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { useGetChainDataByNetwork } from '@/old/services/chainsInfo/query'
 import {
   coingeckoTokenIds,
   getPriceQuery,
-} from '@/services/subsocial/prices/query'
-import { getBalancesQuery } from '@/services/substrateBalances/query'
+} from '@/old/services/subsocial/prices/query'
+import { getBalancesQuery } from '@/old/services/substrateBalances/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { getBalanceInDollars } from '@/utils/balance'
 import { cx } from '@/utils/class-names'

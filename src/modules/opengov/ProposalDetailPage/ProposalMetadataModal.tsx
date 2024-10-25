@@ -1,7 +1,7 @@
 import LinkText from '@/components/LinkText'
 import ProfilePreview from '@/components/ProfilePreview'
 import Modal, { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { Proposal } from '@/server/opengov/mapper'
+import { Proposal } from '@/old/server/opengov/mapper'
 import { getDurationWithPredefinedUnit } from '@/utils/date'
 import { formatBalance, formatBalanceWithDecimals } from '@/utils/formatBalance'
 import { getSubsquareUserProfileLink } from '@/utils/links'

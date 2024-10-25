@@ -1,7 +1,7 @@
 import Loading from '@/components/Loading'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalPreview from '@/components/opengov/ProposalPreview'
-import { getPaginatedProposalsQuery } from '@/services/api/opengov/query'
+import { getPaginatedProposalsQuery } from '@/old/services/api/opengov/query'
 import { cx } from '@/utils/class-names'
 import { useMemo } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'

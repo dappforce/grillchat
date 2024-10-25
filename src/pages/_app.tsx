@@ -7,6 +7,8 @@ import { PAGES_WITH_LARGER_CONTAINER } from '@/constants/layout'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
+import { useDatahubSubscription } from '@/old/services/datahub/subscription-aggregator'
+import { QueryProvider } from '@/old/services/provider'
 import { ConnectWalletProvider } from '@/providers/ConnectWalletProvider'
 import {
   ConfigProvider,
@@ -14,8 +16,6 @@ import {
 } from '@/providers/config/ConfigProvider'
 import { getAugmentedGaId } from '@/providers/config/utils'
 import EvmProvider from '@/providers/evm/EvmProvider'
-import { useDatahubSubscription } from '@/services/datahub/subscription-aggregator'
-import { QueryProvider } from '@/services/provider'
 import { initAllStores } from '@/stores/registry'
 import { useTransactions } from '@/stores/transactions'
 import '@/styles/globals.css'

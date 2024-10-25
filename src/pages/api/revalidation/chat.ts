@@ -1,6 +1,6 @@
 import { constantsConfig } from '@/constants/config'
 import { env } from '@/env.mjs'
-import { handlerWrapper } from '@/server/common'
+import { handlerWrapper } from '@/old/server/common'
 import { getChatPageLink } from '@/utils/links'
 import { createSlug } from '@/utils/slug'
 import { z } from 'zod'

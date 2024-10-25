@@ -1,6 +1,6 @@
 import useRandomColor from '@/hooks/useRandomColor'
-import { getProfileQuery } from '@/services/api/query'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
+import { getProfileQuery } from '@/old/services/api/query'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 import { cx } from '@/utils/class-names'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getUserProfileLink } from '@/utils/links'

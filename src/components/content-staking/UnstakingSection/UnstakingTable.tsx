@@ -1,5 +1,5 @@
 import Table, { Column } from '@/components/Table'
-import { getGeneralEraInfoData } from '@/services/contentStaking/generalErainfo/query'
+import { getGeneralEraInfoData } from '@/old/services/contentStaking/generalErainfo/query'
 import { isTouchDevice } from '@/utils/device'
 import { SubDate } from '@subsocial/utils'
 import BN from 'bignumber.js'

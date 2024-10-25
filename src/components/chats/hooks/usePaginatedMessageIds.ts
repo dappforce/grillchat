@@ -3,9 +3,9 @@ import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import {
   getPaginatedPostsByPostIdFromDatahubQuery,
   PaginatedPostsData,
-} from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
+} from '@/old/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/old/services/datahub/utils'
+import { getCommentIdsByPostIdFromChainQuery } from '@/old/services/subsocial/commentIds'
 import { useMemo } from 'react'
 import useInfiniteScrollData from '../ChatList/hooks/useInfiniteScrollData'
 import usePauseableLoadMore from '../ChatList/hooks/usePausableLoadMore'

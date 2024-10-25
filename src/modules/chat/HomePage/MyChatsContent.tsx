@@ -5,11 +5,11 @@ import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { env } from '@/env.mjs'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import {
   getFollowedPostIdsByAddressQuery,
   getOwnedPostIdsQuery,
-} from '@/services/subsocial/posts'
+} from '@/old/services/subsocial/posts'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'

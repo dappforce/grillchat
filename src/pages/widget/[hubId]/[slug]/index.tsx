@@ -1,26 +1,26 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getHubIdFromAlias } from '@/constants/config'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
+import { prefetchBlockedEntities } from '@/old/server/moderation/prefetch'
+import { getPostQuery, getProfileQuery } from '@/old/services/api/query'
+import { getSuperLikeCountQuery } from '@/old/services/datahub/content-staking/query'
+import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
+import {
+  getPaginatedPostsByPostIdFromDatahubQuery,
+  getPostMetadataQuery,
+} from '@/old/services/datahub/posts/query'
+import { isDatahubAvailable } from '@/old/services/datahub/utils'
+import { getCommentIdsByPostIdFromChainQuery } from '@/old/services/subsocial/commentIds'
+import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
+import {
+  coingeckoTokenIds,
+  getPriceQuery,
+} from '@/old/services/subsocial/prices/query'
 import { AppCommonProps } from '@/pages/_app'
 import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsServer } from '@/pages/api/posts'
 import { getPricesFromCache } from '@/pages/api/prices'
 import { getProfilesServer } from '@/pages/api/profiles'
-import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
-import { getPostQuery, getProfileQuery } from '@/services/api/query'
-import { getSuperLikeCountQuery } from '@/services/datahub/content-staking/query'
-import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
-  getPostMetadataQuery,
-} from '@/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/services/subsocial/commentIds'
-import { getAccountDataQuery } from '@/services/subsocial/evmAddresses'
-import {
-  coingeckoTokenIds,
-  getPriceQuery,
-} from '@/services/subsocial/prices/query'
 import { removeUndefinedValues } from '@/utils/general'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'

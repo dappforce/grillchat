@@ -1,343 +1,221 @@
-import dayjs from 'dayjs'
 import gql from 'graphql-tag'
-import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 import {
-  GeneralStatistics,
-  LeaderboardData,
-  RewardHistory,
-  TopUsers,
-  UserStatistics,
-} from './types'
+  GetUserReferralsQuery,
+  GetUserReferralsQueryVariables,
+} from '../generated-query'
+import { datahubQueryRequest, getDayAndWeekTimestamp } from '../utils'
 
-const GET_TOP_USERS = gql`
-  query GetTopUsers($from: String!) {
-    creator: activeStakingAddressesRankedByRewardsForPeriod(
-      args: {
-        filter: { period: WEEK, role: CREATOR, timestamp: $from }
-        limit: 3
-        offset: 0
-        order: DESC
-      }
+const GET_LEADERBOARD_DATA_BY_ALL_TIME = gql`
+  query GetLeaderboardTableDataByAllTime {
+    activeStakingAddressesRankedByTotalRewardsForPeriod(
+      args: { filter: { period: ALL_TIME }, limit: 100 }
     ) {
+      total
       data {
-        address
         reward
+        rank
+        address
       }
     }
   }
 `
-export async function getTopUsers(): Promise<TopUsers> {
-  const { week } = getDayAndWeekTimestamp()
-  let startOfWeekTimestamp = dayjs.utc().startOf('day')
-  let daysToMonday = startOfWeekTimestamp.day() - 1
-  if (daysToMonday < 0) {
-    daysToMonday += 7
-  }
-  startOfWeekTimestamp = startOfWeekTimestamp.subtract(daysToMonday, 'day')
 
-  const res = await datahubQueryRequest<
-    {
-      creator: {
-        data: {
-          address: string
-          reward: string
-        }[]
+const GET_LEADERBOARD_DATA_BY_WEEK = gql`
+  query GetLeaderboardTableDataByWeek($timestamp: String!) {
+    activeStakingAddressesRankedByTotalRewardsForPeriod(
+      args: { filter: { period: WEEK, timestamp: $timestamp }, limit: 100 }
+    ) {
+      total
+      data {
+        reward
+        rank
+        address
       }
-    },
-    { from: string }
-  >({
-    document: GET_TOP_USERS,
-    variables: { from: week.toString() },
+    }
+  }
+`
+
+type Period = 'week' | 'allTime'
+
+export async function getLeaderboardData(period: Period): Promise<any> {
+  const { week } = getDayAndWeekTimestamp()
+  const res = await datahubQueryRequest<any, any>({
+    document:
+      period === 'allTime'
+        ? GET_LEADERBOARD_DATA_BY_ALL_TIME
+        : GET_LEADERBOARD_DATA_BY_WEEK,
+    variables: period === 'allTime' ? {} : { timestamp: week.toString() },
   })
 
+  const data = res.activeStakingAddressesRankedByTotalRewardsForPeriod.data
+
   return {
-    creators: res.creator.data.map(({ address, reward }) => ({
-      address,
-      reward,
+    totalCount: res.activeStakingAddressesRankedByTotalRewardsForPeriod.total,
+    leaderboardData: data.map((item: any) => ({
+      rank: item.rank + 1,
+      reward: item.reward,
+      address: item.address,
     })),
   }
 }
 
-const GET_USER_STATS = gql`
-  query GetUserStats($address: String!, $timestamp: String!) {
-    staker: activeStakingAddressRankByRewardsForPeriod(
-      args: {
-        address: $address
-        period: WEEK
-        role: STAKER
-        timestamp: $timestamp
-      }
+const GET_USER_DATA_BY_ALL_TIME = gql`
+  query GetUserDataByAllTime($address: String!) {
+    activeStakingAddressRankByTotalRewardsForPeriod(
+      args: { period: ALL_TIME, address: $address, withReward: true }
     ) {
       rankIndex
-    }
-    creator: activeStakingAddressRankByRewardsForPeriod(
-      args: {
-        address: $address
-        period: WEEK
-        role: CREATOR
-        timestamp: $timestamp
-      }
-    ) {
-      rankIndex
-    }
-    activeStakingAccountActivityMetricsForFixedPeriod(
-      args: {
-        address: $address
-        period: WEEK
-        staker: {
-          likedPosts: true
-          likedCreators: true
-          earnedByPeriod: true
-          earnedTotal: true
-        }
-        creator: {
-          likesCountByPeriod: true
-          stakersWhoLiked: true
-          earnedByPeriod: true
-          earnedTotal: true
-        }
-      }
-    ) {
-      staker {
-        likedCreators
-        likedPosts
-        earnedByPeriod
-        earnedTotal
-      }
-      creator {
-        likesCountByPeriod
-        stakersWhoLiked
-        earnedByPeriod
-        earnedTotal
-      }
+      reward
     }
   }
 `
-export async function getUserStatistics({
-  address,
-}: {
-  address: string
-}): Promise<UserStatistics> {
-  const res = await datahubQueryRequest<
-    {
-      staker: {
-        reward: string
-        rankIndex: number
-      } | null
-      creator: {
-        reward: string
-        rankIndex: number
-      } | null
-      activeStakingAccountActivityMetricsForFixedPeriod: {
-        staker: {
-          likedCreators: number
-          likedPosts: number
-          earnedByPeriod: string
-          earnedTotal: string
-        }
-        creator: {
-          likesCountByPeriod: number
-          stakersWhoLiked: number
-          earnedByPeriod: string
-          earnedTotal: string
-        }
+
+const GET_USER_DATA_BY_WEEK = gql`
+  query GetUserDataByWeek($address: String!, $timestamp: String!) {
+    activeStakingAddressRankByTotalRewardsForPeriod(
+      args: {
+        period: WEEK
+        address: $address
+        withReward: true
+        timestamp: $timestamp
       }
-    },
-    { address: string; timestamp: string }
-  >({
-    document: GET_USER_STATS,
-    variables: { address, timestamp: getDayAndWeekTimestamp().week.toString() },
+    ) {
+      rankIndex
+      reward
+    }
+  }
+`
+
+export async function getUserData(
+  address: string,
+  period: Period
+): Promise<any> {
+  const { week } = getDayAndWeekTimestamp()
+  const res = await datahubQueryRequest<any, any>({
+    document:
+      period === 'allTime' ? GET_USER_DATA_BY_ALL_TIME : GET_USER_DATA_BY_WEEK,
+    variables:
+      period === 'allTime'
+        ? { address }
+        : { address, timestamp: week.toString() },
   })
 
-  const creatorRank =
-    res.creator?.rankIndex !== undefined ? res.creator.rankIndex + 1 : null
-  const stakerRank =
-    res.staker?.rankIndex !== undefined ? res.staker.rankIndex + 1 : null
+  const data = res.activeStakingAddressRankByTotalRewardsForPeriod
+
+  if (!data) {
+    return
+  }
 
   return {
     address,
-    creator: {
-      ...res.activeStakingAccountActivityMetricsForFixedPeriod.creator,
-      rank: creatorRank,
-    },
-    staker: {
-      ...res.activeStakingAccountActivityMetricsForFixedPeriod.staker,
-      rank: stakerRank,
-    },
+    rank: data.rankIndex + 1,
+    reward: data.reward,
   }
 }
 
-const GET_GENERAL_STATS = gql`
-  query GetGeneralStats {
-    activeStakingTotalActivityMetricsForFixedPeriod(
+const GET_USER_REFERRALS = gql`
+  query GetUserReferrals($address: String!) {
+    userReferrals(
       args: {
-        period: WEEK
-        likedPostsCount: true
-        likedCreatorsCount: true
-        stakersEarnedTotal: true
-        creatorEarnedTotal: true
-      }
-    ) {
-      likedPostsCount
-      likedCreatorsCount
-      stakersEarnedTotal
-      creatorEarnedTotal
-    }
-  }
-`
-export async function getGeneralStatistics(): Promise<GeneralStatistics> {
-  const res = await datahubQueryRequest<
-    {
-      activeStakingTotalActivityMetricsForFixedPeriod: {
-        likedPostsCount: number
-        likedCreatorsCount: number
-        stakersEarnedTotal: string
-        creatorEarnedTotal: string
-      }
-    },
-    {}
-  >({
-    document: GET_GENERAL_STATS,
-    variables: {},
-  })
-
-  const data = res.activeStakingTotalActivityMetricsForFixedPeriod
-  return {
-    creatorsEarnedTotal: data.creatorEarnedTotal,
-    creatorsLiked: data.likedCreatorsCount,
-    postsLiked: data.likedPostsCount,
-    stakersEarnedTotal: data.stakersEarnedTotal,
-  }
-}
-
-const GET_LEADERBOARD = gql`
-  query GetLeaderboardTableData(
-    $role: ActiveStakingAccountRole!
-    $timestamp: String!
-    $limit: Int!
-    $offset: Int!
-  ) {
-    activeStakingAddressesRankedByRewardsForPeriod(
-      args: {
-        filter: { period: WEEK, role: $role, timestamp: $timestamp }
-        limit: $limit
-        offset: $offset
-        order: DESC
+        where: { referrerIds: [$address] }
+        responseParams: { withDistributedRewards: true }
       }
     ) {
       data {
-        address
-        reward
-        rank
+        referrerId
+        referralsCount
+        distributedRewards {
+          totalPoints
+        }
       }
-      total
-      limit
     }
   }
 `
-export const LEADERBOARD_PAGE_LIMIT = 15
-export type LeaderboardRole = 'staker' | 'creator'
-export async function getLeaderboardData({
-  page,
-  role,
-}: {
-  role: LeaderboardRole
-  page: number
-}): Promise<LeaderboardData> {
-  const { week } = getDayAndWeekTimestamp()
-  const offset = Math.max(page - 1, 0) * LEADERBOARD_PAGE_LIMIT
+export async function getUserReferrals(
+  address: string
+): Promise<{ refCount: number; pointsEarned: number }> {
   const res = await datahubQueryRequest<
-    {
-      activeStakingAddressesRankedByRewardsForPeriod: {
-        data: {
-          address: string
-          reward: string
-          rank: number
-        }[]
-        total: number
-        limit: number
-      }
-    },
-    { role: string; timestamp: string; limit: number; offset: number }
+    GetUserReferralsQuery,
+    GetUserReferralsQueryVariables
   >({
-    document: GET_LEADERBOARD,
-    variables: {
-      role: role === 'creator' ? 'CREATOR' : 'STAKER',
-      timestamp: week.toString(),
-      limit: LEADERBOARD_PAGE_LIMIT,
-      offset,
-    },
+    document: GET_USER_REFERRALS,
+    variables: { address },
   })
 
-  const data = res.activeStakingAddressesRankedByRewardsForPeriod
-
-  const leaderboardData = data.data.map(({ rank, ...other }) => ({
-    ...other,
-    rank: rank !== undefined ? rank + 1 : null,
-  }))
+  const data = res.userReferrals.data[0]
 
   return {
-    data: leaderboardData,
-    hasMore: data.total > data.limit + offset,
-    total: data.total,
-    page,
-    role,
+    refCount: data.referralsCount ?? 0,
+    pointsEarned: parseInt(
+      data.distributedRewards?.totalPoints?.toString() ?? '0'
+    ),
   }
 }
 
-const GET_REWARD_HISTORY = gql`
-  query GetRewardHistory($address: String!) {
-    activeStakingRewardsByWeek(args: { filter: { account: $address } }) {
-      staker
-      week
-      creator {
+const GET_USER_REFERRAL_STATS = gql`
+  query getUserReferralsStats($address: String!) {
+    userReferralsStats(
+      args: {
+        where: { referrerId: $address }
+        responseParams: {
+          withReferralsList: true
+          withDistributedRewards: true
+        }
+        referralsListParams: { pageSize: 100 }
+      }
+    ) {
+      referrerId
+      distributedRewards {
+        totalPoints
+      }
+      referrals {
         total
+        pageSize
+        offset
+        data {
+          timestamp
+          socialProfile {
+            id
+          }
+        }
       }
     }
   }
 `
-export async function getRewardHistory(
-  address: string
-): Promise<RewardHistory> {
+
+export async function getUserReferralStats(address: string) {
   const res = await datahubQueryRequest<
     {
-      activeStakingRewardsByWeek: {
-        staker: string
-        week: number
-        creator: {
-          total: string
+      userReferralsStats: {
+        referrerId: string
+        distributedRewards: {
+          totalPoints: string
         }
-      }[]
+        referrals: {
+          total: number
+          data: {
+            timestamp: string
+            socialProfile: {
+              id: string
+            }
+          }[]
+        }
+      }
     },
-    { address: string }
+    GetUserReferralsQueryVariables
   >({
-    document: GET_REWARD_HISTORY,
+    document: GET_USER_REFERRAL_STATS,
     variables: { address },
   })
-  const rewards = res.activeStakingRewardsByWeek.map(
-    ({ staker, week, creator }) => {
-      const startDate = dayjs
-        .utc()
-        .year(week / 100)
-        .isoWeek(week % 100)
-        .startOf('week')
-      const endDate = startDate.add(1, 'week')
 
-      return {
-        reward: staker,
-        week,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        creatorReward: creator.total,
-      }
-    }
-  )
-  rewards.sort(
-    (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-  )
+  const data = res.userReferralsStats
 
   return {
-    address,
-    rewards,
+    refCount: data.referrals.total ?? 0,
+    pointsEarned: data.distributedRewards.totalPoints.toString() ?? '0',
+    referrals: data.referrals.data.map((referral) => ({
+      timestamp: referral.timestamp,
+      socialProfileId: referral.socialProfile.id,
+    })),
   }
 }

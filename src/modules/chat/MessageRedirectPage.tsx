@@ -1,6 +1,6 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
-import { getPostQuery } from '@/services/api/query'
+import { getPostQuery } from '@/old/services/api/query'
 import { getChatPageLink } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'

@@ -1,5 +1,5 @@
-import { getReferrerIdQuery } from '@/services/datahub/referral/query'
-import { queryClient } from '@/services/provider'
+import { getReferrerIdQuery } from '@/old/services/datahub/referral/query'
+import { queryClient } from '@/old/services/provider'
 import { getReferralIdInUrl } from './ReferralUrlChanger'
 
 export async function getReferralIdFromDbOrUrl(address: string) {

@@ -1,7 +1,7 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import ProposalStatus from '@/components/opengov/ProposalStatus'
 import VoteSummary from '@/components/opengov/VoteSummary'
-import { Proposal } from '@/server/opengov/mapper'
+import { Proposal } from '@/old/server/opengov/mapper'
 import { cx } from '@/utils/class-names'
 import { formatBalanceWithDecimals } from '@/utils/formatBalance'
 import { ReactNode } from 'react'
