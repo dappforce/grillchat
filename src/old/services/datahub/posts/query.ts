@@ -1,7 +1,7 @@
 import { CHAT_PER_PAGE } from '@/constants/chat'
-import { getPostQuery } from '@/old/services/api/query'
 import { queryClient } from '@/old/services/provider'
 import { createQuery, poolQuery, QueryConfig } from '@/old/subsocial-query'
+import { getPostQuery } from '@/services/api/query'
 import {
   QueryClient,
   useInfiniteQuery,

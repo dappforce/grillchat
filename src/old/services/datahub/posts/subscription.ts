@@ -1,5 +1,5 @@
-import { getPostQuery } from '@/old/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/old/services/subsocial/commentIds/optimistic'
+import { getPostQuery } from '@/services/api/query'
 import { useSubscriptionState } from '@/stores/subscription'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'

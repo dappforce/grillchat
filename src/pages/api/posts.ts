@@ -1,11 +1,7 @@
 import { canRenderEmbed } from '@/components/chats/ChatItem/Embed'
-import { redisCallWrapper } from '@/old/server/cache'
-import { ApiResponse, handlerWrapper } from '@/old/server/common'
-import { generateGetDataFromSquidWithBlockchainFallback } from '@/old/server/squid'
-import { isDatahubAvailable } from '@/old/services/datahub/utils'
-import { getPostsFromSubsocial } from '@/old/services/subsocial/posts/fetcher'
-import { convertAddressToSubsocialAddress } from '@/utils/account'
-import { getUrlFromText } from '@/utils/strings'
+import { redisCallWrapper } from '@/server/cache'
+import { ApiResponse, handlerWrapper } from '@/server/common'
+import { getPosts } from '@/services/datahub/posts/fetcher'
 import { LinkMetadata, PostData } from '@subsocial/api/types'
 import { parser } from 'html-metadata-parser'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -74,33 +70,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-const getPostsData = generateGetDataFromSquidWithBlockchainFallback(
-  'posts',
-  getPostsFromSubsocial,
-  { paramToId: (param) => param, responseToId: (post) => post.id },
-  {
-    blockchainResponse: (post) => {
-      if (!post.content) return
-      const link = getUrlFromText(post.content.body)
-      if (!link) return
-      post.content.link = link
-    },
-  },
-  getInvalidatedPostRedisKey
-)
 export async function getPostsServer(postIds: string[]): Promise<PostData[]> {
   const validIds = postIds.filter((id) => !!id && !id.startsWith('optimistic-'))
-  let posts: PostData[]
-  if (isDatahubAvailable) {
-    // to bypass the invalidation cache for squid
-    posts = await getPostsFromSubsocial(validIds)
-  } else {
-    posts = await getPostsData(validIds)
-  }
+  const posts = await getPosts(validIds)
 
   const linksToFetch = new Set<string>()
   posts.forEach((post) => {
-    post.struct.ownerId = convertAddressToSubsocialAddress(post.struct.ownerId)!
     const link = post.content?.link
     const shouldLinkBeFetched =
       link && link.startsWith('https') && !canRenderEmbed(link)

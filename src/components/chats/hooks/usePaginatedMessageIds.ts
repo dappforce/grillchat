@@ -1,48 +1,122 @@
-import { CHAT_PER_PAGE } from '@/constants/chat'
 import useFilterBlockedMessageIds from '@/hooks/useFilterBlockedMessageIds'
 import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
   PaginatedPostsData,
-} from '@/old/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/old/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/old/services/subsocial/commentIds'
+  getPaginatedPostIdsByPostId,
+} from '@/services/datahub/posts/query'
+import { getPaginatedPostIdsByPostIdAndAccount } from '@/services/datahub/posts/queryByAccount'
+import { useMyMainAddress } from '@/stores/my-account'
 import { useMemo } from 'react'
-import useInfiniteScrollData from '../ChatList/hooks/useInfiniteScrollData'
-import usePauseableLoadMore from '../ChatList/hooks/usePausableLoadMore'
 
 type PaginatedData = {
-  currentPageMessageIds: string[]
+  messageIds: string[]
+  unfilteredMessageIds: string[]
   currentPage: number
   loadMore: () => void
   hasMore: boolean
   totalDataCount: number
   isLoading: boolean
   allIds: string[]
+  refetch?: () => void
+  isSuccess?: boolean
+  isError?: boolean
+  isFetching?: boolean
 }
 
 type PaginatedConfig = {
-  isPausedLoadMore?: boolean
   hubId: string
   chatId: string
+  onlyDisplayUnapprovedMessages?: boolean
+  pageSize?: number
 }
 
-export default function usePaginatedMessageIds(config: PaginatedConfig) {
-  return isDatahubAvailable
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      usePaginatedMessageIdsFromDatahub(config)
-    : // eslint-disable-next-line react-hooks/rules-of-hooks
-      usePaginatedMessageIdsFromChain(config)
-}
-
-const EMPTY_ARRAY: string[] = []
-
-export function usePaginatedMessageIdsFromDatahub({
+export default function usePaginatedMessageIds({
   chatId,
   hubId,
-  isPausedLoadMore,
+  onlyDisplayUnapprovedMessages,
+  pageSize,
 }: PaginatedConfig): PaginatedData {
+  const myAddress = useMyMainAddress() ?? ''
+  // because from server it doesn't have access to myAddress, so we need to use the data without users' unapproved posts as placeholder
+  const { data: placeholderData } =
+    getPaginatedPostIdsByPostId.useInfiniteQuery(
+      {
+        postId: chatId,
+        onlyDisplayUnapprovedMessages: !!onlyDisplayUnapprovedMessages,
+        myAddress: '',
+        pageSize,
+      },
+      {
+        enabled: false,
+      }
+    )
+  const {
+    data,
+    fetchNextPage,
+    isLoading,
+    refetch,
+    isSuccess,
+    isError,
+    isFetching,
+  } = getPaginatedPostIdsByPostId.useInfiniteQuery(
+    {
+      postId: chatId,
+      onlyDisplayUnapprovedMessages: !!onlyDisplayUnapprovedMessages,
+      myAddress,
+      pageSize,
+    },
+    { enabled: !!myAddress, placeholderData }
+  )
+
+  const page = data?.pages
+  let lastPage: PaginatedPostsData | null = null
+  if (page && page.length > 0) {
+    const last = page[page.length - 1]
+    if (last) {
+      lastPage = last
+    }
+  }
+
+  const flattenedIds = useMemo(() => {
+    return Array.from(
+      new Set(data?.pages?.map((page) => page.data).flat() || [])
+    )
+  }, [data?.pages])
+
+  const filteredPageIds = useFilterBlockedMessageIds(
+    hubId,
+    chatId,
+    flattenedIds
+  )
+
+  return {
+    currentPage: lastPage?.page ?? 1,
+    messageIds: filteredPageIds,
+    unfilteredMessageIds: flattenedIds,
+    loadMore: fetchNextPage,
+    totalDataCount: data?.pages?.[0].totalData || 0,
+    hasMore: lastPage?.hasMore ?? true,
+    isLoading,
+    allIds: filteredPageIds,
+    refetch: () => refetch(),
+    isSuccess,
+    isError,
+    isFetching,
+  }
+}
+
+type PaginatedByAccountConfig = PaginatedConfig & {
+  account: string
+  isModerator: boolean
+}
+
+export function usePaginatedMessageIdsByAccount({
+  account,
+  chatId,
+  hubId,
+  isModerator,
+}: PaginatedByAccountConfig): PaginatedData {
   const { data, fetchNextPage, isLoading } =
-    getPaginatedPostsByPostIdFromDatahubQuery.useInfiniteQuery(chatId)
+    getPaginatedPostIdsByPostIdAndAccount.useInfiniteQuery(chatId, account)
 
   const page = data?.pages
   let lastPage: PaginatedPostsData | null = null
@@ -63,56 +137,14 @@ export function usePaginatedMessageIdsFromDatahub({
     flattenedIds
   )
 
-  const loadMore = usePauseableLoadMore(fetchNextPage, isPausedLoadMore)
-
   return {
     currentPage: lastPage?.page ?? 1,
-    currentPageMessageIds: filteredPageIds,
-    loadMore,
+    messageIds: isModerator ? flattenedIds : filteredPageIds,
+    loadMore: fetchNextPage,
     totalDataCount: data?.pages?.[0].totalData || 0,
     hasMore: lastPage?.hasMore ?? true,
+    unfilteredMessageIds: flattenedIds,
     isLoading,
-    allIds: filteredPageIds,
-  }
-}
-
-export function usePaginatedMessageIdsFromChain({
-  chatId,
-  hubId,
-  isPausedLoadMore,
-}: PaginatedConfig): PaginatedData {
-  const { data: rawMessageIds, isLoading } =
-    getCommentIdsByPostIdFromChainQuery.useQuery(chatId, {
-      subscribe: true,
-    })
-  const messageIds = rawMessageIds || EMPTY_ARRAY
-
-  const {
-    currentPage,
-    currentData: currentPageMessageIds,
-    loadMore,
-    hasMore,
-  } = useInfiniteScrollData(messageIds, CHAT_PER_PAGE, isPausedLoadMore)
-
-  // TODO: improve this when datahub is integrated with moderation
-  const filteredMessageIds = useFilterBlockedMessageIds(
-    hubId,
-    chatId,
-    messageIds
-  )
-  const filteredCurrentPageIds = useFilterBlockedMessageIds(
-    hubId,
-    chatId,
-    currentPageMessageIds
-  )
-
-  return {
-    currentPageMessageIds: filteredCurrentPageIds,
-    currentPage,
-    loadMore,
-    hasMore,
-    totalDataCount: filteredMessageIds.length,
-    isLoading,
-    allIds: filteredMessageIds,
+    allIds: isModerator ? flattenedIds : filteredPageIds,
   }
 }

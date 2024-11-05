@@ -45,6 +45,7 @@ const getSpaces = poolQuery<string, SpaceData>({
       document: GET_SPACES,
       variables: { ids: spaceIds },
     })
+
     return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
   },
   resultMapper: {

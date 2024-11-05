@@ -1,4 +1,4 @@
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'

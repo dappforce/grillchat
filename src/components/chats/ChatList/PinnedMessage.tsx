@@ -1,5 +1,5 @@
 import Container from '@/components/Container'
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { RiPushpinLine } from 'react-icons/ri'
 import usePinnedMessage from '../hooks/usePinnedMessage'
 import useScrollToMessage from './hooks/useScrollToMessage'

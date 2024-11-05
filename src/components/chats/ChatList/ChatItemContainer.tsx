@@ -1,6 +1,6 @@
 import useIsMessageBlocked from '@/hooks/useIsMessageBlocked'
 import usePrevious from '@/hooks/usePrevious'
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'

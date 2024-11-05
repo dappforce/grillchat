@@ -1,7 +1,7 @@
 import LinkText from '@/components/LinkText'
 import Toast from '@/components/Toast'
 import { env } from '@/env.mjs'
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'

@@ -1,4 +1,4 @@
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
 import { useSubscriptionState } from '@/stores/subscription'
 import { getChatPageLink, getWidgetChatPageLink } from '@/utils/links'

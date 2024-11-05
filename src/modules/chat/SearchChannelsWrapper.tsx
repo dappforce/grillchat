@@ -4,12 +4,12 @@ import NoChatsFound from '@/components/chats/NoChatsFound'
 import { env } from '@/env.mjs'
 import useDebounce from '@/hooks/useDebounce'
 import useSearch from '@/hooks/useSearch'
-import { getPostQuery } from '@/old/services/api/query'
 import {
   getPostIdsBySpaceIdQuery,
   getPostsBySpaceContentQuery,
 } from '@/old/services/subsocial/posts'
 import { isSquidAvailable } from '@/old/services/subsocial/squid/utils'
+import { getPostQuery } from '@/services/api/query'
 import { removeDoubleSpaces } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'

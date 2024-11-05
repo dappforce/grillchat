@@ -1,7 +1,7 @@
-import { getPostQuery } from '@/old/services/api/query'
 import { getPostMetadataQuery } from '@/old/services/datahub/posts/query'
 import { isDatahubAvailable } from '@/old/services/datahub/utils'
 import { getCommentIdsByPostIdFromChainQuery } from '@/old/services/subsocial/commentIds'
+import { getPostQuery } from '@/services/api/query'
 
 export function useLastMessageId(chatId: string) {
   if (isDatahubAvailable) {

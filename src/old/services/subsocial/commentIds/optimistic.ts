@@ -1,5 +1,5 @@
-import { getPostQuery } from '@/old/services/api/query'
 import { isDatahubAvailable } from '@/old/services/datahub/utils'
+import { getPostQuery } from '@/services/api/query'
 import { PostContent, PostData } from '@subsocial/api/types'
 import { QueryClient } from '@tanstack/react-query'
 import {

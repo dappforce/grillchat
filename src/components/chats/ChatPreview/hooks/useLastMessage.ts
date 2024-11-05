@@ -1,5 +1,5 @@
 import { useLastMessageId } from '@/components/chats/hooks/useLastMessageId'
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 
 export default function useLastMessage(chatId: string) {
   const lastMessageId = useLastMessageId(chatId)

@@ -112,13 +112,11 @@ const ProfilePreview = ({
       <div className={cx('flex flex-col gap-1', addressesContainerClassName)}>
         <div className='ml-1 flex items-center gap-2'>
           <Name
-            withPolkadotIdentity={withPolkadotIdentity}
             asLink={asLink}
             profileSourceIconClassName='text-base'
             profileSourceIconPosition='right'
             address={address}
             className={cx('gap-2 text-lg', nameClassName)}
-            forceProfileSource={forceProfileSource}
           />
           {onEditClick && !isLoading && editButton}
         </div>

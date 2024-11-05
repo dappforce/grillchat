@@ -1,12 +1,12 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
-import { getPostQuery } from '@/old/services/api/query'
 import { GetBlockedInAppDetailedQuery } from '@/old/services/datahub/generated-query'
 import { useModerationActions } from '@/old/services/datahub/moderation/mutation'
 import {
   getBlockedInAppDetailedQuery,
   getBlockedInPostIdDetailedQuery,
 } from '@/old/services/datahub/moderation/query'
+import { getPostQuery } from '@/services/api/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Image from 'next/image'

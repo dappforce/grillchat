@@ -3,10 +3,10 @@ import ProposalDetailPage, {
   ProposalDetailPageProps,
 } from '@/modules/opengov/ProposalDetailPage'
 import { prefetchBlockedEntities } from '@/old/server/moderation/prefetch'
-import { getPostQuery } from '@/old/services/api/query'
 import { getPaginatedPostsByPostIdFromDatahubQuery } from '@/old/services/datahub/posts/query'
 import { getProposalDetailServer } from '@/pages/api/opengov/proposals/[id]'
 import { getPostsServer } from '@/pages/api/posts'
+import { getPostQuery } from '@/services/api/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 

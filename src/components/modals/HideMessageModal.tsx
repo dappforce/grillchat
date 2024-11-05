@@ -1,6 +1,6 @@
 import useToastError from '@/hooks/useToastError'
-import { getPostQuery } from '@/old/services/api/query'
 import { useHideMessage } from '@/old/services/subsocial/posts/mutation'
+import { getPostQuery } from '@/services/api/query'
 import { cx } from '@/utils/class-names'
 import { toast } from 'react-hot-toast'
 import { HiOutlineEyeSlash } from 'react-icons/hi2'

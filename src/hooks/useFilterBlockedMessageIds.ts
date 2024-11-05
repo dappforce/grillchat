@@ -1,6 +1,6 @@
 import { env } from '@/env.mjs'
-import { getPostQuery } from '@/old/services/api/query'
 import { getBlockedResourcesQuery } from '@/old/services/datahub/moderation/query'
+import { getPostQuery } from '@/services/api/query'
 import { filterBlockedMessageIds } from '@/utils/chat'
 import { useMemo } from 'react'
 

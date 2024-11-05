@@ -1,7 +1,7 @@
 import useToastError from '@/hooks/useToastError'
-import { getPostQuery } from '@/old/services/api/query'
 import { useModerationActions } from '@/old/services/datahub/moderation/mutation'
 import { getModerationReasonsQuery } from '@/old/services/datahub/moderation/query'
+import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'

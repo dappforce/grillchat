@@ -4,7 +4,7 @@ import useLastReadTimeFromStorage from '@/components/chats/hooks/useLastReadMess
 import MessageModal from '@/components/modals/MessageModal'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'

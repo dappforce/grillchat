@@ -1,5 +1,5 @@
-import { getPostQuery } from '@/old/services/api/query'
 import { getPostRewardsQuery } from '@/old/services/datahub/content-staking/query'
+import { getPostQuery } from '@/services/api/query'
 import { formatSUB } from '@/utils/balance'
 import { cx } from '@/utils/class-names'
 import capitalize from 'lodash.capitalize'

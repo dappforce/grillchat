@@ -4,11 +4,11 @@ import MessageRedirectPage, {
   MessageRedirectPageProps,
 } from '@/modules/chat/MessageRedirectPage'
 import { prefetchBlockedEntities } from '@/old/server/moderation/prefetch'
-import { getPostQuery } from '@/old/services/api/query'
 import { ResourceTypes } from '@/old/services/datahub/moderation/utils'
 import { AppCommonProps } from '@/pages/_app'
 import { getNftDataServer } from '@/pages/api/nft'
 import { getPostsServer } from '@/pages/api/posts'
+import { getPostQuery } from '@/services/api/query'
 import { isMessageBlocked } from '@/utils/chat'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'

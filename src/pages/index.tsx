@@ -6,8 +6,8 @@ import HomePage, {
 } from '@/modules/chat/HomePage'
 import { prefetchChatPreviewsData } from '@/old/server/chats'
 import { getPostIdsBySpaceIdQuery } from '@/old/services/subsocial/posts'
-import { getSpaceQuery } from '@/old/services/subsocial/spaces'
 import { AppCommonProps } from '@/pages/_app'
+import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { getCommonStaticProps } from '@/utils/page'
 import { QueryClient, dehydrate } from '@tanstack/react-query'
 

@@ -1,8 +1,8 @@
 import Send from '@/assets/icons/send.svg'
 import { env } from '@/env.mjs'
 import { Proposal } from '@/old/server/opengov/mapper'
-import { getPostQuery } from '@/old/services/api/query'
 import { getPostMetadataQuery } from '@/old/services/datahub/posts/query'
+import { getPostQuery } from '@/services/api/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getTimeRelativeToNow } from '@/utils/date'
@@ -279,11 +279,7 @@ function LastCommentItem({
           <div className='flex flex-col items-start gap-0.5 overflow-hidden'>
             <span className='flex items-center gap-2'>
               {ownerId ? (
-                <Name
-                  withPolkadotIdentity
-                  className='text-sm font-medium'
-                  address={ownerId}
-                />
+                <Name className='text-sm font-medium' address={ownerId} />
               ) : (
                 <Skeleton className='w-12' />
               )}

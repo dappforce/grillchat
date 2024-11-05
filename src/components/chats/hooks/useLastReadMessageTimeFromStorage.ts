@@ -1,4 +1,4 @@
-import { getPostQuery } from '@/old/services/api/query'
+import { getPostQuery } from '@/services/api/query'
 import { LocalForage, LocalStorage } from '@/utils/storage'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'

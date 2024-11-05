@@ -1,6 +1,5 @@
 import { env } from '@/env.mjs'
 import { useIsAddressBlockedInApp } from '@/hooks/useIsAddressBlockedInApp'
-import { getPostQuery } from '@/old/services/api/query'
 import { useCreateSuperLike } from '@/old/services/datahub/content-staking/mutation'
 import {
   PostRewards,
@@ -11,6 +10,7 @@ import {
   getSuperLikeCountQuery,
   getTotalStakeQuery,
 } from '@/old/services/datahub/content-staking/query'
+import { getPostQuery } from '@/services/api/query'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'

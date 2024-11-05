@@ -1,7 +1,7 @@
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getPosts } from '@/old/services/api/fetcher'
-import { getPostQuery } from '@/old/services/api/query'
 import { isMessageSent } from '@/old/services/subsocial/commentIds/optimistic'
+import { getPostQuery } from '@/services/api/query'
 import { PostData } from '@subsocial/api/types'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
