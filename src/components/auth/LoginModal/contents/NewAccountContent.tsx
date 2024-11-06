@@ -8,7 +8,6 @@ import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { IoLogoGoogle } from 'react-icons/io'
 import { RiTwitterXLine } from 'react-icons/ri'
-import { SiEthereum } from 'react-icons/si'
 import urlJoin from 'url-join'
 import { LoginModalContentProps } from '../LoginModalContent'
 import { getRedirectCallback } from '../utils'
@@ -21,19 +20,6 @@ export default function NewAccountContent({
     <div className='flex flex-col gap-4'>
       <GoogleButton />
       <XLoginButton />
-      <Button
-        size='lg'
-        variant='primaryOutline'
-        onClick={() => {
-          setCurrentState('evm-address-link')
-          sendEvent('login_evm_clicked')
-        }}
-      >
-        <div className='flex items-center justify-center gap-2'>
-          <SiEthereum className={cx('text-[20px] text-text-muted')} />
-          Connect Wallet
-        </div>
-      </Button>
       <span className='text-center text-sm text-text-muted'>
         By creating an account, you agree to the{' '}
         <LinkText

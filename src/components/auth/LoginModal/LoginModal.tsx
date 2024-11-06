@@ -101,6 +101,18 @@ export default function LoginModal({
       withBackButton: true,
       withoutDefaultPadding: true,
     },
+    'solana-connect': {
+      title: '🔗 Connect via Solana',
+      desc: 'Select a wallet to connect to Grill using an existing Solana account',
+      withBackButton: true,
+      withoutDefaultPadding: true,
+    },
+    'solana-connect-confirmation': {
+      title: '🔑 Link Your Account',
+      desc: 'Confirm the account connection in your Solana wallet',
+      withBackButton: true,
+      backToStep: 'solana-connect',
+    },
     'polkadot-js-limited-support': {
       title: '🔗 Limited Polkadot.js Support',
       desc: (

@@ -29,6 +29,7 @@ export const getLinkedIdentityQuery = createQuery({
       undefined
     if (data === useMyAccount.getState().address) {
       const cacheData = getMyLinkedIdentityCache.get()
+      console.log(cacheData)
       cache = parseJSONData(cacheData)
     }
     return {

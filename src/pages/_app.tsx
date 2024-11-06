@@ -9,13 +9,12 @@ import useIsInIframe from '@/hooks/useIsInIframe'
 import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { useDatahubSubscription } from '@/old/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/old/services/provider'
-import { ConnectWalletProvider } from '@/providers/ConnectWalletProvider'
 import {
   ConfigProvider,
   useConfigContext,
 } from '@/providers/config/ConfigProvider'
 import { getAugmentedGaId } from '@/providers/config/utils'
-import EvmProvider from '@/providers/evm/EvmProvider'
+import SolanaProvider from '@/providers/solana/SolanaProvider'
 import { initAllStores } from '@/stores/registry'
 import { useTransactions } from '@/stores/transactions'
 import '@/styles/globals.css'
@@ -166,11 +165,9 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
         <GlobalModals />
         <div className={cx('font-sans')}>
           <ErrorBoundary>
-            <ConnectWalletProvider>
-              <EvmProvider>
-                <Component {...props} />
-              </EvmProvider>
-            </ConnectWalletProvider>
+            <SolanaProvider>
+              <Component {...props} />
+            </SolanaProvider>
           </ErrorBoundary>
         </div>
       </QueryProvider>

@@ -1,6 +1,5 @@
 import IncognitoIcon from '@/assets/icons/incognito.svg'
 import KeyIcon from '@/assets/icons/key.svg'
-import WalletIcon from '@/assets/icons/wallet.svg'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
@@ -33,6 +32,8 @@ import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
 import ScanQrContent from './contents/ScanQrContent'
+import SolanaConnectConfirmation from './contents/SolanaConnectConfirmation'
+import SolanaConnectWalletContent from './contents/SolanaConnectContent'
 import { finishLogin } from './utils'
 
 export type LoginModalStep =
@@ -44,6 +45,8 @@ export type LoginModalStep =
   | 'account-created'
   | 'evm-address-link'
   | 'evm-linking-error'
+  | 'solana-connect'
+  | 'solana-connect-confirmation'
 
 export type LoginModalContentProps = ModalFunctionalityProps & {
   setCurrentState: Dispatch<SetStateAction<LoginModalStep>>
@@ -76,7 +79,6 @@ export const LoginContent = (props: LoginModalContentProps) => {
   }, [])
 
   const canUseAnonLogin = !loginRequired
-  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
 
   return (
     <div>
@@ -100,26 +102,18 @@ export const LoginContent = (props: LoginModalContentProps) => {
             </Button>
           )}
           <Button
-            variant={
-              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
-            }
+            variant={'primaryOutline'}
             onClick={() => {
-              setCurrentState('polkadot-connect')
+              setCurrentState('solana-connect')
               sendEvent('login_polkadot_account_clicked')
             }}
             size='lg'
           >
             <div className='flex items-center justify-center gap-2'>
-              <WalletIcon
-                className={cx(
-                  isConnectWalletPrimaryButton
-                    ? 'text-text-muted-on-primary'
-                    : 'text-text-muted'
-                )}
-              />
-              Connect via Polkadot
+              Connect via Solana
             </div>
           </Button>
+
           {loginOption === 'all' && canUseAnonLogin && isInIframe && (
             <Button
               type='button'
@@ -190,9 +184,11 @@ export const loginModalContents: LoginModalContents = {
   'evm-address-link': EvmLoginStep,
   'evm-linking-error': (props) => <EvmLoginStep isErrorStep {...props} />,
   'polkadot-connect': PolkadotConnectWalletContent,
+  'solana-connect': SolanaConnectWalletContent,
   'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   'polkadot-connect-account': PolkadotConnectAccountContent,
   'polkadot-connect-confirmation': PolkadotConnectConfirmation,
+  'solana-connect-confirmation': SolanaConnectConfirmation,
 }
 
 function PolkadotConnectConfirmation({

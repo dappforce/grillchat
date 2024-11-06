@@ -137,6 +137,19 @@ export async function getServerTime() {
     throw new Error('Failed to get server time')
   }
 }
+
+export async function getSolanaMessage(address: string) {
+  try {
+    const res = await apiInstance.get(
+      '/api/datahub/solana-message?address=' + address
+    )
+    return res.data.message
+  } catch (err) {
+    console.error('Failed to get solana message', err)
+    throw new Error('Failed to get solana message')
+  }
+}
+
 export const getServerTimeQuery = createQuery({
   key: 'server-time',
   fetcher: getServerTime,
