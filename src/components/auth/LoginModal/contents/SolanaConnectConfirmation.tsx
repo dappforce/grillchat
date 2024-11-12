@@ -1,3 +1,5 @@
+import LinkingDark from '@/assets/graphics/linking-dark.svg'
+import LinkingLight from '@/assets/graphics/linking-light.svg'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { getSolanaMessage } from '@/services/api/query'
 import { IdentityProvider } from '@/services/datahub/generated-query'
@@ -7,16 +9,14 @@ import {
   useLinkIdentity,
 } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
-import { getProfileQuery } from '@/services/datahub/profiles/query'
-import { augmentDatahubParams } from '@/services/datahub/utils'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
 import bs58 from 'bs58'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { LoginModalContentProps } from '../LoginModalContent'
 
 type OnSuccess = (linkedIdentity: Identity) => void
@@ -26,6 +26,7 @@ const SolanaConnectConfirmation = ({
 }: LoginModalContentProps) => {
   const { publicKey, signMessage } = useWallet()
   const myGrillAddress = useMyAccount((state) => state.address) ?? ''
+  const [decodedSignature, setDecodedSignature] = useState<string | null>(null)
 
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
@@ -41,26 +42,20 @@ const SolanaConnectConfirmation = ({
     mutate: addExternalProvider,
     isSuccess: isSuccessAdding,
     isLoading: isAddingProvider,
-    reset: resetAdding,
   } = useAddExternalProviderToIdentity()
 
   const {
-    mutateAsync: upsertProfile,
-    isLoading: isUpsertingProfile,
-    isSuccess: isSuccessUpsertingProfile,
-  } = useUpsertProfile()
-  const {
     mutate: linkIdentity,
     isSuccess: isSuccessLinking,
+    isError: isErrorLinking,
+    error: errorLinking,
     isLoading: isLinking,
-    reset: resetLinking,
   } = useLinkIdentity()
 
-  const isLoading = isLinking || isAddingProvider || isUpsertingProfile
-  const isSuccess =
-    isSuccessLinking || isSuccessAdding || isSuccessUpsertingProfile
-
+  const isLoading = isLinking || isAddingProvider
   const isLoadingRef = useWrapInRef(isLoading)
+
+  console.log(isErrorLinking, errorLinking)
 
   useEffect(() => {
     if (!publicKey?.toString()) return
@@ -75,38 +70,23 @@ const SolanaConnectConfirmation = ({
       onSuccessCalls.current = []
     }
 
+    console.log(isSuccessLinking, isSuccessAdding)
+
     if (isSuccessLinking) {
-      getProfileQuery
-        .fetchQuery(queryClient, linkedIdentity?.mainAddress ?? '')
-        .then(async (profile) => {
-          if (!profile) {
-            const augmented = await augmentDatahubParams({
-              content: {
-                name: `some name`,
-              },
-            })
-            upsertProfile(augmented)?.then(() => callOnSuccesses())
-          } else {
-            callOnSuccesses()
-          }
-        })
-      resetAdding()
-      resetLinking()
+      useLoginModal
+        .getState()
+        .openNextStepModal({ step: 'save-grill-key', provider: 'solana' })
     } else if (isSuccessAdding) {
       callOnSuccesses()
-      resetAdding()
-      resetLinking()
+      useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
     }
   }, [
     finalizeTemporaryAccount,
     linkedIdentity,
     isSuccessLinking,
     isSuccessAdding,
-    resetAdding,
-    resetLinking,
-    upsertProfile,
     queryClient,
-    publicKey?.toString(),
+    publicKey,
   ])
 
   const loginSolana = useCallback(
@@ -116,89 +96,82 @@ const SolanaConnectConfirmation = ({
         .getState()
         .setSubscriptionState('identity', 'always-sub')
       if (isLoadingRef.current) return
-
+      const message = await getSolanaMessage(publicKey.toString())
       let currentAddress = useMyAccount.getState().address
 
-      const message = await getSolanaMessage(publicKey.toString())
+      console.log(message)
 
-      const signature = await signMessage?.(new TextEncoder().encode(message))
+      console.log('Decoded signature', decodedSignature)
 
-      const decodedSignature = bs58.encode(signature || [])
+      console.log(currentAddress)
 
-      if (currentAddress) {
-        addExternalProvider({
-          externalProvider: {
-            provider: SDKIdentityProvider.SOLANA,
-            id: publicKey.toString(),
-            solProofMsg: message,
-            solProofMsgSig: decodedSignature,
-          },
-        })
+      if (!decodedSignature) {
+        const signature = await signMessage?.(new TextEncoder().encode(message))
+
+        const decodedSignature = bs58.encode(signature || [])
+
+        setDecodedSignature(decodedSignature)
       } else {
-        const address = await loginAsTemporaryAccount()
-        if (!address) {
-          console.error('Failed to login account')
-          return
+        if (currentAddress) {
+          console.log('Adding external provider')
+          addExternalProvider({
+            externalProvider: {
+              provider: SDKIdentityProvider.SOLANA,
+              id: publicKey.toString(),
+              solProofMsg: message,
+              solProofMsgSig: decodedSignature,
+            },
+          })
+        } else {
+          const address = await loginAsTemporaryAccount()
+          console.log('Linking identity', address)
+          if (!address) {
+            console.error('Failed to login account')
+            return
+          }
+
+          linkIdentity({
+            externalProvider: {
+              id: publicKey.toString(),
+              provider: SDKIdentityProvider.SOLANA,
+              solProofMsg: message,
+              solProofMsgSig: decodedSignature,
+            },
+          })
         }
-
-        linkIdentity({
-          externalProvider: {
-            id: publicKey.toString(),
-            provider: SDKIdentityProvider.SOLANA,
-            solProofMsg: message,
-            solProofMsgSig: decodedSignature,
-          },
-        })
       }
-
       if (onSuccessLogin) onSuccessCalls.current.push(onSuccessLogin)
     },
     [
       addExternalProvider,
-      publicKey?.toString(),
+      decodedSignature,
       isLoadingRef,
       linkIdentity,
       loginAsTemporaryAccount,
+      publicKey,
+      signMessage,
     ]
   )
 
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
 
   useEffect(() => {
-    const login = async () => {
-      if (publicKey?.toString() && !parentProxyAddress && isInitializedProxy) {
-        await loginSolana()
-      } else if (
-        publicKey?.toString() &&
-        isInitializedProxy &&
-        parentProxyAddress
-      ) {
-        // check if the user has profile, because if in any case that the chain of login operations fail, making user doesn't have profile,
-        // the call will never get called again without this
-        getProfileQuery
-          .fetchQuery(queryClient, parentProxyAddress)
-          .then(async (profile) => {
-            if (!profile) {
-              // const firstName = data.firstName || ''
-              // const lastName = data.lastName || ''
-              const augmented = await augmentDatahubParams({
-                content: {
-                  name: `some name`,
-                },
-              })
-              upsertProfile(augmented)
-            }
-          })
-      }
-    }
-
-    login()
+    loginSolana()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKey?.toString(), parentProxyAddress, isInitializedProxy])
+  }, [
+    publicKey?.toString(),
+    parentProxyAddress,
+    isSuccessLinking,
+    isInitializedProxy,
+    decodedSignature,
+  ])
 
   return (
     <div className='flex flex-col'>
-      {!isSuccess && isLoading ? <>Loading...</> : <>Successfully linked</>}
+      <div className='mb-2 w-full'>
+        <LinkingLight className='block w-full dark:hidden' />
+        <LinkingDark className='hidden w-full dark:block' />
+      </div>
     </div>
   )
 }

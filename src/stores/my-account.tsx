@@ -1,34 +1,23 @@
 import Toast from '@/components/Toast'
 import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
 import { sendEventWithRef } from '@/components/referral/analytics'
-import { ESTIMATED_ENERGY_FOR_ONE_TX } from '@/constants/subsocial'
-import { IdentityProvider } from '@/old/services/datahub/generated-query'
-import { linkIdentity } from '@/old/services/datahub/identity/mutation'
-import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
-import { getReferrerIdQuery } from '@/old/services/datahub/referral/query'
-import { queryClient } from '@/old/services/provider'
-import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
-import { getOwnedPostIdsQuery } from '@/old/services/subsocial/posts'
-import { getProxiesQuery } from '@/old/services/subsocial/proxy/query'
-import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
-import { useParentData } from '@/stores/parent'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { getReferrerIdQuery } from '@/services/datahub/referral/query'
+import { getDayAndWeekTimestamp } from '@/services/datahub/utils'
+import { queryClient } from '@/services/provider'
 import {
   Signer,
-  convertAddressToSubsocialAddress,
   decodeSecretKey,
   encodeSecretKey,
   generateAccount,
   isSecretKeyUsingMiniSecret,
   loginWithSecretKey,
-  validateAddress,
 } from '@/utils/account'
-import { waitNewBlock } from '@/utils/blockchain'
-import { currentNetwork } from '@/utils/network'
-import { wait } from '@/utils/promise'
+import { getDayOfYear } from '@/utils/date'
 import { LocalStorage, LocalStorageAndForage } from '@/utils/storage'
-import { getIsInIframe, isWebNotificationsEnabled } from '@/utils/window'
-import { Wallet, WalletAccount, getWallets } from '@talismn/connect-wallets'
+import { isWebNotificationsEnabled } from '@/utils/window'
 import dayjs from 'dayjs'
+import { getAddress } from 'ethers'
 import toast from 'react-hot-toast'
 import { UserProperties, useAnalytics } from './analytics'
 import { create, createSelectors } from './utils'
@@ -49,22 +38,12 @@ type State = {
   isInitializedProxy: boolean | undefined
   isTemporaryAccount: boolean
 
-  preferredWallet: Wallet | null
-  connectedWallet:
-    | {
-        address: string
-        signer: Signer | null
-        energy?: number
-        _unsubscribeEnergy?: () => void
-      }
-    | undefined
   parentProxyAddress: string | undefined
 
   address: string | null
+  readonlyUserAddress: string | null
   signer: Signer | null
-  energy: number | null
   encodedSecretKey: string | null
-  _unsubscribeEnergy: () => void
 }
 
 type Actions = {
@@ -78,29 +57,22 @@ type Actions = {
   ) => Promise<string | false>
   loginAsTemporaryAccount: () => Promise<string | false>
   finalizeTemporaryAccount: () => void
+  readOnlyLoginAsUser: (address: string | null) => void
   logout: () => void
-  setPreferredWallet: (wallet: Wallet | null) => void
-  connectWallet: (address: string, signer: Signer | null) => Promise<void>
-  saveProxyAddress: () => void
+  saveProxyAddress: (address: string) => void
   disconnectProxy: () => void
-  _subscribeEnergy: () => void
-  _subscribeConnectedWalletEnergy: () => void
-  _readPreferredWalletFromStorage: () => Wallet | undefined
 }
 
 const initialState: State = {
-  connectedWallet: undefined,
   isInitialized: undefined,
   isInitializedAddress: true,
   isInitializedProxy: false,
   isTemporaryAccount: false,
-  preferredWallet: null,
   parentProxyAddress: undefined,
+  readonlyUserAddress: null,
   address: null,
   signer: null,
-  energy: null,
   encodedSecretKey: null,
-  _unsubscribeEnergy: () => undefined,
 }
 
 export const accountAddressStorage = new LocalStorageAndForage(
@@ -115,7 +87,6 @@ const temporaryAccountStorage = new LocalStorage(() => 'temp-account')
 const parentProxyAddressStorage = new LocalStorage(
   () => 'connectedWalletAddress'
 )
-const preferredWalletStorage = new LocalStorage(() => 'preferred-wallet')
 
 const sendLaunchEvent = async (
   address?: string | false,
@@ -134,32 +105,9 @@ const sendLaunchEvent = async (
   if (!address) {
     sendEvent('app_launched', undefined, { ref: getReferralIdInUrl() })
   } else {
-    const [
-      // linkedTgAccData,
-      evmLinkedAddress,
-      ownedPostIds,
-      linkedIdentity,
-      referrerId,
-    ] = await Promise.allSettled([
-      // getLinkedTelegramAccountsQuery.fetchQuery(queryClient, {
-      //   address,
-      // }),
-      getAccountDataQuery.fetchQuery(queryClient, address),
-      getOwnedPostIdsQuery.fetchQuery(queryClient, address),
-      getLinkedIdentityQuery.fetchQuery(queryClient, address),
+    const [referrerId] = await Promise.allSettled([
       getReferrerIdQuery.fetchQuery(queryClient, address),
     ] as const)
-
-    // if (linkedTgAccData.status === 'fulfilled')
-    //   userProperties.tgNotifsConnected =
-    //     (linkedTgAccData.value?.length || 0) > 0
-    if (evmLinkedAddress.status === 'fulfilled')
-      userProperties.evmLinked = !!evmLinkedAddress.value
-    if (ownedPostIds.status === 'fulfilled')
-      userProperties.ownedChat = (ownedPostIds.value?.length || 0) > 0
-    if (linkedIdentity.status === 'fulfilled')
-      userProperties.twitterLinked =
-        linkedIdentity.value?.provider === IdentityProvider.Twitter
     if (referrerId.status === 'fulfilled')
       userProperties.ref = referrerId.value || getReferralIdInUrl()
 
@@ -171,48 +119,17 @@ const sendLaunchEvent = async (
 
 const useMyAccountBase = create<State & Actions>()((set, get) => ({
   ...initialState,
-  setPreferredWallet: (wallet) => {
-    set({ preferredWallet: wallet })
-    if (!wallet) preferredWalletStorage.remove()
-    else preferredWalletStorage.set(wallet.title)
-  },
-  _subscribeConnectedWalletEnergy: () => {
-    const { connectedWallet } = get()
-    if (!connectedWallet) return
-
-    const { address } = connectedWallet
-    const unsub = subscribeEnergy(address, (energy) => {
-      const wallet = get().connectedWallet
-      if (!wallet) return
-      set({ connectedWallet: { ...wallet, energy } })
-    })
-    set({
-      connectedWallet: {
-        ...connectedWallet,
-        _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()),
-      },
-    })
-  },
-  connectWallet: async (address, signer) => {
-    const parsedAddress = convertAddressToSubsocialAddress(address)!
-
-    set({ connectedWallet: { address: parsedAddress, signer } })
-    get()._subscribeConnectedWalletEnergy()
-  },
-  saveProxyAddress: () => {
-    const { connectedWallet } = get()
-    if (!connectedWallet) return
-    parentProxyAddressStorage.set(connectedWallet.address)
-    set({
-      parentProxyAddress: convertAddressToSubsocialAddress(
-        connectedWallet.address
-      ),
-    })
+  saveProxyAddress: (address) => {
+    const normalized = getAddress(address)
+    parentProxyAddressStorage.set(normalized)
+    set({ parentProxyAddress: normalized })
   },
   disconnectProxy: () => {
-    get().connectedWallet?._unsubscribeEnergy?.()
-    set({ connectedWallet: undefined, parentProxyAddress: undefined })
+    set({ parentProxyAddress: undefined })
     parentProxyAddressStorage.remove()
+  },
+  readOnlyLoginAsUser: (address: string | null) => {
+    set({ readonlyUserAddress: address })
   },
   login: async (secretKey, config) => {
     const {
@@ -225,15 +142,14 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     try {
       if (!secretKey) {
         secretKey = (await generateAccount()).secretKey
-        const { parentOrigin } = useParentData.getState()
         sendEventWithRef(address, (refId) => {
           analytics.sendEvent(
             'account_created',
             {},
             {
-              cameFrom: parentOrigin,
-              cohortDate: dayjs().toDate(),
+              cohortDate: `${getDayOfYear()}-${dayjs().year()}`,
               ref: refId,
+              week: getDayAndWeekTimestamp().week.toString(),
             }
           )
         })
@@ -246,7 +162,7 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
       const signer = await loginWithSecretKey(secretKey)
       const encodedSecretKey = encodeSecretKey(secretKey)
-      address = convertAddressToSubsocialAddress(signer.address)!
+      address = getAddress(signer.address)
 
       set({
         address,
@@ -264,36 +180,8 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
         if (parentProxyAddress) {
           parentProxyAddressStorage.set(parentProxyAddress)
           set({ parentProxyAddress })
-          await validateParentProxyAddress({
-            grillAddress: address,
-            parentProxyAddress,
-            signer,
-            onAnyProxyRemoved: () => {
-              get().logout()
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  type='error'
-                  title='Login failed'
-                  subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
-                />
-              ))
-            },
-            onInvalidProxy: () => {
-              get().logout()
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  type='error'
-                  title='Login failed'
-                  subtitle='You seem to have logged in to your wallet in another device, please relogin using "Connect via Polkadot" to use it here'
-                />
-              ))
-            },
-          })
         }
       }
-      get()._subscribeEnergy()
     } catch (e) {
       console.error('Failed to login', e)
       if (!isInitialization && withErrorToast) {
@@ -328,46 +216,24 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
     temporaryAccountStorage.remove()
     set({ isTemporaryAccount: false })
   },
-  _subscribeEnergy: () => {
-    const { address, parentProxyAddress, _unsubscribeEnergy } = get()
-    _unsubscribeEnergy()
-    const usedAddress = parentProxyAddress || address
-
-    const unsub = subscribeEnergy(usedAddress, (energy) => {
-      set({ energy })
-    })
-    set({ _unsubscribeEnergy: () => unsub.then((unsub) => unsub?.()) })
-  },
   logout: () => {
-    const { _unsubscribeEnergy, address } = get()
-    _unsubscribeEnergy()
+    const { address } = get()
 
     accountStorage.remove()
     accountAddressStorage.remove()
     hasSentMessageStorage.remove()
     parentProxyAddressStorage.remove()
+    temporaryAccountStorage.remove()
     if (address) followedIdsStorage.remove(address)
 
     set({ ...initialState, isInitialized: true, isInitializedProxy: true })
   },
-  _readPreferredWalletFromStorage: () => {
-    const preferredWallet = preferredWalletStorage.get()
-    let wallet: Wallet | undefined
-    if (preferredWallet) {
-      wallet = getWallets().find((wallet) => wallet.title === preferredWallet)
-      if (wallet) set({ preferredWallet: wallet })
-      else preferredWalletStorage.remove()
-    }
-    return wallet
-  },
   init: async () => {
-    const { isInitialized, login, _readPreferredWalletFromStorage } = get()
+    const { isInitialized, login } = get()
 
     // Prevent multiple initialization
     if (isInitialized !== undefined) return
     set({ isInitialized: false })
-
-    _readPreferredWalletFromStorage()
 
     const encodedSecretKey = accountStorage.get()
     const parentProxyAddressFromStorage = parentProxyAddressStorage.get()
@@ -397,114 +263,27 @@ const useMyAccountBase = create<State & Actions>()((set, get) => ({
 
     set({
       isInitialized: true,
-      parentProxyAddress:
-        convertAddressToSubsocialAddress(parentProxyAddress ?? '') ?? undefined,
+      parentProxyAddress: parentProxyAddress ?? undefined,
     })
 
-    if (parentProxyAddress) {
-      await validateParentProxyAddress({
-        grillAddress: get().address!,
-        parentProxyAddress,
-        signer: get().signer!,
-        onAnyProxyRemoved: () => {
-          get().logout()
-          toast.custom((t) => (
-            <Toast
-              t={t}
-              type='error'
-              title='Logged out'
-              subtitle='Sorry we had to remove your proxy, please relogin to use your account again.'
-            />
-          ))
-        },
-        onInvalidProxy: () => {
-          get().logout()
-          toast.custom((t) => (
-            <Toast
-              t={t}
-              type='error'
-              title='Logged out'
-              subtitle='You seem to have logged in to your wallet in another device, please relogin to use it here'
-            />
-          ))
-        },
-      })
-    }
     set({ isInitializedProxy: true })
-    get()._subscribeEnergy()
-
-    // if we use parentProxy from storage, then need to check whether the account is linked in datahub or not, and link if not yet
-    // this is a background process, so it needs to be done after all other init is done
-    const finalAddress = get().address
-    const finalParentProxyAddress = get().parentProxyAddress
-    if (finalAddress && finalParentProxyAddress) {
-      linkPolkadotIfNotLinked(finalAddress, finalParentProxyAddress)
-    }
   },
 }))
 export const useMyAccount = createSelectors(useMyAccountBase)
 
-async function linkPolkadotIfNotLinked(
-  address: string,
-  parentProxyAddress: string
-) {
-  const linkedAddress = await getParentProxyAddress(address)
-  if (
-    convertAddressToSubsocialAddress(linkedAddress ?? '')! ===
-    convertAddressToSubsocialAddress(parentProxyAddress)!
-  )
-    return
-
-  try {
-    await linkIdentity({
-      address,
-      args: {
-        id: parentProxyAddress,
-        // @ts-expect-error because using IdentityProvider from generated types, but its same with the datahub sdk
-        provider: IdentityProvider.Polkadot,
-      },
-    })
-    getLinkedIdentityQuery.invalidate(queryClient, address)
-  } catch (err) {
-    console.error('Failed to link polkadot identity', err)
-  }
-}
-
 async function validateParentProxyAddress({
   grillAddress,
   parentProxyAddress,
-  signer,
-  onAnyProxyRemoved,
   onInvalidProxy,
 }: {
   parentProxyAddress: string
   grillAddress: string
-  signer: Signer
   onInvalidProxy: () => void
-  onAnyProxyRemoved: () => void
 }) {
   try {
     // Remove proxy with type 'Any'
-    const proxies = await getProxiesQuery.fetchQuery(queryClient, {
-      address: parentProxyAddress,
-    })
-    const currentProxy = proxies.find(({ address }) => address === grillAddress)
-    if (currentProxy?.proxyType === 'Any') {
-      async function removeProxy() {
-        const api = await getSubsocialApi()
-        const substrateApi = await api.substrateApi
-        await substrateApi.tx.proxy
-          .proxy(
-            parentProxyAddress!,
-            null,
-            substrateApi.tx.proxy.removeProxies()
-          )
-          .signAndSend(signer)
-      }
-      removeProxy()
-
-      onAnyProxyRemoved()
-    } else if (!currentProxy) {
+    const currentProxy = await getParentProxyAddress(grillAddress)
+    if (!currentProxy || currentProxy !== parentProxyAddress) {
       onInvalidProxy()
     }
   } catch (err) {
@@ -513,74 +292,17 @@ async function validateParentProxyAddress({
 }
 
 async function getParentProxyAddress(grillAddress: string) {
+  if (!grillAddress) return null
   try {
     const linkedIdentity = await getLinkedIdentityQuery.fetchQuery(
       queryClient,
       grillAddress
     )
-    if (linkedIdentity?.provider === IdentityProvider.Polkadot) {
-      const isValid = await validateAddress(linkedIdentity.substrateAccount)
-      if (!isValid) return null
-
-      return linkedIdentity.externalId
-    }
-    return null
+    return linkedIdentity?.mainAddress
   } catch (err) {
     console.error('Failed to get linked identity')
     return null
   }
-}
-
-async function subscribeEnergy(
-  address: string | null,
-  onEnergyUpdate: (energy: number) => void,
-  isRetrying?: boolean
-): Promise<undefined | (() => void)> {
-  if (!address) return
-
-  const { getSubsocialApi } = await import(
-    '@/old/subsocial-query/subsocial/connection'
-  )
-
-  const subsocialApi = await getSubsocialApi()
-  const substrateApi = await subsocialApi.substrateApi
-  if (!substrateApi.isConnected && !isRetrying) {
-    await substrateApi.disconnect()
-    await substrateApi.connect()
-  }
-
-  if (!substrateApi.isConnected) {
-    // If energy subscription is run when the api is not connected, even after some more ms it connect, the subscription won't work
-    // Here we wait for some delay because the api is not connected immediately even after awaiting the connect() method.
-    // And we retry it recursively after 500ms delay until it's connected (without reconnecting the api again)
-    await wait(500)
-    return subscribeEnergy(address, onEnergyUpdate, true)
-  }
-
-  let prev: null | number = null
-  const unsub = substrateApi.query.energy.energyBalance(
-    address,
-    async (energyAmount) => {
-      let parsedEnergy: unknown = energyAmount
-      if (typeof energyAmount.toPrimitive === 'function') {
-        parsedEnergy = energyAmount.toPrimitive()
-      }
-
-      const energy = parseFloat(parsedEnergy + '')
-      if (
-        prev !== null &&
-        prev < ESTIMATED_ENERGY_FOR_ONE_TX &&
-        currentNetwork === 'subsocial'
-      )
-        await waitNewBlock()
-
-      prev = energy
-
-      console.log('Current energy: ', address, energy)
-      onEnergyUpdate(energy)
-    }
-  )
-  return unsub
 }
 
 function saveLoginInfoToStorage() {
@@ -593,143 +315,39 @@ function saveLoginInfoToStorage() {
 }
 
 export function getMyMainAddress() {
-  const { address, parentProxyAddress } = useMyAccount.getState()
+  const { address, parentProxyAddress, readonlyUserAddress } =
+    useMyAccount.getState()
+
+  if (readonlyUserAddress) return readonlyUserAddress
   return parentProxyAddress || address
 }
 
 export function useMyMainAddress() {
-  const address = useMyAccount((state) => state.address)
+  const { address, readonlyUserAddress } = useMyAccount()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  if (readonlyUserAddress) return readonlyUserAddress
   return parentProxyAddress || address
 }
 
-export function getHasEnoughEnergy(energy: number | undefined | null) {
-  return (energy ?? 0) > ESTIMATED_ENERGY_FOR_ONE_TX
-}
-
-export async function enableWallet({
-  listener,
-  onError,
-}: {
-  listener: (accounts: WalletAccount[]) => void
-  onError: (err: unknown) => void
-}) {
-  let preferredWallet = useMyAccount.getState().preferredWallet
-  if (!preferredWallet) {
-    const fromStorage = useMyAccount
-      .getState()
-      ._readPreferredWalletFromStorage()
-    if (fromStorage) {
-      preferredWallet = fromStorage
-    } else {
-      const firstInstalledWallet = getWallets().find(
-        (wallet) => wallet.installed
-      )
-      if (!firstInstalledWallet)
-        return onError(new Error('No supported wallet found'))
-      preferredWallet = firstInstalledWallet
-    }
-  }
-
-  try {
-    await preferredWallet.enable('grillapp')
-    const unsub = preferredWallet.subscribeAccounts((accounts) => {
-      listener(accounts ?? [])
-    })
-    return () => {
-      if (typeof unsub === 'function') unsub()
-    }
-  } catch (err) {
-    if (getIsInIframe() && preferredWallet.title === 'Polkadot.js') {
-      toast.custom((t) => (
-        <Toast
-          t={t}
-          title='Please retry this action in "Chat" page'
-          description='Click on "Chat" menu in the sidebar and retry your action in that page'
-        />
-      ))
-    }
-    console.error('Error enabling wallet', err)
-    onError(err)
-  }
-}
-
-export async function enableWalletOnce() {
-  return new Promise<WalletAccount[]>((resolve, reject) => {
-    const unsub = enableWallet({
-      listener: (accounts) => {
-        unsub.then((unsub) => unsub?.())
-        resolve(accounts)
-      },
-      onError: (err) => {
-        reject(err)
-      },
-    })
-  })
-}
-
-type PromiseOrValue<T> = Promise<T> | T
-export type WalletSigner = {
-  signRaw: (payload: {
-    address: string
-    data: string
-  }) => PromiseOrValue<string>
-}
-export function useGetCurrentSigner(): () => Promise<WalletSigner | undefined> {
-  const address = useMyAccount((state) => state.address)
-  const signer = useMyAccount((state) => state.signer)
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-
-  return async () => {
-    try {
-      if (!address || !parentProxyAddress)
-        throw new Error('You need to login first')
-      if (!parentProxyAddress) {
-        if (!signer) throw new Error('No signer connected')
-
-        return {
-          signRaw: ({ address, data }) => {
-            if (
-              convertAddressToSubsocialAddress(signer.address) !==
-              convertAddressToSubsocialAddress(address)
-            )
-              throw new Error('Invalid address')
-
-            return signer.sign(data).toString()
-          },
-        }
-      }
-
-      const { web3Enable, web3FromAddress } = await import(
-        '@polkadot/extension-dapp'
-      )
-      const extensions = await web3Enable('grillapp')
-
-      if (extensions.length === 0) {
-        return
-      }
-      const extSigner = (await web3FromAddress(parentProxyAddress)).signer
-
-      if (!extSigner)
-        throw new Error(
-          'Signer not found, please relogin your account to continue'
-        )
-      return {
-        signRaw: async ({ address, data }) => {
-          const sig = await extSigner!.signRaw?.({
-            address,
-            data,
-            type: 'bytes',
-          })
-          return sig?.signature.toString() ?? ''
-        },
-      }
-    } catch (err) {
-      return undefined
-    }
-  }
+export function useMyGrillAddress() {
+  return useMyAccount((state) => state.address)
 }
 
 export function getIsLoggedIn() {
   return !!accountStorage.get()
+}
+
+export async function signMessage(message: string) {
+  const { address, signer } = useMyAccount.getState()
+
+  if (!address) {
+    throw new Error('No account connected')
+  }
+
+  if (!signer) {
+    throw new Error('No signer connected')
+  }
+
+  return (await signer.signMessage(message)).toString()
 }

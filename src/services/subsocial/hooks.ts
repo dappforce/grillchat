@@ -1,9 +1,9 @@
 import { useMyAccount } from '@/stores/my-account'
-import { Signer } from '@/utils/account'
+import { OldSigner } from '@/utils/account'
 
 type WalletAccount = {
   address: string
-  signer: Signer | null
+  signer: OldSigner | null
   proxyToAddress?: string
 }
 

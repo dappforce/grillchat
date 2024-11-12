@@ -9,7 +9,7 @@ import {
   createSignedSocialDataEvent,
   createSocialDataEventPayload,
 } from '@/services/datahub/utils'
-import { Signer, generateAccount, loginWithSecretKey } from '@/utils/account'
+import { OldSigner, generateAccount, loginWithSecretKey } from '@/utils/account'
 import { formatNumber } from '@/utils/strings'
 import {
   IdentityProvider,
@@ -31,11 +31,11 @@ function getImageUrl(imageId: number, ext = 'jpg'): string {
   return `${env.NEXT_PUBLIC_BASE_URL}/frames/${frameName}/${imageId}.${ext}`
 }
 
-const sessions: Map<number, { parentProxyAddress: string; signer: Signer }> =
+const sessions: Map<number, { parentProxyAddress: string; signer: OldSigner }> =
   new Map()
 async function getSession(
   fid: number
-): Promise<{ parentProxyAddress: string; signer: Signer }> {
+): Promise<{ parentProxyAddress: string; signer: OldSigner }> {
   if (sessions.has(fid)) {
     return sessions.get(fid)!
   }

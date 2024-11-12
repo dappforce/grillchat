@@ -7,7 +7,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { isTouchDevice } from '@/utils/device'
 import { useEffect, useRef, useState } from 'react'
-import { LimitedPolkadotJsSupportExplanation } from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
 import CreateProfileModal from './CreateProfileModal'
 import { LoginModalStep, loginModalContents } from './LoginModalContent'
 import SaveGrillKeyModal from './SaveGrillKeyModal'
@@ -95,12 +94,12 @@ export default function LoginModal({
       withBackButton: true,
       backToStep: 'new-account',
     },
-    'polkadot-connect': {
-      title: '🔗 Connect via Polkadot',
-      desc: 'Select a wallet to connect to Grill using an existing Polkadot account',
-      withBackButton: true,
-      withoutDefaultPadding: true,
-    },
+    // 'polkadot-connect': {
+    //   title: '🔗 Connect via Polkadot',
+    //   desc: 'Select a wallet to connect to Grill using an existing Polkadot account',
+    //   withBackButton: true,
+    //   withoutDefaultPadding: true,
+    // },
     'solana-connect': {
       title: '🔗 Connect via Solana',
       desc: 'Select a wallet to connect to Grill using an existing Solana account',
@@ -113,29 +112,29 @@ export default function LoginModal({
       withBackButton: true,
       backToStep: 'solana-connect',
     },
-    'polkadot-js-limited-support': {
-      title: '🔗 Limited Polkadot.js Support',
-      desc: (
-        <LimitedPolkadotJsSupportExplanation
-          goToWalletSelection={() => setCurrentState('polkadot-connect')}
-        />
-      ),
-      backToStep: 'polkadot-connect',
-      withBackButton: true,
-    },
-    'polkadot-connect-account': {
-      title: '🔗 Select an account',
-      desc: 'Select an account to connect to Grill',
-      withBackButton: true,
-      backToStep: 'polkadot-connect',
-      withoutDefaultPadding: true,
-    },
-    'polkadot-connect-confirmation': {
-      title: '🔑 Link Your Account',
-      desc: 'Confirm the account connection in your Polkadot wallet',
-      withBackButton: true,
-      backToStep: 'polkadot-connect-account',
-    },
+    // 'polkadot-js-limited-support': {
+    //   title: '🔗 Limited Polkadot.js Support',
+    //   desc: (
+    //     <LimitedPolkadotJsSupportExplanation
+    //       goToWalletSelection={() => setCurrentState('polkadot-connect')}
+    //     />
+    //   ),
+    //   backToStep: 'polkadot-connect',
+    //   withBackButton: true,
+    // },
+    // 'polkadot-connect-account': {
+    //   title: '🔗 Select an account',
+    //   desc: 'Select an account to connect to Grill',
+    //   withBackButton: true,
+    //   backToStep: 'polkadot-connect',
+    //   withoutDefaultPadding: true,
+    // },
+    // 'polkadot-connect-confirmation': {
+    //   title: '🔑 Link Your Account',
+    //   desc: 'Confirm the account connection in your Polkadot wallet',
+    //   withBackButton: true,
+    //   backToStep: 'polkadot-connect-account',
+    // },
   }
 
   const header = modalHeader[currentState]

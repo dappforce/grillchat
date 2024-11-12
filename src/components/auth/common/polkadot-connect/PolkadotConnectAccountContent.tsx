@@ -4,11 +4,7 @@ import { Skeleton } from '@/components/SkeletonFallback'
 import Toast from '@/components/Toast'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
-import {
-  Signer,
-  convertAddressToSubsocialAddress,
-  truncateAddress,
-} from '@/utils/account'
+import { truncateAddress } from '@/utils/account'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
@@ -61,7 +57,7 @@ export default function PolkadotConnectAccountContent({
           onClick: () => {
             if (!account.signer) return
 
-            connectWallet(account.address, account.signer as Signer)
+            connectWallet(account.address, account.signer as OldSigner)
             sendEvent('select_polkadot_address')
             setCurrentState('polkadot-connect-confirmation')
           },

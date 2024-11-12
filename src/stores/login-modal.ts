@@ -1,6 +1,5 @@
 import { LoginModalStep } from '@/components/auth/LoginModal/LoginModalContent'
-import { getUrlQuery } from '@/utils/links'
-import { useMyAccount } from './my-account'
+// import { useMyAccount } from './my-account'
 import { create, createSelectors } from './utils'
 
 type State = {
@@ -11,6 +10,7 @@ type State = {
     | undefined
     | { step: 'save-grill-key'; provider: SupportedExternalProvider }
     | { step: 'create-profile' }
+    | { step: 'connect-evm' }
 }
 
 type Actions = {
@@ -32,6 +32,7 @@ export const supportedExternalProviders = [
   'google',
   'evm',
   'polkadot',
+  'solana',
 ] as const
 export type SupportedExternalProvider =
   (typeof supportedExternalProviders)[number]
@@ -43,15 +44,10 @@ const useLoginModalBase = create<State & Actions>()((set, get) => ({
     }
 
     if (!isOpen) {
-      const { isTemporaryAccount, logout } = useMyAccount.getState()
-      if (isTemporaryAccount) logout()
-      set({ isOpen: false })
+      // const { isTemporaryAccount, logout } = useMyAccount.getState()
+      // if (isTemporaryAccount) logout()
+      set({ isOpen: false, defaultOpenState: undefined })
       return
-    } else if (
-      initialOpenState === 'polkadot-connect' &&
-      useMyAccount.getState().preferredWallet
-    ) {
-      initialOpenState = 'polkadot-connect-account'
     }
     set({ isOpen, initialOpenState })
   },
@@ -63,23 +59,6 @@ const useLoginModalBase = create<State & Actions>()((set, get) => ({
   },
   closeNextStepModal: () => {
     set({ openedNextStepModal: undefined })
-  },
-  init: () => {
-    const loginQuery = getUrlQuery('login')
-    if (supportedExternalProviders.includes(loginQuery)) {
-      set({
-        openedNextStepModal: {
-          step: 'save-grill-key',
-          provider: loginQuery as SupportedExternalProvider,
-        },
-      })
-      return
-    }
-
-    const auth = getUrlQuery('auth') === 'true'
-    if (auth) {
-      set({ isOpen: true })
-    }
   },
 }))
 export const useLoginModal = createSelectors(useLoginModalBase)

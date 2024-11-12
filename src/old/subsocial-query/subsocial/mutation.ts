@@ -1,5 +1,4 @@
 import { getCurrentWallet } from '@/old/services/subsocial/hooks'
-import { useConnectWallet } from '@/providers/ConnectWalletProvider'
 import { useMyAccount } from '@/stores/my-account'
 import { useTransactions } from '@/stores/transactions'
 import { generatePromiseQueue } from '@/utils/promise'
@@ -45,7 +44,7 @@ export function useSubsocialMutation<Data, Context = undefined>(
   config?: SubsocialMutationConfig<Data, Context>,
   defaultConfig?: SubsocialMutationConfig<Data, Context>
 ): UseMutationResult<string, Error, Data, unknown> {
-  const { requestWalletAccount } = useConnectWallet()
+  // const { requestWalletAccount } = useConnectWallet()
 
   const workerFunc = async (data: Data) => {
     const parentProxyAddress = useMyAccount.getState().parentProxyAddress
@@ -57,13 +56,13 @@ export function useSubsocialMutation<Data, Context = undefined>(
     )
 
     if (walletType === 'dynamic' && parentProxyAddress && !wallet.signer) {
-      const connected = await requestWalletAccount()
-      if (!connected) {
-        throw new Error(
-          'Cannot connect to your polkadot wallet, please make sure you have your connected account inside your selected wallet'
-        )
-      }
-      wallet = connected
+      // const connected = await requestWalletAccount()
+      // if (!connected) {
+      //   throw new Error(
+      //     'Cannot connect to your polkadot wallet, please make sure you have your connected account inside your selected wallet'
+      //   )
+      // }
+      // wallet = connected
     }
 
     if (!wallet.address || !wallet.signer)

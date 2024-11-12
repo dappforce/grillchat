@@ -21,7 +21,7 @@ import { getBalancesQuery } from '@/old/services/substrateBalances/query'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { getCreatorChatIdFromProfile } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
@@ -34,10 +34,10 @@ import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
-import { useDisconnect } from 'wagmi'
 import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
 import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
@@ -50,6 +50,11 @@ export default function AccountContent({
   const isInIframe = useIsInIframe()
   const { closeModal } = useProfileModal()
   const router = useRouter()
+  const logout = useMyAccount((state) => state.logout)
+
+  useEffect(() => {
+    logout()
+  }, [logout])
 
   const {
     data: balance,
@@ -70,7 +75,7 @@ export default function AccountContent({
 
   const sendEvent = useSendEvent()
   const commonEventProps = { eventSource: 'profile_menu' }
-  const { disconnect } = useDisconnect()
+  // const { disconnect } = useDisconnect()
 
   const { data: profile } = getProfileQuery.useQuery(address)
 

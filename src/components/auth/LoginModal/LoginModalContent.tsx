@@ -12,7 +12,6 @@ import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/old/services/api/mutation'
-import { getProfileQuery } from '@/old/services/api/query'
 import { useSetReferrerId } from '@/old/services/datahub/referral/mutation'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useSendEvent } from '@/stores/analytics'
@@ -22,11 +21,6 @@ import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { HiPlus } from 'react-icons/hi2'
-import LimitedPolkadotJsSupportContent from '../common/polkadot-connect/LimitedPolkadotJsSupportContent'
-import PolkadotConnectAccountContent from '../common/polkadot-connect/PolkadotConnectAccountContent'
-import PolkadotConnectConfirmationContent from '../common/polkadot-connect/PolkadotConnectConfirmationContent'
-import PolkadotConnectWalletContent from '../common/polkadot-connect/PolkadotConnectWalletContent'
-import { PolkadotConnectSteps } from '../common/polkadot-connect/types'
 import ScanQRButton from './ScanQRButton'
 import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
@@ -34,10 +28,8 @@ import NewAccountContent from './contents/NewAccountContent'
 import ScanQrContent from './contents/ScanQrContent'
 import SolanaConnectConfirmation from './contents/SolanaConnectConfirmation'
 import SolanaConnectWalletContent from './contents/SolanaConnectContent'
-import { finishLogin } from './utils'
 
 export type LoginModalStep =
-  | PolkadotConnectSteps
   | 'login'
   | 'scan-qr'
   | 'enter-secret-key'
@@ -80,6 +72,8 @@ export const LoginContent = (props: LoginModalContentProps) => {
 
   const canUseAnonLogin = !loginRequired
 
+  const isConnectWalletPrimaryButton = loginOption === 'polkadot'
+
   return (
     <div>
       <ScanQRButton {...props} />
@@ -101,6 +95,27 @@ export const LoginContent = (props: LoginModalContentProps) => {
               </div>
             </Button>
           )}
+          {/* <Button
+            variant={
+              isConnectWalletPrimaryButton ? 'primary' : 'primaryOutline'
+            }
+            onClick={() => {
+              setCurrentState('polkadot-connect')
+              sendEvent('login_polkadot_account_clicked')
+            }}
+            size='lg'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <WalletIcon
+                className={cx(
+                  isConnectWalletPrimaryButton
+                    ? 'text-text-muted-on-primary'
+                    : 'text-text-muted'
+                )}
+              />
+              Connect via Polkadot
+            </div>
+          </Button> */}
           <Button
             variant={'primaryOutline'}
             onClick={() => {
@@ -183,49 +198,49 @@ export const loginModalContents: LoginModalContents = {
   'account-created': AccountCreatedContent,
   'evm-address-link': EvmLoginStep,
   'evm-linking-error': (props) => <EvmLoginStep isErrorStep {...props} />,
-  'polkadot-connect': PolkadotConnectWalletContent,
+  // 'polkadot-connect': PolkadotConnectWalletContent,
   'solana-connect': SolanaConnectWalletContent,
-  'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
-  'polkadot-connect-account': PolkadotConnectAccountContent,
-  'polkadot-connect-confirmation': PolkadotConnectConfirmation,
+  // 'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
+  // 'polkadot-connect-account': PolkadotConnectAccountContent,
+  // 'polkadot-connect-confirmation': PolkadotConnectConfirmation,
   'solana-connect-confirmation': SolanaConnectConfirmation,
 }
 
-function PolkadotConnectConfirmation({
-  setCurrentState,
-  closeModal,
-}: LoginModalContentProps) {
-  const connectedWalletAddress = useMyAccount(
-    (state) => state.connectedWallet?.address
-  )
-  const { data: profile, isSuccess } = getProfileQuery.useQuery(
-    connectedWalletAddress ?? ''
-  )
-  const { mutate: setReferrerId } = useSetReferrerId()
+// function PolkadotConnectConfirmation({
+//   setCurrentState,
+//   closeModal,
+// }: LoginModalContentProps) {
+//   const connectedWalletAddress = useMyAccount(
+//     (state) => state.connectedWallet?.address
+//   )
+//   const { data: profile, isSuccess } = getProfileQuery.useQuery(
+//     connectedWalletAddress ?? ''
+//   )
+//   const { mutate: setReferrerId } = useSetReferrerId()
 
-  const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
-  const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
+//   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
+//   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
 
-  return (
-    <PolkadotConnectConfirmationContent
-      closeModal={closeModal}
-      setCurrentState={setCurrentState}
-      onSuccess={() => {
-        finalizeTemporaryAccount()
-        if (!profile?.profileSpace?.id && isSuccess) {
-          useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
-        } else {
-          finishLogin(closeModal)
-        }
-      }}
-      beforeAddProxy={async () => {
-        await loginAsTemporaryAccount()
-        setReferrerId({ refId: getReferralIdInUrl(), walletType: 'injected' })
-        return true
-      }}
-    />
-  )
-}
+//   return (
+//     <PolkadotConnectConfirmationContent
+//       closeModal={closeModal}
+//       setCurrentState={setCurrentState}
+//       onSuccess={() => {
+//         finalizeTemporaryAccount()
+//         if (!profile?.profileSpace?.id && isSuccess) {
+//           useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
+//         } else {
+//           finishLogin(closeModal)
+//         }
+//       }}
+//       beforeAddProxy={async () => {
+//         await loginAsTemporaryAccount()
+//         setReferrerId({ refId: getReferralIdInUrl(), walletType: 'injected' })
+//         return true
+//       }}
+//     />
+//   )
+// }
 
 export function EvmLoginStep({
   setCurrentState,

@@ -19,7 +19,6 @@ import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
 import {
-  getHasEnoughEnergy,
   hasSentMessageStorage,
   useMyAccount,
   useMyMainAddress,
@@ -116,10 +115,6 @@ export default function ChatForm({
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
-  const hasEnoughEnergy = useMyAccount((state) =>
-    getHasEnoughEnergy(state.energy)
-  )
-  const [isRequestingEnergy, setIsRequestingEnergy] = useState(false)
 
   const { mutate: requestTokenAndSendMessage } = useRequestTokenAndSendMessage({
     onSuccess: () => unsentMessageStorage.remove(chatId),
@@ -172,12 +167,7 @@ export default function ChatForm({
     if (replyTo || messageToEdit) textAreaRef.current?.focus()
   }, [replyTo, messageToEdit])
 
-  useEffect(() => {
-    setIsRequestingEnergy(false)
-  }, [hasEnoughEnergy])
-
-  const shouldSendMessage =
-    isLoggedIn && (isRequestingEnergy || hasEnoughEnergy)
+  const shouldSendMessage = isLoggedIn
 
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
@@ -259,7 +249,6 @@ export default function ChatForm({
       sendMessage(messageParams)
     } else {
       requestTokenAndSendMessage(messageParams)
-      setIsRequestingEnergy(true)
     }
 
     // // TODO: wrap it into hook

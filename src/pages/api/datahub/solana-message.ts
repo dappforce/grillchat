@@ -37,7 +37,7 @@ const GET_handler = handlerWrapper({
   dataGetter: (req) => req.query,
 })<{ message: string }>({
   allowedMethods: ['GET'],
-  errorLabel: 'referral',
+  errorLabel: 'solana-message',
   handler: async (data, _, res) => {
     const message = await getLinkIdentitySolanaMessage(data.address)
     res.json({

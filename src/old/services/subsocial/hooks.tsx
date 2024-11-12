@@ -1,15 +1,10 @@
 import Toast from '@/components/Toast'
 import useLoginOption from '@/hooks/useLoginOption'
-import { useRequestToken } from '@/old/services/api/mutation'
 import {
   SubsocialMutationConfig,
   WalletAccount,
 } from '@/old/subsocial-query/subsocial/types'
-import {
-  getHasEnoughEnergy,
-  useMyAccount,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { UseMutationResult, useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
@@ -17,11 +12,9 @@ export function getCurrentWallet(
   walletType: 'injected' | 'grill' = 'grill'
 ): WalletAccount {
   if (walletType === 'injected') {
-    const wallet = useMyAccount.getState().connectedWallet
-
     return {
-      address: wallet?.address ?? '',
-      signer: wallet?.signer ?? null,
+      address: useMyAccount.getState()?.address ?? '',
+      signer: useMyAccount.getState()?.signer ?? null,
     }
   }
   return {
@@ -40,20 +33,11 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
   isUsingConnectedWallet?: boolean,
   otherProps?: OtherProps
 ) {
-  const connectedWallet = useMyAccount((state) => state.connectedWallet)
-  const grillAddress = useMyAccount.use.address()
+  const { address: connectedAddress } = useMyAccount()
   const myAddress = useMyMainAddress()
-  const address = isUsingConnectedWallet ? connectedWallet?.address : myAddress
-
-  const hasEnoughEnergyGrillAddress = useMyAccount((state) =>
-    getHasEnoughEnergy(state.energy)
-  )
-  const hasEnoughEnergy = isUsingConnectedWallet
-    ? getHasEnoughEnergy(connectedWallet?.energy)
-    : hasEnoughEnergyGrillAddress
+  const address = isUsingConnectedWallet ? connectedAddress : myAddress
 
   const { mutateAsync } = useMutationHook(config, otherProps)
-  const { mutateAsync: requestToken } = useRequestToken()
 
   const { promptUserForLogin } = useLoginOption()
 
@@ -73,14 +57,6 @@ export default function useCommonTxSteps<Data, ReturnValue, OtherProps>(
         if (!address) return
         usedAddress = address
       }
-    }
-
-    if (!hasEnoughEnergy) {
-      const [_, res] = await Promise.all([
-        requestToken({ address: usedAddress }),
-        mutateAsync(params),
-      ])
-      return res
     }
 
     return await mutateAsync(params)

@@ -25,10 +25,9 @@ export default function SolanaConnectWalletContent({
 
   const sendEvent = useSendEvent()
 
-  const { buttonState, onConnect, onDisconnect, publicKey, onSelectWallet } =
-    useWalletMultiButton({
-      onSelectWallet: setWalletModalConfig,
-    })
+  const { buttonState, onSelectWallet } = useWalletMultiButton({
+    onSelectWallet: setWalletModalConfig,
+  })
 
   const menu =
     walletModalConfig?.wallets.map((wallet) => ({

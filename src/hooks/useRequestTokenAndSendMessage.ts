@@ -1,4 +1,3 @@
-import { useRequestToken } from '@/old/services/api/mutation'
 import {
   SendMessageParams,
   useSendMessage,
@@ -14,7 +13,7 @@ export default function useRequestTokenAndSendMessage(
   const address = useMyMainAddress()
   const { promptUserForLogin } = useLoginOption()
 
-  const { mutateAsync: requestToken } = useRequestToken()
+  // const { mutateAsync: requestToken } = useRequestToken()
   const { mutateAsync: sendMessage } = useSendMessage()
 
   const requestTokenAndSendMessage = async (params: Params) => {
@@ -26,7 +25,7 @@ export default function useRequestTokenAndSendMessage(
     }
 
     const promises: Promise<any>[] = [sendMessage(params)]
-    promises.push(requestToken({ address: usedAddress }))
+    // promises.push(requestToken({ address: usedAddress }))
 
     await Promise.all(promises)
   }
