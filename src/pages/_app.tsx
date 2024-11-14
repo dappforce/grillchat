@@ -6,7 +6,6 @@ import { ReferralUrlChanger } from '@/components/referral/ReferralUrlChanger'
 import { PAGES_WITH_LARGER_CONTAINER } from '@/constants/layout'
 import { env } from '@/env.mjs'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useNetworkStatus from '@/hooks/useNetworkStatus'
 import { useDatahubSubscription } from '@/old/services/datahub/subscription-aggregator'
 import { QueryProvider } from '@/old/services/provider'
 import {
@@ -16,7 +15,6 @@ import {
 import { getAugmentedGaId } from '@/providers/config/utils'
 import SolanaProvider from '@/providers/solana/SolanaProvider'
 import { initAllStores } from '@/stores/registry'
-import { useTransactions } from '@/stores/transactions'
 import '@/styles/globals.css'
 import { cx } from '@/utils/class-names'
 import '@rainbow-me/rainbowkit/styles.css'
@@ -151,7 +149,6 @@ function AppContent({ Component, pageProps }: AppProps<AppCommonProps>) {
       <QueryProvider dehydratedState={dehydratedState}>
         <DatahubSubscriber />
         <BadgeManager />
-        <SubsocialApiReconnect />
         <ToasterConfig />
         <ForegroundNotificationHandler />
         <ReferralUrlChanger />
@@ -182,33 +179,4 @@ function DatahubSubscriber() {
 
 function ToasterConfig() {
   return <Toaster position='top-center' />
-}
-
-function SubsocialApiReconnect() {
-  const subscriptionState = useTransactions((state) => state.subscriptionState)
-  const { status, reconnect, disconnect, connect } = useNetworkStatus()
-  const isConnected = status === 'connected'
-
-  useEffect(() => {
-    if (!isConnected && document.visibilityState === 'visible') {
-      reconnect()
-    }
-  }, [isConnected, reconnect])
-
-  useEffect(() => {
-    if (subscriptionState === 'always-sub') {
-      connect()
-    }
-  }, [subscriptionState, connect])
-
-  useEffect(() => {
-    const listener = () => {
-      if (document.visibilityState === 'visible') connect()
-      else disconnect()
-    }
-    document.addEventListener('visibilitychange', listener)
-    return () => document.removeEventListener('visibilitychange', listener)
-  }, [connect, disconnect])
-
-  return null
 }

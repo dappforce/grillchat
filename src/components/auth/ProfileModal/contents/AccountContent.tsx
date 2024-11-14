@@ -1,4 +1,3 @@
-import EthIcon from '@/assets/icons/eth.svg'
 import ExitIcon from '@/assets/icons/exit.svg'
 import KeyIcon from '@/assets/icons/key.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
@@ -14,12 +13,12 @@ import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import { getLinkedTelegramAccountsQuery } from '@/old/services/api/notifications/query'
-import { getProfileQuery } from '@/old/services/api/query'
-import { useGetChainDataByNetwork } from '@/old/services/chainsInfo/query'
-import { getBalancesQuery } from '@/old/services/substrateBalances/query'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
+import { getLinkedTelegramAccountsQuery } from '@/services/api/notifications/query'
 import { getPostQuery } from '@/services/api/query'
+import { useGetChainDataByNetwork } from '@/services/chainsInfo/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
+import { getBalancesQuery } from '@/services/substrateBalances/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
@@ -34,7 +33,6 @@ import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
@@ -51,10 +49,6 @@ export default function AccountContent({
   const { closeModal } = useProfileModal()
   const router = useRouter()
   const logout = useMyAccount((state) => state.logout)
-
-  useEffect(() => {
-    logout()
-  }, [logout])
 
   const {
     data: balance,
@@ -101,19 +95,18 @@ export default function AccountContent({
   }
 
   const onLogoutClick = () => {
-    disconnect()
     sendEvent('open_log_out_modal', commonEventProps)
     setCurrentState('logout')
   }
 
   const menus: MenuListProps['menus'] = [
-    {
-      icon: EthIcon,
-      text: 'My EVM Address',
-      onClick: () => {
-        setCurrentState('link-evm-address')
-      },
-    },
+    // {
+    //   icon: EthIcon,
+    //   text: 'My EVM Address',
+    //   onClick: () => {
+    //     setCurrentState('link-evm-address')
+    //   },
+    // },
     ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
       ? [
           {
