@@ -36,7 +36,6 @@ import { useRouter } from 'next/router'
 import { FaRegBell, FaRegUser } from 'react-icons/fa'
 import { LuRefreshCcw } from 'react-icons/lu'
 import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
-import { useCanUseGrillKey } from '../hooks'
 import { ProfileModalContentProps } from '../types'
 import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
 
@@ -44,7 +43,6 @@ export default function AccountContent({
   address,
   setCurrentState,
 }: ProfileModalContentProps) {
-  const canUseGrillKey = useCanUseGrillKey()
   const isInIframe = useIsInIframe()
   const { closeModal } = useProfileModal()
   const router = useRouter()
@@ -156,17 +154,13 @@ export default function AccountContent({
             },
           },
         ]),
-    ...(canUseGrillKey
-      ? [
-          {
-            text: 'My Key & Session',
-            icon: KeyIcon,
-            onClick: () => {
-              onPrivacySecurityKeyClick()
-            },
-          },
-        ]
-      : []),
+    {
+      text: 'My Key & Session',
+      icon: KeyIcon,
+      onClick: () => {
+        onPrivacySecurityKeyClick()
+      },
+    },
     {
       text: (
         <span className='flex items-center gap-2'>

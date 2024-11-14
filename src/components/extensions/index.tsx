@@ -1,12 +1,6 @@
 import dynamic from 'next/dynamic'
 
-const DonateModal = dynamic(() => import('./donate/DonateModal/DonateModal'), {
-  ssr: false,
-})
 const ImageModal = dynamic(() => import('./image/ImageModal'), {
-  ssr: false,
-})
-const NftModal = dynamic(() => import('./nft/NftModal'), {
   ssr: false,
 })
 const SecretBoxModal = dynamic(() => import('./secret-box/SecretBoxModal'), {
@@ -22,9 +16,7 @@ export type ExtensionModalsProps = {
 export default function ExtensionModals({ ...props }: ExtensionModalsProps) {
   return (
     <>
-      <NftModal {...props} />
       <ImageModal {...props} />
-      <DonateModal {...props} />
       <SecretBoxModal {...props} />
     </>
   )

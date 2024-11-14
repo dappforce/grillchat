@@ -3,11 +3,11 @@ import { sendEventWithRef } from '@/components/referral/analytics'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useToastError from '@/hooks/useToastError'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { useLinkIdentity } from '@/old/services/datahub/identity/mutation'
-import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
-import { useSetReferrerId } from '@/old/services/datahub/referral/mutation'
-import { useSubscribeViaLoginGoogle } from '@/old/services/subsocial-offchain/mutation'
-import { useUpsertProfile } from '@/old/services/subsocial/profiles/mutation'
+import { useLinkIdentity } from '@/services/datahub/identity/mutation'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
+import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
+import { useSetReferrerId } from '@/services/datahub/referral/mutation'
+import { useSubscribeViaLoginGoogle } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
@@ -75,14 +75,12 @@ export default function useOauthLogin({
   const { mutate: setReferrerId } = useSetReferrerId()
 
   const { mutate: upsertProfile, error: errorUpsert } = useUpsertProfile({
-    txCallbacks: {
-      onSuccess: () => {
-        replaceUrl(getCurrentUrlWithoutQuery('login'))
-        sendEvent('login_oauth_successful', { provider })
-        finalizeTemporaryAccount()
-        onSuccess()
-        signOut({ redirect: false })
-      },
+    onSuccess: () => {
+      replaceUrl(getCurrentUrlWithoutQuery('login'))
+      sendEvent('login_oauth_successful', { provider })
+      finalizeTemporaryAccount()
+      onSuccess()
+      signOut({ redirect: false })
     },
   })
   useToastError(
@@ -121,7 +119,7 @@ export default function useOauthLogin({
     const foundIdentity =
       linkedIdentity &&
       session &&
-      linkedIdentity?.externalId === session?.user?.id
+      linkedIdentity?.mainAddress === session?.user?.id
 
     if (foundIdentity && !upsertedProfile.current) {
       sendEvent(
