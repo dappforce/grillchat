@@ -6,9 +6,17 @@ type State = {
   isOpen: boolean
   initialOpenState: LoginModalStep | undefined
   defaultOpenState: LoginModalStep | undefined
+  solMessageProofInfo: {
+    message: string
+    signature: string
+  }
   openedNextStepModal:
     | undefined
-    | { step: 'save-grill-key'; provider: SupportedExternalProvider }
+    | {
+        step: 'save-grill-key'
+        provider: SupportedExternalProvider
+        onFinish?: () => void
+      }
     | { step: 'create-profile' }
     | { step: 'connect-evm' }
 }
@@ -17,6 +25,7 @@ type Actions = {
   setIsOpen: (isOpen: boolean, initialOpenState?: LoginModalStep) => void
   setDefaultOpenState: (defaultOpenState: LoginModalStep) => void
   openNextStepModal: (modal: State['openedNextStepModal']) => void
+  setSolMessageProofInfo: (message: string, signature: string) => void
   closeNextStepModal: () => void
 }
 
@@ -25,6 +34,10 @@ const initialState: State = {
   initialOpenState: undefined,
   defaultOpenState: undefined,
   openedNextStepModal: undefined,
+  solMessageProofInfo: {
+    message: '',
+    signature: '',
+  },
 }
 
 export const supportedExternalProviders = [
@@ -50,6 +63,9 @@ const useLoginModalBase = create<State & Actions>()((set, get) => ({
       return
     }
     set({ isOpen, initialOpenState })
+  },
+  setSolMessageProofInfo: (message: string, signature: string) => {
+    set({ solMessageProofInfo: { message, signature } })
   },
   setDefaultOpenState: (defaultOpenState) => {
     set({ defaultOpenState })

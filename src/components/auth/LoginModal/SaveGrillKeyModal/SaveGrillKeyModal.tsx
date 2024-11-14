@@ -10,7 +10,7 @@ import Modal, {
 } from '@/components/modals/Modal'
 import { spaceMono } from '@/fonts'
 import { useSendEvent } from '@/stores/analytics'
-import { SupportedExternalProvider } from '@/stores/login-modal'
+import { SupportedExternalProvider, useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { decodeSecretKey } from '@/utils/account'
 import { cx } from '@/utils/class-names'
@@ -30,6 +30,7 @@ const providerMapper: Record<SupportedExternalProvider, string> = {
   google: 'Google',
   x: 'X',
   polkadot: 'Polkadot',
+  solana: 'Solana',
 }
 export default function SaveGrillKeyModal({
   provider,
@@ -197,6 +198,7 @@ function EnterKeyStep({ setCurrentState, provider, closeModal }: ContentProps) {
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
   const sendEvent = useSendEvent()
+  const { openedNextStepModal } = useLoginModal()
 
   const isFinished = value.split(/[a-z]\s[a-z]/g).length === 12
 
@@ -204,6 +206,11 @@ function EnterKeyStep({ setCurrentState, provider, closeModal }: ContentProps) {
     <form
       onSubmit={(e) => {
         e.preventDefault()
+
+        if (openedNextStepModal?.step === 'save-grill-key') {
+          openedNextStepModal.onFinish?.()
+          return
+        }
         if (value.trim() !== decodeSecretKey(encodedSecretKey ?? '')) {
           sendEvent('login_mnemonic_wrong')
           setError('The Grill key you entered is incorrect. Please try again.')

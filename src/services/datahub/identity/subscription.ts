@@ -95,6 +95,7 @@ function subscription(queryClient: QueryClient) {
       complete: () => undefined,
       next: async (data) => {
         const eventData = data.data?.linkedIdentitySubscription
+
         if (!eventData) return
 
         await processSubscriptionEvent(queryClient, eventData)

@@ -7,7 +7,7 @@ import { Wallet } from '@solana/wallet-adapter-react'
 import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { LoginModalContentProps } from '../LoginModalContent'
+import { LoginModalContentProps } from '../../LoginModalContent'
 
 function getShouldWalletDisabled(wallet: Wallet) {
   return {

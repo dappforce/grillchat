@@ -104,7 +104,6 @@ function ChatListContent({
     currentPageMessageIds
   )
 
-  console.log(currentPageMessageIds)
   const renderedMessageQueries = getPostQuery.useQueries(renderedMessageIds)
   const lastBatchIds = useMemo(
     () =>

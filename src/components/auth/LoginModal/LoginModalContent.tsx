@@ -26,8 +26,8 @@ import { AccountCreatedContent } from './contents/AccountCreatedContent'
 import { LoginWithGrillKeyContent } from './contents/LoginWithGrillKeyContent'
 import NewAccountContent from './contents/NewAccountContent'
 import ScanQrContent from './contents/ScanQrContent'
-import SolanaConnectConfirmation from './contents/SolanaConnectConfirmation'
-import SolanaConnectWalletContent from './contents/SolanaConnectContent'
+import SolanaConnectWalletContent from './contents/solana/SolanaLinkIdentityContent'
+import SolanaSignMessageContent from './contents/solana/SolanaSignMessageContent'
 
 export type LoginModalStep =
   | 'login'
@@ -203,7 +203,7 @@ export const loginModalContents: LoginModalContents = {
   // 'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
   // 'polkadot-connect-account': PolkadotConnectAccountContent,
   // 'polkadot-connect-confirmation': PolkadotConnectConfirmation,
-  'solana-connect-confirmation': SolanaConnectConfirmation,
+  'solana-connect-confirmation': SolanaSignMessageContent,
 }
 
 // function PolkadotConnectConfirmation({
