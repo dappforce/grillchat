@@ -28,7 +28,6 @@ import PushNotificationContent, {
   getPushNotificationUsableStatus,
 } from './contents/notifications/PushNotificationContent'
 import TelegramNotificationContent from './contents/notifications/TelegramNotificationContent'
-import WithdrawContent from './contents/withdraw/WithdrawContent'
 import { ProfileModalContentProps, ProfileModalState } from './types'
 
 const modalContents: {
@@ -42,31 +41,9 @@ const modalContents: {
   logout: LogoutContent,
   'share-session': ShareSessionContent,
   about: AboutContent,
-  // 'link-evm-address': LinkEvmAddressContent,
-  // 'evm-linking-error': EvmLoginError,
-  // 'unlink-evm-confirmation': UnlinkEvmConfirmationContent,
-  // 'evm-address-linked': CommonEvmAddressLinked,
-  // 'evm-set-profile-suggestion': ({ closeModal }) => (
-  //   <CommonEvmSetProfileContent
-  //     onSkipClick={closeModal}
-  //     onSetEvmIdentityClick={() => {
-  //       useProfileModal.getState().openModal({
-  //         defaultOpenState: 'profile-settings',
-  //         customInternalStepProps: { defaultTab: 'evm' },
-  //       })
-  //     }}
-  //   />
-  // ),
   notifications: NotificationContent,
   'telegram-notifications': TelegramNotificationContent,
   'push-notifications': PushNotificationContent,
-  // 'polkadot-connect': PolkadotConnectContent,
-  // 'polkadot-js-limited-support': LimitedPolkadotJsSupportContent,
-  // 'polkadot-connect-account': PolkadotConnectAccountContent,
-  // 'polkadot-connect-confirmation': PolkadotConnectConfirmationContent,
-  // 'polkadot-connect-unlink': PolkadotConnectUnlink,
-  // 'polkadot-connect-identity-removed': PolkadotConnectIdentityRemovedContent,
-  'withdraw-tokens': WithdrawContent,
   'wallet-action-required': WalletActionRequiredContent,
   'loading-tx': () => (
     <div className='py-8'>
@@ -214,30 +191,6 @@ export default function ProfileModal({
       desc: null,
       withBackButton: true,
     },
-    // 'link-evm-address': {
-    //   title: linkedEvmAddress ? '🔑 My EVM address' : '🔑 Connect EVM',
-    //   desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display NFTs, and interact with ERC20s and smart contracts. ',
-    //   withBackButton: 'account',
-    // },
-    // 'evm-linking-error': {
-    //   title: '😕 Something went wrong',
-    //   desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
-    //   withBackButton: false,
-    // },
-    // 'unlink-evm-confirmation': {
-    //   title: '🤔 Unlink EVM address?',
-    //   desc: undefined,
-    //   withBackButton: false,
-    // },
-    // 'evm-address-linked': {
-    //   title: '🎉 EVM address linked',
-    //   desc: `Now you can use all of Grill's EVM features such as ERC-20 tokens, NFTs, and other smart contracts.`,
-    //   withBackButton: false,
-    // },
-    // 'evm-set-profile-suggestion': {
-    //   title: '🤔 Set as default identity?',
-    //   desc: 'Do you want to set your EVM as your default address?',
-    // },
     notifications: {
       title: '🔔 Notifications',
       desc: 'Receive Grill notifications in various locations',
@@ -256,54 +209,6 @@ export default function ProfileModal({
       title: '🔔 Push Notifications',
       desc: pushNotificationDesc[pushNotificationUsableStatus],
       withBackButton: 'notifications',
-    },
-    // 'polkadot-connect': {
-    //   title: '🔗 Connect Polkadot',
-    //   desc: hasProxy
-    //     ? 'Use your Polkadot identity and enable donations, NFTs, and more.'
-    //     : 'Choose a wallet to connect to Grill',
-    //   withBackButton: () => {
-    //     if (!hasProxy) setPreferredWallet(null)
-    //     return 'linked-addresses'
-    //   },
-    //   withoutDefaultPadding: true,
-    // },
-    // 'polkadot-js-limited-support': {
-    //   title: '🔗 Limited Polkadot.js Support',
-    //   desc: (
-    //     <LimitedPolkadotJsSupportExplanation
-    //       goToWalletSelection={() => setCurrentState('polkadot-connect')}
-    //     />
-    //   ),
-    //   withBackButton: 'polkadot-connect',
-    // },
-    // 'polkadot-connect-account': {
-    //   title: '🔗 Select an account',
-    //   desc: 'Select an account to connect to Grill',
-    //   withBackButton: () => {
-    //     setPreferredWallet(null)
-    //     return 'polkadot-connect'
-    //   },
-    //   withoutDefaultPadding: true,
-    // },
-    // 'polkadot-connect-confirmation': {
-    //   title: '🔑 Link Confirmation',
-    //   desc: 'Please confirm the connection in your Polkadot wallet.',
-    //   withBackButton: 'polkadot-connect-account',
-    // },
-    // 'polkadot-connect-unlink': {
-    //   title: '🤔 Unlink Polkadot address?',
-    //   desc: undefined,
-    //   withBackButton: false,
-    // },
-    // 'polkadot-connect-identity-removed': {
-    //   title: '😕 Your previous identity was removed',
-    //   desc: 'You will need to reset your nickname or reconnect your EVM address to continue using them.',
-    //   withBackButton: false,
-    // },
-    'withdraw-tokens': {
-      title: '💰 Withdraw',
-      withBackButton: true,
     },
     'wallet-action-required': {
       title: '🔐 Wallet Action Required',
@@ -373,7 +278,6 @@ export default function ProfileModal({
       <Content
         address={address}
         setCurrentState={setCurrentStateAugmented}
-        // evmAddress={linkedEvmAddress}
         closeModal={augmentedCloseModal}
       />
     </Modal>

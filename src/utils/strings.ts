@@ -10,6 +10,8 @@ export function copyToClipboard(text: string) {
   navigator.clipboard.writeText(text)
 }
 
+export const TAGS_REGEX = /#[a-zA-Z0-9_]+/g
+
 const EMOJI_REGEX =
   /(?![*#0-9]+)[\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Component}\p{Emoji_Modifier_Base}\p{Emoji_Presentation}]/gu
 export function validateTextContainsOnlyEmoji(text: string) {

@@ -1,23 +1,23 @@
-import { ApiResponse, handlerWrapper } from '@/old/server/common'
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   CanUserDoAction,
   CreatePostOptimisticInput,
-  UpdatePostBlockchainSyncStatusInput,
+  SocialProfileAddReferrerIdInput,
   UpdatePostOptimisticInput,
-} from '@/old/server/datahub-queue/generated'
+} from '@/server/datahub-queue/generated'
 import {
+  approveMessage,
+  approveUser,
   createPostData,
   getCanAccountDo,
-  notifyCreatePostFailedOrRetryStatus,
-  notifyUpdatePostFailedOrRetryStatus,
   updatePostData,
-} from '@/old/server/datahub-queue/post'
+} from '@/server/datahub-queue/post'
 import {
   CreateChatPermissionDeniedError,
   CreateMessagePermissionDeniedError,
   RateLimitError,
   datahubMutationWrapper,
-} from '@/old/server/datahub-queue/utils'
+} from '@/server/datahub-queue/utils'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -42,7 +42,7 @@ const GET_handler = handlerWrapper({
   dataGetter: (req) => req.query,
 })<GetResponseRes>({
   allowedMethods: ['GET'],
-  errorLabel: 'datahub-query',
+  errorLabel: 'datahub-post',
   handler: async (data, _, res) => {
     const canUserDo = await getCanAccountDo({
       action: CanUserDoAction.CreateComment,
@@ -63,15 +63,15 @@ export type ApiDatahubPostMutationBody =
       payload: UpdatePostOptimisticInput
     }
   | {
-      action: 'notify-create-failed'
-      payload: UpdatePostBlockchainSyncStatusInput
+      action: 'approve-user'
+      payload: SocialProfileAddReferrerIdInput
     }
   | {
-      action: 'notify-update-failed'
-      payload: UpdatePostBlockchainSyncStatusInput
+      action: 'approve-message'
+      payload: SocialProfileAddReferrerIdInput
     }
 
-export type ApiDatahubPostResponse = ApiResponse
+export type ApiDatahubPostResponse = ApiResponse<{ callId?: string }>
 const POST_handler = handlerWrapper({
   inputSchema: z.any(),
   dataGetter: (req) => req.body,
@@ -81,7 +81,8 @@ const POST_handler = handlerWrapper({
   handler: async (data: ApiDatahubPostMutationBody, _, res) => {
     const mapper = datahubMutationWrapper(datahubPostActionMapping)
     try {
-      await mapper(data)
+      const callId = await mapper(data)
+      res.status(200).json({ message: 'OK', success: true, callId })
     } catch (err) {
       if (err instanceof RateLimitError) {
         return res.status(429).send({
@@ -102,7 +103,6 @@ const POST_handler = handlerWrapper({
       }
       throw err
     }
-    res.status(200).json({ message: 'OK', success: true })
   },
 })
 
@@ -112,10 +112,10 @@ function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
       return createPostData(data.payload)
     case 'update-post':
       return updatePostData(data.payload)
-    case 'notify-create-failed':
-      return notifyCreatePostFailedOrRetryStatus(data.payload)
-    case 'notify-update-failed':
-      return notifyUpdatePostFailedOrRetryStatus(data.payload)
+    case 'approve-user':
+      return approveUser(data.payload)
+    case 'approve-message':
+      return approveMessage(data.payload)
     default:
       throw new Error('Unknown action')
   }

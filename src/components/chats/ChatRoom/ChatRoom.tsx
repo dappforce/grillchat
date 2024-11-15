@@ -145,11 +145,9 @@ function ChatInputWrapper({
                     variant='primary'
                     size='lg'
                     onClick={() => {
-                      if (isLoggedIn)
-                        openProfileModal({
-                          defaultOpenState: 'polkadot-connect',
-                        })
-                      else openLoginModal(true, 'polkadot-connect')
+                      if (!isLoggedIn) {
+                        openLoginModal(true)
+                      }
                     }}
                   >
                     Connect Polkadot wallet

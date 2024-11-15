@@ -2,21 +2,18 @@ import Send from '@/assets/icons/send.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import TextArea, { TextAreaProps } from '@/components/inputs/TextArea'
 import { ERRORS } from '@/constants/error'
-import { env } from '@/env.mjs'
 import useAutofocus from '@/hooks/useAutofocus'
 import useLoginOption from '@/hooks/useLoginOption'
-import useRequestTokenAndSendMessage from '@/hooks/useRequestTokenAndSendMessage'
 import { showErrorToast } from '@/hooks/useToastError'
-import { getPostQuery, getServerTime } from '@/old/services/api/query'
-import { apiInstance } from '@/old/services/api/utils'
-import { useSendOffchainMessage } from '@/old/services/datahub/posts/mutation'
-import {
-  SendMessageParams,
-  useSendMessage,
-} from '@/old/services/subsocial/commentIds'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
+import { getPostQuery } from '@/services/api/query'
+import { apiInstance } from '@/services/api/utils'
+import { useSendMessage } from '@/services/datahub/posts/mutation'
+import { augmentDatahubParams } from '@/services/datahub/utils'
+import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { useSendEvent } from '@/stores/analytics'
 import { useExtensionData } from '@/stores/extension'
+import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import {
   hasSentMessageStorage,
@@ -33,16 +30,13 @@ import {
   useRef,
   useState,
 } from 'react'
-import { toast } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IoRefresh } from 'react-icons/io5'
+import Toast from '../Toast'
 import { BeforeMessageResult } from '../extensions/common/CommonExtensionModal'
 import { interceptPastedData } from '../extensions/config'
 import { sendEventWithRef } from '../referral/analytics'
-
-// const StayUpdatedModal = dynamic(() => import('./StayUpdatedModal'), {
-//   ssr: false,
-// })
 
 export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
   hubId: string
@@ -61,6 +55,7 @@ export type ChatFormProps = Omit<ComponentProps<'form'>, 'onSubmit'> & {
     messageParams: SendMessageParams
   ) => Promise<BeforeMessageResult>
   autofocus?: boolean
+  placeholder?: string
 }
 
 function processMessage(message: string) {
@@ -81,6 +76,7 @@ export default function ChatForm({
   sendButtonProps,
   isPrimary,
   beforeMesageSend,
+  placeholder,
   ...props
 }: ChatFormProps) {
   const myAddress = useMyMainAddress()
@@ -106,8 +102,6 @@ export default function ChatForm({
   const [isDisabledInput, setIsDisabledInput] = useState(false)
   const reloadUnsentMessage = useLoadUnsentMessage(chatId)
 
-  const [isOpenCtaModal, setIsOpenCtaModal] = useState(false)
-
   const sendEvent = useSendEvent()
   const incrementMessageCount = useMessageData(
     (state) => state.incrementMessageCount
@@ -116,15 +110,7 @@ export default function ChatForm({
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const isLoggedIn = useMyAccount((state) => !!state.address)
 
-  const { mutate: requestTokenAndSendMessage } = useRequestTokenAndSendMessage({
-    onSuccess: () => unsentMessageStorage.remove(chatId),
-    onError: (error, variables) => {
-      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
-        reloadUnsentMessage,
-        setIsDisabledInput,
-      })
-    },
-  })
+  const openLoginModal = useLoginModal((state) => state.setIsOpen)
 
   let messageBody = useMessageData((state) => state.messageBody)
   const showEmptyPrimaryChatInput = useMessageData(
@@ -135,16 +121,9 @@ export default function ChatForm({
   }
 
   const { mutate: sendMessage } = useSendMessage({
-    onSuccess: () => unsentMessageStorage.remove(chatId),
-    onError: (error, variables) => {
-      showErrorSendingMessageToast(error, 'Failed to send message', variables, {
-        reloadUnsentMessage,
-        setIsDisabledInput,
-      })
+    onSuccess: () => {
+      unsentMessageStorage.remove(chatId)
     },
-  })
-  const { mutate: sendOffchainMessage } = useSendOffchainMessage({
-    onSuccess: () => unsentMessageStorage.remove(chatId),
     onError: (error, variables) => {
       showErrorSendingMessageToast(error, 'Failed to send message', variables, {
         reloadUnsentMessage,
@@ -169,6 +148,7 @@ export default function ChatForm({
 
   const shouldSendMessage = isLoggedIn
 
+  const [isSending, setIsSending] = useState(false)
   const isDisabled =
     (mustHaveMessageBody && !processMessage(messageBody)) ||
     sendButtonProps?.disabled ||
@@ -191,6 +171,15 @@ export default function ChatForm({
     const processedMessage = processMessage(messageBody)
     if (isDisabled) return
 
+    setIsSending(true)
+    try {
+      await sendMessageFlow(processedMessage)
+    } finally {
+      setIsSending(false)
+    }
+  }
+
+  const sendMessageFlow = async (processedMessage: string) => {
     const additionalTxParams = await buildAdditionalTxParams?.()
 
     const sendMessageParams = {
@@ -213,55 +202,39 @@ export default function ChatForm({
       return
     }
 
-    const willOpenLoginModal = !isLoggedIn
-    if (!hasSentMessageStorage.get() && !willOpenLoginModal) {
-      setTimeout(() => {
-        setIsOpenCtaModal(true)
-      }, 2000)
+    const linkRegex = /(https?:\/\/[^\s]+)/g
+    if (linkRegex.test(messageParams.message ?? '')) {
+      toast.custom((t) => (
+        <Toast
+          t={t}
+          type='error'
+          title='No Links Allowed!'
+          description="Looks like you tried to send a link. We're keeping it link-free here! Please remove the link and try again. 😊"
+        />
+      ))
+      return
     }
 
     unsentMessageStorage.set(JSON.stringify(messageParams), chatId)
     hasSentMessageStorage.set('true')
 
-    resetForm()
-    const isOffchainPosting =
-      env.NEXT_PUBLIC_OFFCHAIN_POSTING_HUBS.includes(hubId)
-    if (isOffchainPosting) {
-      try {
-        const serverTime = await getServerTime()
-        sendOffchainMessage({
-          ...messageParams,
-          uuid: crypto.randomUUID(),
-          timestamp: serverTime,
-        })
-      } catch (err) {
-        showErrorSendingMessageToast(
-          err,
-          'Failed to get server time',
-          messageParams,
-          {
-            reloadUnsentMessage,
-            setIsDisabledInput,
-          }
-        )
-      }
-    } else if (shouldSendMessage) {
-      sendMessage(messageParams)
+    if (shouldSendMessage) {
+      resetForm()
+      const augmented = await augmentDatahubParams(messageParams)
+      console.log('sendMessageParams', augmented)
+      sendMessage(augmented)
     } else {
-      requestTokenAndSendMessage(messageParams)
+      openLoginModal(true)
+      return
     }
 
-    // // TODO: wrap it into hook
-    // const storage = new SessionStorage(() => 'FIRST_MESSAGE_SENT')
-    // const isFirstMessageInSession = storage.get()
-    // console.log('isFirstMessageInSession', isFirstMessageInSession)
-    // if (!isFirstMessageInSession) {
-    //   sendEvent('send_first_message', { chatId, title: chatTitle })
-    //   storage.set('true')
-    // }
     const firstExtension = sendMessageParams.extensions?.[0]
     sendEventWithRef(myAddress ?? '', (ref) => {
-      sendEvent('send_comment', { extensionType: firstExtension?.id }, { ref })
+      sendEvent(
+        'send_comment',
+        { extensionType: firstExtension?.id, isReply: !!messageParams.replyTo },
+        { ref }
+      )
     })
 
     onSubmit?.(!!messageParams.messageIdToEdit)
@@ -289,6 +262,8 @@ export default function ChatForm({
       tabIndex={-1}
       onClick={submitForm}
       size='circle'
+      isLoading={isSending}
+      loadingText=''
       variant={isDisabled ? 'mutedOutline' : 'primary'}
       {...sendButtonProps}
       className={cx(classNames, sendButtonProps?.className)}
@@ -297,52 +272,45 @@ export default function ChatForm({
     </Button>
   )
   return (
-    <>
-      <form
-        onSubmit={submitForm}
-        {...props}
-        className={cx('flex w-full flex-col gap-2', className)}
-      >
-        <TextArea
-          onPaste={(e) => {
-            const clipboardData = e.clipboardData
-            interceptPastedData(clipboardData, e)
-          }}
-          placeholder='Message...'
-          rows={1}
-          autoComplete='off'
-          autoCapitalize='sentences'
-          autoCorrect='off'
-          spellCheck='false'
-          variant='fill'
-          pill
-          {...inputProps}
-          onChange={(e) => setMessageBody((e.target as any).value)}
-          onEnterToSubmitForm={submitForm}
-          disabled={!chatId || disabled}
-          value={messageBody}
-          ref={textAreaRef}
-          rightElement={!sendButtonText ? renderSendButton : undefined}
-        />
+    <form
+      onSubmit={submitForm}
+      {...props}
+      className={cx('flex w-full flex-col gap-2', className)}
+    >
+      <TextArea
+        onPaste={(e) => {
+          const clipboardData = e.clipboardData
+          interceptPastedData(clipboardData, e)
+        }}
+        placeholder={placeholder ?? 'Post your meme here...'}
+        rows={1}
+        autoComplete='off'
+        autoCapitalize='sentences'
+        autoCorrect='off'
+        spellCheck='false'
+        variant='fill'
+        pill
+        {...inputProps}
+        onChange={(e) => setMessageBody((e.target as any).value)}
+        onEnterToSubmitForm={submitForm}
+        disabled={!chatId || disabled}
+        value={messageBody}
+        ref={textAreaRef}
+        rightElement={!sendButtonText ? renderSendButton : undefined}
+      />
 
-        {sendButtonText && (
-          <Button
-            type='submit'
-            disabled={isDisabled}
-            size='lg'
-            onClick={submitForm}
-            {...sendButtonProps}
-          >
-            {sendButtonText}
-          </Button>
-        )}
-      </form>
-
-      {/* <StayUpdatedModal
-        isOpen={isOpenCtaModal}
-        closeModal={() => setIsOpenCtaModal(false)}
-      /> */}
-    </>
+      {sendButtonText && (
+        <Button
+          type='submit'
+          disabled={isDisabled}
+          size='lg'
+          onClick={submitForm}
+          {...sendButtonProps}
+        >
+          {sendButtonText}
+        </Button>
+      )}
+    </form>
   )
 }
 
@@ -370,20 +338,8 @@ function useLoadUnsentMessage(chatId: string) {
       case 'subsocial-image':
         openExtensionModal(firstExtension.id, firstExtension.properties.image)
         break
-      case 'subsocial-decoded-promo':
-        openExtensionModal(firstExtension.id, {
-          recipient: firstExtension.properties.recipient,
-          messageId: firstExtension.properties.message,
-        })
-        break
       case 'subsocial-evm-nft':
         openExtensionModal(firstExtension.id, firstExtension.properties.url)
-        break
-      case 'subsocial-donations':
-        openExtensionModal(firstExtension.id, {
-          recipient: firstExtension.properties.to,
-          messageId: unsentMessage.replyTo ?? '',
-        })
         break
     }
   }, [chatId, setMessageBody, setReplyTo, openExtensionModal])

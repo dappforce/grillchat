@@ -60,6 +60,7 @@ export const env = createEnv({
     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string().default(''),
     NEXT_PUBLIC_FIREBASE_MESSAGING_ID: z.string().default(''),
     NEXT_PUBLIC_FIREBASE_APP_ID: z.string().default(''),
+    NEXT_PUBLIC_TIME_CONSTRAINT: z.string().default('').transform(Number),
 
     NEXT_PUBLIC_NOTIFICATION_APP_ID: z.string().default(''),
 
@@ -84,6 +85,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
 
     NEXT_PUBLIC_SQUID_URL: process.env.NEXT_PUBLIC_SQUID_URL,
+    NEXT_PUBLIC_TIME_CONSTRAINT: process.env.NEXT_PUBLIC_TIME_CONSTRAINT,
 
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:

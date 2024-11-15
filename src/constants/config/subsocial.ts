@@ -17,7 +17,7 @@ const subsocialConfig: ConstantsConfig = {
   },
   communityHubIds: [env.NEXT_PUBLIC_COMMUNITY_HUB_ID].filter(Boolean),
   pinnedHubIds: [],
-  hubsWithoutJoinButton: ['12659', '12660'],
+  hubsWithoutJoinButton: ['12659', '0xa580866e85dc3f78346ab3131210064e'],
   chatsWithJoinButton: [],
 
   pinnedMessageInChatId: {},

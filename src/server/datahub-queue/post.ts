@@ -49,6 +49,7 @@ const CREATE_POST_OFFCHAIN_MUTATION = gql`
   }
 `
 export async function createPostData(input: CreatePostOffChainInput) {
+  console.log('create post mutation', input)
   const res = await datahubQueueRequest<
     CreatePostOffChainMutation,
     CreatePostOffChainMutationVariables
@@ -58,6 +59,7 @@ export async function createPostData(input: CreatePostOffChainInput) {
       createPostOffChainInput: input,
     },
   })
+  console.log(res)
   throwErrorIfNotProcessed(res.createPostOffChain, 'Failed to create post')
   return res.createPostOffChain.callId
 }
