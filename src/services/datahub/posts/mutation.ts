@@ -94,7 +94,6 @@ async function createPostData(
     content
   )
 
-  console.log('createPostData', input)
   const res = await apiInstance.post<
     any,
     AxiosResponse<ApiDatahubPostResponse>,
