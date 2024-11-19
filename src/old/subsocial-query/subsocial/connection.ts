@@ -6,7 +6,7 @@ let subsocialApi: Promise<SubsocialApi> | null = null
 export const getSubsocialApi = async (renew?: boolean) => {
   if (subsocialApi && !renew) return subsocialApi
 
-  subsocialApi = connectToSubsocialApi(getConnectionConfig())
+  // subsocialApi = connectToSubsocialApi(getConnectionConfig())
   return subsocialApi
 }
 
@@ -43,11 +43,13 @@ export const getSubstrateHttpApi = async () => {
   return substrateApi
 }
 
-export const getSubstrateChainApi = async (endpoint: string) => {
+export const getSubstrateChainApi = async (
+  endpoint: string
+): Promise<ApiPromise | undefined> => {
   const { WsProvider, ApiPromise } = await import('@polkadot/api')
 
-  const provider = new WsProvider(endpoint, 15_000, {})
-  const substrateApi = await ApiPromise.create({ provider })
+  // const provider = new WsProvider(endpoint, 15_000, {})
+  // const substrateApi = await ApiPromise.create({ provider })
 
-  return substrateApi
+  return undefined
 }

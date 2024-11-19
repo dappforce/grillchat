@@ -1,4 +1,3 @@
-import { getSubsocialApi } from '@/old/subsocial-query/subsocial/connection'
 import { useTransactions } from '@/stores/transactions'
 import { ApiPromise } from '@polkadot/api'
 import { useCallback, useEffect, useState } from 'react'
@@ -56,14 +55,14 @@ export default function useNetworkStatus() {
     }
   }, [substrateApi])
 
-  useEffect(() => {
-    getSubsocialApi().then((api) =>
-      api.substrateApi.then((substrateApi) => {
-        if (substrateApi.isConnected) setStatus('connected')
-        setSubstrateApi(substrateApi)
-      })
-    )
-  }, [])
+  // useEffect(() => {
+  //   getSubsocialApi().then((api) =>
+  //     api.substrateApi.then((substrateApi) => {
+  //       if (substrateApi.isConnected) setStatus('connected')
+  //       setSubstrateApi(substrateApi)
+  //     })
+  //   )
+  // }, [])
 
   useEffect(() => {
     if (!substrateApi) return

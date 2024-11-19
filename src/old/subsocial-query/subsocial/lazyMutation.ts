@@ -72,13 +72,15 @@ export function useLazySubstrateMutation<Data, Context = undefined>(
     )
     txCallbacks?.onStart()
 
-    let substrateApi: ApiPromise = await getSubstrateChainApi(chainEndpoint)
+    let substrateApi: ApiPromise | undefined = await getSubstrateChainApi(
+      chainEndpoint
+    )
 
-    if (!substrateApi.isConnected) {
+    if (!substrateApi?.isConnected) {
       // try reconnecting, if it fails, it will throw an error
       try {
-        await substrateApi.disconnect()
-        await substrateApi.connect()
+        await substrateApi?.disconnect()
+        await substrateApi?.connect()
       } catch (err) {
         throw new Error(`Failed to reconnect to the Substrate node: ${err}`)
       }
@@ -90,7 +92,7 @@ export function useLazySubstrateMutation<Data, Context = undefined>(
       transactionGenerator,
       data,
       context,
-      { substrateApi },
+      { substrateApi: substrateApi as ApiPromise },
       {
         wallet,
         networkRpc: getConnectionConfig().substrateUrl,

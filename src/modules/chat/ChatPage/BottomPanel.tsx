@@ -1,6 +1,5 @@
 import Container from '@/components/Container'
 import LinkText from '@/components/LinkText'
-import NetworkStatus from '@/components/NetworkStatus'
 
 export default function BottomPanel() {
   return (
@@ -16,7 +15,6 @@ export default function BottomPanel() {
             Subsocial
           </LinkText>
         </p>
-        <NetworkStatus className='ml-2 inline-block' />
       </div>
     </Container>
   )

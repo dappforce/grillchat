@@ -57,17 +57,19 @@ const SubstrateAmountInput = ({
 
   const onMaxClick = async (balanceValue: string) => {
     if (node && address && decimal) {
-      let substrateApi: ApiPromise = await getSubstrateChainApi(node)
+      let substrateApi: ApiPromise | undefined = await getSubstrateChainApi(
+        node
+      )
 
-      const tx = substrateApi.tx.balances.transfer(
+      const tx = substrateApi?.tx.balances.transfer(
         { Id: address },
         freeBalance || '0'
       )
 
-      const { partialFee } = await tx.paymentInfo(address)
+      const { partialFee } = (await tx?.paymentInfo(address)) || {}
 
       const maxAmount = new BigNumber(freeBalance || '0').minus(
-        partialFee.toNumber()
+        partialFee?.toNumber() || 0
       )
 
       props.setAmount(
