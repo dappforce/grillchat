@@ -1,7 +1,6 @@
 import Button from '@/components/Button'
 import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
-import { useOpenDonateExtension } from '@/components/extensions/donate/hooks/useOpenDonateExtension'
 import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
   FloatingMenusProps,
@@ -23,7 +22,6 @@ import { usePinMessage } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
 import { useExtensionData } from '@/stores/extension'
-import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -42,7 +40,7 @@ import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
 import { IoDiamondOutline } from 'react-icons/io5'
 import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
-import { RiCopperCoinLine, RiDatabase2Line } from 'react-icons/ri'
+import { RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import { SuperLikeWrapper } from '../../content-staking/SuperLike'
 import usePinnedMessage from '../hooks/usePinnedMessage'
@@ -82,11 +80,6 @@ export default function ChatItemMenus({
   const openExtensionModal = useExtensionData(
     (state) => state.openExtensionModal
   )
-  const openDonateExtension = useOpenDonateExtension(
-    message?.id,
-    message?.struct.ownerId ?? ''
-  )
-
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
@@ -163,19 +156,6 @@ export default function ChatItemMenus({
       })
     }
 
-    const donateMenuItem: FloatingMenusProps['menus'][number] = {
-      text: 'Donate',
-      icon: RiCopperCoinLine,
-      onClick: () => {
-        if (!address) {
-          useLoginModal.getState().setIsOpen(true)
-          return
-        }
-
-        sendEvent('open_donate_action_modal', { hubId, chatId })
-        openDonateExtension()
-      },
-    }
     const replyItem: FloatingMenusProps['menus'][number] = {
       text: 'Reply',
       icon: LuReply,
@@ -186,9 +166,7 @@ export default function ChatItemMenus({
       icon: LuPencil,
       onClick: () => setMessageToEdit(messageId),
     }
-    const showDonateMenuItem = canSendMessage && !isMessageOwner
 
-    if (showDonateMenuItem) menus.unshift(donateMenuItem)
     if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
     if (isDatahubAvailable && canSendMessage && isMessageOwner)
       menus.unshift(editItem)

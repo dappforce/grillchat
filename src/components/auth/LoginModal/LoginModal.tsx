@@ -78,18 +78,6 @@ export default function LoginModal({
       title: '🎉 Account created',
       desc: 'We have created an account linked to your X for you. You can now use Grill!',
     },
-    'evm-address-link': {
-      title: '🔑 Connect EVM',
-      desc: 'Create an on-chain proof to link your Grill account, allowing you to use and display ENS names and NFTs, and interact with ERC20s.',
-      withBackButton: true,
-      backToStep: 'new-account',
-    },
-    'evm-linking-error': {
-      title: '😕 Something went wrong',
-      desc: 'This might be related to the transaction signature. You can try again, or come back to it later.',
-      withBackButton: true,
-      backToStep: 'new-account',
-    },
     'solana-connect': {
       title: '🔗 Connect via Solana',
       desc: 'Select a wallet to connect to Grill using an existing Solana account',

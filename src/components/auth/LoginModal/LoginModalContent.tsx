@@ -3,19 +3,14 @@ import KeyIcon from '@/assets/icons/key.svg'
 import Button from '@/components/Button'
 import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
-import { CommonEVMLoginContent } from '@/components/auth/common/evm/CommonEvmModalContent'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
-import { getReferralIdInUrl } from '@/components/referral/ReferralUrlChanger'
-import { sendEventWithRef } from '@/components/referral/analytics'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
 import useToastError from '@/hooks/useToastError'
 import { useRequestToken } from '@/old/services/api/mutation'
-import { useSetReferrerId } from '@/old/services/datahub/referral/mutation'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useSendEvent } from '@/stores/analytics'
-import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
@@ -35,8 +30,6 @@ export type LoginModalStep =
   | 'enter-secret-key'
   | 'new-account'
   | 'account-created'
-  | 'evm-address-link'
-  | 'evm-linking-error'
   | 'solana-connect'
   | 'solana-connect-confirmation'
 
@@ -173,49 +166,10 @@ export const loginModalContents: LoginModalContents = {
   'enter-secret-key': LoginWithGrillKeyContent,
   'new-account': NewAccountContent,
   'account-created': AccountCreatedContent,
-  'evm-address-link': EvmLoginStep,
-  'evm-linking-error': (props) => <EvmLoginStep isErrorStep {...props} />,
   'solana-connect': SolanaConnectWalletContent,
   'solana-connect-confirmation': SolanaSignMessageContent,
 }
 
-export function EvmLoginStep({
-  setCurrentState,
-  isErrorStep,
-  closeModal,
-}: LoginModalContentProps & { isErrorStep?: boolean }) {
-  const { mutate, isLoading } = useLoginBeforeSignEvm()
-  const { mutate: setReferrerId } = useSetReferrerId()
-  const sendEvent = useSendEvent()
-
-  return (
-    <CommonEVMLoginContent
-      buttonLabel={isErrorStep ? 'Try again' : undefined}
-      isLoading={isLoading}
-      beforeSignEvmAddress={() => mutate()}
-      onFinishSignMessage={() => {
-        setReferrerId({ refId: getReferralIdInUrl() })
-        useLoginModal
-          .getState()
-          .openNextStepModal({ step: 'save-grill-key', provider: 'evm' })
-      }}
-      onError={() => {
-        setCurrentState('evm-linking-error')
-      }}
-      onSuccess={async () => {
-        useMyAccount.getState().finalizeTemporaryAccount()
-
-        const address = useMyAccount.getState().address
-        sendEventWithRef(address ?? '', (refId) => {
-          sendEvent('account_created', { loginBy: 'evm' }, { ref: refId })
-        })
-
-        closeModal()
-        useLoginModal.getState().openNextStepModal({ step: 'create-profile' })
-      }}
-    />
-  )
-}
 function useLoginBeforeSignEvm() {
   const [isCreatingAcc, setIsCreatingAcc] = useState(false)
   const { mutate: requestToken, error } = useRequestToken()

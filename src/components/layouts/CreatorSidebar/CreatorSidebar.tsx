@@ -5,7 +5,6 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRef } from 'react'
 import OverviewCard from './OverviewCard'
-import RewardInfoCard from './RewardInfoCard'
 
 export default function CreatorSidebar({ className }: { className?: string }) {
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
@@ -51,7 +50,6 @@ function SidebarContent({ className }: { className?: string }) {
       style={{ position, top }}
     >
       <OverviewCard />
-      {totalStake?.hasStakedEnough && <RewardInfoCard />}
     </div>
   )
 }

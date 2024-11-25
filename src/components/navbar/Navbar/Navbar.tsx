@@ -74,7 +74,6 @@ export default function Navbar({
   )
 
   const { loginOption } = useLoginOption()
-  const setPreferredWallet = useMyAccount((state) => state.setPreferredWallet)
   const { defaultWallet } = useConfigContext()
   useEffect(() => {
     if (defaultWallet) {
@@ -83,15 +82,11 @@ export default function Navbar({
         (wallet) =>
           wallet.title.toLowerCase() === defaultWallet.walletName.toLowerCase()
       )
-      if (wallet) {
-        setPreferredWallet(wallet)
-        setLoginModalDefaultOpenState('polkadot-connect-account')
-      }
     }
-  }, [defaultWallet, setPreferredWallet, setLoginModalDefaultOpenState])
+  }, [defaultWallet, setLoginModalDefaultOpenState])
   const login = () => {
     if (loginOption === 'polkadot') {
-      setIsLoginModalOpen(true, 'polkadot-connect')
+      setIsLoginModalOpen(true, 'solana-connect')
       return
     }
     setIsLoginModalOpen(true)
@@ -191,7 +186,7 @@ export default function Navbar({
             })
           ) : (
             <div className='flex w-full items-center justify-between'>
-              {logoLink}
+              {logoLink}ƒ
               <div className='flex items-center'>
                 {newPostButton}
                 {notificationBell}

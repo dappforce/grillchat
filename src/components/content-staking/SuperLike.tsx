@@ -31,7 +31,6 @@ import {
 import toast from 'react-hot-toast'
 import { IoDiamond, IoDiamondOutline } from 'react-icons/io5'
 import PopOver from '../floating/PopOver'
-import PostRewardStat from './PostRewardStat'
 
 export type SuperLikeProps = ComponentProps<'div'> & {
   withPostReward: boolean
@@ -233,14 +232,6 @@ export default function SuperLike({
               </PopOver>
             ) : (
               button
-            )}
-            {postRewards?.isNotZero && (
-              <PostRewardStat
-                className={cx(
-                  isMyMessage && 'text-text-muted-on-primary-light'
-                )}
-                postId={postId}
-              />
             )}
           </div>
         )

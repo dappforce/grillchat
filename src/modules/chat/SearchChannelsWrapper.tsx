@@ -4,12 +4,9 @@ import NoChatsFound from '@/components/chats/NoChatsFound'
 import { env } from '@/env.mjs'
 import useDebounce from '@/hooks/useDebounce'
 import useSearch from '@/hooks/useSearch'
-import {
-  getPostIdsBySpaceIdQuery,
-  getPostsBySpaceContentQuery,
-} from '@/old/services/subsocial/posts'
+import { getPostsBySpaceContentQuery } from '@/old/services/subsocial/posts'
 import { isSquidAvailable } from '@/old/services/subsocial/squid/utils'
-import { getPostQuery } from '@/services/api/query'
+import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
 import { removeDoubleSpaces } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
@@ -40,13 +37,10 @@ export default function SearchChannelsWrapper({
       enabled: shouldUseGlobalSearch && cleanedSearch === debouncedSearch,
     })
 
-  const { data: mainPostIds } = getPostIdsBySpaceIdQuery.useQuery(
+  const mainPostsQueries = getPostsBySpaceIdQuery.useQuery(
     env.NEXT_PUBLIC_MAIN_SPACE_ID,
     { enabled: !isSquidAvailable }
   )
-  const mainPostsQueries = getPostQuery.useQueries(mainPostIds?.postIds ?? [], {
-    enabled: !isSquidAvailable,
-  })
 
   let usedSearchResults = searchResults
   if (localSearch) {
@@ -55,9 +49,7 @@ export default function SearchChannelsWrapper({
       keys: localSearch.searchKeys,
     })
   } else if (!isSquidAvailable) {
-    const mainPosts = mainPostsQueries
-      .map(({ data }) => data)
-      .filter(Boolean) as PostData[]
+    const mainPosts = mainPostsQueries?.data?.filter(Boolean) as PostData[]
     usedSearchResults = matchSorter(mainPosts, cleanedSearch, {
       keys: ['content.title', 'content.body'],
     })

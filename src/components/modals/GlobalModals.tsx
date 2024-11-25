@@ -1,5 +1,4 @@
 import { useMessageData } from '@/stores/message'
-import ShouldStakeModal from '../content-staking/ShouldStakeModal'
 import BlockedModal from '../moderation/BlockedModal'
 
 export default function GlobalModals() {
@@ -10,10 +9,6 @@ export default function GlobalModals() {
     <>
       <BlockedModal
         isOpen={isOpenMessageModal === 'blocked'}
-        closeModal={() => setOpenMessageModal('')}
-      />
-      <ShouldStakeModal
-        isOpen={isOpenMessageModal === 'should-stake'}
         closeModal={() => setOpenMessageModal('')}
       />
     </>

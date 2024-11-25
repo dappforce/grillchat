@@ -24,15 +24,6 @@ const SecretBoxMessagePreviewPart = dynamic(
   { loading: PreviewPartBodySkeleton }
 )
 
-const DonateMessagePreview = dynamic(
-  () => import('./donate/DonateMessagePreview'),
-  { loading: ChatItemSkeleton }
-)
-const DonateRepliedMessagePreviewPart = dynamic(
-  () => import('./donate/DonateRepliedMessagePreviewPart'),
-  { loading: PreviewPartBodySkeleton }
-)
-
 const ImageChatItem = dynamic(() => import('./image/ImageChatItem'), {
   loading: ChatItemSkeleton,
 })
@@ -51,10 +42,9 @@ const NftRepliedMessagePreviewPart = dynamic(
 
 export type MessageExtensionIds = Exclude<
   PostContentExtension['id'],
-  'subsocial-pinned-posts'
+  'subsocial-pinned-posts' | 'subsocial-donations'
 >
 export const extensionInitialDataTypes = {
-  'subsocial-donations': { recipient: '', messageId: '' },
   'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
   'subsocial-decoded-promo': { recipient: '', messageId: '' },
@@ -71,13 +61,6 @@ type Config<Id extends MessageExtensionIds> = {
 const extensionsConfig: {
   [key in MessageExtensionIds]: Config<key>
 } = {
-  'subsocial-donations': {
-    chatItemComponent: DonateMessagePreview,
-    replyMessageUI: {
-      element: DonateRepliedMessagePreviewPart,
-      config: { place: 'body' },
-    },
-  },
   'subsocial-evm-nft': {
     chatItemComponent: NftChatItem,
     replyMessageUI: {

@@ -1,17 +1,13 @@
 import GrillGreyIcon from '@/assets/icons/grill-grey.svg'
 import useIsMounted from '@/hooks/useIsMounted'
-import { getIsLoggedIn, useMyMainAddress } from '@/stores/my-account'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
-import { BiChat, BiNews } from 'react-icons/bi'
+import { BiChat } from 'react-icons/bi'
 import { GoLaw } from 'react-icons/go'
-import { LuCompass } from 'react-icons/lu'
-import { MdOutlineLeaderboard, MdOutlineLocalPolice } from 'react-icons/md'
+import { MdOutlineLocalPolice } from 'react-icons/md'
 import { RiLineChartLine } from 'react-icons/ri'
-import { TbCoins, TbWorld } from 'react-icons/tb'
-import { TiFlashOutline } from 'react-icons/ti'
-import { getLeaderboardLink } from '../leaderboard/utils'
 import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
@@ -23,26 +19,26 @@ export default function Sidebar() {
   return (
     <aside className='flex flex-col p-4 pl-0 text-[#64748BCC] dark:text-text-muted'>
       <ul className='flex flex-col gap-4'>
-        <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation />
+        {/* <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation /> */}
         <SidebarItem icon={BiChat} title='Chat' href='/' />
         <SidebarItem icon={GoLaw} title='Open Gov' href='/opengov' />
-        {getIsLoggedIn() && (
+        {/* {getIsLoggedIn() && (
           <SidebarItem
             icon={LuCompass}
             title='My Spaces'
             href={`/accounts/${myAddress}/spaces`}
             forceHardNavigation
           />
-        )}
+        )} */}
 
         <div className='border-t border-border-gray' />
 
-        <SidebarItem icon={TbCoins} title='Content Staking' href='/staking' />
-        <SidebarItem
+        {/* <SidebarItem icon={TbCoins} title='Content Staking' href='/staking' /> */}
+        {/* <SidebarItem
           icon={MdOutlineLeaderboard}
           title='Leaderboard'
           href={getLeaderboardLink(myAddress)}
-        />
+        /> */}
         <SidebarItem
           icon={RiLineChartLine}
           title='Statistics'
@@ -50,9 +46,9 @@ export default function Sidebar() {
           forceHardNavigation
         />
 
-        <div className='border-t border-border-gray' />
+        {/* <div className='border-t border-border-gray' /> */}
 
-        <SidebarItem
+        {/* <SidebarItem
           icon={TbWorld}
           title='Usernames'
           href='/dd'
@@ -63,7 +59,7 @@ export default function Sidebar() {
           title='Energy Station'
           href='/energy'
           forceHardNavigation
-        />
+        /> */}
 
         <div className='border-t border-border-gray' />
 

@@ -1,10 +1,7 @@
 import { cx } from '@/utils/class-names'
 import { useState } from 'react'
-import { RiCopperCoinLine } from 'react-icons/ri'
-import ActionCard from './ActionCard'
 import Name, { NameProps } from './Name'
 import ProfilePreview from './ProfilePreview'
-import { useOpenDonateExtension } from './extensions/donate/hooks/useOpenDonateExtension'
 import Modal from './modals/Modal'
 
 export type ProfilePreviewModalWrapperProps = {
@@ -20,7 +17,6 @@ export default function ProfilePreviewModalWrapper({
   messageId,
   children,
 }: ProfilePreviewModalWrapperProps) {
-  const openDonateExtension = useOpenDonateExtension(messageId ?? '', address)
   const [isOpenAccountModal, setIsOpenAccountModal] = useState(false)
 
   return (
@@ -36,19 +32,6 @@ export default function ProfilePreviewModalWrapper({
         closeModal={() => setIsOpenAccountModal(false)}
       >
         <ProfilePreview asLink address={address} className='mb-2' />
-        {messageId && (
-          <ActionCard
-            className='mt-2'
-            actions={[
-              {
-                icon: RiCopperCoinLine,
-                text: 'Donate',
-                iconClassName: cx('text-text-muted'),
-                onClick: () => openDonateExtension(),
-              },
-            ]}
-          />
-        )}
       </Modal>
     </>
   )

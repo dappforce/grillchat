@@ -1,11 +1,10 @@
-import { redisCallWrapper } from '@/old/server/cache'
-import { ApiResponse, handlerWrapper } from '@/old/server/common'
-import { generateGetDataFromSquidWithBlockchainFallback } from '@/old/server/squid'
+import { redisCallWrapper } from '@/server/cache'
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   SubsocialProfile,
-  getProfilesFromSubsocial,
-} from '@/old/services/subsocial/profiles/fetcher'
-import { convertAddressToSubsocialAddress } from '@/utils/account'
+  getProfiles,
+} from '@/services/datahub/profiles/fetcher'
+import { parseJSONData } from '@/utils/strings'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -25,7 +24,7 @@ type ResponseData = {
 export type ApiProfilesResponse = ApiResponse<ResponseData>
 export type ApiProfilesInvalidationResponse = ApiResponse<{}>
 
-const INVALIDATED_MAX_AGE = 2 * 60 // 2 minutes
+const INVALIDATED_MAX_AGE = 1 * 60 // 1 minute
 const getInvalidatedProfileRedisKey = (id: string) => {
   return `profiles-invalidated:${id}`
 }
@@ -51,7 +50,7 @@ const POST_handler = handlerWrapper({
   inputSchema: bodySchema,
   dataGetter: (req: NextApiRequest) => req.body,
 })<{}>({
-  errorLabel: 'profiles',
+  errorLabel: 'posts',
   allowedMethods: ['POST'],
   handler: async (data, _, res) => {
     redisCallWrapper(async (redis) => {
@@ -75,14 +74,53 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export const getProfilesServer = generateGetDataFromSquidWithBlockchainFallback(
-  'profiles',
-  getProfilesFromSubsocial,
-  { paramToId: (param) => param, responseToId: (response) => response.address },
-  {
-    blockchainResponse: (data) => {
-      data.address = convertAddressToSubsocialAddress(data.address)!
-    },
-  },
-  getInvalidatedProfileRedisKey
-)
+const PROFILE_MAX_AGE = 5 * 60 // 5 minutes
+const getProfileRedisKey = (id: string) => {
+  return `profiles:${id}`
+}
+export async function getProfilesServer(
+  addresses: string[]
+): Promise<SubsocialProfile[]> {
+  if (addresses.length === 0) return []
+
+  const profiles: SubsocialProfile[] = []
+  const needToFetch: string[] = []
+  const promises = addresses.map(async (address) => {
+    return redisCallWrapper(async (redis) => {
+      const [profile, isInvalidated] = await Promise.all([
+        redis?.get(getProfileRedisKey(address)),
+        redis?.get(getInvalidatedProfileRedisKey(address)),
+      ] as const)
+      const parsed =
+        profile && parseJSONData<{ data: SubsocialProfile | null }>(profile)
+      if (parsed && !isInvalidated) {
+        if (parsed.data) profiles.push(parsed.data)
+        // if null, we don't need to fetch it
+      } else {
+        needToFetch.push(address)
+      }
+    })
+  })
+  await Promise.allSettled(promises)
+
+  const fetchedProfiles = await getProfiles(needToFetch)
+  const profilesMap = new Map<string, SubsocialProfile>()
+  fetchedProfiles.forEach(async (profile) => {
+    profilesMap.set(profile.address, profile)
+  })
+
+  const saveToRedisPromises = needToFetch.map((address) => {
+    const profile = profilesMap.get(address) ?? null
+    redisCallWrapper(async (redis) => {
+      await redis?.set(
+        getProfileRedisKey(address),
+        JSON.stringify({ data: profile }),
+        'EX',
+        PROFILE_MAX_AGE
+      )
+    })
+  })
+  await Promise.all(saveToRedisPromises)
+
+  return [...profiles, ...fetchedProfiles]
+}
