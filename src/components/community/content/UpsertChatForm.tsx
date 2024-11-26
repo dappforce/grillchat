@@ -106,11 +106,19 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
       sendEvent('start_community_chat_creation')
     }
 
-    await mutateAsync({
-      spaceId: hubId,
-      postId: chat?.id,
-      ...data,
-    })
+    if (chat?.id) {
+      await mutateAsync({
+        postId: chat.id,
+        ...data,
+      })
+    } else {
+      await mutateAsync({
+        spaceId: hubId ?? '',
+        timestamp: Date.now(),
+        uuid: crypto.randomUUID(),
+        ...data,
+      })
+    }
     onSuccess?.()
   }
 

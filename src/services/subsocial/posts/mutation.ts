@@ -1,4 +1,4 @@
-import { saveFile, useRevalidateChatPage } from '@/services/api/mutation'
+import { saveFile } from '@/services/api/mutation'
 import { getPostQuery } from '@/services/api/query'
 import datahubMutation from '@/services/datahub/posts/mutation'
 import {
@@ -10,7 +10,6 @@ import { MutationConfig } from '@/subsocial-query'
 import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { PinsExtension, PostContent } from '@subsocial/api/types'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/router'
 import { getCurrentWallet } from '../hooks'
 import { createMutationWrapper } from '../utils/mutation'
 
@@ -70,16 +69,12 @@ function checkAction(data: UpsertPostParams) {
 }
 function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
   const client = useQueryClient()
-  const { mutate: revalidateChatPage } = useRevalidateChatPage()
-  const router = useRouter()
 
   return useMutation({
     ...config,
     mutationFn: async (params: UpsertPostParams) => {
       const { payload, action } = checkAction(params)
       const { content } = await generateMessageContent(params, client)
-
-      console.log(params)
 
       if (action === 'update') {
         await datahubMutation.updatePostData({
