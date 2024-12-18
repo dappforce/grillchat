@@ -4,9 +4,7 @@ import ProfileModal from '@/components/auth/ProfileModal'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
-import { getCurrentUrlWithoutQuery, getUrlQuery } from '@/utils/links'
-import { replaceUrl } from '@/utils/window'
-import { ComponentProps, useEffect } from 'react'
+import { ComponentProps } from 'react'
 
 export type ProfileAvatarProps = ComponentProps<'div'> & {
   popOverControl?: {
@@ -21,14 +19,6 @@ export default function ProfileAvatar({
 }: ProfileAvatarProps) {
   const address = useMyMainAddress()
   const openModal = useProfileModal((state) => state.openModal)
-
-  useEffect(() => {
-    const evmLinking = getUrlQuery('evmLinking')
-    if (!evmLinking) return
-
-    replaceUrl(getCurrentUrlWithoutQuery('evmLinking'))
-    openModal({ defaultOpenState: 'link-evm-address' })
-  }, [openModal])
 
   return (
     <>

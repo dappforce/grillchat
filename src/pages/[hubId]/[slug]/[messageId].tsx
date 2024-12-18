@@ -3,12 +3,11 @@ import { getHubIdFromAlias } from '@/constants/config'
 import MessageRedirectPage, {
   MessageRedirectPageProps,
 } from '@/modules/chat/MessageRedirectPage'
-import { prefetchBlockedEntities } from '@/old/server/moderation/prefetch'
-import { ResourceTypes } from '@/old/services/datahub/moderation/utils'
 import { AppCommonProps } from '@/pages/_app'
-import { getNftDataServer } from '@/pages/api/nft'
 import { getPostsServer } from '@/pages/api/posts'
+import { prefetchBlockedEntities } from '@/server/moderation/prefetch'
 import { getPostQuery } from '@/services/api/query'
+import { ResourceTypes } from '@/services/datahub/moderation/utils'
 import { isMessageBlocked } from '@/utils/chat'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
@@ -34,9 +33,6 @@ async function getMessageDataFromExtension(
   switch (firstExtension.id) {
     case 'subsocial-image':
       return { image: firstExtension.properties.image }
-    case 'subsocial-evm-nft':
-      const nftData = await getNftDataServer(firstExtension.properties)
-      return { image: nftData?.image }
   }
 
   return { image: null }

@@ -1,5 +1,5 @@
-import { ApiResponse, handlerWrapper } from '@/old/server/common'
-import { getIpfsApi } from '@/old/server/ipfs'
+import { ApiResponse, handlerWrapper } from '@/server/common'
+import { getIpfsApi } from '@/server/ipfs'
 import { z } from 'zod'
 
 const bodySchema = z.any()

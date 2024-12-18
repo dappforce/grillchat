@@ -1,4 +1,4 @@
-import { createUserId } from '@/old/services/api/mutation'
+import { createUserId } from '@/services/api/mutation'
 import { getIdFromSlug } from '@/utils/slug'
 import { LocalStorage } from '@/utils/storage'
 import { type BaseEvent, type BrowserClient } from '@amplitude/analytics-types'

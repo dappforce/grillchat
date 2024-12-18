@@ -1,14 +1,14 @@
-import { ApiResponse, handlerWrapper } from '@/old/server/common'
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   ModerationCallInput,
   SocialCallName,
-} from '@/old/server/datahub-queue/generated'
+} from '@/server/datahub-queue/generated'
 import {
   addPostIdToOrg,
   blockResource,
   initModerationOrg,
   unblockResource,
-} from '@/old/server/datahub-queue/moderation'
+} from '@/server/datahub-queue/moderation'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 

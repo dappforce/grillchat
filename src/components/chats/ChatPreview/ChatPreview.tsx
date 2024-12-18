@@ -1,7 +1,9 @@
 import Container from '@/components/Container'
+import { Skeleton } from '@/components/SkeletonFallback'
 import CustomLink from '@/components/referral/CustomLink'
 import { SortChatOption } from '@/modules/chat/hooks/useSortedChats'
 import { cx } from '@/utils/class-names'
+import { formatNumber } from '@/utils/strings'
 import dynamic from 'next/dynamic'
 import { ImageProps } from 'next/image'
 import { LinkProps } from 'next/link'
@@ -142,10 +144,20 @@ export default function ChatPreview({
               {(() => {
                 if (withUnreadCount && chatId) {
                   return (
-                    <ChatUnreadCount
-                      className='ml-2 flex-shrink-0'
-                      chatId={chatId}
-                    />
+                    <ChatUnreadCount chatId={chatId}>
+                      {({ unreadCount, isLoading }) =>
+                        isLoading ? (
+                          <Skeleton className='w-20' />
+                        ) : (
+                          unreadCount > 0 && (
+                            <span className='text-sm font-medium text-text-primary'>
+                              +{formatNumber(unreadCount, { shorten: true })}{' '}
+                              memes
+                            </span>
+                          )
+                        )
+                      }
+                    </ChatUnreadCount>
                   )
                 }
 

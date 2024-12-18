@@ -1,5 +1,4 @@
-import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
-import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
+import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 
 export default function useAddressIdentityId(
   address: string,
@@ -12,10 +11,6 @@ export default function useAddressIdentityId(
     // so this query will have the correct value when the message is inView (which won't create too much upfront queries)
     { enabled: false }
   )
-  const { data: accountData } = getAccountDataQuery.useQuery(address || '', {
-    enabled,
-  })
-  const { evmAddress } = accountData || {}
 
-  return evmAddress || linkedIdentity?.externalId || address
+  return linkedIdentity?.mainAddress || address
 }

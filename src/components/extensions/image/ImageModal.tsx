@@ -11,7 +11,7 @@ import {
   SOURCE_IMAGE_MAX_SIZE,
 } from '@/constants/image'
 import useDebounce from '@/hooks/useDebounce'
-import { useSaveImage } from '@/old/services/api/mutation'
+import { useSaveImage } from '@/services/api/mutation'
 import { useExtensionModalState } from '@/stores/extension'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'

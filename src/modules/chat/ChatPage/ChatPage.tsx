@@ -10,14 +10,12 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
-import { useModerationActions } from '@/old/services/datahub/moderation/mutation'
-import { getPostMetadataQuery } from '@/old/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/old/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/old/services/subsocial/commentIds'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
+import { useModerationActions } from '@/services/datahub/moderation/mutation'
+import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
-import { useExtensionData } from '@/stores/extension'
+import { isDatahubAvailable } from '@/services/datahub/utils'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -85,31 +83,12 @@ export default function ChatPage({
   const { data: chatMetadata } = getPostMetadataQuery.useQuery(chatId, {
     enabled: isDatahubAvailable,
   })
-  const { data: commentIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
-    chatId,
-    {
-      enabled: !isDatahubAvailable,
-    }
-  )
-
-  const openExtensionModal = useExtensionData(
-    (state) => state.openExtensionModal
-  )
-
-  useEffect(() => {
-    const query = getUrlQuery('donateTo')
-    if (!query) return
-
-    replaceUrl(getCurrentUrlWithoutQuery('donateTo'))
-    try {
-      const donateTo = (JSON.parse(query) || {}) as {
-        messageId: string
-        recipient: string
-      }
-      if (donateTo.messageId && donateTo.recipient)
-        openExtensionModal('subsocial-donations', donateTo)
-    } catch {}
-  }, [openExtensionModal])
+  // const { data: commentIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
+  //   chatId,
+  //   {
+  //     enabled: !isDatahubAvailable,
+  //   }
+  // )
 
   const myAddress = useMyMainAddress()
   const isSignerReady = useMyAccount((state) => !!state.signer)
@@ -131,36 +110,36 @@ export default function ChatPage({
   const { mutateAsync: commitModerationAction } = useModerationActions()
 
   const chatEntityId = chat?.entityId
-  useEffect(() => {
-    if (!isOwner) return
-    if (!isAuthorized && !isLoading && chatEntityId && isSignerReady) {
-      if (!moderatorData?.exist) {
-        commitModerationAction({
-          callName: 'synth_moderation_init_moderator',
-          args: {
-            ctxPostIds: [chatEntityId],
-            withOrganization: true,
-          },
-        })
-      } else {
-        commitModerationAction({
-          callName: 'synth_moderation_add_ctx_to_organization',
-          args: {
-            ctxPostIds: [chatEntityId],
-            organizationId: moderatorData?.organizationId ?? '',
-          },
-        })
-      }
-    }
-  }, [
-    moderatorData,
-    isSignerReady,
-    isAuthorized,
-    commitModerationAction,
-    isLoading,
-    chatEntityId,
-    isOwner,
-  ])
+  // useEffect(() => {
+  //   if (!isOwner) return
+  //   if (!isAuthorized && !isLoading && chatEntityId && isSignerReady) {
+  //     if (!moderatorData?.exist) {
+  //       commitModerationAction({
+  //         callName: 'synth_moderation_init_moderator',
+  //         args: {
+  //           ctxPostIds: [chatEntityId],
+  //           withOrganization: true,
+  //         },
+  //       })
+  //     } else {
+  //       commitModerationAction({
+  //         callName: 'synth_moderation_add_ctx_to_organization',
+  //         args: {
+  //           ctxPostIds: [chatEntityId],
+  //           organizationId: moderatorData?.organizationId ?? '',
+  //         },
+  //       })
+  //     }
+  //   }
+  // }, [
+  //   moderatorData,
+  //   isSignerReady,
+  //   isAuthorized,
+  //   commitModerationAction,
+  //   isLoading,
+  //   chatEntityId,
+  //   isOwner,
+  // ])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId
@@ -178,7 +157,7 @@ export default function ChatPage({
 
   const content = chat?.content ?? stubMetadata
   const messageCount =
-    chatMetadata?.totalCommentsCount ?? commentIds?.length ?? 0
+    chatMetadata?.totalCommentsCount ?? /* commentIds?.length ?? */ 0
 
   return (
     <>

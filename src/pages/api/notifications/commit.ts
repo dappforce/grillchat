@@ -1,5 +1,5 @@
-import { ApiResponse, handlerWrapper } from '@/old/server/common'
-import { commitSignedMessageWithAction } from '@/old/server/notifications'
+import { ApiResponse, handlerWrapper } from '@/server/common'
+import { commitSignedMessageWithAction } from '@/server/notifications'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 

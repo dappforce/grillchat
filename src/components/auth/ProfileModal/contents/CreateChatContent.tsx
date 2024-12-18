@@ -1,7 +1,7 @@
 import LoadingContent from '@/components/community/content/LoadingContent'
 import UpsertChatForm from '@/components/community/content/UpsertChatForm'
 import { communityHubId } from '@/modules/chat/HomePage'
-import { getProfileQuery } from '@/old/services/api/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { ProfileModalContentProps } from '../types'
 

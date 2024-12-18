@@ -1,8 +1,8 @@
-import { ApiResponse, handlerWrapper } from '@/old/server/common'
+import { ApiResponse, handlerWrapper } from '@/server/common'
 import {
   createSuperLike,
   getSuperLikeConfirmationMsg,
-} from '@/old/server/datahub-queue/super-like'
+} from '@/server/datahub-queue/super-like'
 import { SocialEventDataApiInput } from '@subsocial/data-hub-sdk'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'

@@ -3,8 +3,7 @@ import Button from '@/components/Button'
 import LinkText, { LinkTextProps } from '@/components/LinkText'
 import Toast from '@/components/Toast'
 import Input from '@/components/inputs/Input'
-import { getLeaderboardLink } from '@/components/leaderboard/utils'
-import { useSubscribeInLanding } from '@/old/services/subsocial-offchain/mutation'
+import { useSubscribeInLanding } from '@/services/subsocial-offchain/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -118,12 +117,6 @@ export default function Footer(props: ComponentProps<'footer'>) {
             }
           >
             Lock SUB
-          </OpenInNewTabLink>
-          <OpenInNewTabLink
-            href={getLeaderboardLink(myAddress)}
-            onClick={() => sendEvent('lp_leaderboard_clicked')}
-          >
-            Leaderboard
           </OpenInNewTabLink>
         </div>
         <ParticipateCard className='col-span-2 mt-4 sm:col-span-3 sm:mt-4 lg:col-span-5 lg:mt-0' />

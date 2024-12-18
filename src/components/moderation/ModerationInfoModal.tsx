@@ -1,12 +1,12 @@
 import BlockedImage from '@/assets/graphics/blocked.png'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
-import { GetBlockedInAppDetailedQuery } from '@/old/services/datahub/generated-query'
-import { useModerationActions } from '@/old/services/datahub/moderation/mutation'
+import { getPostQuery } from '@/services/api/query'
+import { GetBlockedInAppDetailedQuery } from '@/services/datahub/generated-query'
+import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import {
   getBlockedInAppDetailedQuery,
   getBlockedInPostIdDetailedQuery,
-} from '@/old/services/datahub/moderation/query'
-import { getPostQuery } from '@/services/api/query'
+} from '@/services/datahub/moderation/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { getTimeRelativeToNow } from '@/utils/date'
 import Image from 'next/image'
@@ -139,17 +139,17 @@ export default function ModerationInfoModal({
     blockedInApp?.address ?? []
   ).map((data) => cardMapper(data, true))
 
-  const unblock = async () => {
-    if (!toBeUnblocked) return
-    await mutateAsync({
-      callName: 'synth_moderation_unblock_resource',
-      args: {
-        resourceId: toBeUnblocked.id,
-        ctxPostIds: ['*'],
-        ctxAppIds: ['*'],
-      },
-    })
-  }
+  // const unblock = async () => {
+  //   if (!toBeUnblocked) return
+  //   await mutateAsync({
+  //     callName: 'synth_moderation_unblock_resource',
+  //     args: {
+  //       resourceId: toBeUnblocked.id,
+  //       ctxPostIds: ['*'],
+  //       ctxAppIds: ['*'],
+  //     },
+  //   })
+  // }
   const hasAnyBlockedInApp = isAdmin && blockedInAppCardData.length
 
   return (
@@ -180,7 +180,7 @@ export default function ModerationInfoModal({
         isOpen={isOpenConfirmation}
         closeModal={() => dispatch({ type: 'close' })}
         title='🤔 Unblock user'
-        primaryButtonProps={{ children: 'Yes, unblock', onClick: unblock }}
+        primaryButtonProps={{ children: 'Yes, unblock', onClick: () => {} }}
         secondaryButtonProps={{ children: 'No, keep blocked' }}
         content={() => {
           if (!toBeUnblocked) return null

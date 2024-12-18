@@ -1,32 +1,12 @@
-import { getUnreadCountQuery } from '@/old/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/old/services/datahub/utils'
-import { getMessagesCountAfterTimeQuery } from '@/old/services/subsocial/commentIds'
+import { getUnreadCountQuery } from '@/services/datahub/posts/query'
 
 export default function useUnreadCount(chatId: string, lastReadTime: number) {
-  if (isDatahubAvailable) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useUnreadCountFromDatahub(chatId, lastReadTime)
-  } else {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useUnreadCountFromBlockchain(chatId, lastReadTime)
-  }
-}
-
-function useUnreadCountFromDatahub(chatId: string, lastReadTime: number) {
-  const { data: unreadCountFromDatahub } = getUnreadCountQuery.useQuery(
-    { chatId: chatId, lastRead: { timestamp: lastReadTime } },
-    {
-      enabled: !!lastReadTime,
-    }
-  )
-  return unreadCountFromDatahub ?? 0
-}
-
-function useUnreadCountFromBlockchain(chatId: string, lastReadTime: number) {
-  const { data } = getMessagesCountAfterTimeQuery.useQuery({
-    chatId,
-    time: lastReadTime,
+  const { data: unreadCount, isLoading } = getUnreadCountQuery.useQuery({
+    chatId: chatId,
+    lastRead: { timestamp: lastReadTime || 0 },
   })
-
-  return data?.totalCount ?? 0
+  return {
+    unreadCount: unreadCount ?? 0,
+    isLoading,
+  }
 }

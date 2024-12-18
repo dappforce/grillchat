@@ -1,4 +1,4 @@
-import { getRewardReportQuery } from '@/old/services/datahub/content-staking/query'
+import { getRewardReportQuery } from '@/services/datahub/content-staking/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import clsx from 'clsx'
 import { ComponentProps } from 'react'

@@ -1,5 +1,5 @@
-import firebaseApp from '@/old/services/firebase/config'
 import { getPostQuery } from '@/services/api/query'
+import firebaseApp from '@/services/firebase/config'
 import { cx } from '@/utils/class-names'
 import { currentNetwork } from '@/utils/network'
 import * as firebaseMessaging from 'firebase/messaging'

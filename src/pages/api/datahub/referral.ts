@@ -1,6 +1,6 @@
-import { handlerWrapper } from '@/old/server/common'
-import { SocialProfileAddReferrerIdInput } from '@/old/server/datahub-queue/generated'
-import { setReferrerId } from '@/old/server/datahub-queue/referral'
+import { handlerWrapper } from '@/server/common'
+import { SocialProfileAddReferrerIdInput } from '@/server/datahub-queue/generated'
+import { setReferrerId } from '@/server/datahub-queue/referral'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 

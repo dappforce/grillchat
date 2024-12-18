@@ -6,21 +6,18 @@ import Sidebar from '@/components/layouts/Sidebar'
 import CustomLink from '@/components/referral/CustomLink'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
-import { getProfileQuery } from '@/old/services/api/query'
-import { getNotificationCountQuery } from '@/old/services/subsocial/notifications/query'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getHubPageLink } from '@/utils/links'
-import { useExternalStorage } from '@/utils/polkaverse-storage'
 import { Dialog, Transition } from '@headlessui/react'
 import { Wallet, getWallets } from '@talismn/connect-wallets'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ComponentProps, Fragment, ReactNode, useEffect, useState } from 'react'
-import { FaRegBell } from 'react-icons/fa'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import AuthErrorModal from './AuthErrorModal'
@@ -254,40 +251,5 @@ function DrawerSidebar({
 
 const LAST_READ_NOTIFICATION_KEY = 'lastReadNotification'
 function NotificationBell() {
-  const myAddress = useMyMainAddress()
-  const isInitialized = useMyAccount.use.isInitialized()
-
-  const { getDataForAddress } = useExternalStorage(LAST_READ_NOTIFICATION_KEY, {
-    storageKeyType: 'user',
-  })
-
-  const lastReadNotif = getDataForAddress(myAddress ?? '')
-  const { data: unreadCount } = getNotificationCountQuery.useQuery(
-    {
-      address: myAddress ?? '',
-      afterDate: lastReadNotif || undefined,
-    },
-    { enabled: !!myAddress && !!lastReadNotif && !!isInitialized }
-  )
-  const sendEvent = useSendEvent()
-
-  return (
-    <Button
-      size='circle'
-      variant='transparent'
-      className='relative top-px text-text-muted dark:text-text'
-      nextLinkProps={{ forceHardNavigation: true }}
-      href='/notifications'
-      onClick={() => sendEvent('open_ann_chat', { eventSource: 'notifs_bell' })}
-    >
-      <div className='relative'>
-        <FaRegBell className='text-xl' />
-        {!!unreadCount && unreadCount > 0 && (
-          <div className='absolute right-0.5 top-0 -translate-y-1/2 translate-x-1/2 rounded-full bg-text-red px-1.5 text-xs text-text-on-primary'>
-            {unreadCount}
-          </div>
-        )}
-      </div>
-    </Button>
-  )
+  return <></>
 }

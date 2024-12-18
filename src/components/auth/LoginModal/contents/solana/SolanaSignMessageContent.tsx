@@ -94,11 +94,11 @@ const SolanaSignMessageContent = ({
           },
         })
       } else {
-        setCurrentState('evm-linking-error')
+        // setCurrentState('evm-linking-error')
       }
     } catch (error) {
       console.error('Failed to sign message', error)
-      setCurrentState('evm-linking-error')
+      // setCurrentState('evm-linking-error')
     }
   }, [
     isLoadingRef,

@@ -1,27 +1,8 @@
-import { CHAT_PER_PAGE } from '@/constants/chat'
 import { getHubIdFromAlias } from '@/constants/config'
 import ChatPage, { ChatPageProps } from '@/modules/chat/ChatPage'
-import { prefetchBlockedEntities } from '@/old/server/moderation/prefetch'
-import { getPostQuery, getProfileQuery } from '@/old/services/api/query'
-import { getSuperLikeCountQuery } from '@/old/services/datahub/content-staking/query'
-import { getLinkedIdentityQuery } from '@/old/services/datahub/identity/query'
-import {
-  getPaginatedPostsByPostIdFromDatahubQuery,
-  getPostMetadataQuery,
-} from '@/old/services/datahub/posts/query'
-import { isDatahubAvailable } from '@/old/services/datahub/utils'
-import { getCommentIdsByPostIdFromChainQuery } from '@/old/services/subsocial/commentIds'
-import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
-import {
-  coingeckoTokenIds,
-  getPriceQuery,
-} from '@/old/services/subsocial/prices/query'
 import { AppCommonProps } from '@/pages/_app'
-import { getAccountsDataFromCache } from '@/pages/api/accounts-data'
 import { getPostsServer } from '@/pages/api/posts'
-import { getPricesFromCache } from '@/pages/api/prices'
-import { getProfilesServer } from '@/pages/api/profiles'
-import { removeUndefinedValues } from '@/utils/general'
+import { getPostQuery } from '@/services/api/query'
 import { getIpfsContentUrl } from '@/utils/ipfs'
 import { getCommonStaticProps } from '@/utils/page'
 import { getIdFromSlug } from '@/utils/slug'
@@ -42,105 +23,6 @@ function getValidatedChatId(slugParam: string) {
   if (!chatId || !validateNumber(chatId)) return undefined
 
   return chatId
-}
-
-async function getChatsData(client: QueryClient, chatId: string) {
-  const { messageIds, messages } = await getMessageIds(client, chatId)
-
-  const owners = messages.map((message) => message.struct.ownerId)
-
-  const ownersSet = new Set(owners)
-  const chatPageOwnerIds = Array.from(ownersSet).slice(0, CHAT_PER_PAGE)
-
-  const [accountsDataPromise, profilesPromise, prices] =
-    await Promise.allSettled([
-      getAccountsDataFromCache(chatPageOwnerIds, 'GET'),
-      getProfilesServer(chatPageOwnerIds),
-      getPricesFromCache(Object.values(coingeckoTokenIds)),
-      ...chatPageOwnerIds.map((ownerId) =>
-        getLinkedIdentityQuery.fetchQuery(client, ownerId)
-      ),
-    ] as const)
-  if (accountsDataPromise.status === 'fulfilled') {
-    accountsDataPromise.value.forEach((accountAddresses) => {
-      getAccountDataQuery.setQueryData(
-        client,
-        accountAddresses.grillAddress,
-        accountAddresses
-      )
-    })
-  }
-  if (profilesPromise.status === 'fulfilled') {
-    profilesPromise.value.forEach((profile) => {
-      getProfileQuery.setQueryData(
-        client,
-        profile.address,
-        removeUndefinedValues(profile)
-      )
-    })
-  }
-
-  return {
-    messages,
-    messageIds,
-    prices: prices.status === 'fulfilled' ? prices.value : [],
-  }
-}
-
-async function getMessageIds(client: QueryClient, postId: string) {
-  return isDatahubAvailable
-    ? getMessageIdsFromDatahub(client, postId)
-    : getMessageIdsFromChain(client, postId)
-}
-
-async function getMessageIdsFromDatahub(client: QueryClient, chatId: string) {
-  const res =
-    await getPaginatedPostsByPostIdFromDatahubQuery.fetchFirstPageQuery(
-      client,
-      chatId
-    )
-  getPaginatedPostsByPostIdFromDatahubQuery.invalidateFirstQuery(client, chatId)
-
-  const [messages, superlikes] = await Promise.allSettled([
-    getPostsServer(res.data),
-    getSuperLikeCountQuery.fetchQueries(client, res.data),
-  ] as const)
-  if (messages.status === 'fulfilled') {
-    messages.value.forEach((message) => {
-      getPostQuery.setQueryData(client, message.id, message)
-    })
-  }
-
-  return {
-    messageIds: res.data,
-    messages: messages.status === 'fulfilled' ? messages.value : [],
-  }
-}
-async function getMessageIdsFromChain(client: QueryClient, chatId: string) {
-  const messageIds = await getCommentIdsByPostIdFromChainQuery.fetchQuery(
-    client,
-    chatId
-  )
-
-  const preloadedPostCount = CHAT_PER_PAGE * 2
-  const startSlice = Math.max(0, messageIds.length - preloadedPostCount)
-  const endSlice = messageIds.length
-  const prefetchedMessageIds = messageIds.slice(startSlice, endSlice)
-
-  const messages = await getPostsServer(prefetchedMessageIds)
-  messages.forEach((message) => {
-    getPostQuery.setQueryData(client, message.id, message)
-  })
-
-  return { messageIds: prefetchedMessageIds, messages }
-}
-
-async function prefetchPostMetadata(queryClient: QueryClient, chatId: string) {
-  if (isDatahubAvailable) {
-    await getPostMetadataQuery.fetchQuery(queryClient, chatId)
-  } else {
-    await getCommentIdsByPostIdFromChainQuery.fetchQuery(queryClient, chatId)
-  }
 }
 
 export const getStaticProps = getCommonStaticProps<
@@ -170,32 +52,6 @@ export const getStaticProps = getCommonStaticProps<
         hubIds.push(originalHubId)
       }
 
-      const chatEntityId = chatData.entityId ?? ''
-      const [{ prices }, blockedData] = await Promise.all([
-        getChatsData(queryClient, chatId),
-        prefetchBlockedEntities(queryClient, hubIds, [chatEntityId]),
-        prefetchPostMetadata(queryClient, chatId),
-      ] as const)
-
-      if (blockedData) {
-        let isChatModerated = false
-        ;[
-          ...blockedData.blockedInSpaceIds,
-          ...blockedData.blockedInAppIds,
-        ].forEach(({ blockedResources }) => {
-          if (blockedResources.postId.includes(chatId)) {
-            isChatModerated = true
-          }
-        })
-        if (isChatModerated)
-          return {
-            redirect: {
-              destination: '/',
-              permanent: false,
-            },
-          }
-      }
-
       if (!chatData.struct.hidden) {
         title = chatData?.content?.title || null
         desc = chatData?.content?.body || null
@@ -205,19 +61,8 @@ export const getStaticProps = getCommonStaticProps<
       }
 
       getPostQuery.setQueryData(queryClient, chatId, chatData)
-
-      prices.forEach((price) => {
-        const { id, current_price } = price || {}
-
-        if (id && current_price) {
-          getPriceQuery.setQueryData(queryClient, id, {
-            id,
-            current_price: current_price?.toString(),
-          })
-        }
-      })
-    } catch (err) {
-      console.error('Error fetching for chat page: ', err)
+    } catch (error) {
+      console.error('Failed to fetch chat data:', error)
     }
 
     return {

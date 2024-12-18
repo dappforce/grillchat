@@ -1,4 +1,4 @@
-import { handlerWrapper } from '@/old/server/common'
+import { handlerWrapper } from '@/server/common'
 import { datahubQueueRequest } from '@/server/datahub-queue/utils'
 import { gql } from 'graphql-request'
 import { NextApiRequest, NextApiResponse } from 'next'

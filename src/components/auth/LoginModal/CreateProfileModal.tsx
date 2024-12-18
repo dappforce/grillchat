@@ -6,8 +6,8 @@ import Modal, {
   ModalFunctionalityProps,
   ModalProps,
 } from '@/components/modals/Modal'
-import { getProfileQuery } from '@/old/services/api/query'
 import { useUpsertProfile } from '@/services/datahub/profiles/mutation'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { augmentDatahubParams } from '@/services/datahub/utils'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'

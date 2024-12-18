@@ -1,4 +1,4 @@
-import { redisCallWrapper } from '@/old/server/cache'
+import { redisCallWrapper } from '@/server/cache'
 import axios from 'axios'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'

@@ -1,4 +1,4 @@
-import { getIpfsApi } from '@/old/server/ipfs'
+import { getIpfsApi } from '@/server/ipfs'
 import formidable from 'formidable'
 import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'

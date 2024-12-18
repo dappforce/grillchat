@@ -1,5 +1,5 @@
 import Button from '@/components/Button'
-import { useLinkFcm } from '@/old/services/api/notifications/mutation'
+import { useLinkFcm } from '@/services/api/notifications/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyAccount } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'

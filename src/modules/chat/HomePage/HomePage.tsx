@@ -36,24 +36,11 @@ export const homePageAdditionalTabs: {
   id: string
   text: string
   hubId: string
-}[] = [
-  // Example additional tabs
-  // {
-  //   id: 'ai-bots',
-  //   text: 'AI Experts',
-  //   hubId: '1031',
-  // },
-  // {
-  //   id: 'ai-bots',
-  //   text: 'AI Bots',
-  //   hubId: '1031',
-  // },
-]
+}[] = []
 
 const pathnameTabIdMapper: Record<string, number> = {
   '/my-chats': 0,
   '/hot-chats': 1,
-  // '/ai-bots': 2,
   '/hubs': 2,
 }
 

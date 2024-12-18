@@ -6,23 +6,12 @@ import { ClipboardEvent, ComponentType } from 'react'
 import { SUPPORTED_IMAGE_EXTENSIONS } from '../inputs/ImageInput'
 import {
   ChatItemSkeleton,
-  PreviewPartBodySkeleton,
   PreviewPartImageSkeleton,
 } from './common/skeletons/ChatItemSkeleton'
-import { parseNftMarketplaceLink } from './nft/utils'
 import {
   ExtensionChatItemProps,
   RepliedMessagePreviewPartsProps,
 } from './types'
-
-const SecretBoxChatItem = dynamic(
-  () => import('./secret-box/SecretBoxChatItem'),
-  { loading: ChatItemSkeleton }
-)
-const SecretBoxMessagePreviewPart = dynamic(
-  () => import('./secret-box/SecretBoxMessagePreviewPart'),
-  { loading: PreviewPartBodySkeleton }
-)
 
 const ImageChatItem = dynamic(() => import('./image/ImageChatItem'), {
   loading: ChatItemSkeleton,
@@ -32,22 +21,15 @@ const ImageRepliedMessagePreviewPart = dynamic(
   { loading: PreviewPartImageSkeleton }
 )
 
-const NftChatItem = dynamic(() => import('./nft/NftChatItem'), {
-  loading: ChatItemSkeleton,
-})
-const NftRepliedMessagePreviewPart = dynamic(
-  () => import('./nft/NftRepliedMessagePreviewPart'),
-  { loading: PreviewPartImageSkeleton }
-)
-
 export type MessageExtensionIds = Exclude<
   PostContentExtension['id'],
-  'subsocial-pinned-posts' | 'subsocial-donations'
+  | 'subsocial-pinned-posts'
+  | 'subsocial-donations'
+  | 'subsocial-evm-nft'
+  | 'subsocial-decoded-promo'
 >
 export const extensionInitialDataTypes = {
-  'subsocial-evm-nft': null as null | string,
   'subsocial-image': null as null | File | string,
-  'subsocial-decoded-promo': { recipient: '', messageId: '' },
 } satisfies Record<MessageExtensionIds, unknown>
 
 type Config<Id extends MessageExtensionIds> = {
@@ -61,27 +43,6 @@ type Config<Id extends MessageExtensionIds> = {
 const extensionsConfig: {
   [key in MessageExtensionIds]: Config<key>
 } = {
-  'subsocial-evm-nft': {
-    chatItemComponent: NftChatItem,
-    replyMessageUI: {
-      element: NftRepliedMessagePreviewPart,
-      config: {
-        place: 'inside',
-        emptyBodyText: 'NFT',
-        previewClassName: 'w-4',
-      },
-    },
-    pasteInterception: (clipboardData, e) => {
-      const text = clipboardData.getData('text/plain')
-      try {
-        const marketplace = parseNftMarketplaceLink(text)
-        e.preventDefault()
-        return marketplace.url
-      } catch {}
-
-      return null
-    },
-  },
   'subsocial-image': {
     chatItemComponent: ImageChatItem,
     replyMessageUI: {
@@ -114,16 +75,6 @@ const extensionsConfig: {
       }
 
       return null
-    },
-  },
-  'subsocial-decoded-promo': {
-    chatItemComponent: SecretBoxChatItem,
-    replyMessageUI: {
-      element: SecretBoxMessagePreviewPart,
-      config: {
-        place: 'body',
-        previewClassName: 'w-4',
-      },
     },
   },
 }

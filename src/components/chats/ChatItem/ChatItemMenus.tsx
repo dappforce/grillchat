@@ -1,7 +1,6 @@
 import Button from '@/components/Button'
 import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
-import { canUsePromoExtensionAccounts } from '@/components/extensions/secret-box/utils'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
@@ -33,7 +32,6 @@ import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { BiGift } from 'react-icons/bi'
 import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
 import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
@@ -142,19 +140,6 @@ export default function ChatItemMenus({
     }
 
     if (isOptimisticMessage) return menus
-
-    if (address && canUsePromoExtensionAccounts.includes(address)) {
-      menus.unshift({
-        text: 'Secret Box',
-        icon: BiGift,
-        onClick: () => {
-          openExtensionModal('subsocial-decoded-promo', {
-            recipient: ownerId ?? '',
-            messageId,
-          })
-        },
-      })
-    }
 
     const replyItem: FloatingMenusProps['menus'][number] = {
       text: 'Reply',

@@ -1,6 +1,6 @@
 import { env } from '@/env.mjs'
-import { getBlockedResourcesQuery } from '@/old/services/datahub/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { getBlockedResourcesQuery } from '@/services/datahub/moderation/query'
 import { useMemo } from 'react'
 
 export default function useIsAddressBlockedInChat(

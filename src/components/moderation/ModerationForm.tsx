@@ -1,7 +1,7 @@
 import useToastError from '@/hooks/useToastError'
-import { useModerationActions } from '@/old/services/datahub/moderation/mutation'
-import { getModerationReasonsQuery } from '@/old/services/datahub/moderation/query'
 import { getPostQuery } from '@/services/api/query'
+import { useModerationActions } from '@/services/datahub/moderation/mutation'
+import { getModerationReasonsQuery } from '@/services/datahub/moderation/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -10,13 +10,9 @@ import { SocialCallDataArgs } from '@subsocial/data-hub-sdk'
 import { ComponentProps, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
-import {
-  HiMiniArrowUturnLeft,
-  HiOutlineInformationCircle,
-} from 'react-icons/hi2'
+import { HiOutlineInformationCircle } from 'react-icons/hi2'
 import { z } from 'zod'
 import FormButton from '../FormButton'
-import LinkText from '../LinkText'
 import { useName } from '../Name'
 import Toast from '../Toast'
 import SelectInput, { ListItem } from '../inputs/SelectInput'
@@ -84,16 +80,6 @@ export default function ModerationForm({
         const args =
           variables.args as SocialCallDataArgs<'synth_moderation_block_resource'>
         const isBlockingOwner = args.resourceId === ownerId
-        const undo = () =>
-          mutate({
-            withoutRevalidateCurrentPath: isFromWidget,
-            callName: 'synth_moderation_unblock_resource',
-            args: {
-              resourceId: args.resourceId,
-              ctxPostIds: ['*'],
-              ctxAppIds: ['*'],
-            },
-          })
 
         toast.custom((t) => (
           <Toast
@@ -106,18 +92,6 @@ export default function ModerationForm({
                 You have blocked the {!isBlockingOwner ? 'message from ' : ''}
                 user {name}
               </span>
-            }
-            action={
-              <LinkText
-                onClick={() => {
-                  undo()
-                  toast.dismiss(t.id)
-                }}
-                variant='primary'
-                className='flex items-center gap-1 text-sm'
-              >
-                <HiMiniArrowUturnLeft /> Undo
-              </LinkText>
             }
           />
         ))
@@ -176,16 +150,16 @@ export default function ModerationForm({
 
         const reasonId = reason.id
 
-        mutate({
-          withoutRevalidateCurrentPath: isFromWidget,
-          callName: 'synth_moderation_block_resource',
-          args: {
-            reasonId,
-            resourceId,
-            ctxPostIds: ['*'],
-            ctxAppIds: ['*'],
-          },
-        })
+        // mutate({
+        //   withoutRevalidateCurrentPath: isFromWidget,
+        //   callName: 'synth_moderation_block_resource',
+        //   args: {
+        //     reasonId,
+        //     resourceId,
+        //     ctxPostIds: ['*'],
+        //     ctxAppIds: ['*'],
+        //   },
+        // })
 
         sendEvent('client_moderation', {
           eventSource: 'moderate-action',

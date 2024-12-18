@@ -1,8 +1,6 @@
-import EthIcon from '@/assets/icons/eth-dynamic-size.svg'
 import GrillIcon from '@/assets/icons/grill.svg'
 import PolkadotIcon from '@/assets/icons/polkadot-dynamic-size.svg'
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
-import { getAccountDataQuery } from '@/old/services/subsocial/evmAddresses'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { truncateAddress } from '@/utils/account'
 import { cx } from '@/utils/class-names'
@@ -11,7 +9,6 @@ import { ProfileContent } from '@subsocial/api/types'
 import { ComponentProps } from 'react'
 import { LuPencil } from 'react-icons/lu'
 import AddressAvatar from './AddressAvatar'
-import AllIdentityIcons from './AllIdentityIcons'
 import Button from './Button'
 import { CopyTextInline } from './CopyText'
 import Name, { useName } from './Name'
@@ -52,8 +49,6 @@ const ProfilePreview = ({
 }: ProfilePreviewProps) => {
   const mdUp = useBreakpointThreshold('md')
   const { isLoading } = useName(address)
-  const { data: accountData } = getAccountDataQuery.useQuery(address)
-  const { evmAddress } = accountData || {}
 
   const isMyProxyAddress = !!useMyAccount(
     (state) => state.parentProxyAddress === address
@@ -62,8 +57,7 @@ const ProfilePreview = ({
 
   const isMyAddressPart = myAddress === address ? ' my' : ''
 
-  const showGrillAddress = !isMyProxyAddress && !evmAddress
-  const showEvmAddress = !!evmAddress
+  const showGrillAddress = !isMyProxyAddress
   const showPolkadotAddress = !!isMyProxyAddress
 
   const editButton = mdUp ? (
@@ -148,23 +142,7 @@ const ProfilePreview = ({
                 />
               </div>
             )}
-            {showEvmAddress && (
-              <div className='flex flex-row items-center gap-2'>
-                <EthIcon className='relative left-1 text-xl text-text-muted' />
-                <CopyTextInline
-                  text={truncateAddress(evmAddress)}
-                  tooltip={`Copy${isMyAddressPart} EVM address`}
-                  textToCopy={evmAddress}
-                  textClassName={cx(
-                    'font-mono text-base whitespace-nowrap overflow-hidden overflow-ellipsis'
-                  )}
-                />
-              </div>
-            )}
           </div>
-        )}
-        {showAllIdentity && (
-          <AllIdentityIcons className='mt-1' address={address} />
         )}
       </div>
     </div>

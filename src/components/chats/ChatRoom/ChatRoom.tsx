@@ -7,8 +7,7 @@ import TextArea from '@/components/inputs/TextArea'
 import { getIsHubWithoutJoinButton } from '@/constants/config'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
 import useLoginOption from '@/hooks/useLoginOption'
-import { getHasUserStakedQuery, getPostQuery } from '@/old/services/api/query'
-import { JoinChatWrapper } from '@/old/services/subsocial/posts/mutation'
+import { getHasUserStakedQuery, getPostQuery } from '@/services/api/query'
 import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
@@ -202,31 +201,32 @@ function ChatInputWrapper({
               )
 
             return (
-              <JoinChatWrapper>
-                {({ isLoading, mutateAsync }) => {
-                  const isButtonLoading = isLoading || isLoadingJoinedChat
-                  return (
-                    <Button
-                      size='lg'
-                      className={cx(
-                        isButtonLoading && 'bg-background-light text-text-muted'
-                      )}
-                      disabledStyle='subtle'
-                      isLoading={isButtonLoading}
-                      onClick={async () => {
-                        await mutateAsync({ chatId })
-                        sendEvent(
-                          'join_chat',
-                          { chatId, hubId, eventSource: 'chat_required_btn' },
-                          { hasJoinedChats: true }
-                        )
-                      }}
-                    >
-                      Join
-                    </Button>
-                  )
-                }}
-              </JoinChatWrapper>
+              <></>
+              // <JoinChatWrapper>
+              //   {({ isLoading, mutateAsync }) => {
+              //     const isButtonLoading = isLoading || isLoadingJoinedChat
+              //     return (
+              //       <Button
+              //         size='lg'
+              //         className={cx(
+              //           isButtonLoading && 'bg-background-light text-text-muted'
+              //         )}
+              //         disabledStyle='subtle'
+              //         isLoading={isButtonLoading}
+              //         onClick={async () => {
+              //           await mutateAsync({ chatId })
+              //           sendEvent(
+              //             'join_chat',
+              //             { chatId, hubId, eventSource: 'chat_required_btn' },
+              //             { hasJoinedChats: true }
+              //           )
+              //         }}
+              //       >
+              //         Join
+              //       </Button>
+              //     )
+              //   }}
+              // </JoinChatWrapper>
             )
           })()}
         </div>

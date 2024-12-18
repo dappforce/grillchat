@@ -16,7 +16,6 @@ import {
   CreateChatContent,
   CreateChatLoadingContent,
 } from './contents/CreateChatContent'
-import LinkedAddressesContent from './contents/LinkedAddressesContent'
 import LogoutContent from './contents/LogoutContent'
 import PrivacySecurityContent from './contents/PrivacySecurityContent'
 import PrivateKeyContent from './contents/PrivateKeyContent'
@@ -34,7 +33,7 @@ const modalContents: {
   [key in ProfileModalState]: (props: ProfileModalContentProps) => JSX.Element
 } = {
   account: AccountContent,
-  'linked-addresses': LinkedAddressesContent,
+  'linked-addresses': () => <></>,
   'profile-settings': SimpleProfileSettingsContent,
   'privacy-security': PrivacySecurityContent,
   'private-key': PrivateKeyContent,

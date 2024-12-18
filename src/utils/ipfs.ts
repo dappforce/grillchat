@@ -1,5 +1,5 @@
 import { SUBSOCIAL_IPFS_GATEWAY } from '@/constants/links'
-import { isPersistentId } from '@/old/services/datahub/posts/fetcher'
+import { isPersistentId } from '@/services/datahub/posts/fetcher'
 import { CID } from 'ipfs-http-client'
 import { importer } from 'ipfs-unixfs-importer'
 import urlJoin from 'url-join'

@@ -1,6 +1,6 @@
 import ChatForm, { ChatFormProps } from '@/components/chats/ChatForm'
 import Modal, { ModalProps } from '@/components/modals/Modal'
-import { SendMessageParams } from '@/old/services/subsocial/commentIds'
+import { SendMessageParams } from '@/services/subsocial/commentIds/types'
 import { useMessageData } from '@/stores/message'
 import { cx } from '@/utils/class-names'
 import { useEffect } from 'react'

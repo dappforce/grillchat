@@ -1,6 +1,5 @@
 import { env } from '@/env.mjs'
-import { getLinkedIdentityFromTwitterId } from '@/old/services/datahub/identity/fetcher'
-import { getBlockedResources } from '@/old/services/datahub/moderation/query'
+import { getBlockedResources } from '@/services/datahub/moderation/query'
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
@@ -35,23 +34,18 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user }) {
-      const [{ blockedInAppIds }, linkedAddresses] = await Promise.all([
+      const [{ blockedInAppIds }] = await Promise.all([
         getBlockedResources({
           appIds: [env.NEXT_PUBLIC_APP_ID],
           postEntityIds: [],
           spaceIds: [],
         }),
-        getLinkedIdentityFromTwitterId(user.id),
       ])
       const blockedAddressesSet = new Set(
         blockedInAppIds.map((data) => data.blockedResources.address).flat()
       )
-      const blockedAddress = linkedAddresses.find((address) =>
-        blockedAddressesSet.has(address)
-      )
 
-      if (!blockedAddress) return true
-      return `/?auth-blocked=${blockedAddress}`
+      return `/?auth-blocked=`
     },
     async jwt(all) {
       const { account, token } = all

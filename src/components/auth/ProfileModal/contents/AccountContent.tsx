@@ -4,7 +4,6 @@ import MoonIcon from '@/assets/icons/moon.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
 import Button from '@/components/Button'
-import LinkText from '@/components/LinkText'
 import MenuList, { MenuListProps } from '@/components/MenuList'
 import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
@@ -226,29 +225,6 @@ export default function AccountContent({
               >
                 <LuRefreshCcw />
               </Button>
-            </div>
-            <div>
-              <SkeletonFallback
-                isLoading={isLoading}
-                className='my-0 w-20 bg-background-lightest'
-              >
-                {balanceValueBN.isZero() ? (
-                  <LinkText
-                    variant={'primary'}
-                    href={'https://subsocial.network/get-sub'}
-                    target='_blank'
-                  >
-                    Get SUB
-                  </LinkText>
-                ) : (
-                  <LinkText
-                    variant={'primary'}
-                    onClick={() => setCurrentState('withdraw-tokens')}
-                  >
-                    Withdraw
-                  </LinkText>
-                )}
-              </SkeletonFallback>
             </div>
           </div>
         </div>

@@ -60,3 +60,38 @@ export function parseJSONData<T>(data: string | null) {
     return undefined
   }
 }
+
+function formatNumberToPrecision(number: number) {
+  const str = number.toFixed(2)
+  const [prefix, postfix] = str.split('.')
+  return Number(postfix) > 0 ? str.replace(/0$/, '') : prefix
+}
+
+export function formatNumber(
+  num: number | string,
+  config?: { shorten?: boolean }
+) {
+  const { shorten } = config || {}
+  let [prefix, postfix] = num.toString().split('.')
+
+  if (shorten) {
+    if (prefix.length > 9) {
+      return `${formatNumberToPrecision(Number(prefix) / 1_000_000_000)}B`
+    }
+    if (prefix.length > 6) {
+      return `${formatNumberToPrecision(Number(prefix) / 1_000_000)}M`
+    }
+    if (prefix.length > 3) {
+      return `${formatNumberToPrecision(Number(prefix) / 1_000)}K`
+    }
+  }
+
+  if (prefix.length < 4) {
+    return prefix
+  }
+  const string = prefix.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  if (postfix && prefix.length < 4) {
+    return `${string}.${postfix}`
+  }
+  return string
+}

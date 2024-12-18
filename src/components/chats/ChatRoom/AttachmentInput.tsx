@@ -1,4 +1,3 @@
-import NftIcon from '@/assets/icons/nft.svg'
 import Button, { ButtonProps } from '@/components/Button'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import { useExtensionData } from '@/stores/extension'
@@ -21,11 +20,6 @@ export default function AttachmentInput({
     <FloatingMenus
       showOnHover
       menus={[
-        {
-          icon: NftIcon,
-          text: 'NFT',
-          onClick: () => openExtensionModal('subsocial-evm-nft', null),
-        },
         {
           icon: IoImageOutline,
           text: 'Image',

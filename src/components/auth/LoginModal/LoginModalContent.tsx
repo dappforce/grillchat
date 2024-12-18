@@ -5,13 +5,10 @@ import InfoPanel from '@/components/InfoPanel'
 import Logo from '@/components/Logo'
 import { ModalFunctionalityProps } from '@/components/modals/Modal'
 import useIsInIframe from '@/hooks/useIsInIframe'
-import useLoginAndRequestToken from '@/hooks/useLoginAndRequestToken'
 import useLoginOption from '@/hooks/useLoginOption'
-import useToastError from '@/hooks/useToastError'
-import { useRequestToken } from '@/old/services/api/mutation'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { useSendEvent } from '@/stores/analytics'
-import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
+import { useMyAccount } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getUrlQuery } from '@/utils/links'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
@@ -45,12 +42,9 @@ export const LoginContent = (props: LoginModalContentProps) => {
   const { loginOption } = useLoginOption()
   const sendEvent = useSendEvent()
 
-  const {
-    mutateAsync: loginAndRequestToken,
-    isLoading,
-    error,
-  } = useLoginAndRequestToken()
-  useToastError(error, 'Login failed')
+  const loginAsTemporaryAccount = useMyAccount(
+    (state) => state.loginAsTemporaryAccount
+  )
 
   const { loginRequired } = useConfigContext()
   const isInIframe = useIsInIframe()
@@ -105,10 +99,9 @@ export const LoginContent = (props: LoginModalContentProps) => {
               size='lg'
               className='w-full'
               variant='primaryOutline'
-              isLoading={isLoading}
               onClick={async () => {
                 sendEvent('login_anonymously')
-                const newAddress = await loginAndRequestToken(null)
+                const newAddress = await loginAsTemporaryAccount()
                 if (newAddress) {
                   setCurrentState('account-created')
                 }
@@ -168,30 +161,4 @@ export const loginModalContents: LoginModalContents = {
   'account-created': AccountCreatedContent,
   'solana-connect': SolanaConnectWalletContent,
   'solana-connect-confirmation': SolanaSignMessageContent,
-}
-
-function useLoginBeforeSignEvm() {
-  const [isCreatingAcc, setIsCreatingAcc] = useState(false)
-  const { mutate: requestToken, error } = useRequestToken()
-  const loginAsTemporaryAccount = useMyAccount(
-    (state) => state.loginAsTemporaryAccount
-  )
-  const myAddress = useMyMainAddress()
-  useToastError(error, 'Retry linking EVM address failed')
-
-  return {
-    mutate: async () => {
-      if (myAddress) return
-
-      setIsCreatingAcc(true)
-      try {
-        const address = await loginAsTemporaryAccount()
-        if (!address) throw new Error('Login failed')
-        requestToken({ address })
-      } finally {
-        setIsCreatingAcc(false)
-      }
-    },
-    isLoading: isCreatingAcc,
-  }
 }

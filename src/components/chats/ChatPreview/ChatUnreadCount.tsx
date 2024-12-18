@@ -1,30 +1,22 @@
 import useLastReadTimeFromStorage from '@/components/chats/hooks/useLastReadMessageTimeFromStorage'
 import useUnreadCount from '@/components/chats/hooks/useUnreadCount'
-import { cx } from '@/utils/class-names'
-import { ComponentProps, useMemo } from 'react'
+import { useMemo } from 'react'
 
-export type ChatUnreadCountProps = ComponentProps<'div'> & {
+export type ChatUnreadCountProps = {
   chatId: string
+  children: (data: {
+    unreadCount: number
+    isLoading: boolean
+  }) => React.ReactNode
 }
 
 export default function ChatUnreadCount({
   chatId,
-  ...props
+  children,
 }: ChatUnreadCountProps) {
   const { getLastReadTime } = useLastReadTimeFromStorage(chatId)
   const lastReadTime = useMemo(() => getLastReadTime() ?? '', [getLastReadTime])
-  const unreadCount = useUnreadCount(chatId, lastReadTime)
+  const { unreadCount, isLoading } = useUnreadCount(chatId, lastReadTime)
 
-  if (unreadCount <= 0) return null
-
-  return (
-    <div
-      className={cx(
-        'rounded-full bg-background-primary px-2 py-0.5 text-sm text-text-on-primary',
-        props.className
-      )}
-    >
-      <span className='relative'>{unreadCount}</span>
-    </div>
-  )
+  return <>{children({ unreadCount, isLoading })}</>
 }

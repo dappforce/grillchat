@@ -338,9 +338,6 @@ function useLoadUnsentMessage(chatId: string) {
       case 'subsocial-image':
         openExtensionModal(firstExtension.id, firstExtension.properties.image)
         break
-      case 'subsocial-evm-nft':
-        openExtensionModal(firstExtension.id, firstExtension.properties.url)
-        break
     }
   }, [chatId, setMessageBody, setReplyTo, openExtensionModal])
 

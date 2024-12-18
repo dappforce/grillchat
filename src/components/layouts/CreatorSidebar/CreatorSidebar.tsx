@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/SkeletonFallback'
 import { useStickyElement } from '@/hooks/useStickyElement'
-import { getTotalStakeQuery } from '@/old/services/datahub/content-staking/query'
+import { getTotalStakeQuery } from '@/services/datahub/content-staking/query'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { useRef } from 'react'

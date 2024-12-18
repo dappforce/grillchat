@@ -3,7 +3,7 @@ import {
   COMPRESSED_IMAGE_MAX_SIZE,
   SOURCE_IMAGE_MAX_SIZE,
 } from '@/constants/image'
-import { useSaveImage } from '@/old/services/api/mutation'
+import { useSaveImage } from '@/services/api/mutation'
 import { cx } from '@/utils/class-names'
 import { resizeImage } from '@/utils/image'
 import React, { ComponentProps, useEffect, useState } from 'react'

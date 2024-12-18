@@ -3,7 +3,6 @@ import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
-import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
@@ -12,12 +11,6 @@ import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import useIsInIframe from '@/hooks/useIsInIframe'
 import useIsJoinedToChat from '@/hooks/useIsJoinedToChat'
-import {
-  HideUnhideChatWrapper,
-  JoinChatParams,
-  JoinChatWrapper,
-  LeaveChatWrapper,
-} from '@/old/services/subsocial/posts/mutation'
 import { getPostQuery } from '@/services/api/query'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -30,13 +23,11 @@ import { useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeSlash, HiQrCode } from 'react-icons/hi2'
 import { LuPencil, LuShield } from 'react-icons/lu'
 import { RiDatabase2Line } from 'react-icons/ri'
-import { RxEnter, RxExit } from 'react-icons/rx'
 import urlJoin from 'url-join'
-import ConfirmationModal from '../ConfirmationModal'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
 import QrCodeModal from '../QrCodeModal'
-import AboutModal, { AboutModalProps } from './AboutModal'
+import { AboutModalProps } from './AboutModal'
 
 export type AboutChatModalProps = ModalFunctionalityProps & {
   chatId: string
@@ -121,100 +112,100 @@ export default function AboutChatModal({
   }
   const closeModal = () => setOpenedModalType(null)
 
-  const getActionMenu = (
-    joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
-    isJoiningChat?: boolean
-  ) => {
-    const actionMenu: AboutModalProps['actionMenu'] = [
-      {
-        text: 'Show QR code',
-        iconClassName: 'text-text-muted',
-        icon: HiQrCode,
-        onClick: () => setOpenedModalType('qr'),
-      },
-      {
-        text: 'Show Metadata',
-        iconClassName: cx('text-text-muted'),
-        icon: RiDatabase2Line,
-        onClick: () => setOpenedModalType('metadata'),
-      },
-    ]
-
-    const additionalMenus: ActionCardProps['actions'] = []
-    if (isAuthorized) {
-      additionalMenus.push({
-        text: 'Moderation',
-        icon: LuShield,
-        iconClassName: cx('text-text-muted'),
-        onClick: () => setOpenedModalType('moderation'),
-      })
-    }
-    if (chatOwner === address) {
-      additionalMenus.push({
-        text: 'Edit',
-        icon: LuPencil,
-        iconClassName: cx('text-text-muted'),
-        onClick: () => {
-          setOpenedModalType('edit')
-          openModal({ defaultOpenState: 'update-chat' })
-          sendEvent('click edit_chat_menu')
+  const getActionMenu = () =>
+    // joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
+    // isJoiningChat?: boolean
+    {
+      const actionMenu: AboutModalProps['actionMenu'] = [
+        {
+          text: 'Show QR code',
+          iconClassName: 'text-text-muted',
+          icon: HiQrCode,
+          onClick: () => setOpenedModalType('qr'),
         },
-      })
+        {
+          text: 'Show Metadata',
+          iconClassName: cx('text-text-muted'),
+          icon: RiDatabase2Line,
+          onClick: () => setOpenedModalType('metadata'),
+        },
+      ]
 
-      if (chat.struct.hidden) {
+      const additionalMenus: ActionCardProps['actions'] = []
+      if (isAuthorized) {
         additionalMenus.push({
-          text: 'Unhide Chat',
-          icon: HiOutlineEye,
+          text: 'Moderation',
+          icon: LuShield,
           iconClassName: cx('text-text-muted'),
-          onClick: () => {
-            setOpenedModalType('unhide')
-            sendEvent('click unhide_chat_menu')
-          },
-        })
-      } else {
-        additionalMenus.push({
-          text: 'Hide Chat',
-          icon: HiOutlineEyeSlash,
-          iconClassName: cx('text-text-muted'),
-          onClick: () => {
-            setOpenedModalType('hide')
-            sendEvent('click hide_chat_menu')
-          },
+          onClick: () => setOpenedModalType('moderation'),
         })
       }
+      if (chatOwner === address) {
+        additionalMenus.push({
+          text: 'Edit',
+          icon: LuPencil,
+          iconClassName: cx('text-text-muted'),
+          onClick: () => {
+            setOpenedModalType('edit')
+            openModal({ defaultOpenState: 'update-chat' })
+            sendEvent('click edit_chat_menu')
+          },
+        })
+
+        if (chat.struct.hidden) {
+          additionalMenus.push({
+            text: 'Unhide Chat',
+            icon: HiOutlineEye,
+            iconClassName: cx('text-text-muted'),
+            onClick: () => {
+              setOpenedModalType('unhide')
+              sendEvent('click unhide_chat_menu')
+            },
+          })
+        } else {
+          additionalMenus.push({
+            text: 'Hide Chat',
+            icon: HiOutlineEyeSlash,
+            iconClassName: cx('text-text-muted'),
+            onClick: () => {
+              setOpenedModalType('hide')
+              sendEvent('click hide_chat_menu')
+            },
+          })
+        }
+      }
+
+      actionMenu.unshift(...additionalMenus)
+
+      if (isLoading || isInIframe) return actionMenu
+
+      // if (isJoined) {
+      //   actionMenu.push({
+      //     text: 'Leave Chat',
+      //     icon: RxExit,
+      //     onClick: () => setOpenedModalType('confirmation-leave'),
+      //     className: cx('text-text-red'),
+      //   })
+      // } else {
+      //   actionMenu.push({
+      //     text: 'Join Chat',
+      //     icon: RxEnter,
+      //     disabled: isJoiningChat,
+      //     className: cx('text-text-secondary'),
+      //     onClick: async () => {
+      //       await joinChat({ chatId })
+      //       sendEvent(
+      //         'join_chat',
+      //         { chatId, eventSource: 'chat_modal' },
+      //         { hasJoinedChats: true }
+      //       )
+      //       props.closeModal()
+      //     },
+      //   })
+      // }
+
+      return actionMenu
     }
-
-    actionMenu.unshift(...additionalMenus)
-
-    if (isLoading || isInIframe) return actionMenu
-
-    if (isJoined) {
-      actionMenu.push({
-        text: 'Leave Chat',
-        icon: RxExit,
-        onClick: () => setOpenedModalType('confirmation-leave'),
-        className: cx('text-text-red'),
-      })
-    } else {
-      actionMenu.push({
-        text: 'Join Chat',
-        icon: RxEnter,
-        disabled: isJoiningChat,
-        className: cx('text-text-secondary'),
-        onClick: async () => {
-          await joinChat({ chatId })
-          sendEvent(
-            'join_chat',
-            { chatId, eventSource: 'chat_modal' },
-            { hasJoinedChats: true }
-          )
-          props.closeModal()
-        },
-      })
-    }
-
-    return actionMenu
-  }
 
   let subtitle = (
     <span>
@@ -258,7 +249,7 @@ export default function AboutChatModal({
 
   return (
     <>
-      <JoinChatWrapper>
+      {/* <JoinChatWrapper>
         {({ mutateAsync, isLoading }) => {
           return (
             <AboutModal
@@ -306,7 +297,7 @@ export default function AboutChatModal({
             }}
           />
         )}
-      </LeaveChatWrapper>
+      </LeaveChatWrapper> */}
       <MetadataModal
         onBackClick={closeModal}
         closeModal={closeModal}
@@ -348,7 +339,7 @@ export default function AboutChatModal({
           chatId={chatId}
         />
       )}
-      <HideUnhideChatWrapper>
+      {/* <HideUnhideChatWrapper>
         {({ isLoading, mutateAsync }) => {
           return (
             <>
@@ -381,7 +372,7 @@ export default function AboutChatModal({
             </>
           )
         }}
-      </HideUnhideChatWrapper>
+      </HideUnhideChatWrapper> */}
     </>
   )
 }
