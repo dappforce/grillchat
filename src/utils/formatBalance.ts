@@ -1,5 +1,6 @@
 import { convertToBalanceWithDecimal } from '@subsocial/utils'
 import BigNumber from 'bignumber.js'
+import { convertToBigInt } from './strings'
 
 export const getBalanceInDollars = (balance?: string, price?: string | null) =>
   price && balance
@@ -89,4 +90,11 @@ export function formatBalanceWithDecimals(
   }
 
   return `${prefix}${decimals ? `.${decimals}` : ''}${roundings}`
+}
+
+export function formatBalanceToNumber(
+  value: string | number | bigint,
+  decimals: number
+) {
+  return Number(convertToBigInt(value) / BigInt(10 ** Number(decimals)))
 }

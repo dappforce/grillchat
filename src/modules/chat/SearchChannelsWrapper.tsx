@@ -1,12 +1,9 @@
 import ChatPreviewList from '@/components/chats/ChatPreviewList'
 import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NoChatsFound from '@/components/chats/NoChatsFound'
-import { env } from '@/env.mjs'
 import useDebounce from '@/hooks/useDebounce'
 import useSearch from '@/hooks/useSearch'
-import { getPostsBySpaceContentQuery } from '@/old/services/subsocial/posts'
-import { isSquidAvailable } from '@/old/services/subsocial/squid/utils'
-import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
+import { getPostsBySpaceContentQuery } from '@/services/datahub/generalStats/query'
 import { removeDoubleSpaces } from '@/utils/strings'
 import { PostData } from '@subsocial/api/types'
 import { matchSorter } from 'match-sorter'
@@ -29,7 +26,7 @@ export default function SearchChannelsWrapper({
 }: SearchChannelsWrapperProps) {
   const cleanedSearch = removeDoubleSpaces(search)
 
-  const shouldUseGlobalSearch = !localSearch && isSquidAvailable
+  const shouldUseGlobalSearch = !localSearch
 
   const debouncedSearch = useDebounce(cleanedSearch)
   const { data: searchResults, isLoading } =
@@ -37,24 +34,13 @@ export default function SearchChannelsWrapper({
       enabled: shouldUseGlobalSearch && cleanedSearch === debouncedSearch,
     })
 
-  const mainPostsQueries = getPostsBySpaceIdQuery.useQuery(
-    env.NEXT_PUBLIC_MAIN_SPACE_ID,
-    { enabled: !isSquidAvailable }
-  )
-
   let usedSearchResults = searchResults
   if (localSearch) {
     const filteredData = (localSearch.data?.filter(Boolean) ?? []) as PostData[]
     usedSearchResults = matchSorter(filteredData, cleanedSearch, {
       keys: localSearch.searchKeys,
     })
-  } else if (!isSquidAvailable) {
-    const mainPosts = mainPostsQueries?.data?.filter(Boolean) as PostData[]
-    usedSearchResults = matchSorter(mainPosts, cleanedSearch, {
-      keys: ['content.title', 'content.body'],
-    })
   }
-
   if (!cleanedSearch) {
     return <div className='flex flex-col'>{children}</div>
   }

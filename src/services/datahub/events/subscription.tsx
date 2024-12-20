@@ -1,6 +1,4 @@
 import Toast from '@/components/Toast'
-import { linkEvmAddressCallbacks } from '@/components/modals/LinkEvmAddressModal'
-import { claimTaskErrorStore } from '@/components/tasks/config'
 import { getPostQuery } from '@/services/api/query'
 import { deleteOptimisticData } from '@/services/subsocial/commentIds/optimistic'
 import { getCurrentWallet } from '@/services/subsocial/hooks'
@@ -8,7 +6,7 @@ import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import { toast } from 'sonner'
+import toast from 'react-hot-toast'
 import sortKeysRecursive from 'sort-keys-recursive'
 import {
   getDailyRewardQuery,
@@ -21,14 +19,10 @@ import {
   SubscribeEventsSubscription,
   SubscribeEventsSubscriptionVariables,
 } from '../generated-query'
-import {
-  getLinkedIdentityQuery,
-  getSocialProfileQuery,
-} from '../identity/query'
+import { getSocialProfileQuery } from '../identity/query'
 import { callIdToPostIdMap } from '../posts/mutation'
 import { getUserPostedMemesForCountQuery } from '../posts/query'
 import { getProfileQuery } from '../profiles/query'
-import { getGamificationTasksErrorQuery } from '../tasks/query'
 import { datahubSubscription } from '../utils'
 
 export function useDatahubEventsSubscriber() {
@@ -281,28 +275,6 @@ async function processSubscriptionEvent(
       }
     })
     return
-  }
-
-  if (eventData.meta.callName === SocialCallName.SynthGamificationClaimTask) {
-    claimTaskErrorStore.set(eventData.meta.code)
-
-    getGamificationTasksErrorQuery.setQueryData(client, 'error', () =>
-      reason ? eventData.meta.code : 'None'
-    )
-  }
-
-  if (
-    eventData.meta.callName ===
-      SocialCallName.SynthUpdateLinkedIdentityExternalProvider ||
-    eventData.meta.callName ===
-      SocialCallName.SynthAddLinkedIdentityExternalProvider
-  ) {
-    if (reason) {
-      linkEvmAddressCallbacks.onErrorCallbacks.forEach((cb) => cb())
-    } else if (eventData.meta.code === ServiceMessageStatusCode.Processed) {
-      linkEvmAddressCallbacks.onSuccessCallbacks.forEach((cb) => cb())
-      getLinkedIdentityQuery.invalidate(client, getCurrentWallet().address)
-    }
   }
 
   if (

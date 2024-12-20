@@ -2,7 +2,7 @@ import Toast from '@/components/Toast'
 import { cx } from '@/utils/class-names'
 import { QueryClient } from '@tanstack/react-query'
 import { ReactNode } from 'react'
-import { toast } from 'sonner'
+import toast from 'react-hot-toast'
 import { SubscribeSuperLikeSubscription } from '../generated-query'
 import { getSuperLikeCountQuery, getTodaySuperLikeCountQuery } from './query'
 

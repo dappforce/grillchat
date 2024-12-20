@@ -95,3 +95,11 @@ export function formatNumber(
   }
   return string
 }
+
+export function convertToBigInt(num: number | string | bigint) {
+  try {
+    return BigInt(num)
+  } catch {
+    return BigInt(0)
+  }
+}

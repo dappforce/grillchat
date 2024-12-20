@@ -6,8 +6,8 @@ import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
 import { HiOutlineInformationCircle } from 'react-icons/hi2'
-import { toast } from 'sonner'
 import {
   DataHubSubscriptionEventEnum,
   GetBlockedInPostIdDetailedQuery,
