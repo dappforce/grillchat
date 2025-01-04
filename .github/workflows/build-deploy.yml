@@ -48,8 +48,8 @@ jobs:
           build-args: |
             GH_NEXTAUTH_URL=https://grillapp.net/c/api/auth
             GH_NEXT_PUBLIC_BASE_PATH=/c
-            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.subsocial.network
-            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.subsocial.network
+            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.f3joule.space
+            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.f3joule.space
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://sub-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://sub-data-hub.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://sub-queue-data-hub.subsocial.network/graphql
@@ -99,8 +99,8 @@ jobs:
             GH_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=gl-notifications-dev.appspot.com
             GH_NEXT_PUBLIC_FIREBASE_MESSAGING_ID=581626459774
             GH_NEXT_PUBLIC_FIREBASE_APP_ID=1:581626459774:web:6b7098eb48c0b142f50a2f
-            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.subsocial.network
-            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.subsocial.network
+            GH_NEXT_PUBLIC_SUBSTRATE_URL=https://para.f3joule.space
+            GH_NEXT_PUBLIC_SUBSTRATE_WSS=wss://para.f3joule.space
             GH_NEXT_PUBLIC_DATAHUB_QUERY_URL=https://sub-data-hub.subsocial.network/graphql
             GH_NEXT_PUBLIC_DATAHUB_SUBSCRIPTION_URL=wss://ownership-pallet-data-hub-core.subsocial.network/graphql-ws
             GH_DATAHUB_QUEUE_URL=https://ownership-pallet-data-hub-queue.subsocial.network/graphql
