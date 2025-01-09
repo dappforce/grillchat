@@ -1,6 +1,5 @@
 import useBreakpointThreshold from '@/hooks/useBreakpointThreshold'
 import { cx } from '@/utils/class-names'
-import { currentNetwork } from '@/utils/network'
 import { ComponentProps } from 'react'
 import { HiOutlineChevronLeft } from 'react-icons/hi2'
 import BackButton from '../BackButton'
@@ -25,14 +24,10 @@ export default function DefaultLayout({
   withBackButton,
   withFixedHeight,
   withSidebar,
-  withRightSidebar = true,
+  withRightSidebar = false,
   style,
   ...props
 }: DefaultLayoutProps) {
-  if (currentNetwork === 'xsocial') {
-    withSidebar = false
-  }
-
   return (
     <div
       {...props}

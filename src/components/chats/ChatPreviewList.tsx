@@ -54,6 +54,8 @@ function ChatPreviewContainer({
   const isInIframe = useIsInIframe()
   const router = useRouter()
 
+  console.log(chat)
+
   const content = chat?.content
 
   const usedHubId = hubId || chat.struct.spaceId

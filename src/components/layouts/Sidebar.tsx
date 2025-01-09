@@ -20,6 +20,8 @@ export default function Sidebar() {
     <aside className='flex flex-col p-4 pl-0 text-[#64748BCC] dark:text-text-muted'>
       <ul className='flex flex-col gap-4'>
         {/* <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation /> */}
+        <SidebarItem icon={BiChat} title='Feed' href='/feed' />
+        <SidebarItem icon={BiChat} title='MySpaces' href='/my-spaces' />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
         <SidebarItem icon={GoLaw} title='Open Gov' href='/opengov' />
         {/* {getIsLoggedIn() && (
