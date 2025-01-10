@@ -21,7 +21,12 @@ export default function Sidebar() {
       <ul className='flex flex-col gap-4'>
         {/* <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation /> */}
         <SidebarItem icon={BiChat} title='Feed' href='/feed' />
-        <SidebarItem icon={BiChat} title='MySpaces' href='/my-spaces' />
+        <SidebarItem
+          icon={BiChat}
+          title='MySpaces'
+          forceHardNavigation
+          href={`/accounts/${myAddress}/spaces`}
+        />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
         <SidebarItem icon={GoLaw} title='Open Gov' href='/opengov' />
         {/* {getIsLoggedIn() && (

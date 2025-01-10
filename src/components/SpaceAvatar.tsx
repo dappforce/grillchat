@@ -21,7 +21,10 @@ const SpaceAvatar = ({ space, imageSize = 48 }: SpaceAvatarProps) => {
           className='rounded-full'
         />
       ) : (
-        <AddressAvatar address={space.struct.ownerId} />
+        <AddressAvatar
+          address={space.struct.ownerId}
+          className='h-[62px] w-[62px]'
+        />
       )}
     </div>
   )

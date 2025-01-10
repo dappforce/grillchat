@@ -14,12 +14,12 @@ const SPACE_FRAGMENT = gql`
     hidden
     about
     content
-    createdByAccount {
-      id
-    }
-    ownedByAccount {
-      id
-    }
+    # createdByAccount {
+    #   id
+    # }
+    # ownedByAccount {
+    #   id
+    # }
     createdAtTime
     createdAtBlock
   }
@@ -46,7 +46,13 @@ const getSpaces = poolQuery<string, SpaceData>({
       variables: { ids: spaceIds },
     })
 
-    return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
+    return res.spaces.data.map((space) =>
+      mapDatahubSpaceFragment({
+        ...space,
+        createdByAccount: { id: '0x8b4fF9452aE997a9E442C67D1155a18EDEA3Be6F' },
+        ownedByAccount: { id: '0x8b4fF9452aE997a9E442C67D1155a18EDEA3Be6F' },
+      })
+    )
   },
   resultMapper: {
     paramToKey: (param) => param,

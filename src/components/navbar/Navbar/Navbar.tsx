@@ -183,7 +183,7 @@ export default function Navbar({
             })
           ) : (
             <div className='flex w-full items-center justify-between'>
-              {logoLink}ƒ
+              {logoLink}
               <div className='flex items-center'>
                 {newPostButton}
                 {notificationBell}

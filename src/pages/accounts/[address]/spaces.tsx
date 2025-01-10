@@ -1,8 +1,7 @@
-import ViewSpacePage from '@/modules/SpacePage'
-import { getSpaceQuery } from '@/services/datahub/spaces/query'
+import SpacesPage from '@/modules/SpacesPage'
+import { AppCommonProps } from '@/pages/_app'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
-import { AppCommonProps } from '../_app'
 
 export const getStaticPaths = async () => {
   // Skip pre-rendering, because it will cause slow build time
@@ -17,13 +16,13 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
   async (context) => {
     const queryClient = new QueryClient()
 
-    let { spaceId: spaceIdParam } = context.params ?? {}
+    let { address } = context.params ?? {}
 
-    const spaceId = spaceIdParam as string | undefined
-    if (!spaceId) return undefined
+    if (!address) return undefined
+    const spaceIds = ['0x6c414d3f64a4644423a25bd362d4623a']
+    console.log('hello')
 
     try {
-      await getSpaceQuery.fetchQuery(queryClient, spaceId)
     } catch (e) {
       console.error('Error fetching for space page: ', e)
     }
@@ -31,11 +30,11 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     return {
       props: {
         dehydratedState: dehydrate(queryClient),
-        spaceId,
+        spaceIds,
       },
       revalidate: 2,
     }
   }
 )
 
-export default ViewSpacePage
+export default SpacesPage
