@@ -104,7 +104,7 @@ const SpacePreview = ({
 
   const renderPreview = () => (
     <div>
-      <div className='flex w-full flex-col items-center'>
+      <div className='flex w-full flex-col'>
         <div className={clsx('w-100 flex items-center gap-4')}>
           <Avatar />
           <div className={clsx('w-full flex-1')}>
@@ -126,7 +126,9 @@ const SpacePreview = ({
     </div>
   )
 
-  return <div className='rounded-[20px] bg-white p-5'>{renderPreview()}</div>
+  return (
+    <div className='w-full rounded-[20px] bg-white p-5'>{renderPreview()}</div>
+  )
 }
 
 export default SpacePreview

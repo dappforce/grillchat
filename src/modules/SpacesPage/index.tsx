@@ -49,7 +49,7 @@ const SpacesPage: FC<Props> = ({ spaceIds }) => {
         },
       }}
     >
-      <div className='flex flex-1 flex-col lg:pr-3'>
+      <div className='flex w-full flex-1 flex-col lg:pr-3'>
         <SpacesList spaceIds={spaceIds} />
       </div>
     </DefaultLayout>

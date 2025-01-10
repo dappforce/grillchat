@@ -51,7 +51,7 @@ const ViewSpacePage: FC<Props> = (props) => {
         },
       }}
     >
-      <div className='flex flex-1 flex-col lg:pr-3'>
+      <div className='flex w-full flex-1 flex-col lg:pr-3'>
         <ViewSpace spaceData={spaceData as SpaceData} />
       </div>
     </DefaultLayout>
