@@ -11,10 +11,6 @@ type Props = {
 const SpacesPage: FC<Props> = ({ spaceIds }) => {
   const { search, setSearch, focusController } = useSearch()
 
-  console.log(spaceIds)
-
-  console.log('spaces page')
-
   return (
     <DefaultLayout
       withSidebar

@@ -1,3 +1,4 @@
+import Button from '@/components/Button'
 import { DfMd } from '@/components/DfMd'
 import SpaceAvatar from '@/components/SpaceAvatar'
 import SummarizeMd from '@/components/SummarizeMd'
@@ -10,17 +11,22 @@ import { nonEmptyStr } from '@subsocial/utils'
 import clsx from 'clsx'
 import { useCallback, useState } from 'react'
 import { isMobile } from 'react-device-detect'
+import { CiEdit } from 'react-icons/ci'
+import SpaceDropdownMenu from './SpaceDropdownMenu'
+import SpaceStatsRow from './SpaceStatsRow'
 import { renderSpaceName } from './ViewSpace'
 
 type SpacePreviewProps = {
   spaceId: string
   withTags?: boolean
+  withStats?: boolean
   showFullAbout?: boolean
 }
 
 const SpacePreview = ({
   spaceId,
-  withTags = false,
+  withTags = true,
+  withStats = true,
   showFullAbout = false,
 }: SpacePreviewProps) => {
   const myAddress = useMyMainAddress()
@@ -41,8 +47,6 @@ const SpacePreview = ({
     return <SpaceAvatar space={spaceData} imageSize={62} />
   }, [spaceData])
 
-  console.log(spaceData)
-
   if (!spaceData) return null
 
   const { content, struct } = spaceData || {}
@@ -53,12 +57,12 @@ const SpacePreview = ({
   const spaceName = renderSpaceName(spaceData)
 
   const title = (
-    <div>
+    <div className='flex items-center gap-2'>
       <span className='text-[32px] font-medium leading-[1.25]'>
         {spaceName}
       </span>
       {isMy && (
-        <div className='border border-green-500 bg-green-300 text-green-600'>
+        <div className='rounded-md border border-[#b7eb8f] bg-[#f6ffed] px-2 text-xs font-semibold leading-[20px] text-[#52c41a]'>
           {isProfileSpace ? 'My Profile' : 'My Space'}
         </div>
       )}
@@ -99,35 +103,65 @@ const SpacePreview = ({
       )}
 
       {withTags && <ViewTags tags={tags} className='mt-1' />}
+
+      {withStats && (
+        <span className='mt-4 flex flex-wrap justify-between'>
+          <SpaceStatsRow space={spaceData.struct} />
+          {/* {!preview && <ContactInfo {...contactInfo} />} */}
+        </span>
+      )}
     </div>
   )
 
-  const renderPreview = () => (
-    <div>
-      <div className='flex w-full flex-col'>
-        <div className={clsx('w-100 flex items-center gap-4')}>
-          <Avatar />
-          <div className={clsx('w-full flex-1')}>
-            <div className='d-flex flex-column GapTiny'>
-              <div className={clsx('flex items-center justify-between')}>
-                {title}
-                <span className='ml-3 flex items-center gap-2'>
-                  {/* <SpaceDropdownMenu spaceOwnerId={space.ownerId} spaceData={spaceData} /> */}
-                  {/* {!isMobile && previewButtons('middle')} */}
-                </span>
-              </div>
-              {/* {isMobile && previewButtons('middle')} */}
-            </div>
-            {!isMobile && spaceAbout}
-          </div>
-        </div>
-        {isMobile && <div className='mt-1'>{spaceAbout}</div>}
-      </div>
+  const previewButtons = (size: 'xs' | 'md' = 'md') => (
+    <div className='flex items-center gap-2'>
+      {!isMobile && isMy && (
+        <Button
+          href={`/${spaceId}/edit`}
+          variant={'primaryOutline'}
+          size={size}
+          className='flex items-center gap-2'
+        >
+          <CiEdit /> Edit
+        </Button>
+      )}
+
+      <>
+        {isProfileSpace && isMy ? (
+          <>Chat button</>
+        ) : (
+          <Button variant={'primary'} size={size}>
+            Follow
+          </Button>
+        )}
+      </>
     </div>
   )
 
   return (
-    <div className='w-full rounded-[20px] bg-white p-5'>{renderPreview()}</div>
+    <div className='w-full rounded-[20px] bg-white p-5'>
+      <div>
+        <div className='flex w-full flex-col'>
+          <div className={clsx('w-100 flex items-center gap-4')}>
+            <Avatar />
+            <div className={clsx('w-full flex-1')}>
+              <div className='d-flex flex-column GapTiny'>
+                <div className={clsx('flex items-center justify-between')}>
+                  {title}
+                  <span className='ml-3 flex items-center gap-2'>
+                    <SpaceDropdownMenu spaceData={spaceData} />
+                    {!isMobile && previewButtons('md')}
+                  </span>
+                </div>
+                {isMobile && previewButtons('md')}
+              </div>
+              {!isMobile && spaceAbout}
+            </div>
+          </div>
+          {isMobile && <div className='mt-1'>{spaceAbout}</div>}
+        </div>
+      </div>
+    </div>
   )
 }
 
