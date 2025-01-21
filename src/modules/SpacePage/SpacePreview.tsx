@@ -139,7 +139,7 @@ const SpacePreview = ({
   )
 
   return (
-    <div className='w-full rounded-[20px] bg-white p-5'>
+    <div className='w-full rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]'>
       <div>
         <div className='flex w-full flex-col'>
           <div className={clsx('w-100 flex items-center gap-4')}>

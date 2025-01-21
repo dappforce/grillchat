@@ -33,7 +33,7 @@ const SpaceDropdownMenu = (props: SpaceDropdownMenuProps) => {
       isMySpace
         ? {
             text: 'Edit space',
-            href: `/${id}/edit`,
+            href: `space/${id}/edit`,
           }
         : undefined,
       !isMySpace || isHidden

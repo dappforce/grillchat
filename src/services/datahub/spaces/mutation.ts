@@ -123,6 +123,8 @@ type CommonParams = {
     name?: string
     image?: string
     about?: string
+    tags?: string[]
+    email?: string
   }
 }
 export type UpsertSpaceParams =
