@@ -6,8 +6,6 @@ type SpacesListProps = {
 }
 
 const SpacesList = ({ spaceIds }: SpacesListProps) => {
-  console.log(spaceIds)
-
   return (
     <div className='flex flex-col gap-3 px-4 pt-6'>
       <div className='flex items-center justify-between gap-4 border-b border-[#d1d1d1] pb-3'>

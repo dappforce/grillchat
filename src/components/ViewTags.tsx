@@ -16,10 +16,8 @@ const ViewTag = React.memo(({ tag }: ViewTagProps) => {
       className='mt-2 rounded-md border border-gray-400 bg-gray-300 p-1'
     >
       <Link href={searchLink} as={searchLink}>
-        <a className='DfGreyLink'>
-          <IoPricetagOutline />
-          {tag}
-        </a>
+        <IoPricetagOutline />
+        {tag}
       </Link>
     </div>
   )

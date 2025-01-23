@@ -20,7 +20,6 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
 
     if (!address) return undefined
     const spaceIds = ['0x6c414d3f64a4644423a25bd362d4623a']
-    console.log('hello')
 
     try {
     } catch (e) {

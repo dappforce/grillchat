@@ -1,3 +1,4 @@
+import NoData from '@/components/NoData'
 import Tabs, { TabsProps } from '@/components/Tabs'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
@@ -46,17 +47,17 @@ export default function FeedPage(props: FeedPageProps) {
     {
       id: 'my-feed',
       text: 'My Feed',
-      content: (setSelectedTab) => <></>,
+      content: (setSelectedTab) => <NoData message='No posts yet' />,
     },
     {
       id: 'posts',
       text: 'Posts',
-      content: (setSelectedTab) => <></>,
+      content: (setSelectedTab) => <NoData message='No posts yet' />,
     },
     {
       id: 'spaces',
       text: 'Spaces',
-      content: (setSelectedTab) => <></>,
+      content: (setSelectedTab) => <NoData message='No spaces yet' />,
     },
   ]
 
@@ -143,7 +144,7 @@ export default function FeedPage(props: FeedPageProps) {
     >
       <div className='flex flex-1 flex-col lg:pr-3'>
         <Tabs
-          className='border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
+          className='max-w-full border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
           panelClassName='mt-0 px-0'
           tabClassName={cx('px-1.5 sm:px-2')}
           asContainer

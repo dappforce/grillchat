@@ -6,9 +6,11 @@ import ViewTags from '@/components/ViewTags'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { useMyMainAddress } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { SummarizedContent } from '@subsocial/api/types'
 import { nonEmptyStr } from '@subsocial/utils'
 import clsx from 'clsx'
+import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { CiEdit } from 'react-icons/ci'
@@ -21,6 +23,7 @@ type SpacePreviewProps = {
   withTags?: boolean
   withStats?: boolean
   showFullAbout?: boolean
+  withWrapper?: boolean
 }
 
 const SpacePreview = ({
@@ -28,10 +31,12 @@ const SpacePreview = ({
   withTags = true,
   withStats = true,
   showFullAbout = false,
+  withWrapper = true,
 }: SpacePreviewProps) => {
   const myAddress = useMyMainAddress()
   const [collapseAbout, setCollapseAbout] = useState(true)
   const { data: spaceData } = getSpaceQuery.useQuery(spaceId)
+  console.log(spaceId)
 
   const isMy = spaceData?.struct.ownerId === myAddress
   const { data: ownerProfile } = getProfileQuery.useQuery(
@@ -138,8 +143,12 @@ const SpacePreview = ({
     </div>
   )
 
-  return (
-    <div className='w-full rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]'>
+  const preview = (
+    <div
+      className={cx('w-full', {
+        ['rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]']: withWrapper,
+      })}
+    >
       <div>
         <div className='flex w-full flex-col'>
           <div className={clsx('w-100 flex items-center gap-4')}>
@@ -162,6 +171,14 @@ const SpacePreview = ({
         </div>
       </div>
     </div>
+  )
+
+  return withWrapper ? (
+    <Link href={`/space/${spaceId}`} className='w-full'>
+      {preview}
+    </Link>
+  ) : (
+    preview
   )
 }
 

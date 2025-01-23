@@ -18,7 +18,7 @@ export const SpaceStatsRow = ({ space }: Props) => {
 
   return (
     <div className={'flex items-center gap-4'}>
-      <Link href={`/${id}`}>
+      <Link href={`/${id}`} className='text-text-muted hover:text-text-primary'>
         <Pluralize count={postsCount || 0} singularText='Post' />
       </Link>
 
@@ -26,7 +26,12 @@ export const SpaceStatsRow = ({ space }: Props) => {
         <Pluralize count={count} singularText='Follower' />
       </div> */}
 
-      <Link href={`/${id}/about`}>About</Link>
+      <Link
+        href={`/${id}/about`}
+        className='text-text-muted hover:text-text-primary'
+      >
+        About
+      </Link>
     </div>
   )
 }
