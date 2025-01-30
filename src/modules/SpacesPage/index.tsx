@@ -21,28 +21,26 @@ const SpacesPage: FC<Props> = ({ spaceIds }) => {
           authComponent,
           notificationBell,
           newPostButton,
-        }) => {
-          return (
-            <NavbarWithSearch
-              customContent={(searchButton) => (
-                <div className='flex w-full items-center justify-between gap-4'>
-                  {logoLink}
-                  <div className='flex items-center gap-0'>
-                    {newPostButton}
-                    {searchButton}
-                    {notificationBell}
-                    <div className='ml-2.5'>{authComponent}</div>
-                  </div>
+        }) => (
+          <NavbarWithSearch
+            customContent={(searchButton) => (
+              <div className='flex w-full items-center justify-between gap-4'>
+                {logoLink}
+                <div className='flex items-center gap-0'>
+                  {newPostButton}
+                  {searchButton}
+                  {notificationBell}
+                  <div className='ml-2.5'>{authComponent}</div>
                 </div>
-              )}
-              searchProps={{
-                search,
-                setSearch,
-                ...focusController,
-              }}
-            />
-          )
-        },
+              </div>
+            )}
+            searchProps={{
+              search,
+              setSearch,
+              ...focusController,
+            }}
+          />
+        ),
       }}
     >
       <div className='flex w-full flex-1 flex-col lg:pr-3'>
