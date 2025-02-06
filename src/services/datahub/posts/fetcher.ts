@@ -110,5 +110,7 @@ export async function getPosts(postIds: string[]) {
     })
   }
 
+  console.log(persistentPosts, optimisticPosts)
+
   return [...persistentPosts, ...optimisticPosts]
 }
