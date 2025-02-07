@@ -3,11 +3,8 @@ import KeyIcon from '@/assets/icons/key.svg'
 import MoonIcon from '@/assets/icons/moon.svg'
 import SuggestFeatureIcon from '@/assets/icons/suggest-feature.svg'
 import SunIcon from '@/assets/icons/sun.svg'
-import Button from '@/components/Button'
 import MenuList, { MenuListProps } from '@/components/MenuList'
-import Notice from '@/components/Notice'
 import ProfilePreview from '@/components/ProfilePreview'
-import SkeletonFallback from '@/components/SkeletonFallback'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { SUGGEST_FEATURE_LINK } from '@/constants/links'
 import useGetTheme from '@/hooks/useGetTheme'
@@ -23,17 +20,13 @@ import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
 import { useProfileModal } from '@/stores/profile-modal'
 import { getCreatorChatIdFromProfile } from '@/utils/chat'
 import { cx } from '@/utils/class-names'
-import { currentNetwork } from '@/utils/network'
 import {
   getIsAnIframeInSameOrigin,
   sendMessageToParentWindow,
 } from '@/utils/window'
-import BigNumber from 'bignumber.js'
 import { formatUnits } from 'ethers'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/router'
-import { FaRegBell, FaRegUser } from 'react-icons/fa'
-import { LuRefreshCcw } from 'react-icons/lu'
 import { TbMessageCircle, TbMessageCirclePlus } from 'react-icons/tb'
 import { ProfileModalContentProps } from '../types'
 import { useIsPushNotificationEnabled } from './notifications/PushNotificationContent'
@@ -97,32 +90,25 @@ export default function AccountContent({
   }
 
   const menus: MenuListProps['menus'] = [
-    // {
-    //   icon: EthIcon,
-    //   text: 'My EVM Address',
-    //   onClick: () => {
-    //     setCurrentState('link-evm-address')
-    //   },
-    // },
-    ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
-      ? [
-          {
-            text: 'My Profile',
-            icon: FaRegUser,
-            onClick: () => {
-              const isInGrillSoPolkaverseSide = getIsAnIframeInSameOrigin()
-              if (isInGrillSoPolkaverseSide) {
-                sendMessageToParentWindow(
-                  'redirect',
-                  `/${profile?.profileSpace?.id}`
-                )
-              } else {
-                window.location.href = `/${profile?.profileSpace?.id}`
-              }
-            },
-          },
-        ]
-      : []),
+    // ...(profile?.profileSpace?.id && currentNetwork === 'subsocial'
+    //   ? [
+    //       {
+    //         text: 'My Profile',
+    //         icon: FaRegUser,
+    //         onClick: () => {
+    //           const isInGrillSoPolkaverseSide = getIsAnIframeInSameOrigin()
+    //           if (isInGrillSoPolkaverseSide) {
+    //             sendMessageToParentWindow(
+    //               'redirect',
+    //               `/${profile?.profileSpace?.id}`
+    //             )
+    //           } else {
+    //             window.location.href = `/${profile?.profileSpace?.id}`
+    //           }
+    //         },
+    //       },
+    //     ]
+    //   : []),
     ...(haveChat
       ? [
           {
@@ -160,22 +146,22 @@ export default function AccountContent({
         onPrivacySecurityKeyClick()
       },
     },
-    {
-      text: (
-        <span className='flex items-center gap-2'>
-          <span>Notifications Settings</span>
-          {!isLoadingActivatedNotificationCount && (
-            <Notice size='sm' noticeType='grey'>
-              {activatedNotificationCount} / {maxNotificationCount}
-            </Notice>
-          )}
-        </span>
-      ),
-      icon: FaRegBell,
-      onClick: () => {
-        setCurrentState('notifications')
-      },
-    },
+    // {
+    //   text: (
+    //     <span className='flex items-center gap-2'>
+    //       <span>Notifications Settings</span>
+    //       {!isLoadingActivatedNotificationCount && (
+    //         <Notice size='sm' noticeType='grey'>
+    //           {activatedNotificationCount} / {maxNotificationCount}
+    //         </Notice>
+    //       )}
+    //     </span>
+    //   ),
+    //   icon: FaRegBell,
+    //   onClick: () => {
+    //     setCurrentState('notifications')
+    //   },
+    // },
     {
       text: 'Suggest Feature',
       icon: SuggestFeatureIcon,
@@ -191,8 +177,6 @@ export default function AccountContent({
     { text: 'Log Out', icon: ExitIcon, onClick: onLogoutClick },
   ]
 
-  const balanceValueBN = new BigNumber(balanceValue)
-
   return (
     <>
       <div className='mt-2 flex flex-col'>
@@ -200,33 +184,8 @@ export default function AccountContent({
           <ProfilePreview
             onEditClick={() => setCurrentState('profile-settings')}
             address={address}
+            showAddress={false}
           />
-
-          <div
-            className={
-              'flex items-center justify-between gap-4 rounded-2xl bg-background-lighter p-4'
-            }
-          >
-            <div className='flex items-center gap-2'>
-              <div className='text-text-muted'>Balance:</div>
-              <div>
-                <SkeletonFallback
-                  className='my-0 w-20 bg-background-lightest'
-                  isLoading={isLoading || isRefetching}
-                >
-                  {balanceValueBN.toFixed(4)} {tokenSymbol}
-                </SkeletonFallback>
-              </div>
-              <Button
-                className='text-text-muted'
-                size='noPadding'
-                variant='transparent'
-                onClick={() => refetch()}
-              >
-                <LuRefreshCcw />
-              </Button>
-            </div>
-          </div>
         </div>
         <MenuList menus={menus} />
         <NewCommunityModal hubId={profile?.profileSpace?.id} />

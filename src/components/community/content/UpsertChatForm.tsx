@@ -87,7 +87,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   const { mutateAsync, isLoading: isMutating } = useUpsertPost({
     onSuccess: async (_, data) => {
       if (isUpdating || !myAddress || !('spaceId' in data)) return
-      console.log('data', data)
+
       setSubscriptionState('post', 'always-sub')
       setIsProcessingData(true)
       const chatId = await getDeterministicId({

@@ -20,7 +20,6 @@ import urlJoin from 'url-join'
 import SearchChannelsWrapper from '../SearchChannelsWrapper'
 import CreateChatButton from './CreateChatButton'
 import HotChatsContent from './HotChatsContent'
-import HubsContent from './HubsContent'
 import MyChatsContent from './MyChatsContent'
 
 export type HomePageProps = {
@@ -72,11 +71,11 @@ export default function HomePage(props: HomePageProps) {
       text,
       content: () => <HotChatsContent hubId={hubId} />,
     })),
-    {
-      id: 'hubs',
-      text: 'Hubs',
-      content: () => <HubsContent hubsChatCount={props.hubsChatCount} />,
-    },
+    // {
+    //   id: 'hubs',
+    //   text: 'Hubs',
+    //   content: () => <HubsContent hubsChatCount={props.hubsChatCount} />,
+    // },
   ]
 
   const myAddress = useMyMainAddress()
@@ -128,7 +127,7 @@ export default function HomePage(props: HomePageProps) {
 
   return (
     <DefaultLayout
-      withSidebar
+      withSidebar={false}
       navbarProps={{
         customContent: ({
           logoLink,

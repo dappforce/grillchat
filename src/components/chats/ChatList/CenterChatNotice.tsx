@@ -1,4 +1,3 @@
-import LinkText from '@/components/LinkText'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { cx } from '@/utils/class-names'
 import { ComponentProps } from 'react'
@@ -26,7 +25,7 @@ export default function CenterChatNotice({
               <ul className='mb-1 list-disc whitespace-nowrap pl-2'>
                 <li>Persistent & on-chain</li>
                 <li>Censorship resistant</li>
-                <li>
+                {/* <li>
                   Powered by{' '}
                   <LinkText
                     href='https://subsocial.network'
@@ -35,7 +34,7 @@ export default function CenterChatNotice({
                   >
                     Subsocial
                   </LinkText>
-                </li>
+                </li> */}
               </ul>
             </div>
 

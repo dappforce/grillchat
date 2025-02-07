@@ -33,7 +33,6 @@ import Router, { useRouter } from 'next/router'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import urlJoin from 'url-join'
 import { communityHubId } from '../HomePage'
-import BottomPanel from './BottomPanel'
 
 const AboutChatModal = dynamic(
   () => import('@/components/modals/about/AboutChatModal'),
@@ -191,8 +190,9 @@ export default function ChatPage({
           chatId={chatId}
           asContainer
           customAction={customAction}
+          className='mb-5'
         />
-        <BottomPanel />
+        {/* <BottomPanel /> */}
       </DefaultLayout>
 
       <ChatCreateSuccessModal
