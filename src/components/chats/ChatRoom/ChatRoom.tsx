@@ -6,11 +6,9 @@ import ExtensionModals from '@/components/extensions'
 import TextArea from '@/components/inputs/TextArea'
 import useLoginOption from '@/hooks/useLoginOption'
 import { getHasUserStakedQuery, getPostQuery } from '@/services/api/query'
-import { useSendEvent } from '@/stores/analytics'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMessageData } from '@/stores/message'
 import { useMyAccount, useMyMainAddress } from '@/stores/my-account'
-import { useProfileModal } from '@/stores/profile-modal'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
 import { ComponentProps, ReactNode, RefObject, useEffect, useRef } from 'react'
@@ -81,10 +79,8 @@ function ChatInputWrapper({
   scrollContainerRef,
 }: ChatInputWrapperProps) {
   const clearAction = useMessageData((state) => state.clearAction)
-  const sendEvent = useSendEvent()
   const myAddress = useMyMainAddress()
 
-  const openProfileModal = useProfileModal((state) => state.openModal)
   const openLoginModal = useLoginModal((state) => state.setIsOpen)
   const isLoggedIn = useMyAccount((state) => !!state.address)
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)

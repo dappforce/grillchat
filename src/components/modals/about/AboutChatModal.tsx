@@ -3,13 +3,13 @@ import PluralText from '@/components/PluralText'
 import ProfilePreview from '@/components/ProfilePreview'
 import ProfilePreviewModalWrapper from '@/components/ProfilePreviewModalWrapper'
 import TruncatedText from '@/components/TruncatedText'
+import ChatHiddenChip from '@/components/chats/ChatHiddenChip'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import ModerationInfoModal from '@/components/moderation/ModerationInfoModal'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { isCommunityHubId } from '@/constants/config'
 import { env } from '@/env.mjs'
 import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
-import useIsInIframe from '@/hooks/useIsInIframe'
 import { getPostQuery } from '@/services/api/query'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { useSendEvent } from '@/stores/analytics'
@@ -19,14 +19,14 @@ import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { HiOutlineEye, HiOutlineEyeSlash, HiQrCode } from 'react-icons/hi2'
+import { HiQrCode } from 'react-icons/hi2'
 import { LuPencil, LuShield } from 'react-icons/lu'
 import { RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
 import MetadataModal from '../MetadataModal'
 import { ModalFunctionalityProps } from '../Modal'
 import QrCodeModal from '../QrCodeModal'
-import { AboutModalProps } from './AboutModal'
+import AboutModal, { AboutModalProps } from './AboutModal'
 
 export type AboutChatModalProps = ModalFunctionalityProps & {
   chatId: string
@@ -61,9 +61,9 @@ export default function AboutChatModal({
 
   const [openedModalType, setOpenedModalType] = useState<InnerModalType>(null)
 
-  const isInIframe = useIsInIframe()
-
   const content = chat?.content
+
+  console.log(content)
   if (!content) return null
 
   const hubId = chat.struct.spaceId
@@ -110,73 +110,48 @@ export default function AboutChatModal({
   }
   const closeModal = () => setOpenedModalType(null)
 
-  const getActionMenu = () =>
-    // joinChat: (variables: JoinChatParams) => Promise<string | undefined>,
-    // isJoiningChat?: boolean
-    {
-      const actionMenu: AboutModalProps['actionMenu'] = [
-        {
-          text: 'Show QR code',
-          iconClassName: 'text-text-muted',
-          icon: HiQrCode,
-          onClick: () => setOpenedModalType('qr'),
-        },
-        {
-          text: 'Show Metadata',
-          iconClassName: cx('text-text-muted'),
-          icon: RiDatabase2Line,
-          onClick: () => setOpenedModalType('metadata'),
-        },
-      ]
+  const getActionMenu = () => {
+    const actionMenu: AboutModalProps['actionMenu'] = [
+      {
+        text: 'Show QR code',
+        iconClassName: 'text-text-muted',
+        icon: HiQrCode,
+        onClick: () => setOpenedModalType('qr'),
+      },
+      {
+        text: 'Show Metadata',
+        iconClassName: cx('text-text-muted'),
+        icon: RiDatabase2Line,
+        onClick: () => setOpenedModalType('metadata'),
+      },
+    ]
 
-      const additionalMenus: ActionCardProps['actions'] = []
-      if (isAuthorized) {
-        additionalMenus.push({
-          text: 'Moderation',
-          icon: LuShield,
-          iconClassName: cx('text-text-muted'),
-          onClick: () => setOpenedModalType('moderation'),
-        })
-      }
-      if (chatOwner === address) {
-        additionalMenus.push({
-          text: 'Edit',
-          icon: LuPencil,
-          iconClassName: cx('text-text-muted'),
-          onClick: () => {
-            setOpenedModalType('edit')
-            openModal({ defaultOpenState: 'update-chat' })
-            sendEvent('click edit_chat_menu')
-          },
-        })
-
-        if (chat.struct.hidden) {
-          additionalMenus.push({
-            text: 'Unhide Chat',
-            icon: HiOutlineEye,
-            iconClassName: cx('text-text-muted'),
-            onClick: () => {
-              setOpenedModalType('unhide')
-              sendEvent('click unhide_chat_menu')
-            },
-          })
-        } else {
-          additionalMenus.push({
-            text: 'Hide Chat',
-            icon: HiOutlineEyeSlash,
-            iconClassName: cx('text-text-muted'),
-            onClick: () => {
-              setOpenedModalType('hide')
-              sendEvent('click hide_chat_menu')
-            },
-          })
-        }
-      }
-
-      actionMenu.unshift(...additionalMenus)
-
-      return actionMenu
+    const additionalMenus: ActionCardProps['actions'] = []
+    if (isAuthorized) {
+      additionalMenus.push({
+        text: 'Moderation',
+        icon: LuShield,
+        iconClassName: cx('text-text-muted'),
+        onClick: () => setOpenedModalType('moderation'),
+      })
     }
+    if (chatOwner === address) {
+      additionalMenus.push({
+        text: 'Edit',
+        icon: LuPencil,
+        iconClassName: cx('text-text-muted'),
+        onClick: () => {
+          setOpenedModalType('edit')
+          openModal({ defaultOpenState: 'update-chat' })
+          sendEvent('click edit_chat_menu')
+        },
+      })
+    }
+
+    actionMenu.unshift(...additionalMenus)
+
+    return actionMenu
+  }
 
   let subtitle = (
     <span>
@@ -220,55 +195,30 @@ export default function AboutChatModal({
 
   return (
     <>
-      {/* <JoinChatWrapper>
-        {({ mutateAsync, isLoading }) => {
-          return (
-            <AboutModal
-              {...props}
-              id={chat.id}
-              isOpen={props.isOpen && openedModalType === null}
-              entityTitle={content?.title}
-              modalTitle={
-                <span>
-                  <span>{content?.title}</span>
-                  {chat.struct.hidden && (
-                    <ChatHiddenChip
-                      popOverProps={{
-                        triggerClassName: 'inline ml-2',
-                        placement: 'top-end',
-                      }}
-                      className='inline-flex'
-                    />
-                  )}
-                </span>
-              }
-              subtitle={subtitle}
-              actionMenu={getActionMenu(mutateAsync, isLoading)}
-              contentList={contentList}
-              image={content?.image}
-            />
-          )
-        }}
-      </JoinChatWrapper>
-
-      <LeaveChatWrapper>
-        {({ isLoading, mutateAsync }) => (
-          <ConfirmationModal
-            isOpen={openedModalType === 'confirmation-leave'}
-            closeModal={closeModal}
-            title='🤔 Are you sure you want to leave this chat?'
-            primaryButtonProps={{ children: 'No, stay here' }}
-            secondaryButtonProps={{
-              children: 'Yes, leave chat',
-              onClick: async () => {
-                await mutateAsync({ chatId })
-                props.closeModal()
-              },
-              isLoading,
-            }}
-          />
-        )}
-      </LeaveChatWrapper> */}
+      <AboutModal
+        {...props}
+        id={chat.id}
+        isOpen={props.isOpen && openedModalType === null}
+        entityTitle={content?.title}
+        modalTitle={
+          <span>
+            <span>{content?.title}</span>
+            {chat.struct.hidden && (
+              <ChatHiddenChip
+                popOverProps={{
+                  triggerClassName: 'inline ml-2',
+                  placement: 'top-end',
+                }}
+                className='inline-flex'
+              />
+            )}
+          </span>
+        }
+        subtitle={subtitle}
+        contentList={contentList}
+        actionMenu={getActionMenu()}
+        image={content?.image}
+      />
       <MetadataModal
         onBackClick={closeModal}
         closeModal={closeModal}
@@ -310,40 +260,6 @@ export default function AboutChatModal({
           chatId={chatId}
         />
       )}
-      {/* <HideUnhideChatWrapper>
-        {({ isLoading, mutateAsync }) => {
-          return (
-            <>
-              <ConfirmationModal
-                isOpen={openedModalType === 'hide'}
-                title='🤔 Make this chat hidden?'
-                closeModal={closeModal}
-                primaryButtonProps={{ children: 'No, keep it public' }}
-                secondaryButtonProps={{
-                  children: 'Yes, hide this chat',
-                  isLoading,
-                  onClick: async () => {
-                    await mutateAsync({ postId: chatId, action: 'hide' })
-                  },
-                }}
-              />
-              <ConfirmationModal
-                isOpen={openedModalType === 'unhide'}
-                title='🤔 Make this chat public?'
-                closeModal={closeModal}
-                primaryButtonProps={{ children: 'No, keep it hidden' }}
-                secondaryButtonProps={{
-                  children: 'Yes, make it public',
-                  isLoading,
-                  onClick: async () => {
-                    await mutateAsync({ postId: chatId, action: 'unhide' })
-                  },
-                }}
-              />
-            </>
-          )
-        }}
-      </HideUnhideChatWrapper> */}
     </>
   )
 }

@@ -1,47 +1,33 @@
 import Button from '@/components/Button'
-import MenuList from '@/components/MenuList'
 import Toast from '@/components/Toast'
 import FloatingMenus, {
   FloatingMenusProps,
 } from '@/components/floating/FloatingMenus'
-import PopOver from '@/components/floating/PopOver'
-import HideMessageModal from '@/components/modals/HideMessageModal'
 import MetadataModal from '@/components/modals/MetadataModal'
-import ModerationModal from '@/components/moderation/ModerationModal'
 import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
-import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import { useCanSendMessage } from '@/hooks/useCanSendMessage'
 import useIsOwnerOfPost from '@/hooks/useIsOwnerOfPost'
 import useRerender from '@/hooks/useRerender'
-import useToastError from '@/hooks/useToastError'
 import { getPostQuery } from '@/services/api/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
-import { usePinMessage } from '@/services/subsocial/posts/mutation'
-import { useSendEvent } from '@/stores/analytics'
 import { useChatMenu } from '@/stores/chat-menu'
-import { useExtensionData } from '@/stores/extension'
 import { useMessageData } from '@/stores/message'
-import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { getChatPageLink, getCurrentUrlOrigin } from '@/utils/links'
-import { currentNetwork, estimatedWaitTime } from '@/utils/network'
+import { estimatedWaitTime } from '@/utils/network'
 import { copyToClipboard } from '@/utils/strings'
 import { Transition } from '@headlessui/react'
 import { PostData } from '@subsocial/api/types'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { BsFillPinAngleFill } from 'react-icons/bs'
 import { FiLink } from 'react-icons/fi'
-import { HiChevronRight, HiOutlineEyeSlash } from 'react-icons/hi2'
-import { IoDiamondOutline } from 'react-icons/io5'
-import { LuPencil, LuReply, LuShield } from 'react-icons/lu'
+import { HiChevronRight } from 'react-icons/hi2'
+import { LuPencil, LuReply } from 'react-icons/lu'
 import { MdContentCopy } from 'react-icons/md'
 import { RiDatabase2Line } from 'react-icons/ri'
 import urlJoin from 'url-join'
-import { SuperLikeWrapper } from '../../content-staking/SuperLike'
-import usePinnedMessage from '../hooks/usePinnedMessage'
 
 export type ChatItemMenusProps = {
   messageId: string
@@ -69,24 +55,16 @@ export default function ChatItemMenus({
 
   const router = useRouter()
 
-  const address = useMyMainAddress()
   const { data: message } = getPostQuery.useQuery(messageId)
   const [modalState, setModalState] = useState<ModalState>(null)
 
-  const sendEvent = useSendEvent()
-
-  const openExtensionModal = useExtensionData(
-    (state) => state.openExtensionModal
-  )
   const setReplyTo = useMessageData((state) => state.setReplyTo)
   const setMessageToEdit = useMessageData((state) => state.setMessageToEdit)
 
-  const { isAuthorized } = useAuthorizedForModeration(chatId)
-  const { ownerId, dataType } = message?.struct || {}
+  const { dataType } = message?.struct || {}
 
   const isOptimisticMessage = dataType === 'optimistic'
 
-  const pinUnpinMenu = usePinUnpinMenuItem(chatId, messageId)
   const getChatMenus = (): FloatingMenusProps['menus'] => {
     const menus: FloatingMenusProps['menus'] = [
       {
@@ -121,24 +99,6 @@ export default function ChatItemMenus({
       },
     ]
 
-    const hideMenu: FloatingMenusProps['menus'][number] = {
-      text: 'Hide',
-      icon: HiOutlineEyeSlash,
-      onClick: () => setModalState('hide'),
-    }
-    if (isMessageOwner && !isOptimisticMessage) menus.unshift(hideMenu)
-
-    if (isAuthorized) {
-      menus.unshift({
-        icon: LuShield,
-        text: 'Moderate',
-        onClick: () => {
-          sendEvent('open_moderate_action_modal', { hubId, chatId })
-          setModalState('moderate')
-        },
-      })
-    }
-
     if (isOptimisticMessage) return menus
 
     const replyItem: FloatingMenusProps['menus'][number] = {
@@ -152,7 +112,6 @@ export default function ChatItemMenus({
       onClick: () => setMessageToEdit(messageId),
     }
 
-    if (pinUnpinMenu) menus.unshift(pinUnpinMenu)
     if (isDatahubAvailable && canSendMessage && isMessageOwner)
       menus.unshift(editItem)
     if (canSendMessage) menus.unshift(replyItem)
@@ -164,51 +123,6 @@ export default function ChatItemMenus({
   return (
     <>
       <FloatingMenus
-        beforeMenus={
-          isOptimisticMessage
-            ? message && <MintingMessageNotice message={message} />
-            : currentNetwork === 'subsocial' && (
-                <SuperLikeWrapper postId={messageId} withPostReward={false}>
-                  {({ isDisabled, handleClick, hasILiked, disabledCause }) => {
-                    if (hasILiked) return null
-                    const menuList = (
-                      <div className='relative w-full'>
-                        <MenuList
-                          size='sm'
-                          menus={[
-                            {
-                              icon: IoDiamondOutline,
-                              text: 'Like Message',
-                              disabled: isDisabled,
-                              onClick: () => {
-                                handleClick()
-                                setIsOpenChatMenu(null)
-                              },
-                            },
-                          ]}
-                        />
-                        <div className='absolute bottom-0 flex w-full flex-col'>
-                          <div className='mx-4 border-b border-border-gray' />
-                        </div>
-                      </div>
-                    )
-                    return disabledCause ? (
-                      <PopOver
-                        triggerClassName='w-full'
-                        trigger={menuList}
-                        panelSize='sm'
-                        triggerOnHover
-                        placement='top'
-                      >
-                        <p>{disabledCause}</p>
-                      </PopOver>
-                    ) : (
-                      menuList
-                    )
-                  }}
-                </SuperLikeWrapper>
-              )
-        }
         menus={menus}
         allowedPlacements={[
           'right',
@@ -235,50 +149,8 @@ export default function ChatItemMenus({
           entity={message}
         />
       )}
-      <ModerationModal
-        isOpen={modalState === 'moderate'}
-        closeModal={() => setModalState(null)}
-        messageId={messageId}
-        chatId={chatId}
-      />
-      <HideMessageModal
-        isOpen={modalState === 'hide'}
-        closeModal={() => setModalState(null)}
-        messageId={messageId}
-        chatId={chatId}
-        hubId={hubId}
-      />
     </>
   )
-}
-
-function usePinUnpinMenuItem(chatId: string, messageId: string) {
-  const { mutate: pinMessage, error: pinningError } = usePinMessage()
-  const sendEvent = useSendEvent()
-  useToastError(pinningError, 'Error pinning message')
-  const isChatOwner = useIsOwnerOfPost(chatId)
-
-  const pinnedMessageId = usePinnedMessage(chatId)
-
-  const pinMenuItem: FloatingMenusProps['menus'][number] = {
-    text: 'Pin',
-    icon: BsFillPinAngleFill,
-    onClick: () => {
-      sendEvent('pin_message')
-      pinMessage({ action: 'pin', chatId, messageId })
-    },
-  }
-  const unpinMenuItem: FloatingMenusProps['menus'][number] = {
-    text: 'Unpin',
-    icon: BsFillPinAngleFill,
-    onClick: () => {
-      pinMessage({ action: 'unpin', chatId, messageId })
-    },
-  }
-
-  if (pinnedMessageId === messageId) return unpinMenuItem
-  if (isChatOwner) return pinMenuItem
-  return null
 }
 
 function MintingMessageNotice({ message }: { message: PostData }) {

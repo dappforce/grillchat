@@ -7,12 +7,10 @@ import ChatModerateChip from '@/components/chats/ChatModerateChip'
 import ChatRoom from '@/components/chats/ChatRoom'
 import ChatCreateSuccessModal from '@/components/community/ChatCreateSuccessModal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
-import useAuthorizedForModeration from '@/hooks/useAuthorizedForModeration'
 import usePrevious from '@/hooks/usePrevious'
 import useWrapInRef from '@/hooks/useWrapInRef'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getPostQuery } from '@/services/api/query'
-import { useModerationActions } from '@/services/datahub/moderation/mutation'
 import { getPostMetadataQuery } from '@/services/datahub/posts/query'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { isDatahubAvailable } from '@/services/datahub/utils'
@@ -82,15 +80,7 @@ export default function ChatPage({
   const { data: chatMetadata } = getPostMetadataQuery.useQuery(chatId, {
     enabled: isDatahubAvailable,
   })
-  // const { data: commentIds } = getCommentIdsByPostIdFromChainQuery.useQuery(
-  //   chatId,
-  //   {
-  //     enabled: !isDatahubAvailable,
-  //   }
-  // )
-
   const myAddress = useMyMainAddress()
-  const isSignerReady = useMyAccount((state) => !!state.signer)
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const { data: chat } = getPostQuery.useQuery(chatId, {
     showHiddenPost: { type: 'all' },
@@ -103,42 +93,6 @@ export default function ChatPage({
       Router.push('/')
     }
   }, [isInitialized, myAddress, chat])
-
-  const { isAuthorized, isOwner, isLoading, moderatorData } =
-    useAuthorizedForModeration(chatId)
-  const { mutateAsync: commitModerationAction } = useModerationActions()
-
-  const chatEntityId = chat?.entityId
-  // useEffect(() => {
-  //   if (!isOwner) return
-  //   if (!isAuthorized && !isLoading && chatEntityId && isSignerReady) {
-  //     if (!moderatorData?.exist) {
-  //       commitModerationAction({
-  //         callName: 'synth_moderation_init_moderator',
-  //         args: {
-  //           ctxPostIds: [chatEntityId],
-  //           withOrganization: true,
-  //         },
-  //       })
-  //     } else {
-  //       commitModerationAction({
-  //         callName: 'synth_moderation_add_ctx_to_organization',
-  //         args: {
-  //           ctxPostIds: [chatEntityId],
-  //           organizationId: moderatorData?.organizationId ?? '',
-  //         },
-  //       })
-  //     }
-  //   }
-  // }, [
-  //   moderatorData,
-  //   isSignerReady,
-  //   isAuthorized,
-  //   commitModerationAction,
-  //   isLoading,
-  //   chatEntityId,
-  //   isOwner,
-  // ])
 
   if (chat?.struct.hidden) {
     const isNotAuthorized = myAddress !== chat.struct.ownerId
@@ -155,8 +109,7 @@ export default function ChatPage({
   }
 
   const content = chat?.content ?? stubMetadata
-  const messageCount =
-    chatMetadata?.totalCommentsCount ?? /* commentIds?.length ?? */ 0
+  const messageCount = chatMetadata?.totalCommentsCount ?? 0
 
   return (
     <>
@@ -192,7 +145,6 @@ export default function ChatPage({
           customAction={customAction}
           className='mb-5'
         />
-        {/* <BottomPanel /> */}
       </DefaultLayout>
 
       <ChatCreateSuccessModal
