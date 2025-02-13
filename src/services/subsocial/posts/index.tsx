@@ -40,7 +40,11 @@ export const getFollowedPostIdsByAddressQuery = createQuery({
 
 const GET_OWNED_POSTS_IDS = gql`
   query getOwnedPostIds($address: String!) {
-    posts(args: { filter: { ownedByAccountAddress: $address } }) {
+    posts(
+      args: {
+        filter: { ownedByAccountAddress: $address, postKind: "RegularPost" }
+      }
+    ) {
       data {
         id
       }

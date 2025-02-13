@@ -106,7 +106,7 @@ const POST_handler = handlerWrapper({
   },
 })
 
-function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
+export function datahubPostActionMapping(data: ApiDatahubPostMutationBody) {
   switch (data.action) {
     case 'create-post':
       return createPostData(data.payload)

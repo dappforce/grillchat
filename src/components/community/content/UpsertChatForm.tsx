@@ -4,7 +4,6 @@ import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
 import { getDeterministicId } from '@/services/datahub/posts/mutation'
-import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
@@ -58,8 +57,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
     ...otherProps
   } = props as UpsertChatFormProps &
     Partial<InsertAdditionalProps & UpdateAdditionalProps>
-
-  const { data } = getSpaceQuery.useQuery(hubId || '')
 
   const myAddress = useMyMainAddress()
 

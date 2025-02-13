@@ -1,9 +1,11 @@
 import Button from '@/components/Button'
-import { getHubIdFromAlias } from '@/constants/config'
+import { env } from '@/env.mjs'
 import useToastError from '@/hooks/useToastError'
-import { useCreateDiscussion } from '@/old/services/api/mutation'
-import { ApiDiscussionResponse } from '@/pages/api/discussion'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
+import { getDeterministicId } from '@/services/datahub/posts/mutation'
+import { useUpsertPost } from '@/services/subsocial/posts/mutation'
+import { useMyMainAddress } from '@/stores/my-account'
+import { useSubscriptionState } from '@/stores/subscription'
 import { getChatPageLink, getUrlQuery } from '@/utils/links'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -11,11 +13,30 @@ import ChatPage, { ChatPageProps } from './ChatPage'
 
 export default function StubChatPage() {
   const { customTexts } = useConfigContext()
-  const { mutateAsync, error, isLoading } = useCreateDiscussion()
-  useToastError<ApiDiscussionResponse>(
+  const myAddress = useMyMainAddress()
+  const [newChatId, setNewChatId] = useState<string | null>(null)
+  const setSubscriptionState = useSubscriptionState(
+    (state) => state.setSubscriptionState
+  )
+
+  const { mutateAsync, error, isLoading } = useUpsertPost({
+    onSuccess: async (_, data) => {
+      if (!myAddress || !('spaceId' in data)) return
+
+      setSubscriptionState('post', 'always-sub')
+      const chatId = await getDeterministicId({
+        account: myAddress,
+        timestamp: data.timestamp.toString(),
+        uuid: data.uuid,
+      })
+
+      setNewChatId(chatId)
+    },
+  })
+  useToastError(
     error,
     'Failed to create discussion',
-    (response) => response.message
+    (response: any) => response.message
   )
 
   const [params, setParams] = useState<{
@@ -34,13 +55,14 @@ export default function StubChatPage() {
 
   const router = useRouter()
   useEffect(() => {
-    const hubIdOrAlias = router.query.hubId as string
-    if (!router.isReady || !hubIdOrAlias) return
+    const hubId = env.NEXT_PUBLIC_RESOURCES_ID as string
+    if (!router.isReady || !hubId) return
 
-    const hubId = getHubIdFromAlias(hubIdOrAlias) || hubIdOrAlias
-    const resourceId = router.query.resourceId as string
+    const resourceId = router.query.resourceURL as string
 
     const metadata = getMetadataFromUrl()
+
+    console.log(metadata, resourceId, hubId)
 
     if (!metadata || !resourceId || !hubId) {
       router.replace('/')
@@ -49,20 +71,23 @@ export default function StubChatPage() {
     setParams({ metadata, hubId, resourceId })
   }, [router])
 
+  useEffect(() => {
+    if (newChatId) {
+      router.replace(
+        getChatPageLink(router, newChatId, env.NEXT_PUBLIC_RESOURCES_ID)
+      )
+    }
+  }, [newChatId, router])
+
   const createDiscussion = async function () {
     const { hubId, metadata, resourceId } = params
 
-    const { data } = await mutateAsync({
-      spaceId: hubId,
-      content: metadata,
-      resourceId,
+    await mutateAsync({
+      spaceId: hubId ?? '',
+      timestamp: Date.now(),
+      uuid: crypto.randomUUID(),
+      ...metadata,
     })
-    if (!data?.postId) {
-      router.replace('/')
-      return
-    }
-
-    router.replace(getChatPageLink(router, data?.postId))
   }
 
   return (

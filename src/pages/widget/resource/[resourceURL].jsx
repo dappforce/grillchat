@@ -6,11 +6,11 @@ export const getServerSideProps = getCommonServerSideProps(
   {},
   async (context) => {
     context.res.setHeader('Cache-Control', 's-maxage=2, stale-while-revalidate')
-    const { resourceId } = context.params || {}
+    const { resourceURL } = context.params || {}
 
     const hubId = env.NEXT_PUBLIC_RESOURCES_ID
 
-    if (!hubId || !resourceId) {
+    if (!hubId || !resourceURL) {
       return undefined
     }
 
