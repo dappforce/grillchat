@@ -17,6 +17,7 @@ type Content = {
   image: string
   title: string
   body?: string
+  resource?: string
 }
 export type UpsertPostParams = (
   | { postId: string }
@@ -28,7 +29,7 @@ async function generateMessageContent(
   params: UpsertPostParams,
   client: QueryClient
 ) {
-  const { image, title, body } = params
+  const { image, title, body, resource } = params
 
   if ('postId' in params && params.postId) {
     const post = await getPostQuery.fetchQuery(client, params.postId)
@@ -40,6 +41,7 @@ async function generateMessageContent(
       image,
       title,
       body,
+      resource,
     } as PostContent
 
     return { content: savedContent }
@@ -49,14 +51,17 @@ async function generateMessageContent(
     image,
     title,
     body,
+    resource,
     optimisticId: crypto.randomUUID(),
-  } as PostContent & { optimisticId: string; isChat?: boolean }
+  } as PostContent & {
+    optimisticId: string
+    isChat?: boolean
+    resource?: string
+  }
 
   return { content }
 }
-type GeneratedMessageContent = Awaited<
-  ReturnType<typeof generateMessageContent>
->
+
 function checkAction(data: UpsertPostParams) {
   if ('spaceId' in data && data.spaceId) {
     return { payload: data, action: 'create' } as const
@@ -75,6 +80,8 @@ function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
     mutationFn: async (params: UpsertPostParams) => {
       const { payload, action } = checkAction(params)
       const { content } = await generateMessageContent(params, client)
+
+      console.log(content)
 
       if (action === 'update') {
         await datahubMutation.updatePostData({
@@ -117,6 +124,7 @@ function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
               title: payload.title,
               image: payload.image,
               body: payload.body ?? '',
+              resource: payload.resource,
             } as PostContent,
           }
         })

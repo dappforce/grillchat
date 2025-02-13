@@ -58,7 +58,7 @@ export default function StubChatPage() {
     const hubId = env.NEXT_PUBLIC_RESOURCES_ID as string
     if (!router.isReady || !hubId) return
 
-    const resourceId = router.query.resourceURL as string
+    const resourceId = router.query.resourceId as string
 
     const metadata = getMetadataFromUrl()
 
@@ -86,6 +86,7 @@ export default function StubChatPage() {
       spaceId: hubId ?? '',
       timestamp: Date.now(),
       uuid: crypto.randomUUID(),
+      resource: resourceId,
       ...metadata,
     })
   }
