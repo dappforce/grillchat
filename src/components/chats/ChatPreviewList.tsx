@@ -55,7 +55,6 @@ function ChatPreviewContainer({
   const router = useRouter()
 
   const content = chat?.content
-  console.log(hubId, chat)
   const usedHubId = hubId || chat.struct.spaceId
   const linkTo = getChatPageLink(
     router,

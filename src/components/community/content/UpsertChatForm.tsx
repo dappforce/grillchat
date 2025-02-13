@@ -109,6 +109,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         ...data,
       })
     } else {
+      console.log('hubId', hubId)
       await mutateAsync({
         spaceId: hubId ?? '',
         timestamp: Date.now(),

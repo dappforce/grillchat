@@ -63,7 +63,6 @@ export default function AboutChatModal({
 
   const content = chat?.content
 
-  console.log(content)
   if (!content) return null
 
   const hubId = chat.struct.spaceId

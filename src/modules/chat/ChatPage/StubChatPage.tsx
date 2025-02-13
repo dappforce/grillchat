@@ -62,8 +62,6 @@ export default function StubChatPage() {
 
     const metadata = getMetadataFromUrl()
 
-    console.log(metadata, resourceId, hubId)
-
     if (!metadata || !resourceId || !hubId) {
       router.replace('/')
       return

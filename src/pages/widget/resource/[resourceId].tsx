@@ -45,7 +45,6 @@ export const getServerSideProps = getCommonServerSideProps(
       hubId
     )
 
-    console.log(linkedResource)
     if (!linkedResource) {
       return {
         props: {},

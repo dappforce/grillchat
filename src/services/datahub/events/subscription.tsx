@@ -167,9 +167,9 @@ async function processSubscriptionEvent(
     case ServiceMessageStatusCode.Forbidden:
       reason = 'You are not allowed to perform this action'
       break
-    case ServiceMessageStatusCode.EntityAlreadyExists:
-      reason = 'The entity already exists'
-      break
+    // case ServiceMessageStatusCode.EntityAlreadyExists:
+    //   reason = 'The entity already exists'
+    //   break
     case ServiceMessageStatusCode.EntityNotFound:
       reason = 'The entity was not found'
       break

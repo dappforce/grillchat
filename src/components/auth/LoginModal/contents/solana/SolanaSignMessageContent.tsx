@@ -5,7 +5,7 @@ import { getSolanaMessage } from '@/services/api/query'
 import { IdentityProvider } from '@/services/datahub/generated-query'
 import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
-import { useDatahubIdentitySubscriber } from '@/services/datahub/identity/subscription'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useLoginModal } from '@/stores/login-modal'
 import { useMyAccount } from '@/stores/my-account'
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -17,13 +17,14 @@ import { LoginModalContentProps } from '../../LoginModalContent'
 
 const SolanaSignMessageContent = ({
   setCurrentState,
+  closeModal,
 }: LoginModalContentProps) => {
   const { publicKey, signMessage } = useWallet()
   const myGrillAddress = useMyAccount((state) => state.address) ?? ''
-  useDatahubIdentitySubscriber()
 
-  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
+
+  const saveProxyAddress = useMyAccount((state) => state.saveProxyAddress)
 
   const queryClient = useQueryClient()
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
@@ -53,10 +54,24 @@ const SolanaSignMessageContent = ({
       useLoginModal.getState().openNextStepModal({
         step: 'save-grill-key',
         provider: 'solana',
-        onFinish: () => {
-          useLoginModal.getState().openNextStepModal({
-            step: 'create-profile',
-          })
+        onFinish: async () => {
+          saveProxyAddress(linkedIdentity.mainAddress)
+          const profile = await getProfileQuery.fetchQuery(
+            queryClient,
+            linkedIdentity.mainAddress
+          )
+          console.log(profile, ' hello', linkedIdentity)
+          closeModal()
+
+          if (!profile) {
+            console.log('redirect to create profile')
+            useLoginModal
+              .getState()
+              .openNextStepModal({ step: 'create-profile' })
+          } else {
+            console.log('closeModal')
+            useLoginModal.getState().closeNextStepModal()
+          }
         },
       })
     }
@@ -84,6 +99,8 @@ const SolanaSignMessageContent = ({
         return
       }
 
+      console.log('message', message)
+
       if (message && decodedSignature) {
         linkIdentity({
           externalProvider: {
@@ -94,11 +111,9 @@ const SolanaSignMessageContent = ({
           },
         })
       } else {
-        // setCurrentState('evm-linking-error')
       }
     } catch (error) {
       console.error('Failed to sign message', error)
-      // setCurrentState('evm-linking-error')
     }
   }, [
     isLoadingRef,
@@ -114,7 +129,7 @@ const SolanaSignMessageContent = ({
   useEffect(() => {
     loginSolana()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKey?.toString(), parentProxyAddress, isInitializedProxy])
+  }, [publicKey?.toString(), isInitializedProxy])
 
   return (
     <div className='flex flex-col'>

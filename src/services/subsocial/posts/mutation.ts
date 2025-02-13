@@ -81,8 +81,6 @@ function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
       const { payload, action } = checkAction(params)
       const { content } = await generateMessageContent(params, client)
 
-      console.log(content)
-
       if (action === 'update') {
         await datahubMutation.updatePostData({
           ...getCurrentWallet(),

@@ -32,6 +32,9 @@ type Filter = (typeof filters)[number]
 export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const address = useMyMainAddress()
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
+
+  console.log(address, parentProxyAddress)
 
   const [filter, setFilter] = useState<Filter | null>(null)
   const changeFilter = (filter: Filter) => {
