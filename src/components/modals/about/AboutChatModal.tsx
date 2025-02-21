@@ -87,6 +87,13 @@ export default function AboutChatModal({
       redirectTo: chatUrl,
       openInNewTab: true,
     },
+    {
+      title: 'Resource',
+      content: content.resource,
+      textToCopy: content.resource,
+      redirectTo: content.resource,
+      openInNewTab: true,
+    },
   ]
   if (isChatInsideCommunityHub) {
     contentList.push({

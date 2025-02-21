@@ -6,6 +6,7 @@ import ChatPreviewSkeleton from '@/components/chats/ChatPreviewSkeleton'
 import NewCommunityModal from '@/components/community/NewCommunityModal'
 import { env } from '@/env.mjs'
 import { getPostQuery } from '@/services/api/query'
+import { getProfileQuery } from '@/services/datahub/profiles/query'
 import {
   getFollowedPostIdsByAddressQuery,
   getOwnedPostIdsQuery,
@@ -33,8 +34,6 @@ export default function MyChatsContent({ changeTab }: MyChatsContentProps) {
   const isInitialized = useMyAccount((state) => state.isInitialized)
   const address = useMyMainAddress()
   const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
-
-  console.log(address, parentProxyAddress)
 
   const [filter, setFilter] = useState<Filter | null>(null)
   const changeFilter = (filter: Filter) => {
@@ -169,6 +168,8 @@ function Toolbar({ filter, changeFilter, hasAnyHiddenChats }: ToolbarProps) {
 type NoChatsProps = Pick<MyChatsContentProps, 'changeTab'>
 function NoChats({ changeTab }: NoChatsProps) {
   const { openModal } = useCreateChatModal()
+  const myAddress = useMyMainAddress()
+  const { data: profile } = getProfileQuery.useQuery(myAddress || '')
 
   return (
     <>
@@ -195,14 +196,6 @@ function NoChats({ changeTab }: NoChatsProps) {
             >
               Create Chat
             </Button>
-            <Button
-              className='w-full'
-              variant='primaryOutline'
-              size='lg'
-              onClick={() => changeTab(2)}
-            >
-              Explore Chats
-            </Button>
           </>
         ) : (
           <>
@@ -225,7 +218,9 @@ function NoChats({ changeTab }: NoChatsProps) {
         )}
       </Container>
 
-      {communityHubId && <NewCommunityModal hubId={communityHubId} />}
+      {profile?.profileSpace?.id && (
+        <NewCommunityModal hubId={profile?.profileSpace?.id} />
+      )}
     </>
   )
 }

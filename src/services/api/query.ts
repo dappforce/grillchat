@@ -3,7 +3,6 @@ import {
   DatahubPostQueryInput,
 } from '@/pages/api/datahub/post'
 import { ApiDayResponse } from '@/pages/api/day'
-import { ApiNftParams, ApiNftResponse } from '@/pages/api/nft'
 import { ApiStakedParams, ApiStakedResponse } from '@/pages/api/staked'
 import { ApiTimeResponse } from '@/pages/api/time'
 import { createQuery, poolQuery } from '@/subsocial-query'
@@ -88,22 +87,6 @@ export const getPostQuery = {
     return queriesData
   },
 }
-
-async function getNft(nft: ApiNftParams | null) {
-  if (!nft) return null
-  const urlQuery = new URLSearchParams()
-  urlQuery.set('chain', nft.chain)
-  urlQuery.set('collectionId', nft.collectionId)
-  urlQuery.set('nftId', nft.nftId)
-
-  const res = await apiInstance.get('/api/nft?' + urlQuery.toString())
-  const responseData = res.data as ApiNftResponse
-  return responseData.data
-}
-export const getNftQuery = createQuery({
-  key: 'nft',
-  fetcher: getNft,
-})
 
 async function getCanUserDoDatahubAction(input: DatahubPostQueryInput) {
   const urlParams = new URLSearchParams(input)

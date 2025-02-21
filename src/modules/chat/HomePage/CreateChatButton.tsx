@@ -26,11 +26,9 @@ const CreateChatButton = () => {
     className: 'flex items-center gap-2',
   }
 
-  return chat && chat.struct.spaceId ? (
-    <Button href={`/${profile?.profileSpace?.id}/${chat.id}`} {...commonProps}>
-      Creator Chat
-    </Button>
-  ) : (
+  console.log(profile?.profileSpace?.id)
+
+  return (
     <>
       <Button
         {...commonProps}

@@ -27,6 +27,7 @@ export const DATAHUB_POST_FRAGMENT = gql`
     ownedByAccount {
       id
     }
+    resource
     rootPost {
       persistentId
       space {

@@ -18,6 +18,7 @@ import { z } from 'zod'
 
 type InsertAdditionalProps = {
   hubId?: string
+  spaceId?: string
 }
 type UpdateAdditionalProps = {
   chat: PostData
@@ -39,7 +40,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatForm(props: UpsertChatFormProps) {
-  const { openModal, setNewChatId } = useCreateChatModal()
+  const { setNewChatId } = useCreateChatModal()
   const [isImageLoading, setIsImageLoading] = useState(false)
   const [isProcessingData, setIsProcessingData] = useState(false)
   const sendEvent = useSendEvent()
@@ -51,6 +52,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   const {
     chat,
     hubId,
+    spaceId,
     onSuccess,
     onTxSuccess,
     customModalStates,
@@ -109,7 +111,6 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
         ...data,
       })
     } else {
-      console.log('hubId', hubId)
       await mutateAsync({
         spaceId: hubId ?? '',
         timestamp: Date.now(),

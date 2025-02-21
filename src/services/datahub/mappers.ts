@@ -66,6 +66,7 @@ export const mapDatahubPostFragment = (
       summary: post.body,
       image: '',
       title: post.title ?? '',
+      resource: post.resource ?? '',
       link: '',
       body: (post.body || '').replace(/\n{3,}/g, '\n\n'),
       canonical: '',

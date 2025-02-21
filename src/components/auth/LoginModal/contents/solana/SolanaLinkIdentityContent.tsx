@@ -34,7 +34,6 @@ export default function SolanaConnectWalletContent({
   const { onButtonClick } = useWalletDisconnectButton()
 
   useEffect(() => {
-    console.log(walletModalConfig?.wallets)
     if (!walletModalConfig) {
       onButtonClick?.()
     }

@@ -7,7 +7,7 @@ import { useLinkIdentity } from '@/services/datahub/identity/mutation'
 import { getLinkedIdentityQuery } from '@/services/datahub/identity/query'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useLoginModal } from '@/stores/login-modal'
-import { useMyAccount } from '@/stores/my-account'
+import { useMyAccount, useMyGrillAddress } from '@/stores/my-account'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { IdentityProvider as SDKIdentityProvider } from '@subsocial/data-hub-sdk'
 import { useQueryClient } from '@tanstack/react-query'
@@ -20,7 +20,8 @@ const SolanaSignMessageContent = ({
   closeModal,
 }: LoginModalContentProps) => {
   const { publicKey, signMessage } = useWallet()
-  const myGrillAddress = useMyAccount((state) => state.address) ?? ''
+  const myGrillAddress = useMyGrillAddress() || ''
+  const parentProxyAddress = useMyAccount((state) => state.parentProxyAddress)
 
   const finalizeTemporaryAccount = useMyAccount.use.finalizeTemporaryAccount()
 
@@ -29,14 +30,20 @@ const SolanaSignMessageContent = ({
   const queryClient = useQueryClient()
   const loginAsTemporaryAccount = useMyAccount.use.loginAsTemporaryAccount()
 
-  const { data: linkedIdentity } =
-    getLinkedIdentityQuery.useQuery(myGrillAddress)
-
   const {
-    mutate: linkIdentity,
+    mutateAsync: linkIdentity,
     isSuccess: isSuccessLinking,
     isLoading: isLinking,
   } = useLinkIdentity()
+
+  const { data: linkedIdentity } = getLinkedIdentityQuery.useQuery(
+    myGrillAddress,
+    {
+      refetchOnMount: 'always',
+      refetchInterval: 1000,
+      enabled: !!myGrillAddress && isSuccessLinking,
+    }
+  )
 
   const isLoading = isLinking
   const isLoadingRef = useWrapInRef(isLoading)
@@ -47,10 +54,8 @@ const SolanaSignMessageContent = ({
       (p) => p.provider === IdentityProvider.Solana && p.enabled
     )
 
-    if (!linkedIdentity || !foundMatchingProvider) return
-
     if (isSuccessLinking) {
-      finalizeTemporaryAccount()
+      if (!linkedIdentity || !foundMatchingProvider) return
       useLoginModal.getState().openNextStepModal({
         step: 'save-grill-key',
         provider: 'solana',
@@ -60,28 +65,21 @@ const SolanaSignMessageContent = ({
             queryClient,
             linkedIdentity.mainAddress
           )
-          console.log(profile, ' hello', linkedIdentity)
           closeModal()
 
           if (!profile) {
-            console.log('redirect to create profile')
             useLoginModal
               .getState()
               .openNextStepModal({ step: 'create-profile' })
           } else {
-            console.log('closeModal')
             useLoginModal.getState().closeNextStepModal()
           }
+
+          finalizeTemporaryAccount()
         },
       })
     }
-  }, [
-    finalizeTemporaryAccount,
-    linkedIdentity,
-    isSuccessLinking,
-    queryClient,
-    publicKey,
-  ])
+  }, [linkedIdentity, isSuccessLinking, queryClient])
 
   const loginSolana = useCallback(async () => {
     if (!publicKey?.toString() || isLoadingRef.current) return
@@ -99,10 +97,8 @@ const SolanaSignMessageContent = ({
         return
       }
 
-      console.log('message', message)
-
       if (message && decodedSignature) {
-        linkIdentity({
+        await linkIdentity({
           externalProvider: {
             id: publicKey.toString(),
             provider: SDKIdentityProvider.SOLANA,
@@ -110,26 +106,22 @@ const SolanaSignMessageContent = ({
             solProofMsgSig: decodedSignature,
           },
         })
+        // refetch()
       } else {
       }
     } catch (error) {
       console.error('Failed to sign message', error)
     }
-  }, [
-    isLoadingRef,
-    linkIdentity,
-    loginAsTemporaryAccount,
-    publicKey,
-    setCurrentState,
-    signMessage,
-  ])
+  }, [linkIdentity, loginAsTemporaryAccount, publicKey, signMessage])
 
   const isInitializedProxy = useMyAccount.use.isInitializedProxy()
 
   useEffect(() => {
-    loginSolana()
+    if (!parentProxyAddress && isInitializedProxy && publicKey?.toString()) {
+      loginSolana()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKey?.toString(), isInitializedProxy])
+  }, [publicKey?.toString(), parentProxyAddress, isInitializedProxy])
 
   return (
     <div className='flex flex-col'>

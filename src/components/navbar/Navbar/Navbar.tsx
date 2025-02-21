@@ -42,7 +42,7 @@ export type NavbarProps = ComponentProps<'div'> & {
     authComponent: ReactNode
     notificationBell: ReactNode
     backButton: ReactNode
-    newPostButton: ReactNode
+    newPostButton?: ReactNode
     hamburgerMenu: ReactNode
   }) => JSX.Element
 }
@@ -140,19 +140,6 @@ export default function Navbar({
     </div>
   )
 
-  const newPostButton = profile?.profileSpace && (
-    <Button
-      roundings='lg'
-      variant='mutedOutline'
-      className='mr-2 border-[#D9D9D9] text-sm font-medium text-text'
-      size='xs'
-      nextLinkProps={{ forceHardNavigation: true }}
-      href={`/${profile.profileSpace.id}/posts/new`}
-    >
-      New post
-    </Button>
-  )
-
   const isInIframe = useIsInIframe()
   const notificationBell = !isInIframe && <NotificationBell />
 
@@ -178,14 +165,12 @@ export default function Navbar({
               authComponent,
               notificationBell,
               backButton,
-              newPostButton,
               hamburgerMenu,
             })
           ) : (
             <div className='flex w-full items-center justify-between'>
               {logoLink}ƒ
               <div className='flex items-center'>
-                {newPostButton}
                 {notificationBell}
                 <div className='ml-2.5'>{authComponent}</div>
               </div>
