@@ -2,9 +2,11 @@ import MenuList from '@/components/MenuList'
 import { useSendEvent } from '@/stores/analytics'
 import { cx } from '@/utils/class-names'
 import { WalletName } from '@solana/wallet-adapter-base'
-import { useWalletMultiButton } from '@solana/wallet-adapter-base-ui'
+import {
+  useWalletDisconnectButton,
+  useWalletMultiButton,
+} from '@solana/wallet-adapter-base-ui'
 import { Wallet } from '@solana/wallet-adapter-react'
-import { WalletDisconnectButton } from '@solana/wallet-adapter-react-ui'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { LoginModalContentProps } from '../../LoginModalContent'
@@ -28,6 +30,14 @@ export default function SolanaConnectWalletContent({
   const { buttonState, onSelectWallet } = useWalletMultiButton({
     onSelectWallet: setWalletModalConfig,
   })
+
+  const { onButtonClick } = useWalletDisconnectButton()
+
+  useEffect(() => {
+    if (!walletModalConfig) {
+      onButtonClick?.()
+    }
+  }, [onButtonClick, walletModalConfig])
 
   const menu =
     walletModalConfig?.wallets.map((wallet) => ({
@@ -80,7 +90,6 @@ export default function SolanaConnectWalletContent({
 
   return (
     <div className='flex flex-col'>
-      <WalletDisconnectButton />
       <MenuList className='pt-0' menus={menu} />
     </div>
   )
