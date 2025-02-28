@@ -14,12 +14,12 @@ const SPACE_FRAGMENT = gql`
     hidden
     about
     content
-    # createdByAccount {
-    #   id
-    # }
-    # ownedByAccount {
-    #   id
-    # }
+    createdByAccount {
+      id
+    }
+    ownedByAccount {
+      id
+    }
     createdAtTime
     createdAtBlock
   }
@@ -34,6 +34,18 @@ export const GET_SPACES = gql`
     }
   }
 `
+
+export const GET_SPACES_BY_OWNER = gql`
+  ${SPACE_FRAGMENT}
+  query getSpaces($owner: String!) {
+    spaces(args: { filter: { ownedByAccountAddress: $owner } }) {
+      data {
+        ...SpaceFragment
+      }
+    }
+  }
+`
+
 const getSpaces = poolQuery<string, SpaceData>({
   name: 'getSpaces',
   multiCall: async (spaceIds) => {
@@ -46,13 +58,7 @@ const getSpaces = poolQuery<string, SpaceData>({
       variables: { ids: spaceIds },
     })
 
-    return res.spaces.data.map((space) =>
-      mapDatahubSpaceFragment({
-        ...space,
-        createdByAccount: { id: '0x8b4fF9452aE997a9E442C67D1155a18EDEA3Be6F' },
-        ownedByAccount: { id: '0x8b4fF9452aE997a9E442C67D1155a18EDEA3Be6F' },
-      })
-    )
+    return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
   },
   resultMapper: {
     paramToKey: (param) => param,
@@ -65,5 +71,20 @@ export const getSpaceQuery = createQuery({
   fetcher: getSpaces,
   defaultConfigGenerator: (spaceId) => ({
     enabled: !!spaceId,
+  }),
+})
+
+export const getSpaceByOwnerQuery = createQuery({
+  key: 'space',
+  fetcher: async (owner: string) => {
+    const res = await datahubQueryRequest<GetSpacesQuery, { owner: string }>({
+      document: GET_SPACES_BY_OWNER,
+      variables: { owner },
+    })
+
+    return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
+  },
+  defaultConfigGenerator: (owner) => ({
+    enabled: !!owner,
   }),
 })

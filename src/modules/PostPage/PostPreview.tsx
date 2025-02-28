@@ -34,7 +34,6 @@ const PostPreview = ({
   const myAddress = useMyMainAddress()
   const [collapseAbout, setCollapseAbout] = useState(true)
   const { data: postData } = getPostQuery.useQuery(spaceId)
-  console.log(spaceId)
 
   const isMy = postData?.struct.ownerId === myAddress
   const { data: ownerProfile } = getProfileQuery.useQuery(

@@ -12,6 +12,7 @@ import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
   const myAddress = useMyMainAddress()
+  console.log('my address', myAddress)
   const isMounted = useIsMounted()
 
   if (!isMounted) return null
@@ -23,7 +24,7 @@ export default function Sidebar() {
         <SidebarItem icon={BiChat} title='Feed' href='/feed' />
         <SidebarItem
           icon={BiChat}
-          title='MySpaces'
+          title='My Spaces'
           forceHardNavigation
           href={`/accounts/${myAddress}/spaces`}
         />

@@ -164,7 +164,7 @@ body {
 
 .container-page {
   @apply mx-auto w-full px-4;
-  max-width: 1300px;
+  max-width: 1100px;
 }
 
 .unselectable-text {

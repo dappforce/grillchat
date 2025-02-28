@@ -2,6 +2,7 @@ import SpacesPage from '@/modules/SpacesPage'
 import { AppCommonProps } from '@/pages/_app'
 import { getCommonStaticProps } from '@/utils/page'
 import { dehydrate, QueryClient } from '@tanstack/react-query'
+import { getSpaceByOwnerQuery } from '../../../services/datahub/spaces/query'
 
 export const getStaticPaths = async () => {
   // Skip pre-rendering, because it will cause slow build time
@@ -18,8 +19,18 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
 
     let { address } = context.params ?? {}
 
+    console.log('address', address)
+
     if (!address) return undefined
-    const spaceIds = ['0x6c414d3f64a4644423a25bd362d4623a']
+    // const spaceIds = ['0x6c414d3f64a4644423a25bd362d4623a']
+    const spaces = await getSpaceByOwnerQuery.fetchQuery(
+      queryClient,
+      address as string
+    )
+
+    const spaceIds = spaces?.map((space) => space.id) || []
+
+    console.log('hello', address, spaceIds)
 
     try {
     } catch (e) {

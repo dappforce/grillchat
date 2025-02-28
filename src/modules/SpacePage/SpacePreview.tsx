@@ -36,7 +36,6 @@ const SpacePreview = ({
   const myAddress = useMyMainAddress()
   const [collapseAbout, setCollapseAbout] = useState(true)
   const { data: spaceData } = getSpaceQuery.useQuery(spaceId)
-  console.log(spaceId)
 
   const isMy = spaceData?.struct.ownerId === myAddress
   const { data: ownerProfile } = getProfileQuery.useQuery(
