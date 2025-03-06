@@ -27,6 +27,8 @@ export type ImageInputProps = ComponentProps<'input'> & {
   setImageUrl: (url: string) => void
   error?: string | true
   containerProps?: ComponentProps<'div'>
+  dropzoneClassName?: string
+  innerLabel?: React.ReactNode
   withIpfsPrefix?: boolean
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -36,6 +38,8 @@ export default function ImageInput({
   setImageUrl,
   containerProps,
   withIpfsPrefix,
+  dropzoneClassName,
+  innerLabel,
   error,
   disabled,
   setIsLoading,
@@ -89,13 +93,15 @@ export default function ImageInput({
             className={cx(
               'flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-full border border-dashed border-text-muted p-4 text-center transition-colors md:h-24 md:w-24',
               'hover:border-text-primary hover:text-text-primary focus-visible:border-text-primary focus-visible:text-text-primary',
-              isError && 'border-text-red'
+              isError && 'border-text-red',
+              dropzoneClassName
             )}
           >
             <input {...props} {...getInputProps()} />
             <div className='text-3xl'>
               {isLoading ? <Spinner className='block h-8 w-8' /> : <ImageAdd />}
             </div>
+            {innerLabel}
           </div>
         )}
       </Dropzone>

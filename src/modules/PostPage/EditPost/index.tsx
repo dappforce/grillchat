@@ -18,7 +18,7 @@ const formSchema = z.object({
   body: z.string(),
   tags: z.array(z.string()),
 })
-type FormSchema = z.infer<typeof formSchema>
+export type FormSchema = z.infer<typeof formSchema>
 
 type EditPostFormProps = {
   postContent: PostContent
@@ -91,6 +91,8 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
           register={register}
           errors={errors}
           isLoading={isLoading}
+          control={control}
+          setValue={setValue}
         />
         <PostParamsSection />
       </div>
@@ -150,9 +152,6 @@ const EditPostForm = (props: EditPostFormProps) => {
       }}
     >
       <div className='flex w-full flex-1 flex-col gap-6 p-4 lg:pr-3'>
-        <div className='flex items-center justify-between gap-4 border-b border-[#d1d1d1] pb-3'>
-          <span className='mb-0 text-2xl font-medium'>Create new space</span>
-        </div>
         <InnerEditPostForm {...props} />
       </div>
     </DefaultLayout>

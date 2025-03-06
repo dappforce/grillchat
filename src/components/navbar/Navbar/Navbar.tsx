@@ -147,7 +147,7 @@ export default function Navbar({
       className='mr-2 border-[#D9D9D9] text-sm font-medium text-text'
       size='xs'
       nextLinkProps={{ forceHardNavigation: true }}
-      href={`/${profile.profileSpace.id}/posts/new`}
+      href={`/space/${profile.profileSpace.id}/posts/new`}
     >
       New post
     </Button>
