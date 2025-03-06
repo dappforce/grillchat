@@ -12,7 +12,6 @@ import CustomLink from '../referral/CustomLink'
 
 export default function Sidebar() {
   const myAddress = useMyMainAddress()
-  console.log('my address', myAddress)
   const isMounted = useIsMounted()
 
   if (!isMounted) return null

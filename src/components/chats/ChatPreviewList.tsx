@@ -56,9 +56,7 @@ function ChatPreviewContainer({
 
   const content = chat?.content
 
-  const usedHubId =
-    hubId || chat.struct.spaceId || '0x6c414d3f64a4644423a25bd362d4623a'
-  console.log(chat.struct.spaceId)
+  const usedHubId = hubId || chat.struct.spaceId
   const linkTo = getChatPageLink(
     router,
     createSlug(chat.id, { title: content?.title }),

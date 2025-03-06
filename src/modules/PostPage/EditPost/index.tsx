@@ -9,8 +9,8 @@ import { PostContent } from '@subsocial/api/types/dto'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import EditorSection from './EditorSection'
-import PostParamsSection from './PostParamsSection'
+import EditorSection from './editor/EditorSection'
+import PostParamsSection from './editor/PostParamsSection'
 
 const formSchema = z.object({
   image: z.string(),
@@ -86,7 +86,7 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
       onSubmit={handleSubmit(onSubmit)}
       className={cx('flex flex-col gap-4')}
     >
-      <div>
+      <div className='flex gap-4'>
         <EditorSection
           register={register}
           errors={errors}

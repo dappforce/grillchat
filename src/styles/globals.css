@@ -4,6 +4,8 @@
   }
 }
 
+@import './editor.css';
+
 * {
   min-width: 0;
 }
@@ -185,4 +187,83 @@ body {
 
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+.BorderLessMdEditor {
+  .editor-toolbar {
+    border: none;
+    padding: 0.25rem;
+    padding-left: 0;
+    zoom: 1.1;
+  }
+
+  .CodeMirror {
+    border: none;
+    font-size: 1rem;
+    padding: 0 !important;
+    margin-top: 0.5rem;
+  }
+}
+
+.DfMdEditor {
+  .CodeMirror {
+    font-size: 1rem;
+    padding: 6.5px 11px; /* padding from ant design input */
+
+    @media screen and (min-width: 755px) {
+      resize: vertical !important;
+    }
+  }
+
+  .CodeMirror-scroll {
+    min-height: 5rem !important;
+  }
+
+  .CodeMirror.cm-s-easymde.CodeMirror-wrap.CodeMirror-fullscreen {
+    z-index: 1000;
+  }
+
+  .markdown-body {
+    a {
+      color: #bd018b !important;
+    }
+
+    background-color: #fff !important;
+    padding: 0.25rem !important;
+  }
+
+  &.hideToolbar {
+    .editor-toolbar {
+      display: none;
+    }
+
+    .CodeMirror {
+      border-radius: 5px;
+    }
+  }
+
+  .editor-statusbar {
+    padding: 0.25rem 0;
+    text-align: left;
+
+    .upload-image {
+      margin-left: 0;
+      font-size: 0.75rem;
+    }
+  }
+}
+
+.DfMdEditor.error {
+  .CodeMirror.cm-s-easymde.CodeMirror-wrap {
+    background-color: #fff6f6;
+    border-color: #e0b4b4;
+  }
+
+  .editor-toolbar {
+    border-color: #e0b4b4;
+  }
+}
+
+.ui.attached.tabular.menu {
+  padding: 0 2rem;
 }

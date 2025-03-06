@@ -19,8 +19,6 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
 
     let { address } = context.params ?? {}
 
-    console.log('address', address)
-
     if (!address) return undefined
     // const spaceIds = ['0x6c414d3f64a4644423a25bd362d4623a']
     const spaces = await getSpaceByOwnerQuery.fetchQuery(
@@ -29,8 +27,6 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
     )
 
     const spaceIds = spaces?.map((space) => space.id) || []
-
-    console.log('hello', address, spaceIds)
 
     try {
     } catch (e) {
