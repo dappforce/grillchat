@@ -508,11 +508,15 @@ async function getPostsBySpaceId(
     document: GET_POSTS_BY_SPACE_ID,
     variables: { id: spaceId },
   })
+
+  console.log(res)
   const mappedPosts = res.posts.data.map((post) => {
     const mapped = mapDatahubPostFragment(post)
     if (queryClient) getPostQuery.setQueryData(queryClient, post.id, mapped)
     return mapped
   })
+
+  console.log(mappedPosts)
   return mappedPosts
 }
 export const getPostsBySpaceIdQuery = createQuery({

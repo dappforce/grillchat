@@ -13,11 +13,11 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { CiEdit } from 'react-icons/ci'
-import PostDropdownMenu from './PostDropdownMenu'
-import { renderPostTitle } from './ViewPost'
+import PostDropdownMenu from '../PostDropdownMenu'
+import { renderPostTitle } from '../ViewPost'
 
 type SpacePreviewProps = {
-  spaceId: string
+  postId: string
   withTags?: boolean
   withStats?: boolean
   showFullAbout?: boolean
@@ -25,7 +25,7 @@ type SpacePreviewProps = {
 }
 
 const PostPreview = ({
-  spaceId,
+  postId,
   withTags = true,
   withStats = true,
   showFullAbout = false,
@@ -33,7 +33,7 @@ const PostPreview = ({
 }: SpacePreviewProps) => {
   const myAddress = useMyMainAddress()
   const [collapseAbout, setCollapseAbout] = useState(true)
-  const { data: postData } = getPostQuery.useQuery(spaceId)
+  const { data: postData } = getPostQuery.useQuery(postId)
 
   const isMy = postData?.struct.ownerId === myAddress
   const { data: ownerProfile } = getProfileQuery.useQuery(
@@ -103,7 +103,7 @@ const PostPreview = ({
     <div className='flex items-center gap-2'>
       {!isMobile && isMy && (
         <Button
-          href={`/${spaceId}/edit`}
+          href={`/${postId}/edit`}
           variant={'primaryOutline'}
           size={size}
           className='flex items-center gap-2'
@@ -154,7 +154,7 @@ const PostPreview = ({
   )
 
   return withWrapper ? (
-    <Link href={`/space/${spaceId}`} className='w-full'>
+    <Link href={`/space/${postId}`} className='w-full'>
       {preview}
     </Link>
   ) : (

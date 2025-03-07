@@ -131,9 +131,7 @@ const SpacePreview = ({
       )}
 
       <>
-        {isProfileSpace && isMy ? (
-          <>Chat button</>
-        ) : (
+        {!isMy && (
           <Button variant={'primary'} size={size}>
             Follow
           </Button>
