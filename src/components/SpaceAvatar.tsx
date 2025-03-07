@@ -1,3 +1,4 @@
+import { cx } from '@/utils/class-names'
 import { SpaceData } from '@subsocial/api/types'
 import Image from 'next/image'
 import AddressAvatar from './AddressAvatar'
@@ -5,9 +6,14 @@ import AddressAvatar from './AddressAvatar'
 type SpaceAvatarProps = {
   space: SpaceData
   imageSize?: number
+  className?: string
 }
 
-const SpaceAvatar = ({ space, imageSize = 48 }: SpaceAvatarProps) => {
+const SpaceAvatar = ({
+  space,
+  imageSize = 48,
+  className,
+}: SpaceAvatarProps) => {
   const image = space.content?.image
 
   return (
@@ -23,7 +29,7 @@ const SpaceAvatar = ({ space, imageSize = 48 }: SpaceAvatarProps) => {
       ) : (
         <AddressAvatar
           address={space.struct.ownerId}
-          className='h-[62px] w-[62px]'
+          className={cx('h-[62px] w-[62px]', className)}
         />
       )}
     </div>

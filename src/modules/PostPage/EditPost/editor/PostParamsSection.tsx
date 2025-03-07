@@ -1,5 +1,150 @@
-const PostParamsSection = () => {
-  return <div className='rounded-lg bg-white p-4'></div>
+import FormButton from '@/components/FormButton'
+import { MenuListProps } from '@/components/MenuList'
+import SpaceAvatar from '@/components/SpaceAvatar'
+import FloatingMenus from '@/components/floating/FloatingMenus'
+import Input from '@/components/inputs/Input'
+import { getSpaceByOwnerQuery } from '@/services/datahub/spaces/query'
+import { useMyMainAddress } from '@/stores/my-account'
+import { SpaceData } from '@subsocial/api/types'
+import { isDef } from '@subsocial/utils'
+import { useEffect, useState } from 'react'
+import { Control, UseFormSetValue, UseFormWatch } from 'react-hook-form'
+import { IoIosArrowDown } from 'react-icons/io'
+import { ZodTypeAny } from 'zod'
+import { FormSchema } from '..'
+
+type PostParamsSectionProps = {
+  formSchema: ZodTypeAny
+  watch: UseFormWatch<FormSchema>
+  register: any
+  setValue: UseFormSetValue<FormSchema>
+  control: Control<FormSchema>
+  isLoading: boolean
+  isUpdating: boolean
+  errors: any
+}
+const PostParamsSection = (props: PostParamsSectionProps) => {
+  return (
+    <div className='flex h-fit flex-1 flex-col gap-4'>
+      <SelectSpaceSection {...props} />
+      <PostAdditionalFields {...props} />
+    </div>
+  )
+}
+
+const SelectSpaceSection = (props: PostParamsSectionProps) => {
+  const { formSchema, watch, isUpdating, isLoading } = props
+  const myAddress = useMyMainAddress()
+  const { data: spaces } = getSpaceByOwnerQuery.useQuery(myAddress || '')
+  const [selectedSpace, setSelectedSpace] = useState<SpaceData | null>(
+    spaces?.[0] || null
+  )
+
+  console.log(spaces)
+
+  const actionText = isUpdating ? 'Save changes' : 'Create'
+
+  useEffect(() => {
+    setSelectedSpace(spaces?.[0] || null)
+  }, [spaces?.length])
+
+  const menuItems =
+    spaces
+      ?.map((space) => ({
+        text: (
+          <div className='flex items-center gap-3'>
+            <SpaceAvatar space={space} className='h-[32px] w-[32px]' />
+            <span>{selectedSpace?.content?.name || 'Select space'}</span>
+          </div>
+        ),
+        onClick: () => {
+          setSelectedSpace(space)
+          console.log('space', space)
+        },
+      }))
+      .filter(isDef) || ([] as MenuListProps['menus'])
+
+  if (!spaces) return null
+
+  return (
+    <div className='flex h-fit flex-1 flex-col gap-4 rounded-lg bg-white p-4'>
+      <FloatingMenus
+        menus={menuItems}
+        allowedPlacements={['bottom-start']}
+        mainAxisOffset={4}
+        panelSize='xs'
+      >
+        {(config) => {
+          const { referenceProps, toggleDisplay } = config || {}
+          if (!selectedSpace) return <></>
+
+          return (
+            <div
+              {...referenceProps}
+              onClick={toggleDisplay}
+              className='flex cursor-pointer items-center justify-between gap-1 text-text-primary'
+            >
+              <div className='flex items-center gap-3'>
+                <SpaceAvatar
+                  space={selectedSpace}
+                  className='h-[32px] w-[32px]'
+                />
+                <span>{selectedSpace?.content?.name || 'Select space'}</span>
+              </div>
+              <IoIosArrowDown className='text-text-muted' />
+            </div>
+          )
+        }}
+      </FloatingMenus>
+      <FormButton
+        schema={formSchema}
+        watch={watch}
+        isLoading={isLoading}
+        loadingText={isLoading ? 'Loading...' : undefined}
+        size='lg'
+      >
+        {actionText}
+      </FormButton>
+    </div>
+  )
+}
+
+const PostAdditionalFields = (props: PostParamsSectionProps) => {
+  const { register, isLoading, errors } = props
+  return (
+    <div className='flex h-fit flex-1 flex-col gap-4 rounded-lg bg-white p-4'>
+      <div className='flex flex-col gap-2'>
+        <span>Tags</span>
+        <Input
+          {...register('tags')}
+          ref={(e) => {
+            register('tags').ref(e)
+          }}
+          disabled={isLoading}
+          placeholder="Press 'Enter' or 'Tab' to add a tags"
+          error={errors.title?.message}
+          variant='outlined'
+        />
+      </div>
+      <div className='flex flex-col gap-2'>
+        <span>Tags</span>
+        <Input
+          {...register('orginalUrl')}
+          ref={(e) => {
+            register('orginalUrl').ref(e)
+          }}
+          disabled={isLoading}
+          placeholder='Url of the original post'
+          error={errors.title?.message}
+          variant='outlined'
+        />
+        <span className='text-text-muted'>
+          This is the original URL of the place you first posted about this on
+          another social media platform (i.e. Medium, Reddit, Twitter, etc.)
+        </span>
+      </div>
+    </div>
+  )
 }
 
 export default PostParamsSection

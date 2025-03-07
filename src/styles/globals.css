@@ -192,9 +192,14 @@ body {
 .BorderLessMdEditor {
   .editor-toolbar {
     border: none;
-    padding: 0.25rem;
-    padding-left: 0;
-    zoom: 1.1;
+    padding: 0;
+  }
+
+  .EasyMDEContainer .CodeMirror {
+    border: none;
+    font-size: 1rem;
+    padding: 0 !important;
+    margin-top: 0.5rem;
   }
 
   .CodeMirror {

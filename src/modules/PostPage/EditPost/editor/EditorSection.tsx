@@ -44,7 +44,7 @@ const EditorSection = ({
   ]
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex w-[65%] flex-col gap-4'>
       <div className='rounded-lg bg-white p-4'>
         <Input
           {...register('title')}
@@ -66,15 +66,15 @@ const EditorSection = ({
           withHashIntegration={false}
           hideBeforeHashLoaded
         />
-        <EditorCard
-          register={register}
-          isLoading={isLoading}
-          setValue={setValue}
-          control={control}
-          markdownMode={true}
-          setMarkdownMode={() => {}}
-        />
       </div>
+      <EditorCard
+        register={register}
+        isLoading={isLoading}
+        setValue={setValue}
+        control={control}
+        markdownMode={true}
+        setMarkdownMode={() => {}}
+      />
     </div>
   )
 }

@@ -1,4 +1,3 @@
-import FormButton from '@/components/FormButton'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useSearch from '@/hooks/useSearch'
@@ -12,7 +11,7 @@ import { z } from 'zod'
 import EditorSection from './editor/EditorSection'
 import PostParamsSection from './editor/PostParamsSection'
 
-const formSchema = z.object({
+export const formSchema = z.object({
   image: z.string(),
   title: z.string().nonempty('Name cannot be empty'),
   body: z.string(),
@@ -94,10 +93,19 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
           control={control}
           setValue={setValue}
         />
-        <PostParamsSection />
+        <PostParamsSection
+          formSchema={formSchema}
+          watch={watch}
+          errors={errors}
+          register={register}
+          setValue={setValue}
+          control={control}
+          isLoading={isLoading}
+          isUpdating={isUpdating}
+        />
       </div>
 
-      <div className='flex w-full gap-4'>
+      {/* <div className='flex w-full gap-4'>
         <span className='max-w-[25%] basis-[20%]'></span>
         <FormButton
           schema={formSchema}
@@ -109,7 +117,7 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
         >
           {actionText}
         </FormButton>
-      </div>
+      </div> */}
     </form>
   )
 }
