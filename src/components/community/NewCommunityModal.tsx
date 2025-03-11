@@ -38,6 +38,7 @@ const getModalConfigByStep = (isWidget: boolean, isUpdateChat: boolean) => ({
 export type NewCommunityModalProps = {
   chat?: PostData
   hubId?: string
+  spaceId?: string
   withBackButton?: boolean
   onBackClick?: () => void
   customOnClose?: () => void
@@ -46,6 +47,7 @@ export type NewCommunityModalProps = {
 
 const NewCommunityModal = ({
   hubId,
+  spaceId,
   withBackButton,
   chat,
   customOnClose,
@@ -76,8 +78,9 @@ const NewCommunityModal = ({
   const Content = chatContentByStep[defaultOpenState || 'new-comunity']
 
   const augmentedFormProps: UpsertChatFormProps = {
-    hubId,
     ...(chat ? { chat } : {}),
+    hubId,
+    spaceId,
     onSuccess: chat ? onSuccess : undefined,
   }
 

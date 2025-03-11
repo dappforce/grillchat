@@ -30,11 +30,7 @@ const ViewSpace = ({ spaceData, withTags = true }: Props) => {
 
   const { data: posts } = getPostsBySpaceIdQuery.useQuery(spaceData.id)
 
-  console.log(posts)
-
   const postsCount = posts?.length
-
-  console.log()
 
   return (
     <div className='flex flex-col gap-6 p-6'>

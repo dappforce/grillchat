@@ -1,28 +1,17 @@
-import Toast from '@/components/Toast'
 import { getPostQuery } from '@/services/api/query'
 import { commentIdsOptimisticEncoder } from '@/services/subsocial/commentIds/optimistic'
-import { useMessageData } from '@/stores/message'
 import { getMyMainAddress, useMyMainAddress } from '@/stores/my-account'
 import { useSubscriptionState } from '@/stores/subscription'
-import { cx } from '@/utils/class-names'
 import { QueryClient, useQueryClient } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useEffect, useRef } from 'react'
-import toast from 'react-hot-toast'
 import { getContentContainersQuery } from '../content-containers/query'
-import { getTokenomicsMetadataQuery } from '../content-staking/query'
 import {
   DataHubSubscriptionEventEnum,
   SubscribePostSubscription,
 } from '../generated-query'
 import { datahubSubscription, isDatahubAvailable } from '../utils'
-import { lastSentMessageStorage } from './mutation'
-import {
-  getPaginatedPostIdsByPostId,
-  getPostMetadataQuery,
-  getTimeLeftUntilCanPostQuery,
-  getUserPostedMemesForCountQuery,
-} from './query'
+import { getPaginatedPostIdsByPostId, getPostMetadataQuery } from './query'
 
 // Note: careful when using this in several places, if you have 2 places, the first one will be the one subscribing
 // the subscription will only be one, but if the first place is unmounted, it will unsubscribe, making all other places unsubscribed too
@@ -157,8 +146,6 @@ async function processMessage(
       ...dataFromEntityId,
       struct: {
         ...dataFromEntityId.struct,
-        approvedInRootPost: eventData.entity.approvedInRootPost,
-        approvedInRootPostAtTime: eventData.entity.approvedInRootPostAtTime,
         dataType: eventData.entity.dataType,
       },
     })
@@ -198,111 +185,6 @@ async function processMessage(
     )
     const contentContainer = contentContainers.data?.[0]
     return contentContainer ?? undefined
-  }
-
-  if (isCreationEvent) {
-    const tokenomics = await getTokenomicsMetadataQuery.fetchQuery(
-      queryClient,
-      null
-    )
-    if (isCreationEvent && newPost) {
-      if (newPost.struct.approvedInRootPost) {
-        if (isCurrentOwner) {
-          const contentContainer = await getContentContainer()
-          toast.custom((t) => (
-            <Toast
-              icon={(className) => (
-                <span className={cx(className, 'text-base')}>✨</span>
-              )}
-              t={t}
-              title='Meme Sent!'
-              description={`${contentContainer.createCommentPricePointsAmount} points have been used. More memes, more fun!`}
-            />
-          ))
-        }
-      } else {
-        // to not wait for another query to run the other synchronous actions below
-        processUnapprovedMeme()
-        async function processUnapprovedMeme() {
-          if (ownerId) {
-            const cached = getUserPostedMemesForCountQuery.getQueryData(
-              queryClient,
-              { address: ownerId, chatId: rootPostId ?? '' }
-            )
-            if (cached) {
-              getUserPostedMemesForCountQuery.setQueryData(
-                queryClient,
-                { address: ownerId, chatId: rootPostId ?? '' },
-                (old) => {
-                  if (!old) return old
-                  return [
-                    ...old,
-                    {
-                      id: entity.id,
-                      approvedInRootPost: entity.approvedInRootPost,
-                    },
-                  ]
-                }
-              )
-            } else if (isCurrentOwner) {
-              await getUserPostedMemesForCountQuery.fetchQuery(queryClient, {
-                address: ownerId,
-                chatId: rootPostId ?? '',
-              })
-            }
-          }
-          if (isCurrentOwner) {
-            lastSentMessageStorage.remove()
-
-            const postedMeme = getUserPostedMemesForCountQuery.getQueryData(
-              queryClient,
-              { address: myAddress, chatId: rootPostId ?? '' }
-            )
-            const sentMeme = postedMeme.length
-            if (sentMeme < 3) {
-              // reset timer because its unapproved meme
-              getTimeLeftUntilCanPostQuery.setQueryData(
-                queryClient,
-                myAddress,
-                { timeLeft: 0 }
-              )
-            }
-
-            if (sentMeme === 1 || sentMeme === 3) {
-              const contentContainer = await getContentContainer()
-              useMessageData.getState().setOpenMessageModal('on-review', {
-                contentContainer,
-                chatId: contentContainer.rootPost.id,
-              })
-            } else {
-              const contentContainer = await getContentContainer()
-              const cost = contentContainer.createCommentPricePointsAmount
-              const remaining = Math.max(
-                MIN_MEME_FOR_REVIEW - (sentMeme ?? 0),
-                0
-              )
-              const title = 'Under review'
-              const description =
-                remaining > 0
-                  ? `${cost} points have been used. We received your meme! We need at least ${remaining} more meme${
-                      remaining > 1 ? 's' : ''
-                    } from you to mark you as a verified creator.`
-                  : `${cost} points have been used. We received ${sentMeme} memes from you! Now we need a bit of time to finish review you as a verified creator.`
-              toast.custom((t) => (
-                <Toast
-                  t={t}
-                  icon={(className) => (
-                    <span className={cx(className, 'text-base')}>⏳</span>
-                  )}
-                  title={title}
-                  description={description}
-                />
-              ))
-            }
-          }
-        }
-      }
-    }
   }
 
   if (!rootPostId) return

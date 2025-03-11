@@ -111,8 +111,6 @@ const EditorCard = ({
     onChange(mdText)
   }
 
-  console.log('MdEditor')
-
   return (
     <div className='rounded-lg bg-white p-4'>
       <Controller

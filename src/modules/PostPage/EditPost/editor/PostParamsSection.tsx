@@ -40,8 +40,6 @@ const SelectSpaceSection = (props: PostParamsSectionProps) => {
     spaces?.[0] || null
   )
 
-  console.log(spaces)
-
   const actionText = isUpdating ? 'Save changes' : 'Create'
 
   useEffect(() => {
@@ -59,7 +57,6 @@ const SelectSpaceSection = (props: PostParamsSectionProps) => {
         ),
         onClick: () => {
           setSelectedSpace(space)
-          console.log('space', space)
         },
       }))
       .filter(isDef) || ([] as MenuListProps['menus'])

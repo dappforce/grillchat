@@ -15,6 +15,7 @@ import { isMobile } from 'react-device-detect'
 import { CiEdit } from 'react-icons/ci'
 import PostDropdownMenu from '../PostDropdownMenu'
 import { renderPostTitle } from '../ViewPost'
+import PostInfoPreview from './PostInfoPreview'
 
 type SpacePreviewProps = {
   postId: string
@@ -54,11 +55,6 @@ const PostPreview = ({
       <span className='text-[32px] font-medium leading-[1.25]'>
         {postTitle}
       </span>
-      {isMy && (
-        <div className='rounded-md border border-[#b7eb8f] bg-[#f6ffed] px-2 text-xs font-semibold leading-[20px] text-[#52c41a]'>
-          {isProfileSpace ? 'My Profile' : 'My Space'}
-        </div>
-      )}
     </div>
   )
 
@@ -124,6 +120,8 @@ const PostPreview = ({
     </div>
   )
 
+  if (!postData) return null
+
   const preview = (
     <div
       className={cx('w-full', {
@@ -135,6 +133,7 @@ const PostPreview = ({
           <div className={clsx('w-100 flex items-center gap-4')}>
             <div className={clsx('w-full flex-1')}>
               <div className='d-flex flex-column GapTiny'>
+                <PostInfoPreview post={postData} />
                 <div className={clsx('flex items-center justify-between')}>
                   {title}
                   <span className='ml-3 flex items-center gap-2'>

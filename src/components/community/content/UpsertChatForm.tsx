@@ -4,7 +4,6 @@ import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import TextArea from '@/components/inputs/TextArea'
 import { getDeterministicId } from '@/services/datahub/posts/mutation'
-import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useSendEvent } from '@/stores/analytics'
 import { useCreateChatModal } from '@/stores/create-chat-modal'
@@ -19,6 +18,7 @@ import { z } from 'zod'
 
 type InsertAdditionalProps = {
   hubId?: string
+  spaceId?: string
 }
 type UpdateAdditionalProps = {
   chat: PostData
@@ -40,7 +40,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export default function UpsertChatForm(props: UpsertChatFormProps) {
-  const { openModal, setNewChatId } = useCreateChatModal()
+  const { setNewChatId } = useCreateChatModal()
   const [isImageLoading, setIsImageLoading] = useState(false)
   const [isProcessingData, setIsProcessingData] = useState(false)
   const sendEvent = useSendEvent()
@@ -52,14 +52,13 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   const {
     chat,
     hubId,
+    spaceId,
     onSuccess,
     onTxSuccess,
     customModalStates,
     ...otherProps
   } = props as UpsertChatFormProps &
     Partial<InsertAdditionalProps & UpdateAdditionalProps>
-
-  const { data } = getSpaceQuery.useQuery(hubId || '')
 
   const myAddress = useMyMainAddress()
 
@@ -87,7 +86,8 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
   const { mutateAsync, isLoading: isMutating } = useUpsertPost({
     onSuccess: async (_, data) => {
       if (isUpdating || !myAddress || !('spaceId' in data)) return
-      // setSubscriptionState('post', 'always-sub')
+
+      setSubscriptionState('post', 'always-sub')
       setIsProcessingData(true)
       const chatId = await getDeterministicId({
         account: myAddress,
@@ -112,7 +112,7 @@ export default function UpsertChatForm(props: UpsertChatFormProps) {
       })
     } else {
       await mutateAsync({
-        spaceId: hubId ?? '0x6c414d3f64a4644423a25bd362d4623a',
+        spaceId: hubId ?? '',
         timestamp: Date.now(),
         uuid: crypto.randomUUID(),
         ...data,
