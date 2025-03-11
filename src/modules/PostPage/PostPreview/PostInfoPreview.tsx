@@ -22,6 +22,8 @@ const PostInfoPreview = ({ post }: PostInfoPreviewProps) => {
 
   const isProfileSpace = post.id === profileSpaceId
 
+  console.log(spaceId)
+
   if (!space) return null
 
   const { struct: spaceStruct, content: spaceContent } = space
