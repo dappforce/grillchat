@@ -1,9 +1,6 @@
-import Button from '@/components/Button'
 import { DfMd } from '@/components/DfMd'
 import SummarizeMd from '@/components/SummarizeMd'
-import ViewTags from '@/components/ViewTags'
 import { getPostQuery } from '@/services/api/query'
-import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { SummarizedContent } from '@subsocial/api/types'
@@ -11,9 +8,6 @@ import { nonEmptyStr } from '@subsocial/utils'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
-import { isMobile } from 'react-device-detect'
-import { CiEdit } from 'react-icons/ci'
-import PostDropdownMenu from '../PostDropdownMenu'
 import { renderPostTitle } from '../ViewPost'
 import PostInfoPreview from './PostInfoPreview'
 
@@ -37,22 +31,16 @@ const PostPreview = ({
   const { data: postData } = getPostQuery.useQuery(postId)
 
   const isMy = postData?.struct.ownerId === myAddress
-  const { data: ownerProfile } = getProfileQuery.useQuery(
-    postData?.struct.ownerId || ''
-  )
-  const profileId = ownerProfile?.profileSpace?.id
 
-  const isProfileSpace = postData?.id === profileId
+  const { content } = postData || {}
 
-  const { content, struct } = postData || {}
-
-  const { summary, tags } = content || {}
+  const { summary } = content || {}
 
   const postTitle = renderPostTitle(postData as any)
 
   const title = (
     <div className='flex items-center gap-2'>
-      <span className='text-[32px] font-medium leading-[1.25]'>
+      <span className='text-[26px] font-medium leading-[1.25]'>
         {postTitle}
       </span>
     </div>
@@ -64,7 +52,7 @@ const PostPreview = ({
     setCollapseAbout((prev) => !prev)
   }
 
-  const spaceAbout = (
+  const postSummary = (
     <div>
       {nonEmptyStr(summary) && (
         <div className='mt-3 block text-sm'>
@@ -90,33 +78,6 @@ const PostPreview = ({
           )}
         </div>
       )}
-
-      {withTags && <ViewTags tags={tags} className='mt-1' />}
-    </div>
-  )
-
-  const previewButtons = (size: 'xs' | 'md' = 'md') => (
-    <div className='flex items-center gap-2'>
-      {!isMobile && isMy && (
-        <Button
-          href={`/${postId}/edit`}
-          variant={'primaryOutline'}
-          size={size}
-          className='flex items-center gap-2'
-        >
-          <CiEdit /> Edit
-        </Button>
-      )}
-
-      <>
-        {isProfileSpace && isMy ? (
-          <>Chat button</>
-        ) : (
-          <Button variant={'primary'} size={size}>
-            Follow
-          </Button>
-        )}
-      </>
     </div>
   )
 
@@ -128,25 +89,13 @@ const PostPreview = ({
         ['rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]']: withWrapper,
       })}
     >
-      <div>
-        <div className='flex w-full flex-col'>
-          <div className={clsx('w-100 flex items-center gap-4')}>
-            <div className={clsx('w-full flex-1')}>
-              <div className='d-flex flex-column GapTiny'>
-                <PostInfoPreview post={postData} />
-                <div className={clsx('flex items-center justify-between')}>
-                  {title}
-                  <span className='ml-3 flex items-center gap-2'>
-                    <PostDropdownMenu postData={postData as any} />
-                    {!isMobile && previewButtons('md')}
-                  </span>
-                </div>
-                {isMobile && previewButtons('md')}
-              </div>
-              {!isMobile && spaceAbout}
-            </div>
+      <div className='flex w-full flex-col gap-2'>
+        <PostInfoPreview post={postData} />
+        <div className='flex flex-col gap-4'>
+          <div className={clsx('flex items-center justify-between')}>
+            {title}
           </div>
-          {isMobile && <div className='mt-1'>{spaceAbout}</div>}
+          {summary && postSummary}
         </div>
       </div>
     </div>
