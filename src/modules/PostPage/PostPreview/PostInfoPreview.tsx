@@ -61,7 +61,10 @@ const PostInfoPreview = ({ post }: PostInfoPreviewProps) => {
           </div>
         </div>
         <span className='ml-3 flex items-center gap-2'>
-          <PostDropdownMenu postData={post as any} />
+          <PostDropdownMenu
+            postData={post as any}
+            className='text-text-muted'
+          />
         </span>
       </div>
     </div>

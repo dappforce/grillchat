@@ -1,17 +1,20 @@
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { useMyMainAddress } from '@/stores/my-account'
+import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types/dto'
 import { isDef } from '@subsocial/utils'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 
 type SpaceDropdownMenuProps = {
   postData: PostData
+  className?: string
 }
 
 const PostDropdownMenu = (props: SpaceDropdownMenuProps) => {
   const {
     postData: { struct },
+    className,
   } = props
   const { id, ownerId } = struct
   const spaceKey = `space-${id.toString()}`
@@ -72,7 +75,10 @@ const PostDropdownMenu = (props: SpaceDropdownMenuProps) => {
           <div
             {...referenceProps}
             onClick={toggleDisplay}
-            className='flex cursor-pointer items-center gap-1 text-text-primary'
+            className={cx(
+              'flex cursor-pointer items-center gap-1 text-text-primary',
+              className
+            )}
           >
             <BsThreeDotsVertical />
           </div>

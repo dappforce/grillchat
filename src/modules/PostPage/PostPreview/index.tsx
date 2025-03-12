@@ -8,6 +8,7 @@ import { nonEmptyStr } from '@subsocial/utils'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
+import { ShareDropdown } from '../../../components/share/index'
 import { renderPostTitle } from '../ViewPost'
 import PostInfoPreview from './PostInfoPreview'
 
@@ -96,6 +97,13 @@ const PostPreview = ({
             {title}
           </div>
           {summary && postSummary}
+        </div>
+        <div className='flex w-full items-center justify-end gap-4'>
+          <ShareDropdown
+            postDetails={postData}
+            spaceId={postData.struct.spaceId || ''}
+            className='text-text-muted'
+          />
         </div>
       </div>
     </div>
