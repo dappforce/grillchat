@@ -7,14 +7,16 @@ import { FC } from 'react'
 import ViewPost from './ViewPost'
 
 type Props = {
-  spaceId: string
+  postId: string
 }
 
 const ViewPostPage: FC<Props> = (props) => {
-  const { spaceId } = props
+  const { postId } = props
   const myAddress = useMyMainAddress()
   const { search, setSearch, focusController } = useSearch()
-  const { data: postData } = getPostQuery.useQuery(spaceId)
+  const { data: postData } = getPostQuery.useQuery(postId)
+
+  console.log('hello', postData)
 
   return (
     <DefaultLayout

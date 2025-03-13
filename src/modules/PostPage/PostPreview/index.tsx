@@ -1,4 +1,6 @@
+import Button from '@/components/Button'
 import { DfMd } from '@/components/DfMd'
+import Drawer from '@/components/Drawer'
 import SummarizeMd from '@/components/SummarizeMd'
 import { getPostQuery } from '@/services/api/query'
 import { useMyMainAddress } from '@/stores/my-account'
@@ -8,6 +10,7 @@ import { nonEmptyStr } from '@subsocial/utils'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
+import ChatRoom from '../../../components/chats/ChatRoom/index'
 import { ShareDropdown } from '../../../components/share/index'
 import { renderPostTitle } from '../ViewPost'
 import PostInfoPreview from './PostInfoPreview'
@@ -30,6 +33,9 @@ const PostPreview = ({
   const myAddress = useMyMainAddress()
   const [collapseAbout, setCollapseAbout] = useState(true)
   const { data: postData } = getPostQuery.useQuery(postId)
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
+
+  console.log(postId)
 
   const isMy = postData?.struct.ownerId === myAddress
 
@@ -99,6 +105,18 @@ const PostPreview = ({
           {summary && postSummary}
         </div>
         <div className='flex w-full items-center justify-end gap-4'>
+          <Button
+            variant={'transparent'}
+            className='text-text-muted'
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              setIsCommentsOpen(true)
+            }}
+          >
+            Comments
+          </Button>
           <ShareDropdown
             postDetails={postData}
             spaceId={postData.struct.spaceId || ''}
@@ -109,12 +127,26 @@ const PostPreview = ({
     </div>
   )
 
-  return withWrapper ? (
-    <Link href={`/space/${postId}`} className='w-full'>
-      {preview}
-    </Link>
-  ) : (
-    preview
+  return (
+    <>
+      {withWrapper ? (
+        <Link
+          href={`/space/${postData.struct.spaceId}/${postId}`}
+          className='w-full'
+        >
+          {preview}
+        </Link>
+      ) : (
+        preview
+      )}
+      <Drawer isOpen={isCommentsOpen} setIsOpen={setIsCommentsOpen}>
+        <ChatRoom
+          chatId={postId}
+          hubId={postData.struct.spaceId || ''}
+          asContainer
+        />
+      </Drawer>
+    </>
   )
 }
 

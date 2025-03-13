@@ -1,10 +1,13 @@
 import Button from '@/components/Button'
-import NoData from '@/components/NoData'
-import { PostData } from '@subsocial/api/types/dto'
+import Drawer from '@/components/Drawer'
+import ChatRoom from '@/components/chats/ChatRoom'
+import { ShareDropdown } from '@/components/share'
+import { cx } from '@/utils/class-names'
+import { PostData } from '@subsocial/api/types'
 import { isEmptyStr } from '@subsocial/utils'
-import { IoMdAdd } from 'react-icons/io'
-import WritePostPreview from './EditPost/WritePostPreview'
-import PostPreview from './PostPreview'
+import { useState } from 'react'
+import SpacePreview from '../SpacePage/SpacePreview'
+import PostInfoPreview from './PostPreview/PostInfoPreview'
 
 type Props = {
   postData?: PostData
@@ -17,38 +20,63 @@ export const renderPostTitle = (post?: PostData | null) => {
   const spaceName = isEmptyStr(name) ? (
     <span className='text-text-muted'>{'Unnamed post'}</span>
   ) : (
-    name
+    <span className='text-[32px] font-medium leading-[1.25]'>{name}</span>
   )
 
   return spaceName
 }
 
-const ViewPost = ({ postData, withTags = true }: Props) => {
+const ViewPost = ({ postData }: Props) => {
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   if (!postData) return null
 
   return (
-    <div className='flex flex-col gap-6 p-6'>
-      <PostPreview
-        spaceId={postData.id}
-        withWrapper={false}
-        withStats={true}
-        withTags={withTags}
-        showFullAbout={true}
-      />
-      <WritePostPreview />
-      <NoData
-        message={'No posts yet'}
-        button={
-          <Button
-            variant='primary'
-            href={`/post/${postData.id}/posts/new`}
-            className='flex items-center gap-2'
-          >
-            <IoMdAdd /> Create post
-          </Button>
-        }
-      />
-    </div>
+    <>
+      <div className='flex flex-col gap-6 p-4'>
+        <PostInfoPreview post={postData} />
+
+        <div
+          className={cx(
+            'w-full rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]'
+          )}
+        >
+          <div className='flex w-full flex-col gap-2'>
+            <div className='flex items-center justify-between'>
+              {renderPostTitle(postData)}
+            </div>
+            <div className='text-sm'>{postData.content?.body}</div>
+          </div>
+          <div className='flex w-full items-center justify-end gap-4'>
+            <Button
+              variant={'transparent'}
+              className='text-text-muted'
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                setIsCommentsOpen(true)
+              }}
+            >
+              Comments
+            </Button>
+            <ShareDropdown
+              postDetails={postData}
+              spaceId={postData.struct.spaceId || ''}
+              className='text-text-muted'
+            />
+          </div>
+        </div>
+        <SpacePreview spaceId={postData.struct.spaceId || ''} withWrapper />
+      </div>
+
+      <Drawer isOpen={isCommentsOpen} setIsOpen={setIsCommentsOpen}>
+        <ChatRoom
+          chatId={postData.id}
+          hubId={postData.struct.spaceId || ''}
+          asContainer
+        />
+      </Drawer>
+    </>
   )
 }
 

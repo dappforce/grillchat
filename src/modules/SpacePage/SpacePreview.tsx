@@ -121,7 +121,7 @@ const SpacePreview = ({
     <div className='flex items-center gap-2'>
       {!isMobile && isMy && (
         <Button
-          href={`/${spaceId}/edit`}
+          href={`/space/${spaceId}/edit`}
           variant={'primaryOutline'}
           size={size}
           className='flex items-center gap-2'
