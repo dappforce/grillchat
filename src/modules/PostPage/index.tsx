@@ -2,7 +2,6 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useSearch from '@/hooks/useSearch'
 import { getPostQuery } from '@/services/api/query'
-import { useMyMainAddress } from '@/stores/my-account'
 import { FC } from 'react'
 import ViewPost from './ViewPost'
 
@@ -12,11 +11,8 @@ type Props = {
 
 const ViewPostPage: FC<Props> = (props) => {
   const { postId } = props
-  const myAddress = useMyMainAddress()
   const { search, setSearch, focusController } = useSearch()
   const { data: postData } = getPostQuery.useQuery(postId)
-
-  console.log('hello', postData)
 
   return (
     <DefaultLayout

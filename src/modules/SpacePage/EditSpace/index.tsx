@@ -7,9 +7,13 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useSearch from '@/hooks/useSearch'
 import { useUpsertSpace } from '@/services/datahub/spaces/mutation'
+import { getSpaceQuery } from '@/services/datahub/spaces/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getDeterministicId } from '@/utils/deterministic-id'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SpaceContent } from '@subsocial/api/types/dto'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -19,18 +23,21 @@ const formSchema = z.object({
   name: z.string().nonempty('Name cannot be empty'),
   about: z.string(),
   tags: z.array(z.string()),
-  email: z.string().email('Invalid email'),
+  email: z.union([z.literal(''), z.string().email('Invalid email')]),
 })
 type FormSchema = z.infer<typeof formSchema>
 
 type EditSpaceProps = {
-  spaceContent?: SpaceContent
+  spaceContent?: SpaceContent | null
   spaceId?: string
 }
 
 const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
   const [isImageLoading, setIsImageLoading] = useState(false)
   const [isProcessingData, setIsProcessingData] = useState(false)
+  const myAddress = useMyMainAddress()
+  const router = useRouter()
+
   const defaultValues = {
     image: spaceContent?.image ?? '',
     about: spaceContent?.about ?? '',
@@ -55,7 +62,22 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
     defaultValues,
   })
 
-  const { mutateAsync, isLoading: isMutating } = useUpsertSpace()
+  const { mutateAsync, isLoading: isMutating } = useUpsertSpace({
+    onSuccess: async (_, data: any) => {
+      if (!myAddress) return
+      setIsProcessingData(true)
+
+      const spaceId = await getDeterministicId({
+        account: myAddress,
+        timestamp: data.timestamp.toString(),
+        uuid: data.uuid,
+      })
+
+      if (spaceId) {
+        await router.push(`/space/${spaceId}`)
+      }
+    },
+  })
 
   const onSubmit: SubmitHandler<FormSchema> = async (data) => {
     if (spaceContent && spaceId) {
@@ -76,14 +98,14 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
     }
   }
 
-  const isLoading = /* isMutating ||  */ isProcessingData
+  const isLoading = isMutating || isProcessingData
 
   let loadingText = 'Saving...'
   if (!isUpdating) {
     if (!isProcessingData) {
       loadingText = 'Creating...'
     } else {
-      loadingText = 'Finalizing group chat...'
+      loadingText = 'Finalizing space...'
     }
   }
 
@@ -242,8 +264,14 @@ const UpsertSpaceForm = (props: EditSpaceProps) => {
   )
 }
 
-export const EditSpace = (props: EditSpaceProps) => {
-  return <UpsertSpaceForm {...props} />
+export const EditSpace = () => {
+  const router = useRouter()
+
+  const spaceId = (router.query.spaceId as string) || ''
+
+  const { data } = getSpaceQuery.useQuery(spaceId)
+
+  return <UpsertSpaceForm spaceId={spaceId} spaceContent={data?.content} />
 }
 
 export const NewSpace = () => {

@@ -221,7 +221,6 @@ export default function ChatForm({
     if (shouldSendMessage) {
       resetForm()
       const augmented = await augmentDatahubParams(messageParams)
-      console.log('sendMessageParams', augmented)
       sendMessage(augmented)
     } else {
       openLoginModal(true)

@@ -35,8 +35,6 @@ const PostPreview = ({
   const { data: postData } = getPostQuery.useQuery(postId)
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
 
-  console.log(postId)
-
   const isMy = postData?.struct.ownerId === myAddress
 
   const { content } = postData || {}
