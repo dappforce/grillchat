@@ -2,6 +2,7 @@ import AutofocusWrapper from '@/components/AutofocusWrapper'
 import FormButton from '@/components/FormButton'
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
+import { TagsInput } from '@/components/inputs/TagInput'
 import TextArea from '@/components/inputs/TextArea'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
@@ -171,14 +172,20 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
       </div>
       <div className='flex w-full gap-4'>
         <span className='max-w-[25%] basis-[25%]'>Tags:</span>
-        <TextArea
+        <TagsInput
+          placeholder={"Press 'Enter' or 'Tab' key to add tags"}
+          disabled={isLoading}
+          value={watch('tags')}
+          onChange={(tags) => setValue('tags', tags)}
+        />
+        {/* <TextArea
           {...register('tags')}
           disabled={isLoading}
           placeholder={`Press 'Enter' or 'Tab' key to add tags`}
           error={errors.tags?.message}
           rows={1}
           variant='fill-bg'
-        />
+        /> */}
       </div>
       <div className='flex w-full gap-4'>
         <span className='max-w-[25%] basis-[25%]'>Email:</span>
