@@ -24,7 +24,6 @@ import AuthErrorModal from './AuthErrorModal'
 
 const ProfileAvatar = dynamic(() => import('./ProfileAvatar'), {
   ssr: false,
-  loading: () => <div className='w-20' />,
 })
 const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), {
   ssr: false,
