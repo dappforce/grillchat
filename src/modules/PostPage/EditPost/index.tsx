@@ -2,9 +2,12 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useSearch from '@/hooks/useSearch'
 import { useUpsertPost } from '@/services/subsocial/posts/mutation'
+import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
+import { getDeterministicId } from '@/utils/deterministic-id'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PostContent } from '@subsocial/api/types/dto'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -16,6 +19,8 @@ export const formSchema = z.object({
   title: z.string().nonempty('Name cannot be empty'),
   body: z.string(),
   tags: z.array(z.string()),
+  originalUrl: z.string().optional(),
+  spaceId: z.string().optional(),
 })
 export type FormSchema = z.infer<typeof formSchema>
 
@@ -26,16 +31,18 @@ type EditPostFormProps = {
 
 const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
   const [isImageLoading, setIsImageLoading] = useState(false)
+  const myAddress = useMyMainAddress()
+  const router = useRouter()
   const [isProcessingData, setIsProcessingData] = useState(false)
   const defaultValues = {
     image: postContent?.image ?? '',
     body: postContent?.body ?? '',
     title: postContent?.title ?? '',
     tags: postContent?.tags ?? [],
+    originalUrl: postContent?.canonical ?? '',
   }
 
   const isUpdating = !!postContent
-  const actionText = isUpdating ? 'Save changes' : 'Create'
 
   const {
     register,
@@ -50,7 +57,22 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
     defaultValues,
   })
 
-  const { mutateAsync, isLoading: isMutating } = useUpsertPost()
+  const { mutateAsync, isLoading: isMutating } = useUpsertPost({
+    onSuccess: async (_, data: any) => {
+      if (!myAddress) return
+      setIsProcessingData(true)
+
+      const spaceId = await getDeterministicId({
+        account: myAddress,
+        timestamp: data.timestamp.toString(),
+        uuid: data.uuid,
+      })
+
+      if (spaceId) {
+        await router.push(`/space/${spaceId}`)
+      }
+    },
+  })
 
   const onSubmit: SubmitHandler<FormSchema> = async (data) => {
     if (postContent && postId) {
@@ -61,7 +83,7 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
     } else {
       await mutateAsync({
         // TODO: need to get the correct spaceId
-        spaceId: '',
+        spaceId: data.spaceId || '',
         timestamp: Date.now(),
         uuid: crypto.randomUUID(),
         ...data,
@@ -69,7 +91,7 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
     }
   }
 
-  const isLoading = /* isMutating ||  */ isProcessingData
+  const isLoading = isMutating || isProcessingData
 
   let loadingText = 'Saving...'
   if (!isUpdating) {
@@ -104,20 +126,6 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
           isUpdating={isUpdating}
         />
       </div>
-
-      {/* <div className='flex w-full gap-4'>
-        <span className='max-w-[25%] basis-[20%]'></span>
-        <FormButton
-          schema={formSchema}
-          watch={watch}
-          isLoading={isLoading}
-          disabled={isImageLoading}
-          loadingText={loadingText}
-          size='lg'
-        >
-          {actionText}
-        </FormButton>
-      </div> */}
     </form>
   )
 }

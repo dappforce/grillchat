@@ -56,6 +56,7 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
     watch,
   } = useForm<FormSchema>({
     mode: 'onChange',
@@ -175,17 +176,9 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
         <TagsInput
           placeholder={"Press 'Enter' or 'Tab' key to add tags"}
           disabled={isLoading}
-          value={watch('tags')}
+          value={getValues().tags}
           onChange={(tags) => setValue('tags', tags)}
         />
-        {/* <TextArea
-          {...register('tags')}
-          disabled={isLoading}
-          placeholder={`Press 'Enter' or 'Tab' key to add tags`}
-          error={errors.tags?.message}
-          rows={1}
-          variant='fill-bg'
-        /> */}
       </div>
       <div className='flex w-full gap-4'>
         <span className='max-w-[25%] basis-[25%]'>Email:</span>

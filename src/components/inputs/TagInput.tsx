@@ -84,7 +84,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
 
   useEffect(() => {
     onChange?.(tags)
-  }, [tags, onChange])
+  }, [tags.length])
 
   const placeholderText =
     maxTagsCount !== undefined && tags.length >= maxTagsCount ? '' : placeholder

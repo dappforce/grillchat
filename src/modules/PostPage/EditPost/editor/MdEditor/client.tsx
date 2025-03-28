@@ -1,13 +1,10 @@
 import { LocalStorage } from '@/utils/storage'
 import { nonEmptyStr } from '@subsocial/utils'
 import SimpleMDE from 'easymde'
-import dynamic from 'next/dynamic'
 import { useEffect } from 'react'
+import SimpleMDEReact from 'react-simplemde-editor'
 import sanitizeHtml from 'sanitize-html'
 import { AutoSaveId, MdEditorProps } from './types'
-const SimpleMDEReact = dynamic(() => import('react-simplemde-editor'), {
-  ssr: false,
-})
 
 const getStoreKey = (id: AutoSaveId) => `smde_${id}`
 
@@ -78,11 +75,21 @@ const MdEditor = ({
     ...otherOptions,
   } as SimpleMDE.Options
 
+  console.log('hello')
+
   useEffect(() => {
     if (autosave && nonEmptyStr(autosavedContent)) {
       // Need to trigger onChange event to notify a wrapping Ant D. form
       // that this editor received a value from local storage.
       onChange(autosavedContent)
+    }
+  }, [])
+
+  useEffect(() => {
+    const editors = document.querySelectorAll('.EasyMDEContainer')
+
+    if (editors.length > 1) {
+      editors[1].remove()
     }
   }, [])
 

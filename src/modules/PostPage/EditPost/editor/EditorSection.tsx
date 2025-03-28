@@ -1,12 +1,17 @@
 import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import { cx } from '@/utils/class-names'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { Control, Controller, UseFormSetValue } from 'react-hook-form'
 import { FormSchema } from '..'
 import Tabs from '../../../../components/Tabs'
 import { htmlToMd } from './HtmlEditor/tiptap'
-import MdEditor from './MdEditor/client'
+
+const MdEditor = dynamic(
+  () => import('./MdEditor/client').then((mod) => mod.default),
+  { ssr: false }
+)
 
 type EditorSectionProps = {
   register: any

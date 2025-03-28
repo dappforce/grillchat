@@ -3,6 +3,7 @@ import { MenuListProps } from '@/components/MenuList'
 import SpaceAvatar from '@/components/SpaceAvatar'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import Input from '@/components/inputs/Input'
+import { TagsInput } from '@/components/inputs/TagInput'
 import { getSpaceByOwnerQuery } from '@/services/datahub/spaces/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { SpaceData } from '@subsocial/api/types'
@@ -33,7 +34,7 @@ const PostParamsSection = (props: PostParamsSectionProps) => {
 }
 
 const SelectSpaceSection = (props: PostParamsSectionProps) => {
-  const { formSchema, watch, isUpdating, isLoading } = props
+  const { formSchema, watch, isUpdating, isLoading, setValue } = props
   const myAddress = useMyMainAddress()
   const { data: spaces } = getSpaceByOwnerQuery.useQuery(myAddress || '')
   const [selectedSpace, setSelectedSpace] = useState<SpaceData | null>(
@@ -44,6 +45,7 @@ const SelectSpaceSection = (props: PostParamsSectionProps) => {
 
   useEffect(() => {
     setSelectedSpace(spaces?.[0] || null)
+    setValue('spaceId', spaces?.[0]?.id || '')
   }, [spaces?.length])
 
   const menuItems =
@@ -52,11 +54,12 @@ const SelectSpaceSection = (props: PostParamsSectionProps) => {
         text: (
           <div className='flex items-center gap-3'>
             <SpaceAvatar space={space} className='h-[32px] w-[32px]' />
-            <span>{selectedSpace?.content?.name || 'Select space'}</span>
+            <span>{space?.content?.name || 'Select space'}</span>
           </div>
         ),
         onClick: () => {
           setSelectedSpace(space)
+          setValue('spaceId', space.id)
         },
       }))
       .filter(isDef) || ([] as MenuListProps['menus'])
@@ -107,31 +110,27 @@ const SelectSpaceSection = (props: PostParamsSectionProps) => {
 }
 
 const PostAdditionalFields = (props: PostParamsSectionProps) => {
-  const { register, isLoading, errors } = props
+  const { register, isLoading, errors, watch, setValue } = props
   return (
     <div className='flex h-fit flex-1 flex-col gap-4 rounded-lg bg-white p-4'>
       <div className='flex flex-col gap-2'>
         <span>Tags</span>
+        <TagsInput
+          placeholder={"Press 'Enter' or 'Tab' key to add tags"}
+          disabled={isLoading}
+          value={watch('tags')}
+          onChange={(tags) => setValue('tags', tags)}
+        />
+      </div>
+      <div className='flex flex-col gap-2'>
+        <span>Original URL</span>
         <Input
-          {...register('tags')}
+          {...register('originalUrl')}
           ref={(e) => {
             register('tags').ref(e)
           }}
           disabled={isLoading}
-          placeholder="Press 'Enter' or 'Tab' to add a tags"
-          error={errors.title?.message}
-          variant='outlined'
-        />
-      </div>
-      <div className='flex flex-col gap-2'>
-        <span>Tags</span>
-        <Input
-          {...register('orginalUrl')}
-          ref={(e) => {
-            register('orginalUrl').ref(e)
-          }}
-          disabled={isLoading}
-          placeholder='Url of the original post'
+          placeholder='URL of the original post'
           error={errors.title?.message}
           variant='outlined'
         />
