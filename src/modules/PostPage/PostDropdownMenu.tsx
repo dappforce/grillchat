@@ -41,7 +41,7 @@ const PostDropdownMenu = (props: SpaceDropdownMenuProps) => {
         : undefined,
       !isMySpace || isHidden
         ? undefined
-        : { text: 'Write post', href: `/${id}/posts/new` },
+        : { text: 'Write post', href: `/space/${id}/posts/new` },
       showMakeAsProfileButton ? { text: 'Make as profile' } : undefined,
       isMySpace && profileSpaceId === id
         ? { text: 'Unlink profile' }

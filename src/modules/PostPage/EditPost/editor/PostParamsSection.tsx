@@ -4,7 +4,10 @@ import SpaceAvatar from '@/components/SpaceAvatar'
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import Input from '@/components/inputs/Input'
 import { TagsInput } from '@/components/inputs/TagInput'
-import { getSpaceByOwnerQuery } from '@/services/datahub/spaces/query'
+import {
+  getSpaceByOwnerQuery,
+  getSpaceQuery,
+} from '@/services/datahub/spaces/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { SpaceData } from '@subsocial/api/types'
 import { isDef } from '@subsocial/utils'
@@ -22,6 +25,7 @@ type PostParamsSectionProps = {
   control: Control<FormSchema>
   isLoading: boolean
   isUpdating: boolean
+  spaceId: string
   errors: any
 }
 const PostParamsSection = (props: PostParamsSectionProps) => {
@@ -34,14 +38,21 @@ const PostParamsSection = (props: PostParamsSectionProps) => {
 }
 
 const SelectSpaceSection = (props: PostParamsSectionProps) => {
-  const { formSchema, watch, isUpdating, isLoading, setValue } = props
+  const { formSchema, watch, isUpdating, isLoading, setValue, spaceId } = props
   const myAddress = useMyMainAddress()
+  const { data: defaultSpace } = getSpaceQuery.useQuery(spaceId || '')
   const { data: spaces } = getSpaceByOwnerQuery.useQuery(myAddress || '')
   const [selectedSpace, setSelectedSpace] = useState<SpaceData | null>(
     spaces?.[0] || null
   )
 
   const actionText = isUpdating ? 'Save changes' : 'Create'
+
+  useEffect(() => {
+    if (spaceId && defaultSpace) {
+      setSelectedSpace(defaultSpace)
+    }
+  }, [spaceId, defaultSpace])
 
   useEffect(() => {
     setSelectedSpace(spaces?.[0] || null)

@@ -1,3 +1,3 @@
-import { NewPost } from '@/modules/PostPage/EditPost'
+import { NewPostWithSpace } from '@/modules/PostPage/EditPost'
 
-export default NewPost
+export default NewPostWithSpace

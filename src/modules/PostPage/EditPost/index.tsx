@@ -27,9 +27,14 @@ export type FormSchema = z.infer<typeof formSchema>
 type EditPostFormProps = {
   postContent: PostContent
   postId: string
+  spaceId: string
 }
 
-const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
+const InnerEditPostForm = ({
+  postContent,
+  postId,
+  spaceId,
+}: EditPostFormProps) => {
   const [isImageLoading, setIsImageLoading] = useState(false)
   const myAddress = useMyMainAddress()
   const router = useRouter()
@@ -40,6 +45,7 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
     title: postContent?.title ?? '',
     tags: postContent?.tags ?? [],
     originalUrl: postContent?.canonical ?? '',
+    spaceId: spaceId || '',
   }
 
   const isUpdating = !!postContent
@@ -51,25 +57,28 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
     formState: { errors },
     setValue,
     watch,
+    getValues,
   } = useForm<FormSchema>({
     mode: 'onChange',
     resolver: zodResolver(formSchema),
     defaultValues,
   })
 
+  console.log(watch('spaceId'))
+
   const { mutateAsync, isLoading: isMutating } = useUpsertPost({
     onSuccess: async (_, data: any) => {
       if (!myAddress) return
       setIsProcessingData(true)
 
-      const spaceId = await getDeterministicId({
+      const postId = await getDeterministicId({
         account: myAddress,
         timestamp: data.timestamp.toString(),
         uuid: data.uuid,
       })
 
-      if (spaceId) {
-        await router.push(`/space/${spaceId}`)
+      if (postId) {
+        await router.push(`/space/${getValues()['spaceId']}/${postId}`)
       }
     },
   })
@@ -82,7 +91,6 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
       })
     } else {
       await mutateAsync({
-        // TODO: need to get the correct spaceId
         spaceId: data.spaceId || '',
         timestamp: Date.now(),
         uuid: crypto.randomUUID(),
@@ -92,15 +100,6 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
   }
 
   const isLoading = isMutating || isProcessingData
-
-  let loadingText = 'Saving...'
-  if (!isUpdating) {
-    if (!isProcessingData) {
-      loadingText = 'Creating...'
-    } else {
-      loadingText = 'Finalizing...'
-    }
-  }
 
   return (
     <form
@@ -118,6 +117,7 @@ const InnerEditPostForm = ({ postContent, postId }: EditPostFormProps) => {
         <PostParamsSection
           formSchema={formSchema}
           watch={watch}
+          spaceId={spaceId}
           errors={errors}
           register={register}
           setValue={setValue}
@@ -179,3 +179,11 @@ export const EditPost = (props: EditPostFormProps) => {
 }
 
 export const NewPost = EditPostForm
+
+export const NewPostWithSpace = (props: EditPostFormProps) => {
+  const router = useRouter()
+
+  const spaceId = router.query.spaceId as string
+
+  return <EditPostForm {...props} spaceId={spaceId} />
+}
