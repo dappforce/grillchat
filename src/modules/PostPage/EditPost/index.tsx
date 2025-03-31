@@ -16,8 +16,8 @@ import PostParamsSection from './editor/PostParamsSection'
 
 export const formSchema = z.object({
   image: z.string(),
-  title: z.string().nonempty('Name cannot be empty'),
-  body: z.string(),
+  title: z.string(),
+  body: z.string().nonempty('Name cannot be empty'),
   tags: z.array(z.string()),
   originalUrl: z.string().optional(),
   spaceId: z.string().optional(),
@@ -35,7 +35,6 @@ const InnerEditPostForm = ({
   postId,
   spaceId,
 }: EditPostFormProps) => {
-  const [isImageLoading, setIsImageLoading] = useState(false)
   const myAddress = useMyMainAddress()
   const router = useRouter()
   const [isProcessingData, setIsProcessingData] = useState(false)
@@ -63,8 +62,6 @@ const InnerEditPostForm = ({
     resolver: zodResolver(formSchema),
     defaultValues,
   })
-
-  console.log(watch('spaceId'))
 
   const { mutateAsync, isLoading: isMutating } = useUpsertPost({
     onSuccess: async (_, data: any) => {
