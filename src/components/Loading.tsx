@@ -3,9 +3,14 @@ import { ComponentProps } from 'react'
 
 export type LoadingProps = ComponentProps<'div'> & {
   spinnerClassName?: string
+  textClassName?: string
 }
 
-export default function Loading({ spinnerClassName, ...props }: LoadingProps) {
+export default function Loading({
+  spinnerClassName,
+  textClassName,
+  ...props
+}: LoadingProps) {
   return (
     <div
       {...props}
@@ -22,7 +27,9 @@ export default function Loading({ spinnerClassName, ...props }: LoadingProps) {
           )}
         />
       </div>
-      <span className='text-sm text-text-muted'>Loading...</span>
+      <span className={cx('text-sm text-text-muted', textClassName)}>
+        Loading...
+      </span>
     </div>
   )
 }

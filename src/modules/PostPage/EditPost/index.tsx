@@ -1,6 +1,8 @@
+import Loading from '@/components/Loading'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useSearch from '@/hooks/useSearch'
+import { getPostQuery } from '@/services/api/query'
 import { useUpsertPost } from '@/services/subsocial/posts/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
@@ -38,6 +40,7 @@ const InnerEditPostForm = ({
   const myAddress = useMyMainAddress()
   const router = useRouter()
   const [isProcessingData, setIsProcessingData] = useState(false)
+
   const defaultValues = {
     image: postContent?.image ?? '',
     body: postContent?.body ?? '',
@@ -46,6 +49,8 @@ const InnerEditPostForm = ({
     originalUrl: postContent?.canonical ?? '',
     spaceId: spaceId || '',
   }
+
+  console.log(defaultValues)
 
   const isUpdating = !!postContent
 
@@ -172,7 +177,36 @@ const EditPostForm = (props: EditPostFormProps) => {
 }
 
 export const EditPost = (props: EditPostFormProps) => {
-  return <EditPostForm {...props} />
+  const router = useRouter()
+  const myAddress = useMyMainAddress()
+  const postId = router.query.slug as string
+  const spaceId = router.query.spaceId as string
+  const { data: post } = getPostQuery.useQuery(postId, {
+    showHiddenPost: {
+      type: 'owner',
+      owner: myAddress || '',
+    },
+  })
+
+  const { content } = post || {}
+
+  console.log(content)
+
+  if (!post)
+    return (
+      <Loading
+        className='absolute bottom-0 left-0 right-0 top-0 m-auto'
+        textClassName='text-xl'
+      />
+    )
+
+  return (
+    <EditPostForm
+      postContent={content || props.postContent}
+      spaceId={spaceId}
+      postId={postId}
+    />
+  )
 }
 
 export const NewPost = EditPostForm

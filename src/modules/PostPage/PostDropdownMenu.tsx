@@ -1,9 +1,11 @@
 import FloatingMenus from '@/components/floating/FloatingMenus'
-import { getProfileQuery } from '@/services/datahub/profiles/query'
+import { getPostQuery } from '@/services/api/query'
+import { useHideUnhidePost } from '@/services/subsocial/posts/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { PostData } from '@subsocial/api/types/dto'
 import { isDef } from '@subsocial/utils'
+import { useQueryClient } from '@tanstack/react-query'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 
 type SpaceDropdownMenuProps = {
@@ -17,44 +19,39 @@ const PostDropdownMenu = (props: SpaceDropdownMenuProps) => {
     className,
   } = props
   const { id, ownerId } = struct
-  const spaceKey = `space-${id.toString()}`
   const address = useMyMainAddress()
-  const isMySpace = struct.ownerId === address
-  const { data: profileData } = getProfileQuery.useQuery(address || '')
-
-  const { profileSpace } = profileData || {}
-
-  const profileSpaceId = profileSpace?.id
+  const client = useQueryClient()
+  const isMyPost = struct.ownerId === address
+  const { mutateAsync } = useHideUnhidePost({
+    onSuccess: () => {
+      getPostQuery.fetchQuery(client, id)
+    },
+  })
 
   const isHidden = struct.hidden
 
-  const showMakeAsProfileButton =
-    isMySpace && (!profileSpaceId || profileSpaceId !== id)
-
   const getMenuItems = () => {
     return [
-      isMySpace
+      isMyPost
         ? {
-            text: 'Edit space',
-            href: `space/${id}/edit`,
+            text: 'Edit post',
+            href: `/space/${struct.spaceId}/${id}/edit`,
           }
         : undefined,
-      !isMySpace || isHidden
-        ? undefined
-        : { text: 'Write post', href: `/space/${id}/posts/new` },
-      showMakeAsProfileButton ? { text: 'Make as profile' } : undefined,
-      isMySpace && profileSpaceId === id
-        ? { text: 'Unlink profile' }
+      isMyPost
+        ? {
+            text: isHidden ? 'Unhide post' : 'Hide post',
+            onClick: async (e: any) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              await mutateAsync({
+                postId: id,
+                action: isHidden ? 'unhide' : 'hide',
+              })
+            },
+          }
         : undefined,
-      isMySpace
-        ? { text: isHidden ? 'Hide space' : 'Unhide space' }
-        : undefined,
-      {
-        text: `Copy space id`,
-        onClick: () => {
-          navigator.clipboard.writeText(id)
-        },
-      },
       {
         text: 'Copy owner address',
         onClick: () => navigator.clipboard.writeText(ownerId),
@@ -74,7 +71,12 @@ const PostDropdownMenu = (props: SpaceDropdownMenuProps) => {
         return (
           <div
             {...referenceProps}
-            onClick={toggleDisplay}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              toggleDisplay?.()
+            }}
             className={cx(
               'flex cursor-pointer items-center gap-1 text-text-primary',
               className

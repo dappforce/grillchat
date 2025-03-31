@@ -3166,6 +3166,7 @@ export type DatahubPostFragmentFragment = {
   updatedAtTime?: any | null
   title?: string | null
   body?: string | null
+  hidden?: boolean
   approvedInRootPost: boolean
   approvedInRootPostAtTime?: any | null
   createdByAccount: { __typename?: 'Account'; id: string }

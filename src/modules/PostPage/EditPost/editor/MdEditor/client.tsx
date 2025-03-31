@@ -75,8 +75,6 @@ const MdEditor = ({
     ...otherOptions,
   } as SimpleMDE.Options
 
-  console.log('hello')
-
   useEffect(() => {
     if (autosave && nonEmptyStr(autosavedContent)) {
       // Need to trigger onChange event to notify a wrapping Ant D. form

@@ -33,7 +33,7 @@ const SpaceDropdownMenu = (props: SpaceDropdownMenuProps) => {
       isMySpace
         ? {
             text: 'Edit space',
-            href: `space/${id}/edit`,
+            href: `/space/${id}/edit`,
           }
         : undefined,
       !isMySpace || isHidden
@@ -71,7 +71,12 @@ const SpaceDropdownMenu = (props: SpaceDropdownMenuProps) => {
         return (
           <div
             {...referenceProps}
-            onClick={toggleDisplay}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              toggleDisplay?.()
+            }}
             className='flex cursor-pointer items-center gap-1 text-text-primary'
           >
             <BsThreeDotsVertical />

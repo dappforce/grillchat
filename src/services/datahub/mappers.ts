@@ -40,7 +40,7 @@ export const mapDatahubPostFragment = (
     createdByAccount: post.createdByAccount?.id ?? '',
     downvotesCount: 0,
     dataType: 'offChain',
-    hidden: false,
+    hidden: post.hidden ?? false,
     id: post.id,
     isComment: true,
     isRegularPost: true,

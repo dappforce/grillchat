@@ -46,6 +46,7 @@ type Menu = {
   iconClassName?: string
   icon?: React.ComponentType<{ className?: string }>
   onClick?: (e: SyntheticEvent) => void
+  openNewPage?: boolean
   href?: string
   disabled?: boolean
   className?: string
@@ -65,6 +66,7 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             onClick,
             text,
             href,
+            openNewPage = false,
             iconClassName,
             className,
             disabled,
@@ -74,7 +76,7 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
           <Button
             key={idx}
             href={href}
-            target='_blank'
+            target={openNewPage ? '_blank' : undefined}
             rel='noopener noreferrer'
             variant='transparent'
             size='noPadding'
@@ -82,7 +84,9 @@ export default function MenuList({ menus, size, ...props }: MenuListProps) {
             interactive='none'
             className={cx(menuListItemStyles({ size }), 'text-left', className)}
             disabledStyle='subtle'
-            onClick={onClick}
+            onClick={(e) => {
+              onClick?.(e)
+            }}
           >
             {Icon && (
               <Icon

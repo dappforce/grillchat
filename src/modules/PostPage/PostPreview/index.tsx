@@ -3,13 +3,16 @@ import { DfMd } from '@/components/DfMd'
 import Drawer from '@/components/Drawer'
 import SummarizeMd from '@/components/SummarizeMd'
 import { getPostQuery } from '@/services/api/query'
+import { useHideUnhidePost } from '@/services/subsocial/posts/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { SummarizedContent } from '@subsocial/api/types'
 import { nonEmptyStr } from '@subsocial/utils'
+import { useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
+import { IoMdAlert } from 'react-icons/io'
 import ChatRoom from '../../../components/chats/ChatRoom/index'
 import { ShareDropdown } from '../../../components/share/index'
 import { renderPostTitle } from '../ViewPost'
@@ -25,21 +28,32 @@ type SpacePreviewProps = {
 
 const PostPreview = ({
   postId,
-  withTags = true,
-  withStats = true,
   showFullAbout = false,
   withWrapper = true,
 }: SpacePreviewProps) => {
   const myAddress = useMyMainAddress()
   const [collapseAbout, setCollapseAbout] = useState(true)
-  const { data: postData } = getPostQuery.useQuery(postId)
+  const client = useQueryClient()
+  const { data: postData } = getPostQuery.useQuery(postId, {
+    showHiddenPost: {
+      type: 'owner',
+      owner: myAddress || '',
+    },
+  })
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
+  const { mutateAsync } = useHideUnhidePost({
+    onSuccess: () => {
+      getPostQuery.fetchQuery(client, postId)
+    },
+  })
 
   const isMy = postData?.struct.ownerId === myAddress
 
-  const { content } = postData || {}
+  const { content, struct } = postData || {}
 
   const { summary } = content || {}
+
+  const isHidden = struct?.hidden
 
   const postTitle = renderPostTitle(postData as any)
 
@@ -90,36 +104,65 @@ const PostPreview = ({
 
   const preview = (
     <div
-      className={cx('w-full', {
-        ['rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]']: withWrapper,
+      className={cx('flex w-full flex-col gap-4 overflow-hidden', {
+        ['rounded-[20px] bg-white shadow-[0_0_20px_#e2e8f0]']: withWrapper,
       })}
     >
-      <div className='flex w-full flex-col gap-2'>
-        <PostInfoPreview post={postData} />
-        <div className='flex flex-col gap-4'>
-          <div className={clsx('flex items-center justify-between')}>
-            {title}
+      {isHidden && isMy && (
+        <div className='flex items-center justify-between gap-2 bg-[#fffbe6] px-4 py-2'>
+          <div className='flex items-center gap-2'>
+            <IoMdAlert size={20} color='#faad14' />
+            <span>This post is unlisted and only you can see it</span>
           </div>
-          {summary && postSummary}
-        </div>
-        <div className='flex w-full items-center justify-end gap-4'>
           <Button
-            variant={'transparent'}
-            className='text-text-muted'
-            onClick={(e) => {
+            variant='primaryOutline'
+            onClick={async (e) => {
               e.preventDefault()
               e.stopPropagation()
 
-              setIsCommentsOpen(true)
+              await mutateAsync({
+                postId,
+                action: 'unhide',
+              })
             }}
+            size='sm'
           >
-            Comments
+            Make visible
           </Button>
-          <ShareDropdown
-            postDetails={postData}
-            spaceId={postData.struct.spaceId || ''}
-            className='text-text-muted'
-          />
+        </div>
+      )}
+      <div
+        className={cx('w-full', {
+          ['p-5']: withWrapper,
+        })}
+      >
+        <div className='flex w-full flex-col gap-2'>
+          <PostInfoPreview post={postData} />
+          <div className='flex flex-col gap-4'>
+            <div className={clsx('flex items-center justify-between')}>
+              {title}
+            </div>
+            {summary && postSummary}
+          </div>
+          <div className='flex w-full items-center justify-end gap-4'>
+            <Button
+              variant={'transparent'}
+              className='text-text-muted'
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                setIsCommentsOpen(true)
+              }}
+            >
+              Comments
+            </Button>
+            <ShareDropdown
+              postDetails={postData}
+              spaceId={postData.struct.spaceId || ''}
+              className='text-text-muted'
+            />
+          </div>
         </div>
       </div>
     </div>

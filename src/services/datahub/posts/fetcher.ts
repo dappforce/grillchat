@@ -22,6 +22,7 @@ export const DATAHUB_POST_FRAGMENT = gql`
     }
     title
     body
+    hidden
     approvedInRootPost
     approvedInRootPostAtTime
     ownedByAccount {
