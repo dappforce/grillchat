@@ -127,7 +127,7 @@ export default function FloatingWrapper({
             {...getFloatingProps()}
             appear
             show={open}
-            className='z-30 transition-opacity'
+            className='z-40 transition-opacity'
             enter='ease-out duration-150'
             enterFrom='opacity-0'
             enterTo='opacity-100'

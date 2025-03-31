@@ -30,6 +30,7 @@ export type ImageInputProps = ComponentProps<'input'> & {
   dropzoneClassName?: string
   innerLabel?: React.ReactNode
   withIpfsPrefix?: boolean
+  withPreview?: boolean
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -42,6 +43,7 @@ export default function ImageInput({
   innerLabel,
   error,
   disabled,
+  withPreview = true,
   setIsLoading,
   ...props
 }: ImageInputProps) {
@@ -68,6 +70,7 @@ export default function ImageInput({
       return
     }
     saveImage(resizedImage)
+    setImageUrl(URL.createObjectURL(image))
   }
 
   const shownImage =
@@ -110,11 +113,13 @@ export default function ImageInput({
           {errorMsg || error || '😥 Sorry, we cannot upload your image.'}
         </InfoPanel>
       )}
-      {shownImage && (
+      {shownImage && withPreview && (
         <div className='absolute inset-0 h-20 w-20 md:h-24 md:w-24'>
           <MediaLoader
-            containerClassName='h-full w-full rounded-full overflow-hidden'
-            className='h-full w-full object-cover'
+            containerClassName={cx(
+              'h-full w-full rounded-full overflow-hidden'
+            )}
+            className={cx('h-full w-full object-cover', {})}
             src={shownImage}
             onLoad={() => {
               if (shownImage) setImageUrl(shownImage)

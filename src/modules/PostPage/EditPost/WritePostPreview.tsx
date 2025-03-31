@@ -25,7 +25,7 @@ const WritePostPreview = () => {
         <div className='w-full rounded-[60px] bg-[#f8fafc] px-4 py-2 text-text-muted'>
           Write something...
         </div>
-        <Button variant={'primary'} disabled size={'md'}>
+        <Button variant={'primary'} size={'md'}>
           Post
         </Button>
       </div>

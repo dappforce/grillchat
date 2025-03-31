@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import NoData from '@/components/NoData'
 import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { SpaceData } from '@subsocial/api/types'
 import { isEmptyStr } from '@subsocial/utils'
 import { IoMdAdd } from 'react-icons/io'
@@ -26,7 +27,9 @@ export const renderSpaceName = (space: SpaceData) => {
 }
 
 const ViewSpace = ({ spaceData, withTags = true }: Props) => {
+  const myAddress = useMyMainAddress()
   if (!spaceData) return null
+  const isMySpace = spaceData.struct.ownerId === myAddress
 
   const { data: posts } = getPostsBySpaceIdQuery.useQuery(spaceData.id)
 
@@ -41,7 +44,7 @@ const ViewSpace = ({ spaceData, withTags = true }: Props) => {
         withTags={withTags}
         showFullAbout={true}
       />
-      <WritePostPreview />
+      {isMySpace && <WritePostPreview />}
       {!postsCount ? (
         <NoData
           message={'No posts yet'}
