@@ -6,9 +6,10 @@ import SpacesList from './SpacesList'
 
 type Props = {
   spaceIds: string[]
+  address: string
 }
 
-const SpacesPage: FC<Props> = ({ spaceIds }) => {
+const SpacesPage: FC<Props> = ({ spaceIds, address }) => {
   const { search, setSearch, focusController } = useSearch()
 
   return (
@@ -44,7 +45,7 @@ const SpacesPage: FC<Props> = ({ spaceIds }) => {
       }}
     >
       <div className='flex w-full flex-1 flex-col lg:pr-3'>
-        <SpacesList spaceIds={spaceIds} />
+        <SpacesList spaceIds={spaceIds} address={address} />
       </div>
     </DefaultLayout>
   )

@@ -37,6 +37,7 @@ export const getStaticProps = getCommonStaticProps<AppCommonProps>(
       props: {
         dehydratedState: dehydrate(queryClient),
         spaceIds,
+        address,
       },
       revalidate: 2,
     }

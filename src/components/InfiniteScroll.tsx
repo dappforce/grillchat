@@ -1,32 +1,12 @@
-import Button from '@/components/Button'
-import Loading from '@/components/Loading'
-import useLoadMoreIfNoScroll from '@/components/chats/ChatList/hooks/useLoadMoreIfNoScroll'
-import usePaginatedSpaceIds from '@/components/chats/hooks/useGetPaginatedSpaces'
-import { SPACE_PER_PAGE, getSpaceQuery } from '@/services/datahub/spaces/query'
+import SpacePreview from '@/modules/SpacePage/SpacePreview'
+import { getSpaceQuery, SPACE_PER_PAGE } from '@/services/datahub/spaces/query'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { Fragment, useEffect, useId, useMemo, useRef, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import SpacePreview from '../SpacePage/SpacePreview'
-
-type SpacesListProps = {
-  spaceIds: string[]
-  address: string
-}
-
-const SpacesList = ({ spaceIds, address }: SpacesListProps) => (
-  <div className='flex flex-col gap-3 px-4 pt-6'>
-    <div className='flex items-center justify-between gap-4 border-b border-[#d1d1d1] pb-3'>
-      <span className='mb-0 text-2xl font-medium'>My spaces</span>
-      <Button variant={'primaryOutline'} href={'/space/new'} size={'md'}>
-        Create space
-      </Button>
-    </div>
-    <div className='flex w-full flex-1 flex-col gap-4'>
-      <SpacesInfiniteScroll address={address} />
-    </div>
-  </div>
-)
+import useLoadMoreIfNoScroll from './chats/ChatList/hooks/useLoadMoreIfNoScroll'
+import usePaginatedSpaceIds from './chats/hooks/useGetPaginatedSpaces'
+import Loading from './Loading'
 
 type CustomInfiniteScrollProps = {
   address: string
@@ -35,7 +15,7 @@ type CustomInfiniteScrollProps = {
 
 const SCROLL_THRESHOLD = 20
 
-const SpacesInfiniteScroll = ({
+const CustomInfiniteScroll = ({
   address,
   scrollContainerRef: _scrollContainerRef,
 }: CustomInfiniteScrollProps) => {
@@ -122,4 +102,4 @@ const SpacesInfiniteScroll = ({
   )
 }
 
-export default SpacesList
+export default CustomInfiniteScroll
