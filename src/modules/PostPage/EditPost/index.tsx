@@ -50,8 +50,6 @@ const InnerEditPostForm = ({
     spaceId: spaceId || '',
   }
 
-  console.log(defaultValues)
-
   const isUpdating = !!postContent
 
   const {
@@ -189,8 +187,6 @@ export const EditPost = (props: EditPostFormProps) => {
   })
 
   const { content } = post || {}
-
-  console.log(content)
 
   if (!post)
     return (

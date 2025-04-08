@@ -44,7 +44,7 @@ const ViewSpace = ({ spaceData, withTags = true }: Props) => {
         withTags={withTags}
         showFullAbout={true}
       />
-      {isMySpace && <WritePostPreview />}
+      {isMySpace && <WritePostPreview spaceId={spaceData.id} />}
       {!postsCount ? (
         <NoData
           message={'No posts yet'}

@@ -24,7 +24,6 @@ export default function Sidebar() {
         <SidebarItem
           icon={BiChat}
           title='My Spaces'
-          forceHardNavigation
           href={`/accounts/${myAddress}/spaces`}
         />
         <SidebarItem icon={BiChat} title='Chat' href='/' />

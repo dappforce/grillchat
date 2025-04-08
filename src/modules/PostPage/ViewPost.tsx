@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import Drawer from '@/components/Drawer'
+import MdRendererRaw from '@/components/MdRenderer'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { ShareDropdown } from '@/components/share'
 import { cx } from '@/utils/class-names'
@@ -17,9 +18,7 @@ type Props = {
 
 export const renderPostTitle = (post?: PostData | null) => {
   const name = post?.content?.title
-  const spaceName = isEmptyStr(name) ? (
-    <span className='text-text-muted'>{'Unnamed post'}</span>
-  ) : (
+  const spaceName = isEmptyStr(name) ? null : (
     <span className='text-[32px] font-medium leading-[1.25]'>{name}</span>
   )
 
@@ -44,7 +43,9 @@ const ViewPost = ({ postData }: Props) => {
             <div className='flex items-center justify-between'>
               {renderPostTitle(postData)}
             </div>
-            <div className='text-sm'>{postData.content?.body}</div>
+            {postData.content?.body && (
+              <MdRendererRaw source={postData.content.body} />
+            )}
           </div>
           <div className='flex w-full items-center justify-end gap-4'>
             <Button

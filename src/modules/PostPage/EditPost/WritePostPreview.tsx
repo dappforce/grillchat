@@ -5,7 +5,11 @@ import { cx } from '@/utils/class-names'
 import { useState } from 'react'
 import NewPostModal from './editor/NewPostModal'
 
-const WritePostPreview = () => {
+type WritePostPreviewProps = {
+  spaceId?: string
+}
+
+const WritePostPreview = ({ spaceId }: WritePostPreviewProps) => {
   const myAddress = useMyMainAddress()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -29,7 +33,11 @@ const WritePostPreview = () => {
           Post
         </Button>
       </div>
-      <NewPostModal isOpen={isOpen} closeModal={() => setIsOpen(false)} />
+      <NewPostModal
+        isOpen={isOpen}
+        spaceId={spaceId}
+        closeModal={() => setIsOpen(false)}
+      />
     </>
   )
 }

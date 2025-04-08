@@ -87,7 +87,10 @@ const SpacePreview = ({
             <>
               <DfMd source={about} className='text-sm' />
               {!showFullAbout && (
-                <div className='mt-2 font-semibold' onClick={onToggleShow}>
+                <div
+                  className='mt-2 font-semibold hover:text-text-primary'
+                  onClick={onToggleShow}
+                >
                   Show Less
                 </div>
               )}
@@ -97,7 +100,10 @@ const SpacePreview = ({
               content={content as SummarizedContent}
               className='text-sm'
               more={
-                <span className='text-sm font-semibold' onClick={onToggleShow}>
+                <span
+                  className='hover:text-text-primary! text-sm font-semibold'
+                  onClick={onToggleShow}
+                >
                   Show More
                 </span>
               }

@@ -1,6 +1,6 @@
 import Button from '@/components/Button'
-import { DfMd } from '@/components/DfMd'
 import Drawer from '@/components/Drawer'
+import MdRendererRaw from '@/components/MdRenderer'
 import SummarizeMd from '@/components/SummarizeMd'
 import { getPostQuery } from '@/services/api/query'
 import { useHideUnhidePost } from '@/services/subsocial/posts/mutation'
@@ -77,9 +77,12 @@ const PostPreview = ({
         <div className='mt-3 block text-sm'>
           {showFullAbout || !collapseAbout ? (
             <>
-              <DfMd source={summary} className='text-sm' />
+              <MdRendererRaw source={summary} />
               {!showFullAbout && (
-                <div className='mt-2 font-semibold' onClick={onToggleShow}>
+                <div
+                  className='mt-2 font-semibold transition-colors hover:text-text-primary'
+                  onClick={onToggleShow}
+                >
                   Show Less
                 </div>
               )}
@@ -89,7 +92,10 @@ const PostPreview = ({
               content={content as SummarizedContent}
               className='text-sm'
               more={
-                <span className='text-sm font-semibold' onClick={onToggleShow}>
+                <span
+                  className='text-sm font-semibold transition-colors hover:text-text-primary'
+                  onClick={onToggleShow}
+                >
                   Show More
                 </span>
               }
@@ -138,7 +144,7 @@ const PostPreview = ({
       >
         <div className='flex w-full flex-col gap-2'>
           <PostInfoPreview post={postData} />
-          <div className='flex flex-col gap-4'>
+          <div className='flex flex-col'>
             <div className={clsx('flex items-center justify-between')}>
               {title}
             </div>

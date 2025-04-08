@@ -1,3 +1,4 @@
+import MdRendererRaw from '@/components/MdRenderer'
 import { SummarizedContent } from '@subsocial/api/types'
 import { isEmptyStr } from '@subsocial/utils'
 import { summarize } from '@subsocial/utils/summarize'
@@ -47,7 +48,7 @@ const SummarizeMd = (props: Props) => {
       className={clsx(!omitDefaultClassName && 'break-words', className)}
       {...otherProps}
     >
-      {summary}
+      <MdRendererRaw source={summary} />
       {isShowMore && (
         <span className='DfSeeMore' onClick={(e) => e.stopPropagation()}>
           {' '}
