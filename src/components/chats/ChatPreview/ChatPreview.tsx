@@ -152,7 +152,7 @@ export default function ChatPreview({
                           unreadCount > 0 && (
                             <span className='text-sm font-medium text-text-primary'>
                               +{formatNumber(unreadCount, { shorten: true })}{' '}
-                              memes
+                              messages
                             </span>
                           )
                         )

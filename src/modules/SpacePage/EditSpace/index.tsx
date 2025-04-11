@@ -107,7 +107,7 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
     if (!isProcessingData) {
       loadingText = 'Creating...'
     } else {
-      loadingText = 'Finalizing space...'
+      loadingText = 'Loading...'
     }
   }
 
