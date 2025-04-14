@@ -1,10 +1,22 @@
 import Button from '@/components/Button'
+import useLoadMoreIfNoScroll from '@/components/chats/ChatList/hooks/useLoadMoreIfNoScroll'
+import usePaginatedPostIdsBySpaceId from '@/components/chats/hooks/useGetPaginatedPostIdsBySpaceId'
+import Loading from '@/components/Loading'
 import NoData from '@/components/NoData'
-import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
+import { getPostQuery } from '@/services/api/query'
+import {
+  getPostsBySpaceIdQuery,
+  POSTS_PER_PAGE,
+} from '@/services/datahub/posts/query'
+import { getSpaceQuery, SPACE_PER_PAGE } from '@/services/datahub/spaces/query'
 import { useMyMainAddress } from '@/stores/my-account'
+import { useIsAnyQueriesLoading } from '@/subsocial-query'
+import { cx } from '@/utils/class-names'
 import { SpaceData } from '@subsocial/api/types'
 import { isEmptyStr } from '@subsocial/utils'
+import { Fragment, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { IoMdAdd } from 'react-icons/io'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import WritePostPreview from '../PostPage/EditPost/WritePostPreview'
 import PostPreview from '../PostPage/PostPreview'
 import SpacePreview from './SpacePreview'
@@ -59,14 +71,100 @@ const ViewSpace = ({ spaceData, withTags = true }: Props) => {
           }
         />
       ) : (
-        <div className='flex flex-col gap-6'>
-          {posts?.map((post) => (
-            <div key={post.id}>
-              <PostPreview postId={post.id} />
-            </div>
-          ))}
-        </div>
+        <PostsInfiniteScroll spaceId={spaceData.id} />
       )}
+    </div>
+  )
+}
+
+const SCROLL_THRESHOLD = 20
+
+type CustomInfiniteScrollProps = {
+  spaceId: string
+  scrollContainerRef?: React.RefObject<HTMLDivElement>
+}
+
+const PostsInfiniteScroll = ({
+  spaceId,
+  scrollContainerRef: _scrollContainerRef,
+}: CustomInfiniteScrollProps) => {
+  const innerScrollContainerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
+  const scrollableContainerId = useId()
+
+  const {
+    postIds: currentPagePostIds,
+    loadMore,
+    totalDataCount,
+  } = usePaginatedPostIdsBySpaceId({
+    spaceId,
+  })
+
+  const [renderedSpaceIds, setRenderedSpaceIds] =
+    useState<string[]>(currentPagePostIds)
+
+  const renderedSpaceQueries = getPostQuery.useQueries(renderedSpaceIds)
+
+  const lastBatchIds = useMemo(
+    () => currentPagePostIds.slice(currentPagePostIds.length - SPACE_PER_PAGE),
+    [currentPagePostIds]
+  )
+
+  const lastBatchQueries = getSpaceQuery.useQueries(lastBatchIds)
+
+  const isLastBatchLoading = useIsAnyQueriesLoading([...lastBatchQueries])
+
+  useEffect(() => {
+    if (isLastBatchLoading) return
+    setRenderedSpaceIds(() => {
+      let newRenderedSpaceIds = [...currentPagePostIds]
+      if (isLastBatchLoading) {
+        newRenderedSpaceIds = newRenderedSpaceIds.slice(
+          0,
+          newRenderedSpaceIds.length - POSTS_PER_PAGE
+        )
+      }
+
+      return newRenderedSpaceIds
+    })
+  }, [isLastBatchLoading, currentPagePostIds])
+
+  useLoadMoreIfNoScroll(loadMore, renderedSpaceIds?.length ?? 0, {
+    scrollContainer: scrollContainerRef,
+    innerContainer: innerRef,
+  })
+
+  const isAllMessagesLoaded = renderedSpaceIds.length === totalDataCount
+
+  return (
+    <div className='flex-1'>
+      <InfiniteScroll
+        dataLength={renderedSpaceIds.length}
+        next={() => {
+          loadMore()
+        }}
+        className={cx(
+          'relative flex w-full flex-col !overflow-hidden pb-2',
+          'min-h-[400px]'
+        )}
+        hasMore={!isAllMessagesLoaded}
+        scrollableTarget={scrollableContainerId}
+        loader={<Loading className='pb-2 pt-4' />}
+        scrollThreshold={`${SCROLL_THRESHOLD}px`}
+      >
+        <div className='flex w-full flex-1 flex-col gap-4'>
+          {renderedSpaceQueries.map(({ data: post }, index) => {
+            const postId = post?.id
+
+            return (
+              <Fragment key={post?.id ?? index}>
+                <PostPreview postId={post?.id} />{' '}
+              </Fragment>
+            )
+          })}
+        </div>
+      </InfiniteScroll>
     </div>
   )
 }

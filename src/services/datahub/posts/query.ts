@@ -30,6 +30,7 @@ import {
   GetPostMetadataQueryVariables,
   GetPostsBySpaceIdQuery,
   GetPostsBySpaceIdQueryVariables,
+  GetPostsQuery,
   GetUnapprovedMemesCountQuery,
   GetUnapprovedMemesCountQueryVariables,
   GetUnreadCountQuery,
@@ -497,6 +498,32 @@ export const GET_POSTS_BY_SPACE_ID = gql`
     }
   }
 `
+
+export const GET_PAGINATED_POSTS_BY_SPACE_ID = gql`
+  ${DATAHUB_POST_FRAGMENT}
+  query GetPaginatedPostsBySpaceId(
+    $spaceId: String!
+    $pageSize: Int!
+    $offset: Int!
+    $orderBy: String!
+    $orderDirection: QueryOrder!
+  ) {
+    posts(
+      args: {
+        filter: { spaceId: $spaceId }
+        pageSize: $pageSize
+        offset: $offset
+        orderBy: $orderBy
+        orderDirection: $orderDirection
+      }
+    ) {
+      data {
+        ...DatahubPostFragment
+      }
+      total
+    }
+  }
+`
 async function getPostsBySpaceId(
   spaceId: string,
   queryClient: QueryClient | null
@@ -765,4 +792,229 @@ export const useGetTopMemes = () => {
           )
         : topMemesIds,
   }
+}
+
+export const POSTS_PER_PAGE = 20
+
+export type PaginatedPostsBySpaceIdData = {
+  data: string[]
+  page: number
+  hasMore: boolean
+  totalData: number
+}
+
+type PostIdsData = {
+  spaceId: string
+  pageSize?: number
+}
+
+async function getPostIdsBySpaceId({
+  page,
+  spaceId,
+  client,
+  pageSize,
+}: {
+  page: number
+  client?: QueryClient | null
+  pageSize?: number
+} & PostIdsData): Promise<PaginatedPostsBySpaceIdData> {
+  if (!spaceId || !client)
+    return { data: [], page, hasMore: false, totalData: 0 }
+
+  const oldIds = getPaginatedPostIdsBySpaceId.getFirstPageData(client, {
+    spaceId,
+  })
+
+  const chatPerPage = POSTS_PER_PAGE
+  const firstPageDataLength = oldIds?.length || chatPerPage
+
+  const spacesPerPage = pageSize || chatPerPage
+
+  let offset = Math.max((page - 2) * spacesPerPage + firstPageDataLength, 0)
+  if (page === 1) offset = 0
+
+  const res = await datahubQueryRequest<
+    { posts: { data: GetPostsQuery['posts']['data']; total: number } },
+    {
+      spaceId: string
+      pageSize: number
+      offset: number
+      orderBy: string
+      orderDirection: QueryOrder
+    }
+  >({
+    document: GET_PAGINATED_POSTS_BY_SPACE_ID,
+    variables: {
+      spaceId: spaceId,
+      pageSize: spacesPerPage,
+      offset,
+      orderBy: 'createdAtTime',
+      orderDirection: QueryOrder.Desc,
+    },
+  })
+  const optimisticIds = new Set<string>()
+  const ids: string[] = []
+  const posts: PostData[] = []
+  res.posts.data.forEach((post) => {
+    optimisticIds.add('')
+
+    const id = post.id
+    ids.push(id)
+
+    const mapped = mapDatahubPostFragment(post)
+    posts.push(mapped)
+    getPostQuery.setQueryData(client, id, mapped)
+  })
+  const totalData = res.posts.total ?? 0
+  const hasMore = offset + ids.length < totalData
+
+  const idsSet = new Set<string>(ids)
+
+  let unincludedFirstPageIds: string[] = []
+  if (page === 1 && oldIds) {
+    let unincludedIdsIndex = oldIds.length
+
+    let hasFoundIncludedId = false
+
+    for (let i = oldIds.length - 1; i >= 0; i--) {
+      const id = oldIds[i]
+
+      if (hasFoundIncludedId) continue
+
+      if (!idsSet.has(id)) {
+        unincludedIdsIndex = i
+      } else {
+        hasFoundIncludedId = true
+      }
+    }
+
+    unincludedFirstPageIds = oldIds.slice(unincludedIdsIndex)
+  }
+
+  return {
+    data: [...posts.map(({ id }) => id), ...unincludedFirstPageIds],
+    page,
+    hasMore,
+    totalData,
+  }
+}
+
+const SPACE_IDS_QUERY_KEY = 'postsBySpaceId'
+const getPostIdsQueryKey = (data: PostIdsData) => [SPACE_IDS_QUERY_KEY, data]
+export const getPaginatedPostIdsBySpaceId = {
+  getPostIdsQueryKey,
+  getFirstPageData: (client: QueryClient, data: PostIdsData) => {
+    const cachedData = client?.getQueryData(getPostIdsQueryKey(data))
+    return (
+      (cachedData as any)?.pages?.[0] as PaginatedPostsBySpaceIdData | undefined
+    )?.data
+  },
+  getCurrentPageNumber: (client: QueryClient, data: PostIdsData) => {
+    const cachedData = client?.getQueryData(getPostIdsQueryKey(data))
+    return (cachedData as any)?.pages?.length
+  },
+  fetchFirstPageQuery: async (
+    client: QueryClient | null,
+    data: PostIdsData,
+    page = 1,
+    pageSize?: number
+  ) => {
+    const res = await getPostIdsBySpaceId({
+      ...data,
+      page,
+      client,
+      pageSize,
+    })
+    if (!client) return res
+
+    client.setQueryData(getPostIdsQueryKey(data), {
+      pageParams: [1],
+      pages: [res],
+    })
+    return res
+  },
+  setQueryFirstPageData: (
+    client: QueryClient,
+    data: PostIdsData,
+    updater: (oldIds?: string[]) => string[] | undefined | null
+  ) => {
+    client.setQueryData(getPostIdsQueryKey(data), (oldData: any) => {
+      const firstPage = oldData?.pages?.[0] as
+        | PaginatedPostsBySpaceIdData
+        | undefined
+      const newPages = [...(oldData?.pages ?? [])]
+      const newFirstPageMessageIds = updater(firstPage?.data)
+      newPages.splice(0, 1, {
+        ...firstPage,
+        data: newFirstPageMessageIds,
+        totalData: newFirstPageMessageIds?.length ?? 0,
+      } as PaginatedPostsBySpaceIdData)
+      return {
+        pageParams: [...(oldData?.pageParams ?? [])],
+        pages: [...newPages],
+      }
+    })
+  },
+  invalidateLastQuery: (client: QueryClient, data: PostIdsData) => {
+    client.refetchQueries(getPostIdsQueryKey(data), {
+      refetchPage: (_, index, allPages) => {
+        const lastPageIndex = allPages.length - 1
+        if (index !== lastPageIndex) return false
+        if (
+          !allPages[lastPageIndex] ||
+          !(allPages[lastPageIndex] as { hasMore: boolean }).hasMore
+        )
+          return true
+        return false
+      },
+    })
+  },
+  invalidateFirstQuery: (client: QueryClient, data: PostIdsData) => {
+    client.invalidateQueries(getPostIdsQueryKey(data), {
+      refetchPage: (_, index) => index === 0,
+    })
+  },
+  useInfiniteQuery: (
+    data: PostIdsData,
+    config?: QueryConfig
+  ): UseInfiniteQueryResult<PaginatedPostsBySpaceIdData, unknown> => {
+    const client = useQueryClient()
+    return useInfiniteQuery({
+      ...config,
+      queryKey: getPostIdsQueryKey(data),
+      queryFn: async ({ pageParam = 1, queryKey }) => {
+        const [_, spaceId] = queryKey
+        const res = await getPostIdsBySpaceId({
+          ...data,
+          page: pageParam,
+          client,
+        })
+
+        if (pageParam === 1) {
+          client.setQueryData<{
+            pageParams: number[]
+            pages: PaginatedPostsBySpaceIdData[]
+          }>(getPostIdsQueryKey(data), (oldData) => {
+            if (
+              !oldData ||
+              !Array.isArray(oldData.pageParams) ||
+              !Array.isArray(oldData.pages)
+            )
+              return oldData
+            const pages = [...oldData.pages]
+            pages.splice(0, 1, res)
+            return {
+              ...oldData,
+              pageParams: [...oldData.pageParams],
+              pages,
+            }
+          })
+        }
+
+        return res
+      },
+      getNextPageParam: (lastPage) =>
+        lastPage.hasMore ? lastPage.page + 1 : undefined,
+    })
+  },
 }

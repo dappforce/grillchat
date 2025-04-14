@@ -161,10 +161,6 @@ async function getPaginatedSpaceIdsByAddress({
 
   const spacesPerPage = pageSize || chatPerPage
 
-  // only first page that has dynamic content, where its length can increase from:
-  // - subscription
-  // - invalidation
-  // so the offset has to accommodate the length of the current first page
   let offset = Math.max((page - 2) * spacesPerPage + firstPageDataLength, 0)
   if (page === 1) offset = 0
 
@@ -205,19 +201,10 @@ async function getPaginatedSpaceIdsByAddress({
 
   const idsSet = new Set<string>(ids)
 
-  // only adding the client optimistic ids, and unincluded ids if refetching first page
-  // for fetching first page, no ids that has been fetched will be removed
-  // ex: first fetch: id 1-50, and after invalidation, there is new data id 0
-  // the result should be id 0-50 instead of 0-49
   let unincludedFirstPageIds: string[] = []
   if (page === 1 && oldIds) {
-    const oldOptimisticIds = []
-
     let unincludedIdsIndex = oldIds.length
 
-    // for example, if the page size is 3, and there is 1 new id
-    // ids: [new, old1, old2], and oldIds: [old1, old2, old3]
-    // so we need to get the unincludedOldIds from the end of the array (old3)
     let hasFoundIncludedId = false
 
     for (let i = oldIds.length - 1; i >= 0; i--) {
@@ -301,7 +288,6 @@ export const getPaginatedSpaceIdsAddress = {
       refetchPage: (_, index, allPages) => {
         const lastPageIndex = allPages.length - 1
         if (index !== lastPageIndex) return false
-        // only fetch if its the last page and its the real "last" page, where hasMore is false
         if (
           !allPages[lastPageIndex] ||
           !(allPages[lastPageIndex] as { hasMore: boolean }).hasMore
@@ -332,7 +318,6 @@ export const getPaginatedSpaceIdsAddress = {
           client,
         })
 
-        // hotfix because in offchain chat (/offchain/18634) its not updating cache when first invalidated from server
         if (pageParam === 1) {
           client.setQueryData<{
             pageParams: number[]
