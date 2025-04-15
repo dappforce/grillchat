@@ -1,4 +1,4 @@
-import { createQuery, poolQuery, QueryConfig } from '@/subsocial-query'
+import { QueryConfig } from '@/subsocial-query'
 import { SpaceData } from '@subsocial/api/types'
 import {
   QueryClient,
@@ -7,61 +7,19 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import {
-  GetSpacesQuery,
-  GetSpacesQueryVariables,
-  QueryOrder,
-} from '../generated-query'
+import { GetSpacesQuery, QueryOrder } from '../generated-query'
 import { mapDatahubSpaceFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
+import {
+  getSpaceQuery,
+  PaginatedSpacesData,
+  SPACE_FRAGMENT,
+  SPACE_PER_PAGE,
+} from './query'
 
-export const SPACE_PER_PAGE = 10
-
-export const SPACE_FRAGMENT = gql`
-  fragment SpaceFragment on Space {
-    name
-    image
-    about
-    id
-    hidden
-    about
-    content
-    createdByAccount {
-      id
-    }
-    ownedByAccount {
-      id
-    }
-    createdAtTime
-    createdAtBlock
-  }
-`
-export const GET_SPACES = gql`
+export const GET_PAGINATED_SPACES = gql`
   ${SPACE_FRAGMENT}
-  query getSpaces($ids: [String!]) {
-    spaces(args: { filter: { ids: $ids } }) {
-      data {
-        ...SpaceFragment
-      }
-    }
-  }
-`
-
-export const GET_SPACES_BY_OWNER = gql`
-  ${SPACE_FRAGMENT}
-  query getSpacesByOwner($owner: String!) {
-    spaces(args: { filter: { ownedByAccountAddress: $owner } }) {
-      data {
-        ...SpaceFragment
-      }
-    }
-  }
-`
-
-export const GET_PAGINATED_SPACES_BY_OWNER = gql`
-  ${SPACE_FRAGMENT}
-  query getSpacesPaginatedSpacesByOwner(
-    $owner: String!
+  query getPaginatedSpaces(
     $pageSize: Int!
     $offset: Int!
     $orderBy: String!
@@ -69,7 +27,6 @@ export const GET_PAGINATED_SPACES_BY_OWNER = gql`
   ) {
     spaces(
       args: {
-        filter: { ownedByAccountAddress: $owner }
         pageSize: $pageSize
         offset: $offset
         orderBy: $orderBy
@@ -84,107 +41,22 @@ export const GET_PAGINATED_SPACES_BY_OWNER = gql`
   }
 `
 
-export const GET_SPACE_IDS_BY_FOLLOWER = gql`
-  query getSpaceIdsByFollower($accountId: String!) {
-    spaceFollowers(args: { filter: { accountId: $accountId } }) {
-      data {
-        followingSpace {
-          id
-        }
-      }
-    }
-  }
-`
-
-const getSpaces = poolQuery<string, SpaceData>({
-  name: 'getSpaces',
-  multiCall: async (spaceIds) => {
-    if (spaceIds.length === 0) return []
-    const res = await datahubQueryRequest<
-      GetSpacesQuery,
-      GetSpacesQueryVariables
-    >({
-      document: GET_SPACES,
-      variables: { ids: spaceIds },
-    })
-
-    return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
-  },
-  resultMapper: {
-    paramToKey: (param) => param,
-    resultToKey: (result) => result?.id ?? '',
-  },
-})
-
-export const getSpaceQuery = createQuery({
-  key: 'space',
-  fetcher: getSpaces,
-  defaultConfigGenerator: (spaceId) => ({
-    enabled: !!spaceId,
-  }),
-})
-
-export const getSpaceByOwnerQuery = createQuery({
-  key: 'space',
-  fetcher: async (owner: string) => {
-    const res = await datahubQueryRequest<GetSpacesQuery, { owner: string }>({
-      document: GET_SPACES_BY_OWNER,
-      variables: { owner },
-    })
-
-    return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
-  },
-  defaultConfigGenerator: (owner) => ({
-    enabled: !!owner,
-  }),
-})
-
-export const getSpaceIdsByFollower = createQuery({
-  key: 'spaceIdByFollower',
-  fetcher: async (accountId: string) => {
-    const res = await datahubQueryRequest<
-      { spaceFollowers: { data: { followingSpace: { id: string } }[] } },
-      { accountId: string }
-    >({
-      document: GET_SPACE_IDS_BY_FOLLOWER,
-      variables: { accountId },
-    })
-
-    return res.spaceFollowers.data.map((item) => item.followingSpace.id)
-  },
-  defaultConfigGenerator: (accountId) => ({
-    enabled: !!accountId,
-  }),
-})
-
-export type PaginatedSpacesData = {
-  data: string[]
-  page: number
-  hasMore: boolean
-  totalData: number
-}
-
-type Data = {
-  address: string
+type HomeSpacesData = {
   pageSize?: number
 }
 
-async function getPaginatedSpaceIdsByAddress({
+async function getHomePageSpaceIdsRaw({
   page,
-  address,
   client,
   pageSize,
 }: {
   page: number
   client?: QueryClient | null
   pageSize?: number
-} & Data): Promise<PaginatedSpacesData> {
-  if (!address || !client)
-    return { data: [], page, hasMore: false, totalData: 0 }
+} & HomeSpacesData): Promise<PaginatedSpacesData> {
+  if (!client) return { data: [], page, hasMore: false, totalData: 0 }
 
-  const oldIds = getPaginatedSpaceIdsAddress.getFirstPageData(client, {
-    address,
-  })
+  const oldIds = getHomePageSpaceIds.getFirstPageData(client, { pageSize })
 
   const chatPerPage = SPACE_PER_PAGE
   const firstPageDataLength = oldIds?.length || chatPerPage
@@ -197,16 +69,14 @@ async function getPaginatedSpaceIdsByAddress({
   const res = await datahubQueryRequest<
     { spaces: { data: GetSpacesQuery['spaces']['data']; total: number } },
     {
-      owner: string
       pageSize: number
       offset: number
       orderBy: string
       orderDirection: QueryOrder
     }
   >({
-    document: GET_PAGINATED_SPACES_BY_OWNER,
+    document: GET_PAGINATED_SPACES,
     variables: {
-      owner: address,
       pageSize: spacesPerPage,
       offset,
       orderBy: 'createdAtTime',
@@ -260,26 +130,29 @@ async function getPaginatedSpaceIdsByAddress({
   }
 }
 
-const SPACE_IDS_QUERY_KEY = 'spaces'
-const getQueryKey = (data: Data) => [SPACE_IDS_QUERY_KEY, data]
-export const getPaginatedSpaceIdsAddress = {
-  getQueryKey,
-  getFirstPageData: (client: QueryClient, data: Data) => {
-    const cachedData = client?.getQueryData(getQueryKey(data))
+const HOME_PAGE_SPACE_IDS_QUERY_KEY = 'spaceIds'
+const getPaginatedQueryKey = (data: HomeSpacesData) => [
+  HOME_PAGE_SPACE_IDS_QUERY_KEY,
+  data,
+]
+export const getHomePageSpaceIds = {
+  getPaginatedQueryKey,
+  getFirstPageData: (client: QueryClient, data: HomeSpacesData) => {
+    const cachedData = client?.getQueryData(getPaginatedQueryKey(data))
     return ((cachedData as any)?.pages?.[0] as PaginatedSpacesData | undefined)
       ?.data
   },
-  getCurrentPageNumber: (client: QueryClient, data: Data) => {
-    const cachedData = client?.getQueryData(getQueryKey(data))
+  getCurrentPageNumber: (client: QueryClient, data: HomeSpacesData) => {
+    const cachedData = client?.getQueryData(getPaginatedQueryKey(data))
     return (cachedData as any)?.pages?.length
   },
   fetchFirstPageQuery: async (
     client: QueryClient | null,
-    data: Data,
+    data: HomeSpacesData,
     page = 1,
     pageSize?: number
   ) => {
-    const res = await getPaginatedSpaceIdsByAddress({
+    const res = await getHomePageSpaceIdsRaw({
       ...data,
       page,
       client,
@@ -287,7 +160,7 @@ export const getPaginatedSpaceIdsAddress = {
     })
     if (!client) return res
 
-    client.setQueryData(getQueryKey(data), {
+    client.setQueryData(getPaginatedQueryKey(data), {
       pageParams: [1],
       pages: [res],
     })
@@ -295,10 +168,10 @@ export const getPaginatedSpaceIdsAddress = {
   },
   setQueryFirstPageData: (
     client: QueryClient,
-    data: Data,
+    data: HomeSpacesData,
     updater: (oldIds?: string[]) => string[] | undefined | null
   ) => {
-    client.setQueryData(getQueryKey(data), (oldData: any) => {
+    client.setQueryData(getPaginatedQueryKey(data), (oldData: any) => {
       const firstPage = oldData?.pages?.[0] as PaginatedSpacesData | undefined
       const newPages = [...(oldData?.pages ?? [])]
       const newFirstPageMessageIds = updater(firstPage?.data)
@@ -313,8 +186,8 @@ export const getPaginatedSpaceIdsAddress = {
       }
     })
   },
-  invalidateLastQuery: (client: QueryClient, data: Data) => {
-    client.refetchQueries(getQueryKey(data), {
+  invalidateLastQuery: (client: QueryClient, data: HomeSpacesData) => {
+    client.refetchQueries(getPaginatedQueryKey(data), {
       refetchPage: (_, index, allPages) => {
         const lastPageIndex = allPages.length - 1
         if (index !== lastPageIndex) return false
@@ -327,22 +200,22 @@ export const getPaginatedSpaceIdsAddress = {
       },
     })
   },
-  invalidateFirstQuery: (client: QueryClient, data: Data) => {
-    client.invalidateQueries(getQueryKey(data), {
+  invalidateFirstQuery: (client: QueryClient, data: HomeSpacesData) => {
+    client.invalidateQueries(getPaginatedQueryKey(data), {
       refetchPage: (_, index) => index === 0,
     })
   },
   useInfiniteQuery: (
-    data: Data,
+    data: HomeSpacesData,
     config?: QueryConfig
   ): UseInfiniteQueryResult<PaginatedSpacesData, unknown> => {
     const client = useQueryClient()
     return useInfiniteQuery({
       ...config,
-      queryKey: getQueryKey(data),
+      queryKey: getPaginatedQueryKey(data),
       queryFn: async ({ pageParam = 1, queryKey }) => {
         const [_, spaceId] = queryKey
-        const res = await getPaginatedSpaceIdsByAddress({
+        const res = await getHomePageSpaceIdsRaw({
           ...data,
           page: pageParam,
           client,
@@ -352,7 +225,7 @@ export const getPaginatedSpaceIdsAddress = {
           client.setQueryData<{
             pageParams: number[]
             pages: PaginatedSpacesData[]
-          }>(getQueryKey(data), (oldData) => {
+          }>(getPaginatedQueryKey(data), (oldData) => {
             if (
               !oldData ||
               !Array.isArray(oldData.pageParams) ||

@@ -4,10 +4,7 @@ import usePaginatedPostIdsBySpaceId from '@/components/chats/hooks/useGetPaginat
 import Loading from '@/components/Loading'
 import NoData from '@/components/NoData'
 import { getPostQuery } from '@/services/api/query'
-import {
-  getPostsBySpaceIdQuery,
-  POSTS_PER_PAGE,
-} from '@/services/datahub/posts/query'
+import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
 import { getSpaceQuery, SPACE_PER_PAGE } from '@/services/datahub/spaces/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
@@ -122,7 +119,7 @@ const PostsInfiniteScroll = ({
       if (isLastBatchLoading) {
         newRenderedSpaceIds = newRenderedSpaceIds.slice(
           0,
-          newRenderedSpaceIds.length - POSTS_PER_PAGE
+          newRenderedSpaceIds.length - SPACE_PER_PAGE
         )
       }
 

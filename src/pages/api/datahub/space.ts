@@ -25,6 +25,14 @@ export type ApiDatahubSpaceMutationBody =
       action: 'create-profile'
       payload: CreateMutateSpaceOffChainDataInput
     }
+  | {
+      action: 'follow-space'
+      payload: CreateMutateSpaceOffChainDataInput
+    }
+  | {
+      action: 'unfollow-space'
+      payload: CreateMutateSpaceOffChainDataInput
+    }
 
 export type ApiDatahubSpaceResponse = ApiResponse
 export default handlerWrapper({
@@ -68,6 +76,10 @@ function datahubPostActionMapping(data: ApiDatahubSpaceMutationBody) {
     case 'update-space':
       return updateSpaceServer(data.payload)
     case 'create-profile':
+      return createSpaceServer(data.payload)
+    case 'follow-space':
+      return createSpaceServer(data.payload)
+    case 'unfollow-space':
       return createSpaceServer(data.payload)
     default:
       throw new Error('Unknown action')

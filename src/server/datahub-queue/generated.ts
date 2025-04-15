@@ -524,7 +524,9 @@ export enum SocialCallName {
   SynthUpdatePostTxRetry = 'synth_update_post_tx_retry',
   UpdatePost = 'update_post',
   UpdatePostReaction = 'update_post_reaction',
-  UpdateSpace = 'update_space'
+  UpdateSpace = 'update_space',
+  FollowSpace = 'follow_space',
+  UnfollowSpace = 'unfollow_space',
 }
 
 export enum SocialEventDataType {

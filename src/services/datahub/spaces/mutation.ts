@@ -8,13 +8,15 @@ import { allowWindowUnload, preventWindowUnload } from '@/utils/window'
 import { SpaceContent } from '@subsocial/api/types'
 import {
   CreateSpaceCallParsedArgs,
+  FollowSpaceCallParsedArgs,
+  UnfollowSpaceCallParsedArgs,
   UpdateSpaceCallParsedArgs,
   socialCallName,
 } from '@subsocial/data-hub-sdk'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getDeterministicId } from '../posts/mutation'
 import { DatahubParams, createSignedSocialDataEvent } from '../utils'
-import { getSpaceQuery } from './query'
+import { getSpaceIdsByFollower, getSpaceQuery } from './query'
 
 function getPermission(allAllowed = false) {
   return {
@@ -118,6 +120,58 @@ export async function updateSpaceData(
   )
 }
 
+export async function followSpace(
+  params: DatahubParams<{
+    spaceId: string
+  }>
+) {
+  const { args } = params
+  const { spaceId } = args
+  const eventArgs: FollowSpaceCallParsedArgs = {
+    spaceId,
+  }
+
+  const input = await createSignedSocialDataEvent(
+    socialCallName.follow_space,
+    params,
+    eventArgs
+  )
+
+  await apiInstance.post<any, any, ApiDatahubSpaceMutationBody>(
+    '/api/datahub/space',
+    {
+      action: 'follow-space',
+      payload: input as any,
+    }
+  )
+}
+
+export async function unfollowSpace(
+  params: DatahubParams<{
+    spaceId: string
+  }>
+) {
+  const { args } = params
+  const { spaceId } = args
+  const eventArgs: UnfollowSpaceCallParsedArgs = {
+    spaceId,
+  }
+
+  const input = await createSignedSocialDataEvent(
+    socialCallName.unfollow_space,
+    params,
+    eventArgs
+  )
+
+  await apiInstance.post<any, any, ApiDatahubSpaceMutationBody>(
+    '/api/datahub/space',
+    {
+      action: 'unfollow-space',
+      payload: input as any,
+    }
+  )
+}
+
 type CommonParams = {
   content: {
     name?: string
@@ -216,4 +270,90 @@ function useUpsertSpaceRaw(config?: MutationConfig<UpsertSpaceParams>) {
 export const useUpsertSpace = createMutationWrapper(
   useUpsertSpaceRaw,
   'Failed to upsert space'
+)
+
+type FollowSpaceParams = Required<
+  Pick<DatahubParams<{}>, 'timestamp' | 'uuid'>
+> & {
+  spaceId: string
+}
+
+function useFollowSpaceRaw(config?: MutationConfig<FollowSpaceParams>) {
+  const client = useQueryClient()
+
+  return useMutation({
+    ...config,
+    mutationFn: async (params: FollowSpaceParams) => {
+      const { spaceId } = params
+      const currentWallet = getCurrentWallet()
+      if (!currentWallet.address) throw new Error('Please login')
+
+      followSpace({
+        ...currentWallet,
+        uuid: params.uuid,
+        timestamp: params.timestamp,
+        args: { spaceId },
+      })
+    },
+    onMutate: async (data) => {
+      config?.onMutate?.(data)
+      preventWindowUnload()
+      const mainAddress = getMyMainAddress() ?? ''
+
+      getSpaceIdsByFollower.setQueryData(client, mainAddress, (oldData) => {
+        return [...(oldData || []), data.spaceId] as string[]
+      })
+    },
+    onError: async (_, data, __) => {
+      config?.onError?.(_, data, __)
+    },
+    onSuccess: async (_, data, __) => {
+      config?.onSuccess?.(_, data, __)
+      allowWindowUnload()
+    },
+  })
+}
+export const useFollowSpace = createMutationWrapper(
+  useFollowSpaceRaw,
+  'Failed to follow space'
+)
+
+function useUnFollowSpaceRaw(config?: MutationConfig<FollowSpaceParams>) {
+  const client = useQueryClient()
+
+  return useMutation({
+    ...config,
+    mutationFn: async (params: FollowSpaceParams) => {
+      const { spaceId } = params
+      const currentWallet = getCurrentWallet()
+      if (!currentWallet.address) throw new Error('Please login')
+
+      unfollowSpace({
+        ...currentWallet,
+        uuid: params.uuid,
+        timestamp: params.timestamp,
+        args: { spaceId },
+      })
+    },
+    onMutate: async (data) => {
+      config?.onMutate?.(data)
+      preventWindowUnload()
+      const mainAddress = getMyMainAddress() ?? ''
+
+      getSpaceIdsByFollower.setQueryData(client, mainAddress, (oldData) => {
+        return oldData?.filter((id) => id !== data.spaceId) as string[]
+      })
+    },
+    onError: async (_, data, __) => {
+      config?.onError?.(_, data, __)
+    },
+    onSuccess: async (_, data, __) => {
+      config?.onSuccess?.(_, data, __)
+      allowWindowUnload()
+    },
+  })
+}
+export const useUnFollowSpace = createMutationWrapper(
+  useUnFollowSpaceRaw,
+  'Failed to unfollow space'
 )

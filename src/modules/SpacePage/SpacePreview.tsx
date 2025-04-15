@@ -1,5 +1,6 @@
 import Button from '@/components/Button'
 import { DfMd } from '@/components/DfMd'
+import FollowUnfollowSpaceButton from '@/components/FollowUnfollowSpaceButton'
 import SpaceAvatar from '@/components/SpaceAvatar'
 import SummarizeMd from '@/components/SummarizeMd'
 import ViewTags from '@/components/ViewTags'
@@ -136,13 +137,7 @@ const SpacePreview = ({
         </Button>
       )}
 
-      <>
-        {!isMy && (
-          <Button variant={'primary'} size={size}>
-            Follow
-          </Button>
-        )}
-      </>
+      {!isMy && <FollowUnfollowSpaceButton size={size} spaceId={spaceId} />}
     </div>
   )
 

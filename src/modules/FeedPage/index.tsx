@@ -16,6 +16,7 @@ import { cx } from '@/utils/class-names'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import SpacesTab from './SpacesTab'
 
 export type FeedPageProps = {
   hubsChatCount: { [id: string]: number }
@@ -57,7 +58,7 @@ export default function FeedPage(props: FeedPageProps) {
     {
       id: 'spaces',
       text: 'Spaces',
-      content: (setSelectedTab) => <NoData message='No spaces yet' />,
+      content: (setSelectedTab) => <SpacesTab />,
     },
   ]
 
@@ -145,9 +146,8 @@ export default function FeedPage(props: FeedPageProps) {
       <div className='flex flex-1 flex-col lg:pr-3'>
         <Tabs
           className='max-w-full border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
-          panelClassName='mt-0 px-0'
+          panelClassName='mt-0 px-0 px-2 py-4'
           tabClassName={cx('px-1.5 sm:px-2')}
-          asContainer
           tabs={tabs}
           withHashIntegration={false}
           hideBeforeHashLoaded

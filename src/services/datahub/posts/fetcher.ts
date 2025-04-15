@@ -44,7 +44,12 @@ export const DATAHUB_POST_FRAGMENT = gql`
 const GET_POSTS = gql`
   ${DATAHUB_POST_FRAGMENT}
   query GetPosts($ids: [String!], $pageSize: Int!) {
-    posts(args: { filter: { persistentIds: $ids }, pageSize: $pageSize }) {
+    posts(
+      args: {
+        filter: { persistentIds: $ids, postKind: "RegularPost" }
+        pageSize: $pageSize
+      }
+    ) {
       data {
         ...DatahubPostFragment
       }

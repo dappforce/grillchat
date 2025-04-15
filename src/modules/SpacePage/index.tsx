@@ -2,7 +2,6 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
 import useSearch from '@/hooks/useSearch'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
-import { useMyMainAddress } from '@/stores/my-account'
 import { SpaceData } from '@subsocial/api/types'
 import { FC } from 'react'
 import ViewSpace from './ViewSpace'
@@ -13,7 +12,6 @@ type Props = {
 
 const ViewSpacePage: FC<Props> = (props) => {
   const { spaceId } = props
-  const myAddress = useMyMainAddress()
   const { search, setSearch, focusController } = useSearch()
   const { data: spaceData } = getSpaceQuery.useQuery(spaceId)
 
