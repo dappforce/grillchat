@@ -1,7 +1,5 @@
-import { constantsConfig } from '@/constants/config'
 import { createQuery, poolQuery } from '@/subsocial-query'
 import { gql } from 'graphql-request'
-import { env } from 'process'
 import {
   GetGeneralStatsQuery,
   GetGeneralStatsQueryVariables,
@@ -92,24 +90,20 @@ async function getPostsBySpaceContent(search: string) {
 
 export const GET_POSTS_BY_CONTENT = gql`
   ${DATAHUB_POST_FRAGMENT}
-  query GetPostsByContent(
-    $search: String!
-    $spaceIds: [String!]!
-    $postIds: [String!]!
-  ) {
+  query GetPostsByContent($search: String!, $postIds: [String!]!) {
     posts(
-      where: {
-        AND: [
-          { hidden_eq: false, isComment_eq: false }
-          {
-            title_containsInsensitive: $search
-            OR: { body_containsInsensitive: $search }
-          }
-          { space: { id_in: $spaceIds }, OR: { id_in: $postIds } }
-        ]
+      args: {
+        filter: {
+          AND: [
+            { hidden: false, postKind: "RegularPost" }
+            { title: $search, OR: { body: $search } }
+          ]
+        }
       }
     ) {
-      ...PostFragment
+      data {
+        ...DatahubPostFragment
+      }
     }
   }
 `
@@ -117,22 +111,16 @@ export const GET_POSTS_BY_CONTENT = gql`
 async function getPostsByContent(search: string) {
   if (!search) return []
 
-  const linkedPostIds = new Set<string>()
-  const hubIds = env.NEXT_PUBLIC_SPACE_IDS
-  hubIds?.split(',').forEach((hubId) => {
-    const linkedChatIds = constantsConfig.linkedChatsForHubId[hubId] ?? []
-    linkedChatIds.forEach((chatId) => linkedPostIds.add(chatId))
-  })
-
   const res: any = await datahubQueryRequest({
     document: GET_POSTS_BY_CONTENT,
     variables: {
       search,
-      spaceIds: env.NEXT_PUBLIC_SPACE_IDS,
-      postIds: Array.from(linkedPostIds.values()),
     },
   })
-  return res.posts.map((post: any) => mapDatahubPostFragment(post))
+
+  console.log(res)
+
+  return res.posts.data.map((post: any) => mapDatahubPostFragment(post))
 }
 
 export const getPostsBySpaceContentQuery = createQuery({

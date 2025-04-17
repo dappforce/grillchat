@@ -2,20 +2,16 @@ import NoData from '@/components/NoData'
 import Tabs, { TabsProps } from '@/components/Tabs'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
-import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger'
 import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
 import { useLocation } from '@/stores/location'
-import {
-  accountAddressStorage,
-  useMyAccount,
-  useMyMainAddress,
-} from '@/stores/my-account'
+import { accountAddressStorage, useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import PostsTab from './PostsTab'
 import SpacesTab from './SpacesTab'
 
 export type FeedPageProps = {
@@ -37,28 +33,25 @@ const pathnameTabIdMapper: Record<string, number> = {
 }
 
 export default function FeedPage(props: FeedPageProps) {
-  const isLoggedIn = useMyAccount((state) => !!state.address)
   const router = useRouter()
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, focusController } = useSearch()
-
-  const refSearchParam = useReferralSearchParam()
 
   const tabs: TabsProps['tabs'] = [
     {
       id: 'my-feed',
       text: 'My Feed',
-      content: (setSelectedTab) => <NoData message='No posts yet' />,
+      content: () => <NoData message='No posts yet' />,
     },
     {
       id: 'posts',
       text: 'Posts',
-      content: (setSelectedTab) => <NoData message='No posts yet' />,
+      content: () => <PostsTab />,
     },
     {
       id: 'spaces',
       text: 'Spaces',
-      content: (setSelectedTab) => <SpacesTab />,
+      content: () => <SpacesTab />,
     },
   ]
 
@@ -67,7 +60,6 @@ export default function FeedPage(props: FeedPageProps) {
     myAddress ?? addressFromStorage ?? ''
   )
 
-  // If user is accessing page for the first time, we can't use the `asPath` because it will cause hydration error because of rewrites
   const currentTabId = isFirstAccessed
     ? undefined
     : pathnameTabIdMapper[router.asPath.split('?')[0]]

@@ -1,33 +1,30 @@
+import { getPostQuery } from '@/services/api/query'
 import { QueryConfig } from '@/subsocial-query'
-import { SpaceData } from '@subsocial/api/types'
+import { PostData } from '@subsocial/api/types'
 import {
   QueryClient,
-  useInfiniteQuery,
   UseInfiniteQueryResult,
+  useInfiniteQuery,
   useQueryClient,
 } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import { GetSpacesQuery, QueryOrder } from '../generated-query'
-import { mapDatahubSpaceFragment } from '../mappers'
+import { GetPostsQuery, QueryOrder } from '../generated-query'
+import { mapDatahubPostFragment } from '../mappers'
 import { datahubQueryRequest } from '../utils'
-import {
-  getSpaceQuery,
-  PaginatedSpacesData,
-  SPACE_FRAGMENT,
-  SPACE_PER_PAGE,
-} from './query'
+import { DATAHUB_POST_FRAGMENT } from './fetcher'
+import { POSTS_PER_PAGE, PaginatedPostsData } from './query'
 
-export const GET_PAGINATED_SPACES = gql`
-  ${SPACE_FRAGMENT}
-  query getPaginatedSpaces(
+export const GET_PAGINATED_POSTS = gql`
+  ${DATAHUB_POST_FRAGMENT}
+  query getPaginatedPosts(
     $pageSize: Int!
     $offset: Int!
     $orderBy: String!
     $orderDirection: QueryOrder!
   ) {
-    spaces(
+    posts(
       args: {
-        filter: { hidden: false }
+        filter: { postKind: "RegularPost", hidden: false }
         pageSize: $pageSize
         offset: $offset
         orderBy: $orderBy
@@ -35,18 +32,18 @@ export const GET_PAGINATED_SPACES = gql`
       }
     ) {
       data {
-        ...SpaceFragment
+        ...DatahubPostFragment
       }
       total
     }
   }
 `
 
-type HomeSpacesData = {
+type HomePostsData = {
   pageSize?: number
 }
 
-async function getHomePageSpaceIdsRaw({
+async function getHomePagePostIdsRaw({
   page,
   client,
   pageSize,
@@ -54,21 +51,21 @@ async function getHomePageSpaceIdsRaw({
   page: number
   client?: QueryClient | null
   pageSize?: number
-} & HomeSpacesData): Promise<PaginatedSpacesData> {
+} & HomePostsData): Promise<PaginatedPostsData> {
   if (!client) return { data: [], page, hasMore: false, totalData: 0 }
 
-  const oldIds = getHomePageSpaceIds.getFirstPageData(client, { pageSize })
+  const oldIds = getHomePagePostIds.getFirstPageData(client, { pageSize })
 
-  const chatPerPage = SPACE_PER_PAGE
+  const chatPerPage = POSTS_PER_PAGE
   const firstPageDataLength = oldIds?.length || chatPerPage
 
-  const spacesPerPage = pageSize || chatPerPage
+  const postsPerPage = pageSize || chatPerPage
 
-  let offset = Math.max((page - 2) * spacesPerPage + firstPageDataLength, 0)
+  let offset = Math.max((page - 2) * postsPerPage + firstPageDataLength, 0)
   if (page === 1) offset = 0
 
   const res = await datahubQueryRequest<
-    { spaces: { data: GetSpacesQuery['spaces']['data']; total: number } },
+    { posts: { data: GetPostsQuery['posts']['data']; total: number } },
     {
       pageSize: number
       offset: number
@@ -76,9 +73,9 @@ async function getHomePageSpaceIdsRaw({
       orderDirection: QueryOrder
     }
   >({
-    document: GET_PAGINATED_SPACES,
+    document: GET_PAGINATED_POSTS,
     variables: {
-      pageSize: spacesPerPage,
+      pageSize: postsPerPage,
       offset,
       orderBy: 'createdAtTime',
       orderDirection: QueryOrder.Desc,
@@ -86,18 +83,18 @@ async function getHomePageSpaceIdsRaw({
   })
   const optimisticIds = new Set<string>()
   const ids: string[] = []
-  const spaces: SpaceData[] = []
-  res.spaces.data.forEach((space) => {
+  const posts: PostData[] = []
+  res.posts.data.forEach((post) => {
     optimisticIds.add('')
 
-    const id = space.id
+    const id = post.id
     ids.push(id)
 
-    const mapped = mapDatahubSpaceFragment(space)
-    spaces.push(mapped)
-    getSpaceQuery.setQueryData(client, id, mapped)
+    const mapped = mapDatahubPostFragment(post)
+    posts.push(mapped)
+    getPostQuery.setQueryData(client, id, mapped)
   })
-  const totalData = res.spaces.total ?? 0
+  const totalData = res.posts.total ?? 0
   const hasMore = offset + ids.length < totalData
 
   const idsSet = new Set<string>(ids)
@@ -124,36 +121,36 @@ async function getHomePageSpaceIdsRaw({
   }
 
   return {
-    data: [...spaces.map(({ id }) => id), ...unincludedFirstPageIds],
+    data: [...posts.map(({ id }) => id), ...unincludedFirstPageIds],
     page,
     hasMore,
     totalData,
   }
 }
 
-const HOME_PAGE_SPACE_IDS_QUERY_KEY = 'spaceIds'
-const getPaginatedQueryKey = (data: HomeSpacesData) => [
-  HOME_PAGE_SPACE_IDS_QUERY_KEY,
+const HOME_PAGE_POST_IDS_QUERY_KEY = 'postIds'
+const getPaginatedQueryKey = (data: HomePostsData) => [
+  HOME_PAGE_POST_IDS_QUERY_KEY,
   data,
 ]
-export const getHomePageSpaceIds = {
+export const getHomePagePostIds = {
   getPaginatedQueryKey,
-  getFirstPageData: (client: QueryClient, data: HomeSpacesData) => {
+  getFirstPageData: (client: QueryClient, data: HomePostsData) => {
     const cachedData = client?.getQueryData(getPaginatedQueryKey(data))
-    return ((cachedData as any)?.pages?.[0] as PaginatedSpacesData | undefined)
+    return ((cachedData as any)?.pages?.[0] as PaginatedPostsData | undefined)
       ?.data
   },
-  getCurrentPageNumber: (client: QueryClient, data: HomeSpacesData) => {
+  getCurrentPageNumber: (client: QueryClient, data: HomePostsData) => {
     const cachedData = client?.getQueryData(getPaginatedQueryKey(data))
     return (cachedData as any)?.pages?.length
   },
   fetchFirstPageQuery: async (
     client: QueryClient | null,
-    data: HomeSpacesData,
+    data: HomePostsData,
     page = 1,
     pageSize?: number
   ) => {
-    const res = await getHomePageSpaceIdsRaw({
+    const res = await getHomePagePostIdsRaw({
       ...data,
       page,
       client,
@@ -169,25 +166,25 @@ export const getHomePageSpaceIds = {
   },
   setQueryFirstPageData: (
     client: QueryClient,
-    data: HomeSpacesData,
+    data: HomePostsData,
     updater: (oldIds?: string[]) => string[] | undefined | null
   ) => {
     client.setQueryData(getPaginatedQueryKey(data), (oldData: any) => {
-      const firstPage = oldData?.pages?.[0] as PaginatedSpacesData | undefined
+      const firstPage = oldData?.pages?.[0] as PaginatedPostsData | undefined
       const newPages = [...(oldData?.pages ?? [])]
-      const newFirstPageSpaceIds = updater(firstPage?.data)
+      const newFirstPagePostIds = updater(firstPage?.data)
       newPages.splice(0, 1, {
         ...firstPage,
-        data: newFirstPageSpaceIds,
-        totalData: newFirstPageSpaceIds?.length ?? 0,
-      } as PaginatedSpacesData)
+        data: newFirstPagePostIds,
+        totalData: newFirstPagePostIds?.length ?? 0,
+      } as PaginatedPostsData)
       return {
         pageParams: [...(oldData?.pageParams ?? [])],
         pages: [...newPages],
       }
     })
   },
-  invalidateLastQuery: (client: QueryClient, data: HomeSpacesData) => {
+  invalidateLastQuery: (client: QueryClient, data: HomePostsData) => {
     client.refetchQueries(getPaginatedQueryKey(data), {
       refetchPage: (_, index, allPages) => {
         const lastPageIndex = allPages.length - 1
@@ -201,22 +198,21 @@ export const getHomePageSpaceIds = {
       },
     })
   },
-  invalidateFirstQuery: (client: QueryClient, data: HomeSpacesData) => {
+  invalidateFirstQuery: (client: QueryClient, data: HomePostsData) => {
     client.invalidateQueries(getPaginatedQueryKey(data), {
       refetchPage: (_, index) => index === 0,
     })
   },
   useInfiniteQuery: (
-    data: HomeSpacesData,
+    data: HomePostsData,
     config?: QueryConfig
-  ): UseInfiniteQueryResult<PaginatedSpacesData, unknown> => {
+  ): UseInfiniteQueryResult<PaginatedPostsData, unknown> => {
     const client = useQueryClient()
     return useInfiniteQuery({
       ...config,
       queryKey: getPaginatedQueryKey(data),
-      queryFn: async ({ pageParam = 1, queryKey }) => {
-        const [_, spaceId] = queryKey
-        const res = await getHomePageSpaceIdsRaw({
+      queryFn: async ({ pageParam = 1 }) => {
+        const res = await getHomePagePostIdsRaw({
           ...data,
           page: pageParam,
           client,
@@ -225,7 +221,7 @@ export const getHomePageSpaceIds = {
         if (pageParam === 1) {
           client.setQueryData<{
             pageParams: number[]
-            pages: PaginatedSpacesData[]
+            pages: PaginatedPostsData[]
           }>(getPaginatedQueryKey(data), (oldData) => {
             if (
               !oldData ||
