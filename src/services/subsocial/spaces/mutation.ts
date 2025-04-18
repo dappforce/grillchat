@@ -25,12 +25,12 @@ function useHideUnhideSpaceRaw(config?: MutationConfig<HideUnhidePostParams>) {
     },
     onMutate: (data) => {
       config?.onMutate?.(data)
-      getSpaceQuery.setQueryData(client, data.spaceId, (post) => {
-        if (!post) return post
+      getSpaceQuery.setQueryData(client, data.spaceId, (space) => {
+        if (!space) return space
         return {
-          ...post,
+          ...space,
           struct: {
-            ...post.struct,
+            ...space.struct,
             hidden: data.action === 'hide',
           },
         }

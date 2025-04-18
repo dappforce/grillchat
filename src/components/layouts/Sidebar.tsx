@@ -5,7 +5,7 @@ import { cx } from '@/utils/class-names'
 import { useRouter } from 'next/router'
 import { IconType } from 'react-icons'
 import { BiChat } from 'react-icons/bi'
-import { GoLaw } from 'react-icons/go'
+import { FiCompass } from 'react-icons/fi'
 import { MdOutlineLocalPolice } from 'react-icons/md'
 import { RiLineChartLine } from 'react-icons/ri'
 import CustomLink from '../referral/CustomLink'
@@ -19,53 +19,17 @@ export default function Sidebar() {
   return (
     <aside className='flex flex-col p-4 pl-0 text-[#64748BCC] dark:text-text-muted'>
       <ul className='flex flex-col gap-4'>
-        {/* <SidebarItem icon={BiNews} title='Feed' href='/' forceHardNavigation /> */}
         <SidebarItem icon={BiChat} title='Feed' href='/feed' />
         <SidebarItem
-          icon={BiChat}
+          icon={FiCompass}
           title='My Spaces'
           href={`/accounts/${myAddress}/spaces`}
         />
         <SidebarItem icon={BiChat} title='Chat' href='/' />
-        <SidebarItem icon={GoLaw} title='Open Gov' href='/opengov' />
-        {/* {getIsLoggedIn() && (
-          <SidebarItem
-            icon={LuCompass}
-            title='My Spaces'
-            href={`/accounts/${myAddress}/spaces`}
-            forceHardNavigation
-          />
-        )} */}
 
         <div className='border-t border-border-gray' />
 
-        {/* <SidebarItem icon={TbCoins} title='Content Staking' href='/staking' /> */}
-        {/* <SidebarItem
-          icon={MdOutlineLeaderboard}
-          title='Leaderboard'
-          href={getLeaderboardLink(myAddress)}
-        /> */}
-        <SidebarItem
-          icon={RiLineChartLine}
-          title='Statistics'
-          href='/stats'
-          forceHardNavigation
-        />
-
-        {/* <div className='border-t border-border-gray' /> */}
-
-        {/* <SidebarItem
-          icon={TbWorld}
-          title='Usernames'
-          href='/dd'
-          forceHardNavigation
-        />
-        <SidebarItem
-          icon={TiFlashOutline}
-          title='Energy Station'
-          href='/energy'
-          forceHardNavigation
-        /> */}
+        <SidebarItem icon={RiLineChartLine} title='Statistics' href='/stats' />
 
         <div className='border-t border-border-gray' />
 

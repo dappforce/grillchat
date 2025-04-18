@@ -1,11 +1,9 @@
 import FloatingMenus from '@/components/floating/FloatingMenus'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
-import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { useHideUnhideSpace } from '@/services/subsocial/spaces/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { SpaceData } from '@subsocial/api/types'
 import { isDef } from '@subsocial/utils'
-import { useQueryClient } from '@tanstack/react-query'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 
 type SpaceDropdownMenuProps = {
@@ -18,14 +16,9 @@ const SpaceDropdownMenu = (props: SpaceDropdownMenuProps) => {
   } = props
   const { id, ownerId } = struct
   const address = useMyMainAddress()
-  const client = useQueryClient()
   const isMySpace = struct.ownerId === address
   const { data: profileData } = getProfileQuery.useQuery(address || '')
-  const { mutateAsync } = useHideUnhideSpace({
-    onSuccess: () => {
-      getSpaceQuery.invalidate(client, id)
-    },
-  })
+  const { mutateAsync } = useHideUnhideSpace()
 
   const { profileSpace } = profileData || {}
 

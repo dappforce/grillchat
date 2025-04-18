@@ -44,8 +44,6 @@ const ViewSpace = ({ spaceData, withTags = true }: Props) => {
 
   const postsCount = posts?.length
 
-  console.log('postsCount', posts)
-
   return (
     <div className='flex flex-col gap-6 p-6'>
       <SpacePreview
@@ -104,16 +102,12 @@ const PostsInfiniteScroll = ({
   const [renderedPostIds, setRenderedPostIds] =
     useState<string[]>(currentPagePostIds)
 
-  console.log('renderedPostIds', renderedPostIds)
-
   const renderedPostQueries = getPostQuery.useQueries(renderedPostIds, {
     showHiddenPost: {
       type: 'owner',
       owner: myAddress || '',
     },
   })
-
-  console.log('renderedSpaceQueries', renderedPostQueries)
 
   const lastBatchIds = useMemo(
     () => currentPagePostIds.slice(currentPagePostIds.length - SPACE_PER_PAGE),
@@ -170,8 +164,6 @@ const PostsInfiniteScroll = ({
         <div className='flex w-full flex-1 flex-col gap-4'>
           {renderedPostQueries.map(({ data: post }, index) => {
             const postId = post?.id
-
-            console.log(postId, 'postId')
 
             return (
               <Fragment key={postId ?? index}>

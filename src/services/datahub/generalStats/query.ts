@@ -118,8 +118,6 @@ async function getPostsByContent(search: string) {
     },
   })
 
-  console.log(res)
-
   return res.posts.data.map((post: any) => mapDatahubPostFragment(post))
 }
 

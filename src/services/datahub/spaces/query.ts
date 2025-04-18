@@ -111,8 +111,6 @@ const getSpaces = poolQuery<string, SpaceData>({
       variables: { ids: spaceIds },
     })
 
-    console.log(res)
-
     return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
   },
   resultMapper: {
@@ -130,7 +128,7 @@ export const getSpaceQuery = createQuery({
 })
 
 export const getSpaceByOwnerQuery = createQuery({
-  key: 'space',
+  key: 'spaceByOwner',
   fetcher: async (owner: string) => {
     const res = await datahubQueryRequest<GetSpacesQuery, { owner: string }>({
       document: GET_SPACES_BY_OWNER,

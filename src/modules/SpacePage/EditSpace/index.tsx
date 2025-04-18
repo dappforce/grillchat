@@ -69,11 +69,7 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
       if (!myAddress) return
       setIsProcessingData(true)
 
-      console.log(data)
-
       let currentSpaceId = spaceId
-
-      console.log(spaceId)
 
       if (!spaceId) {
         currentSpaceId = await getDeterministicId({

@@ -94,11 +94,6 @@ export default function FeedPage(props: FeedPageProps) {
   const usedSelectedTab = isTabUrlLoaded ? selectedTab : -1
   const usedSetSelectedTab = (selectedTab: number) => {
     setSelectedTab(selectedTab)
-    // const selectedTabId = tabs[selectedTab]?.id
-    // if (selectedTabId)
-    //   router.push(urlJoin(`/${selectedTabId}`, refSearchParam), undefined, {
-    //     shallow: true,
-    //   })
   }
 
   return (
@@ -137,7 +132,7 @@ export default function FeedPage(props: FeedPageProps) {
     >
       <div className='flex flex-1 flex-col lg:pr-3'>
         <Tabs
-          className='max-w-full border-b border-border-gray bg-background-light px-0.5 text-sm md:bg-background-light/50'
+          className='max-w-full border-b border-border-gray px-0.5 text-sm'
           panelClassName='mt-0 px-0 px-2 py-4'
           tabClassName={cx('px-1.5 sm:px-2')}
           tabs={tabs}

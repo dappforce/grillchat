@@ -20,7 +20,7 @@ export type DefaultLayoutProps = ComponentProps<'div'> & {
 export default function DefaultLayout({
   children,
   navbarProps,
-  withSidebarBorder = true,
+  withSidebarBorder = false,
   withBackButton,
   withFixedHeight,
   withSidebar,
@@ -55,7 +55,7 @@ export default function DefaultLayout({
         >
           <div
             className={cx(
-              'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[200px] border-r border-border-gray md:block',
+              'sticky top-14 hidden h-[calc(100dvh_-_3.5rem)] w-[200px] border-border-gray md:block',
               withSidebarBorder && 'border-r'
             )}
           >

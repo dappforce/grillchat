@@ -41,11 +41,7 @@ const SpacePreview = ({
   const client = useQueryClient()
   const [collapseAbout, setCollapseAbout] = useState(true)
   const { data: spaceData } = getSpaceQuery.useQuery(spaceId)
-  const { mutateAsync } = useHideUnhideSpace({
-    onSuccess: () => {
-      getSpaceQuery.invalidate(client, spaceId)
-    },
-  })
+  const { mutateAsync } = useHideUnhideSpace()
 
   const isMy = spaceData?.struct.ownerId === myAddress
   const { data: ownerProfile } = getProfileQuery.useQuery(

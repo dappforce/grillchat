@@ -6,7 +6,6 @@ import { getSpaceQuery } from '@/services/datahub/spaces/query'
 import { useHideUnhideSpace } from '@/services/subsocial/spaces/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { SpaceData } from '@subsocial/api/types'
-import { useQueryClient } from '@tanstack/react-query'
 import { FC } from 'react'
 import { IoMdAlert } from 'react-icons/io'
 import ViewSpace from './ViewSpace'
@@ -20,19 +19,12 @@ const ViewSpacePage: FC<Props> = (props) => {
   const myAddress = useMyMainAddress()
   const { search, setSearch, focusController } = useSearch()
   const { data: spaceData } = getSpaceQuery.useQuery(spaceId)
-  const client = useQueryClient()
 
-  const { mutateAsync } = useHideUnhideSpace({
-    onSuccess: () => {
-      getSpaceQuery.invalidate(client, spaceId)
-    },
-  })
+  const { mutateAsync } = useHideUnhideSpace()
 
   const isMy = spaceData?.struct.ownerId === myAddress
 
   const isHidden = spaceData?.struct.hidden
-
-  console.log('isHidden', isHidden, spaceData)
 
   return (
     <DefaultLayout
