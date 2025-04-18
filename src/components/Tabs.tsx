@@ -99,7 +99,7 @@ export default function Tabs({
                 <span
                   className={cx(
                     isHidden && '!hidden',
-                    'group relative block cursor-pointer rounded-t-2xl px-2 outline-none after:absolute after:bottom-0 after:left-0 after:h-[90%] after:w-full after:rounded-t-2xl after:bg-background-light after:opacity-0 after:transition-opacity sm:px-3',
+                    'group relative block cursor-pointer rounded-t-2xl px-2 outline-none after:absolute after:bottom-0 after:left-0 after:h-[90%] after:w-full after:rounded-t-2xl after:opacity-0 after:transition-opacity sm:px-3',
                     'border-collapse focus-visible:after:opacity-100',
                     tabStyle === 'buttons' &&
                       cx(
@@ -108,8 +108,7 @@ export default function Tabs({
                         idx === tabs.length - 1 && 'rounded-r-xl border-r',
                         usedSelectedTab === idx - 1 && 'border-l-0',
                         usedSelectedTab === idx + 1 && 'border-r-0',
-                        selected &&
-                          'border-r border-background-primary bg-background-primary/30'
+                        selected && 'border-r border-background-primary'
                       ),
 
                     tabClassName

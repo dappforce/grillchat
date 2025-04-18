@@ -11,7 +11,6 @@ import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { SummarizedContent } from '@subsocial/api/types'
 import { nonEmptyStr } from '@subsocial/utils'
-import { useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
@@ -38,7 +37,6 @@ const SpacePreview = ({
   withWrapper = true,
 }: SpacePreviewProps) => {
   const myAddress = useMyMainAddress()
-  const client = useQueryClient()
   const [collapseAbout, setCollapseAbout] = useState(true)
   const { data: spaceData } = getSpaceQuery.useQuery(spaceId)
   const { mutateAsync } = useHideUnhideSpace()
@@ -69,9 +67,7 @@ const SpacePreview = ({
 
   const title = (
     <div className='flex items-center gap-2'>
-      <span className='text-[32px] font-medium leading-[1.25]'>
-        {spaceName}
-      </span>
+      <span className='text-[32px] font-medium'>{spaceName}</span>
       {isMy && (
         <div className='rounded-md border border-[#b7eb8f] bg-[#f6ffed] px-2 text-xs font-semibold leading-[20px] text-[#52c41a]'>
           {isProfileSpace ? 'My Profile' : 'My Space'}
@@ -119,7 +115,7 @@ const SpacePreview = ({
         </div>
       )}
 
-      {withTags && <ViewTags tags={tags} className='mt-1' />}
+      {withTags && <ViewTags tags={tags} className='mt-5' />}
 
       {withStats && (
         <span className='mt-4 flex flex-wrap justify-between'>
@@ -182,8 +178,10 @@ const SpacePreview = ({
         })}
       >
         <div className='flex w-full flex-col'>
-          <div className={clsx('w-100 flex items-center gap-4')}>
-            <Avatar />
+          <div className={clsx('w-100 flex items-start gap-4')}>
+            <span className='mt-3'>
+              <Avatar />
+            </span>
             <div className={clsx('w-full flex-1')}>
               <div className='d-flex flex-column GapTiny'>
                 <div className={clsx('flex items-center justify-between')}>

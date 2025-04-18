@@ -13,9 +13,13 @@ const ViewTag = React.memo(({ tag }: ViewTagProps) => {
   return isEmptyStr(tag) ? null : (
     <div
       key={tag}
-      className='mt-2 rounded-md border border-gray-400 bg-gray-300 p-1'
+      className='rounded-md border border-gray-300 bg-gray-100 px-2 py-1 text-text-muted'
     >
-      <Link href={searchLink} as={searchLink}>
+      <Link
+        href={searchLink}
+        as={searchLink}
+        className='flex items-center gap-2 hover:text-text-primary'
+      >
         <IoPricetagOutline />
         {tag}
       </Link>
@@ -33,7 +37,10 @@ type ViewTagsProps = {
 const ViewTags = React.memo(
   ({ tags = [], className = '', ...props }: ViewTagsProps) =>
     isEmptyArray(tags) ? null : (
-      <div className={`DfTags ${className}`} {...props}>
+      <div
+        className={`flex flex-wrap items-center gap-2 ${className}`}
+        {...props}
+      >
         {tags.filter(nonEmptyStr).map((tag: string, i: number) => (
           <ViewTag key={`${tag}-${i}`} tag={tag} />
         ))}

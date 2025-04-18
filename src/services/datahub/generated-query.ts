@@ -3166,6 +3166,7 @@ export type DatahubPostFragmentFragment = {
   updatedAtTime?: any | null
   title?: string | null
   body?: string | null
+  tagsOriginal?: string
   hidden?: boolean
   approvedInRootPost: boolean
   approvedInRootPostAtTime?: any | null
@@ -3613,6 +3614,7 @@ export type SpaceFragmentFragment = {
   image?: string | null
   about?: string | null
   id: string
+  tagsOriginal?: string
   hidden: boolean
   content?: string | null
   createdAtTime?: any | null

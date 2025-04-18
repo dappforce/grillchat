@@ -99,7 +99,6 @@ export default function FeedPage(props: FeedPageProps) {
   return (
     <DefaultLayout
       withSidebar
-      withRightSidebar={false}
       navbarProps={{
         customContent: ({
           logoLink,

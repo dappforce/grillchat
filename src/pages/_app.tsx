@@ -101,33 +101,25 @@ function Styles({
         }
       `
         : ''}
-      ${isUsing16BaseSize
-        ? `
-          @media screen and (min-width: 768px) {
-            :root {
-              font-size: 1rem;
-            }
-          }
-        `
-        : ''}
-      ${isPagesWithSidebar
-        ? `
+      @media screen and (min-width: 768px) {
         :root {
-          --background: 248 250 252;
-          --background-light: 255 255 255;
-          --background-lighter: 248 250 252;
-          --background-lightest: 241 245 249;
-          --border-gray: 223 229 240;
+          font-size: 1rem;
         }
-        .dark {
-          --background: 17 23 41;
-          --background-light: 32 41 58;
-          --background-lighter: 44 56 79;
-          --background-lightest: 54 74 102;
-          --border-gray: 51 59 74;
-        }
-      `
-        : ''}
+      }
+      :root {
+        --background: 248 250 252;
+        --background-light: 255 255 255;
+        --background-lighter: 248 250 252;
+        --background-lightest: 241 245 249;
+        --border-gray: 223 229 240;
+      }
+      .dark {
+        --background: 17 23 41;
+        --background-light: 32 41 58;
+        --background-lighter: 44 56 79;
+        --background-lightest: 54 74 102;
+        --border-gray: 51 59 74;
+      }
 
       ${scrollbarStyling}
     `}</style>

@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Drawer from '@/components/Drawer'
 import MdRendererRaw from '@/components/MdRenderer'
+import ViewTags from '@/components/ViewTags'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { ShareDropdown } from '@/components/share'
 import { cx } from '@/utils/class-names'
@@ -29,6 +30,8 @@ const ViewPost = ({ postData }: Props) => {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   if (!postData) return null
 
+  const tags = postData.content?.tags
+
   return (
     <>
       <div className='flex flex-col gap-6 p-4'>
@@ -47,6 +50,7 @@ const ViewPost = ({ postData }: Props) => {
               <MdRendererRaw source={postData.content.body} />
             )}
           </div>
+          <ViewTags tags={tags} className='mt-5' />
           <div className='flex w-full items-center justify-end gap-4'>
             <Button
               variant={'transparent'}

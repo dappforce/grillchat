@@ -70,7 +70,7 @@ export const mapDatahubPostFragment = (
       body: (post.body || '').replace(/\n{3,}/g, '\n\n'),
       canonical: '',
       isShowMore: false,
-      tags: [],
+      tags: post.tagsOriginal?.split(',') || [],
     } as PostContent,
   } satisfies PostData
 
@@ -95,7 +95,7 @@ export const mapDatahubSpaceFragment = (
       about: space.about ?? '',
       email: '',
       links: [],
-      tags: [],
+      tags: space.tagsOriginal?.split(',') || [],
     },
     struct: {
       hidden: space.hidden ?? false,

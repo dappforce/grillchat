@@ -5,7 +5,6 @@ import { useReferralSearchParam } from '@/components/referral/ReferralUrlChanger
 import { env } from '@/env.mjs'
 import useSearch from '@/hooks/useSearch'
 import { getFollowedPostIdsByAddressQuery } from '@/services/subsocial/posts'
-import { useSendEvent } from '@/stores/analytics'
 import { useLocation } from '@/stores/location'
 import {
   accountAddressStorage,
@@ -47,7 +46,6 @@ const pathnameTabIdMapper: Record<string, number> = {
 export default function HomePage(props: HomePageProps) {
   const isLoggedIn = useMyAccount((state) => !!state.address)
   const router = useRouter()
-  const sendEvent = useSendEvent()
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, getFocusedElementIndex, focusController } =
     useSearch()

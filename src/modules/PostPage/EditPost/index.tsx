@@ -21,7 +21,7 @@ export const formSchema = z.object({
   title: z.string(),
   body: z.string().nonempty('Name cannot be empty'),
   tags: z.array(z.string()),
-  originalUrl: z.string().optional(),
+  canonical: z.string().optional(),
   spaceId: z.string().optional(),
 })
 export type FormSchema = z.infer<typeof formSchema>
@@ -46,7 +46,7 @@ const InnerEditPostForm = ({
     body: postContent?.body ?? '',
     title: postContent?.title ?? '',
     tags: postContent?.tags ?? [],
-    originalUrl: postContent?.canonical ?? '',
+    canonical: postContent?.canonical ?? '',
     spaceId: spaceId || '',
   }
 
@@ -71,14 +71,18 @@ const InnerEditPostForm = ({
       if (!myAddress) return
       setIsProcessingData(true)
 
-      const postId = await getDeterministicId({
-        account: myAddress,
-        timestamp: data.timestamp.toString(),
-        uuid: data.uuid,
-      })
+      let currentPostId = postId
 
-      if (postId) {
-        await router.push(`/space/${getValues()['spaceId']}/${postId}`)
+      if (!postId) {
+        currentPostId = await getDeterministicId({
+          account: myAddress,
+          timestamp: data.timestamp.toString(),
+          uuid: data.uuid,
+        })
+      }
+
+      if (currentPostId) {
+        await router.push(`/space/${getValues()['spaceId']}/${currentPostId}`)
       }
     },
   })

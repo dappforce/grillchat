@@ -25,6 +25,7 @@ export const SPACE_FRAGMENT = gql`
     id
     hidden
     about
+    tagsOriginal
     content
     createdByAccount {
       id

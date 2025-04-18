@@ -84,7 +84,10 @@ function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
             changes: {
               content: {
                 cid: '',
-                content,
+                content: {
+                  ...content,
+                  tagsOriginal: content.tags.join(',') ?? '',
+                } as PostContent,
               },
             },
           },
@@ -95,7 +98,10 @@ function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
           uuid: payload.uuid,
           timestamp: payload.timestamp,
           args: {
-            content,
+            content: {
+              ...content,
+              tagsOriginal: content.tags.join(',') ?? '',
+            } as PostContent,
             cid: '',
             spaceId: payload.spaceId,
           },

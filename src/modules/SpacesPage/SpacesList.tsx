@@ -49,7 +49,6 @@ const SpacesInfiniteScroll = ({
   const {
     spaceIds: currentPageSpaceIds,
     loadMore,
-    refetch,
     totalDataCount,
   } = usePaginatedSpaceIds({
     address,
@@ -101,8 +100,7 @@ const SpacesInfiniteScroll = ({
           loadMore()
         }}
         className={cx(
-          'relative flex w-full flex-col !overflow-hidden pb-2',
-          // need to have enough room to open message menu
+          'relative flex w-full flex-col !overflow-visible pb-2',
           'min-h-[400px]'
         )}
         hasMore={!isAllMessagesLoaded}

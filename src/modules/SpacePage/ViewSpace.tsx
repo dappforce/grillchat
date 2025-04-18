@@ -153,7 +153,7 @@ const PostsInfiniteScroll = ({
           loadMore()
         }}
         className={cx(
-          'relative flex w-full flex-col !overflow-hidden pb-2',
+          'relative flex w-full flex-col !overflow-visible pb-2',
           'min-h-[400px]'
         )}
         hasMore={!isAllMessagesLoaded}

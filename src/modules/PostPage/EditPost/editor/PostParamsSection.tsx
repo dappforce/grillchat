@@ -138,7 +138,7 @@ const PostAdditionalFields = (props: PostParamsSectionProps) => {
         <Input
           {...register('originalUrl')}
           ref={(e) => {
-            register('tags').ref(e)
+            register('canonical').ref(e)
           }}
           disabled={isLoading}
           placeholder='URL of the original post'
