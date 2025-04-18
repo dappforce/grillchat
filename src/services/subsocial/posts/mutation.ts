@@ -190,7 +190,7 @@ function useHideUnhidePostRaw(config?: MutationConfig<HideUnhidePostParams>) {
 }
 export const useHideUnhidePost = createMutationWrapper(
   useHideUnhidePostRaw,
-  'Failed to hide/unhide chat'
+  'Failed to hide/unhide post'
 )
 
 export type HideMessageParams = {

@@ -49,8 +49,10 @@ export const GET_SPACES = gql`
 
 export const GET_SPACES_BY_OWNER = gql`
   ${SPACE_FRAGMENT}
-  query getSpacesByOwner($owner: String!) {
-    spaces(args: { filter: { ownedByAccountAddress: $owner } }) {
+  query getSpacesByOwner($owner: String!, $hidden: Boolean) {
+    spaces(
+      args: { filter: { ownedByAccountAddress: $owner, hidden: $hidden } }
+    ) {
       data {
         ...SpaceFragment
       }
@@ -62,6 +64,7 @@ export const GET_PAGINATED_SPACES_BY_OWNER = gql`
   ${SPACE_FRAGMENT}
   query getSpacesPaginatedSpacesByOwner(
     $owner: String!
+    $hidden: Boolean
     $pageSize: Int!
     $offset: Int!
     $orderBy: String!
@@ -69,7 +72,7 @@ export const GET_PAGINATED_SPACES_BY_OWNER = gql`
   ) {
     spaces(
       args: {
-        filter: { ownedByAccountAddress: $owner }
+        filter: { ownedByAccountAddress: $owner, hidden: $hidden }
         pageSize: $pageSize
         offset: $offset
         orderBy: $orderBy
@@ -107,6 +110,8 @@ const getSpaces = poolQuery<string, SpaceData>({
       document: GET_SPACES,
       variables: { ids: spaceIds },
     })
+
+    console.log(res)
 
     return res.spaces.data.map((space) => mapDatahubSpaceFragment(space))
   },
@@ -167,6 +172,7 @@ export type PaginatedSpacesData = {
 type Data = {
   address: string
   pageSize?: number
+  isHidden?: boolean
 }
 
 async function getPaginatedSpaceIdsByAddress({
@@ -174,6 +180,7 @@ async function getPaginatedSpaceIdsByAddress({
   address,
   client,
   pageSize,
+  isHidden,
 }: {
   page: number
   client?: QueryClient | null
@@ -198,6 +205,7 @@ async function getPaginatedSpaceIdsByAddress({
     { spaces: { data: GetSpacesQuery['spaces']['data']; total: number } },
     {
       owner: string
+      hidden?: boolean
       pageSize: number
       offset: number
       orderBy: string
@@ -207,6 +215,7 @@ async function getPaginatedSpaceIdsByAddress({
     document: GET_PAGINATED_SPACES_BY_OWNER,
     variables: {
       owner: address,
+      hidden: isHidden,
       pageSize: spacesPerPage,
       offset,
       orderBy: 'createdAtTime',

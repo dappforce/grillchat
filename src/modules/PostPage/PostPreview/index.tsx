@@ -43,7 +43,7 @@ const PostPreview = ({
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const { mutateAsync } = useHideUnhidePost({
     onSuccess: () => {
-      getPostQuery.fetchQuery(client, postId)
+      getPostQuery.invalidate(client, postId)
     },
   })
 

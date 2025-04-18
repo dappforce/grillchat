@@ -3,6 +3,7 @@ import Loading from '@/components/Loading'
 import useLoadMoreIfNoScroll from '@/components/chats/ChatList/hooks/useLoadMoreIfNoScroll'
 import usePaginatedSpaceIds from '@/components/chats/hooks/useGetPaginatedSpaces'
 import { SPACE_PER_PAGE, getSpaceQuery } from '@/services/datahub/spaces/query'
+import { useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
 import { Fragment, useEffect, useId, useMemo, useRef, useState } from 'react'
@@ -43,13 +44,16 @@ const SpacesInfiniteScroll = ({
   const innerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
   const scrollableContainerId = useId()
+  const myAddress = useMyMainAddress()
 
   const {
     spaceIds: currentPageSpaceIds,
     loadMore,
+    refetch,
     totalDataCount,
   } = usePaginatedSpaceIds({
     address,
+    isHidden: myAddress !== address,
   })
 
   const [renderedSpaceIds, setRenderedSpaceIds] =

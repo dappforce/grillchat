@@ -85,6 +85,7 @@ export const mapDatahubPostFragment = (
 export const mapDatahubSpaceFragment = (
   space: SpaceFragmentFragment
 ): SpaceData => {
+  console.log('space.hidden', space.hidden)
   return {
     id: space.id,
     content: {

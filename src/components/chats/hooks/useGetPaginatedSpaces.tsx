@@ -18,11 +18,13 @@ type PaginatedData = {
 type PaginatedConfig = {
   address: string
   pageSize?: number
+  isHidden?: boolean
 }
 
 export default function usePaginatedSpaceIds({
   address,
   pageSize,
+  isHidden,
 }: PaginatedConfig): PaginatedData {
   // because from server it doesn't have access to myAddress, so we need to use the data without users' unapproved posts as placeholder
   const { data: placeholderData } =
@@ -30,9 +32,10 @@ export default function usePaginatedSpaceIds({
       {
         address,
         pageSize,
+        isHidden,
       },
       {
-        enabled: false,
+        enabled: true,
       }
     )
   const {

@@ -1,11 +1,11 @@
 import Button from '@/components/Button'
-import useLoadMoreIfNoScroll from '@/components/chats/ChatList/hooks/useLoadMoreIfNoScroll'
-import usePaginatedPostIdsBySpaceId from '@/components/chats/hooks/useGetPaginatedPostIdsBySpaceId'
 import Loading from '@/components/Loading'
 import NoData from '@/components/NoData'
+import useLoadMoreIfNoScroll from '@/components/chats/ChatList/hooks/useLoadMoreIfNoScroll'
+import usePaginatedPostIdsBySpaceId from '@/components/chats/hooks/useGetPaginatedPostIdsBySpaceId'
 import { getPostQuery } from '@/services/api/query'
 import { getPostsBySpaceIdQuery } from '@/services/datahub/posts/query'
-import { getSpaceQuery, SPACE_PER_PAGE } from '@/services/datahub/spaces/query'
+import { SPACE_PER_PAGE } from '@/services/datahub/spaces/query'
 import { useMyMainAddress } from '@/stores/my-account'
 import { useIsAnyQueriesLoading } from '@/subsocial-query'
 import { cx } from '@/utils/class-names'
@@ -43,6 +43,8 @@ const ViewSpace = ({ spaceData, withTags = true }: Props) => {
   const { data: posts } = getPostsBySpaceIdQuery.useQuery(spaceData.id)
 
   const postsCount = posts?.length
+
+  console.log('postsCount', posts)
 
   return (
     <div className='flex flex-col gap-6 p-6'>
@@ -89,6 +91,7 @@ const PostsInfiniteScroll = ({
   const innerRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = _scrollContainerRef || innerScrollContainerRef
   const scrollableContainerId = useId()
+  const myAddress = useMyMainAddress()
 
   const {
     postIds: currentPagePostIds,
@@ -98,46 +101,60 @@ const PostsInfiniteScroll = ({
     spaceId,
   })
 
-  const [renderedSpaceIds, setRenderedSpaceIds] =
+  const [renderedPostIds, setRenderedPostIds] =
     useState<string[]>(currentPagePostIds)
 
-  const renderedSpaceQueries = getPostQuery.useQueries(renderedSpaceIds)
+  console.log('renderedPostIds', renderedPostIds)
+
+  const renderedPostQueries = getPostQuery.useQueries(renderedPostIds, {
+    showHiddenPost: {
+      type: 'owner',
+      owner: myAddress || '',
+    },
+  })
+
+  console.log('renderedSpaceQueries', renderedPostQueries)
 
   const lastBatchIds = useMemo(
     () => currentPagePostIds.slice(currentPagePostIds.length - SPACE_PER_PAGE),
     [currentPagePostIds]
   )
 
-  const lastBatchQueries = getSpaceQuery.useQueries(lastBatchIds)
+  const lastBatchQueries = getPostQuery.useQueries(lastBatchIds, {
+    showHiddenPost: {
+      type: 'owner',
+      owner: myAddress || '',
+    },
+  })
 
   const isLastBatchLoading = useIsAnyQueriesLoading([...lastBatchQueries])
 
   useEffect(() => {
     if (isLastBatchLoading) return
-    setRenderedSpaceIds(() => {
-      let newRenderedSpaceIds = [...currentPagePostIds]
+    setRenderedPostIds(() => {
+      let newRenderedPostIds = [...currentPagePostIds]
       if (isLastBatchLoading) {
-        newRenderedSpaceIds = newRenderedSpaceIds.slice(
+        newRenderedPostIds = newRenderedPostIds.slice(
           0,
-          newRenderedSpaceIds.length - SPACE_PER_PAGE
+          newRenderedPostIds.length - SPACE_PER_PAGE
         )
       }
 
-      return newRenderedSpaceIds
+      return newRenderedPostIds
     })
   }, [isLastBatchLoading, currentPagePostIds])
 
-  useLoadMoreIfNoScroll(loadMore, renderedSpaceIds?.length ?? 0, {
+  useLoadMoreIfNoScroll(loadMore, renderedPostIds?.length ?? 0, {
     scrollContainer: scrollContainerRef,
     innerContainer: innerRef,
   })
 
-  const isAllMessagesLoaded = renderedSpaceIds.length === totalDataCount
+  const isAllMessagesLoaded = renderedPostIds.length === totalDataCount
 
   return (
     <div className='flex-1'>
       <InfiniteScroll
-        dataLength={renderedSpaceIds.length}
+        dataLength={renderedPostIds.length}
         next={() => {
           loadMore()
         }}
@@ -151,12 +168,14 @@ const PostsInfiniteScroll = ({
         scrollThreshold={`${SCROLL_THRESHOLD}px`}
       >
         <div className='flex w-full flex-1 flex-col gap-4'>
-          {renderedSpaceQueries.map(({ data: post }, index) => {
+          {renderedPostQueries.map(({ data: post }, index) => {
             const postId = post?.id
 
+            console.log(postId, 'postId')
+
             return (
-              <Fragment key={post?.id ?? index}>
-                <PostPreview postId={post?.id} />{' '}
+              <Fragment key={postId ?? index}>
+                <PostPreview postId={postId} />{' '}
               </Fragment>
             )
           })}

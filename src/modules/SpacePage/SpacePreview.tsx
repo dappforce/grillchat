@@ -6,15 +6,18 @@ import SummarizeMd from '@/components/SummarizeMd'
 import ViewTags from '@/components/ViewTags'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
 import { getSpaceQuery } from '@/services/datahub/spaces/query'
+import { useHideUnhideSpace } from '@/services/subsocial/spaces/mutation'
 import { useMyMainAddress } from '@/stores/my-account'
 import { cx } from '@/utils/class-names'
 import { SummarizedContent } from '@subsocial/api/types'
 import { nonEmptyStr } from '@subsocial/utils'
+import { useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { CiEdit } from 'react-icons/ci'
+import { IoMdAlert } from 'react-icons/io'
 import SpaceDropdownMenu from './SpaceDropdownMenu'
 import SpaceStatsRow from './SpaceStatsRow'
 import { renderSpaceName } from './ViewSpace'
@@ -35,8 +38,14 @@ const SpacePreview = ({
   withWrapper = true,
 }: SpacePreviewProps) => {
   const myAddress = useMyMainAddress()
+  const client = useQueryClient()
   const [collapseAbout, setCollapseAbout] = useState(true)
   const { data: spaceData } = getSpaceQuery.useQuery(spaceId)
+  const { mutateAsync } = useHideUnhideSpace({
+    onSuccess: () => {
+      getSpaceQuery.invalidate(client, spaceId)
+    },
+  })
 
   const isMy = spaceData?.struct.ownerId === myAddress
   const { data: ownerProfile } = getProfileQuery.useQuery(
@@ -56,8 +65,9 @@ const SpacePreview = ({
 
   const { content, struct } = spaceData || {}
 
-  const { about, tags, email, links } = content || {}
-  const contactInfo = { email, links }
+  const { about, tags } = content || {}
+
+  const isHidden = struct?.hidden
 
   const spaceName = renderSpaceName(spaceData)
 
@@ -143,11 +153,38 @@ const SpacePreview = ({
 
   const preview = (
     <div
-      className={cx('w-full', {
-        ['rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]']: withWrapper,
+      className={cx('flex w-full flex-col gap-4 overflow-hidden', {
+        ['rounded-[20px] bg-white shadow-[0_0_20px_#e2e8f0]']: withWrapper,
       })}
     >
-      <div>
+      {isHidden && isMy && withWrapper && (
+        <div className='flex items-center justify-between gap-2 bg-[#fffbe6] px-4 py-2'>
+          <div className='flex items-center gap-2'>
+            <IoMdAlert size={20} color='#faad14' />
+            <span>This space is unlisted and only you can see it</span>
+          </div>
+          <Button
+            variant='primaryOutline'
+            onClick={async (e) => {
+              e.preventDefault()
+              e.stopPropagation()
+
+              await mutateAsync({
+                spaceId,
+                action: 'unhide',
+              })
+            }}
+            size='sm'
+          >
+            Make visible
+          </Button>
+        </div>
+      )}
+      <div
+        className={cx('w-full', {
+          ['p-5']: withWrapper,
+        })}
+      >
         <div className='flex w-full flex-col'>
           <div className={clsx('w-100 flex items-center gap-4')}>
             <Avatar />

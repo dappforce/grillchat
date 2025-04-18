@@ -94,14 +94,16 @@ export async function updateSpaceData(
   params: DatahubParams<{
     spaceId: string
     cid?: string
-    content: SpaceContent
+    hidden?: boolean
+    content?: SpaceContent
   }>
 ) {
   const { args } = params
-  const { content, cid, spaceId } = args
+  const { content, cid, spaceId, hidden } = args
   const eventArgs: UpdateSpaceCallParsedArgs = {
     spaceId,
     ipfsSrc: cid,
+    hidden,
   }
 
   const input = await createSignedSocialDataEvent(

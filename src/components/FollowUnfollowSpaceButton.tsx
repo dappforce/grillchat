@@ -25,12 +25,12 @@ const FollowUnfollowSpaceButton = ({
   const { data } = getSpaceIdsByFollower.useQuery(myAddress || '')
   const { mutateAsync: followSpace } = useFollowSpace({
     onSuccess: () => {
-      getSpaceIdsByFollower.fetchQuery(client, myAddress || '')
+      getSpaceIdsByFollower.invalidate(client, myAddress || '')
     },
   })
   const { mutateAsync: unfollowSpace } = useUnFollowSpace({
     onSuccess: () => {
-      getSpaceIdsByFollower.fetchQuery(client, myAddress || '')
+      getSpaceIdsByFollower.invalidate(client, myAddress || '')
     },
   })
 

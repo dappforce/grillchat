@@ -69,14 +69,22 @@ const InnerUpsertSpaceForm = ({ spaceContent, spaceId }: EditSpaceProps) => {
       if (!myAddress) return
       setIsProcessingData(true)
 
-      const spaceId = await getDeterministicId({
-        account: myAddress,
-        timestamp: data.timestamp.toString(),
-        uuid: data.uuid,
-      })
+      console.log(data)
 
-      if (spaceId) {
-        await router.push(`/space/${spaceId}`)
+      let currentSpaceId = spaceId
+
+      console.log(spaceId)
+
+      if (!spaceId) {
+        currentSpaceId = await getDeterministicId({
+          account: myAddress,
+          timestamp: data.timestamp.toString(),
+          uuid: data.uuid,
+        })
+      }
+
+      if (currentSpaceId) {
+        await router.push(`/space/${currentSpaceId}`)
       }
     },
   })

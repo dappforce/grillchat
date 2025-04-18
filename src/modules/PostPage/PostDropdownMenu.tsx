@@ -24,7 +24,7 @@ const PostDropdownMenu = (props: SpaceDropdownMenuProps) => {
   const isMyPost = struct.ownerId === address
   const { mutateAsync } = useHideUnhidePost({
     onSuccess: () => {
-      getPostQuery.fetchQuery(client, id)
+      getPostQuery.invalidate(client, id)
     },
   })
 

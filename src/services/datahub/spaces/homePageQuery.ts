@@ -215,7 +215,6 @@ export const getHomePageSpaceIds = {
       ...config,
       queryKey: getPaginatedQueryKey(data),
       queryFn: async ({ pageParam = 1, queryKey }) => {
-        const [_, spaceId] = queryKey
         const res = await getHomePageSpaceIdsRaw({
           ...data,
           page: pageParam,

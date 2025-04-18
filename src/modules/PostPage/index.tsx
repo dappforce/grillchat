@@ -28,7 +28,7 @@ const ViewPostPage: FC<Props> = (props) => {
 
   const { mutateAsync } = useHideUnhidePost({
     onSuccess: () => {
-      getPostQuery.fetchQuery(client, postId)
+      getPostQuery.invalidate(client, postId)
     },
   })
 

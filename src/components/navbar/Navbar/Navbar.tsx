@@ -4,7 +4,6 @@ import Container from '@/components/Container'
 import Logo from '@/components/Logo'
 import Sidebar from '@/components/layouts/Sidebar'
 import CustomLink from '@/components/referral/CustomLink'
-import useIsInIframe from '@/hooks/useIsInIframe'
 import useLoginOption from '@/hooks/useLoginOption'
 import { useConfigContext } from '@/providers/config/ConfigProvider'
 import { getProfileQuery } from '@/services/datahub/profiles/query'
@@ -152,9 +151,6 @@ export default function Navbar({
     </Button>
   )
 
-  const isInIframe = useIsInIframe()
-  const notificationBell = !isInIframe && <NotificationBell />
-
   return (
     <>
       <nav
@@ -175,7 +171,7 @@ export default function Navbar({
             customContent({
               logoLink,
               authComponent,
-              notificationBell,
+              notificationBell: null,
               backButton,
               newPostButton,
               hamburgerMenu,
@@ -185,7 +181,6 @@ export default function Navbar({
               {logoLink}
               <div className='flex items-center'>
                 {newPostButton}
-                {notificationBell}
                 <div className='ml-2.5'>{authComponent}</div>
               </div>
             </div>
@@ -246,9 +241,4 @@ function DrawerSidebar({
       </Dialog>
     </Transition>
   )
-}
-
-const LAST_READ_NOTIFICATION_KEY = 'lastReadNotification'
-function NotificationBell() {
-  return <></>
 }
