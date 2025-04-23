@@ -100,7 +100,7 @@ function useUpsertPostRaw(config?: MutationConfig<UpsertPostParams>) {
           args: {
             content: {
               ...content,
-              tagsOriginal: content.tags.join(',') ?? '',
+              tagsOriginal: content.tags?.join(',') ?? '',
             } as PostContent,
             cid: '',
             spaceId: payload.spaceId,

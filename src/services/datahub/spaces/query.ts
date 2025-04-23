@@ -349,7 +349,6 @@ export const getPaginatedSpaceIdsAddress = {
       ...config,
       queryKey: getQueryKey(data),
       queryFn: async ({ pageParam = 1, queryKey }) => {
-        const [_, spaceId] = queryKey
         const res = await getPaginatedSpaceIdsByAddress({
           ...data,
           page: pageParam,

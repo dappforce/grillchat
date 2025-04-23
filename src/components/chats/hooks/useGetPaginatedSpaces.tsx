@@ -26,7 +26,6 @@ export default function usePaginatedSpaceIds({
   pageSize,
   isHidden,
 }: PaginatedConfig): PaginatedData {
-  // because from server it doesn't have access to myAddress, so we need to use the data without users' unapproved posts as placeholder
   const { data: placeholderData } =
     getPaginatedSpaceIdsAddress.useInfiniteQuery(
       {
@@ -36,6 +35,7 @@ export default function usePaginatedSpaceIds({
       },
       {
         enabled: true,
+        refetchOnMount: 'always',
       }
     )
   const {
@@ -51,7 +51,7 @@ export default function usePaginatedSpaceIds({
       address,
       pageSize,
     },
-    { enabled: !!address, placeholderData }
+    { enabled: !!address, refetchOnMount: 'always', placeholderData }
   )
 
   const page = data?.pages

@@ -23,16 +23,8 @@ const FollowUnfollowSpaceButton = ({
   const client = useQueryClient()
   const { setIsOpen } = useLoginModal()
   const { data } = getSpaceIdsByFollower.useQuery(myAddress || '')
-  const { mutateAsync: followSpace } = useFollowSpace({
-    onSuccess: () => {
-      getSpaceIdsByFollower.invalidate(client, myAddress || '')
-    },
-  })
-  const { mutateAsync: unfollowSpace } = useUnFollowSpace({
-    onSuccess: () => {
-      getSpaceIdsByFollower.invalidate(client, myAddress || '')
-    },
-  })
+  const { mutateAsync: followSpace } = useFollowSpace()
+  const { mutateAsync: unfollowSpace } = useUnFollowSpace()
 
   const isFollowing = data?.includes(spaceId)
 
