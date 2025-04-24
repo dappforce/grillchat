@@ -13,7 +13,7 @@ const ViewTag = React.memo(({ tag }: ViewTagProps) => {
   return isEmptyStr(tag) ? null : (
     <div
       key={tag}
-      className='rounded-md border border-gray-300 bg-gray-100 px-2 py-1 text-sm text-text-muted'
+      className='rounded-md border border-gray-300 bg-gray-100 px-2 py-1 text-sm text-text-muted dark:border-gray-400 dark:bg-gray-700'
     >
       <Link
         href={searchLink}

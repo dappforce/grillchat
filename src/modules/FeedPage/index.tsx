@@ -1,4 +1,3 @@
-import NoData from '@/components/NoData'
 import Tabs, { TabsProps } from '@/components/Tabs'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import NavbarWithSearch from '@/components/navbar/Navbar/custom/NavbarWithSearch'
@@ -11,6 +10,7 @@ import { cx } from '@/utils/class-names'
 import { replaceUrl } from '@/utils/window'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import FeedTab from './FeedTab'
 import PostsTab from './PostsTab'
 import SpacesTab from './SpacesTab'
 
@@ -36,12 +36,14 @@ export default function FeedPage(props: FeedPageProps) {
   const router = useRouter()
   const isFirstAccessed = useLocation((state) => state.isFirstAccessed)
   const { search, setSearch, focusController } = useSearch()
+  const myAddress = useMyMainAddress()
 
   const tabs: TabsProps['tabs'] = [
     {
       id: 'my-feed',
       text: 'My Feed',
-      content: () => <NoData message='No posts yet' />,
+      isHidden: !myAddress,
+      content: () => <FeedTab />,
     },
     {
       id: 'posts',
@@ -55,7 +57,6 @@ export default function FeedPage(props: FeedPageProps) {
     },
   ]
 
-  const myAddress = useMyMainAddress()
   const { data: followedPostIds } = getFollowedPostIdsByAddressQuery.useQuery(
     myAddress ?? addressFromStorage ?? ''
   )

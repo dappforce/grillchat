@@ -69,7 +69,7 @@ const SpacePreview = ({
     <div className='flex items-center gap-2'>
       <span className='text-[32px] font-medium'>{spaceName}</span>
       {isMy && (
-        <div className='rounded-md border border-[#b7eb8f] bg-[#f6ffed] px-2 text-xs font-semibold leading-[20px] text-[#52c41a]'>
+        <div className='rounded-md border border-green-300 bg-green-100 px-2 text-xs font-semibold leading-[20px] text-green-600 dark:bg-green-100/10'>
           {isProfileSpace ? 'My Profile' : 'My Space'}
         </div>
       )}
