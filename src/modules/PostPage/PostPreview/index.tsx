@@ -77,7 +77,7 @@ const PostPreview = ({
         <div className='mt-3 block text-sm'>
           {showFullAbout || !collapseAbout ? (
             <>
-              <MdRendererRaw source={summary} />
+              <MdRendererRaw source={summary} className='text-white' />
               {!showFullAbout && (
                 <div
                   className='mt-2 font-semibold transition-colors hover:text-text-primary'
@@ -111,7 +111,8 @@ const PostPreview = ({
   const preview = (
     <div
       className={cx('flex w-full flex-col gap-4 overflow-hidden', {
-        ['rounded-[20px] bg-white shadow-[0_0_20px_#e2e8f0]']: withWrapper,
+        ['rounded-[20px] bg-white shadow-[0_0_20px_#e2e8f0] dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]']:
+          withWrapper,
       })}
     >
       {isHidden && isMy && (

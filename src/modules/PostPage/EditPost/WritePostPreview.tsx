@@ -18,7 +18,7 @@ const WritePostPreview = ({ spaceId }: WritePostPreviewProps) => {
   return (
     <>
       <div
-        className='flex cursor-pointer items-center gap-4 rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]'
+        className='flex cursor-pointer items-center gap-4 rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0] dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]'
         onClick={onClick}
       >
         <AddressAvatar
@@ -26,7 +26,7 @@ const WritePostPreview = ({ spaceId }: WritePostPreviewProps) => {
           address={myAddress || ''}
           className={cx()}
         />
-        <div className='w-full rounded-[60px] bg-[#f8fafc] px-4 py-2 text-text-muted'>
+        <div className='w-full rounded-[60px] bg-[#f8fafc] px-4 py-2 text-text-muted dark:bg-slate-900'>
           Write something...
         </div>
         <Button variant={'primary'} size={'md'}>

@@ -88,7 +88,7 @@ const SpacePreview = ({
         <div className='mt-3 block text-sm'>
           {showFullAbout || !collapseAbout ? (
             <>
-              <DfMd source={about} className='text-sm' />
+              <DfMd source={about} className='text-sm dark:!text-white' />
               {!showFullAbout && (
                 <div
                   className='mt-2 font-semibold hover:text-text-primary'
@@ -146,7 +146,8 @@ const SpacePreview = ({
   const preview = (
     <div
       className={cx('flex w-full flex-col gap-4 overflow-hidden', {
-        ['rounded-[20px] bg-white shadow-[0_0_20px_#e2e8f0]']: withWrapper,
+        ['rounded-[20px] bg-white shadow-[0_0_20px_#e2e8f0] dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]']:
+          withWrapper,
       })}
     >
       {isHidden && isMy && withWrapper && (

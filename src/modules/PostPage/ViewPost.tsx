@@ -39,7 +39,7 @@ const ViewPost = ({ postData }: Props) => {
 
         <div
           className={cx(
-            'w-full rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0]'
+            'w-full rounded-[20px] bg-white p-5 shadow-[0_0_20px_#e2e8f0] dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]'
           )}
         >
           <div className='flex w-full flex-col gap-2'>
