@@ -3166,6 +3166,7 @@ export type DatahubPostFragmentFragment = {
   updatedAtTime?: any | null
   title?: string | null
   body?: string | null
+  image?: string | null
   tagsOriginal?: string
   hidden?: boolean
   approvedInRootPost: boolean

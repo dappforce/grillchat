@@ -64,7 +64,7 @@ export const mapDatahubPostFragment = (
     entityId: post.id,
     content: {
       summary: post.body,
-      image: '',
+      image: post.image || '',
       title: post.title ?? '',
       link: '',
       body: (post.body || '').replace(/\n{3,}/g, '\n\n'),

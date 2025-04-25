@@ -2,11 +2,9 @@ import ImageInput from '@/components/inputs/ImageInput'
 import Input from '@/components/inputs/Input'
 import { cx } from '@/utils/class-names'
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
 import { Control, Controller, UseFormSetValue } from 'react-hook-form'
 import { FormSchema } from '..'
 import Tabs from '../../../../components/Tabs'
-import { htmlToMd } from './HtmlEditor/tiptap'
 
 const MdEditor = dynamic(
   () => import('./MdEditor/client').then((mod) => mod.default),
@@ -50,7 +48,7 @@ const EditorSection = ({
 
   return (
     <div className='flex w-[65%] flex-col gap-4'>
-      <div className='rounded-lg bg-white p-4'>
+      <div className='rounded-lg bg-white p-4 dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]'>
         <Input
           {...register('title')}
           ref={(e) => {
@@ -95,46 +93,26 @@ type EditorCardProps = {
 
 const EditorCard = ({
   markdownMode,
-  register,
   control,
   setValue,
   setMarkdownMode,
 }: EditorCardProps) => {
-  const [fixedToolbar, setFixedToolbar] = useState(false)
-
   const onChange = (value: string) => {
     setValue('body', value)
   }
 
-  const toggleMarkdownMode = () => {
-    const newState = !markdownMode
-    setMarkdownMode(newState)
-  }
-
-  const onChangeHtmlEditor = (text: string) => {
-    const mdText = htmlToMd(text) || ''
-    onChange(mdText)
-  }
-
   return (
-    <div className='rounded-lg bg-white p-4'>
+    <div className='rounded-lg bg-white p-4 dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]'>
       <Controller
         control={control}
         name='image'
-        render={({ field, fieldState }) => {
-          return markdownMode ? (
+        render={() => {
+          return (
             <MdEditor
               onChange={onChange}
               options={{ autofocus: true }}
               className={'BorderLessMdEditor'}
             />
-          ) : (
-            // <HtmlEditor
-            //   onChange={onChangeHtmlEditor}
-            //   saveBodyDraft={onChangeHtmlEditor}
-            //   showToolbar
-            // />
-            <></>
           )
         }}
       />
@@ -168,6 +146,8 @@ const CoverImageContent = ({
             }}
             disabled={isLoading}
             image={field.value}
+            imageContainerClassName='!h-full !w-full rounded-lg'
+            mediaLoaderContainerClassName='!h-full !w-full'
             innerLabel={
               <div className='flex flex-col items-center gap-1'>
                 <span className='text-xl'>

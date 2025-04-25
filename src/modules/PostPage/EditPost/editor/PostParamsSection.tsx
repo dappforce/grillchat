@@ -78,7 +78,7 @@ const SelectSpaceSection = (props: PostParamsSectionProps) => {
   if (!spaces) return null
 
   return (
-    <div className='flex h-fit flex-1 flex-col gap-4 rounded-lg bg-white p-4'>
+    <div className='flex h-fit flex-1 flex-col gap-4 rounded-lg bg-white p-4 dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]'>
       <FloatingMenus
         menus={menuItems}
         allowedPlacements={['bottom-start']}
@@ -123,7 +123,7 @@ const SelectSpaceSection = (props: PostParamsSectionProps) => {
 const PostAdditionalFields = (props: PostParamsSectionProps) => {
   const { register, isLoading, errors, watch, setValue } = props
   return (
-    <div className='flex h-fit flex-1 flex-col gap-4 rounded-lg bg-white p-4'>
+    <div className='flex h-fit flex-1 flex-col gap-4 rounded-lg bg-white p-4 dark:bg-slate-800 dark:shadow-[0_0_20px_#0000]'>
       <div className='flex flex-col gap-2'>
         <span>Tags</span>
         <TagsInput

@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Drawer from '@/components/Drawer'
 import MdRendererRaw from '@/components/MdRenderer'
+import MediaLoader from '@/components/MediaLoader'
 import ViewTags from '@/components/ViewTags'
 import ChatRoom from '@/components/chats/ChatRoom'
 import { ShareDropdown } from '@/components/share'
@@ -31,6 +32,7 @@ const ViewPost = ({ postData }: Props) => {
   if (!postData) return null
 
   const tags = postData.content?.tags
+  const image = postData.content?.image
 
   return (
     <>
@@ -43,6 +45,15 @@ const ViewPost = ({ postData }: Props) => {
           )}
         >
           <div className='flex w-full flex-col gap-2'>
+            {image && (
+              <MediaLoader
+                containerClassName={cx(
+                  'max-h-[436px] w-full rounded-[10px] overflow-hidden'
+                )}
+                src={image}
+                className={cx('h-full w-full object-cover', {})}
+              />
+            )}
             <div className='flex items-center justify-between'>
               {renderPostTitle(postData)}
             </div>

@@ -96,7 +96,7 @@ const MdEditor = ({
 
   return (
     <SimpleMDEReact
-      className={`DfMdEditor ${classToolbar} ${className}`}
+      className={`DfMdEditor ${classToolbar} ${className} dark:[&_.CodeMirror]:bg-slate-800 dark:[&_.CodeMirror]:text-white`}
       value={value}
       events={events}
       onChange={onChange}

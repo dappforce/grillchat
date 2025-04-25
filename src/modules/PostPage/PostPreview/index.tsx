@@ -1,6 +1,7 @@
 import Button from '@/components/Button'
 import Drawer from '@/components/Drawer'
 import MdRendererRaw from '@/components/MdRenderer'
+import MediaLoader from '@/components/MediaLoader'
 import SummarizeMd from '@/components/SummarizeMd'
 import { getPostQuery } from '@/services/api/query'
 import { useHideUnhidePost } from '@/services/subsocial/posts/mutation'
@@ -51,7 +52,9 @@ const PostPreview = ({
 
   const { content, struct } = postData || {}
 
-  const { summary } = content || {}
+  const { summary, image } = content || {}
+
+  console.log(image)
 
   const isHidden = struct?.hidden
 
@@ -146,6 +149,15 @@ const PostPreview = ({
         <div className='flex w-full flex-col gap-2'>
           <PostInfoPreview post={postData} />
           <div className='flex flex-col'>
+            {image && (
+              <MediaLoader
+                containerClassName={cx(
+                  'max-h-[436px] w-full rounded-[10px] overflow-hidden'
+                )}
+                src={image}
+                className={cx('h-full w-full object-cover', {})}
+              />
+            )}
             <div className={clsx('flex items-center justify-between')}>
               {title}
             </div>

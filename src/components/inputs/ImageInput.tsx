@@ -30,6 +30,8 @@ export type ImageInputProps = ComponentProps<'input'> & {
   dropzoneClassName?: string
   innerLabel?: React.ReactNode
   withIpfsPrefix?: boolean
+  imageContainerClassName?: string
+  mediaLoaderContainerClassName?: string
   withPreview?: boolean
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -43,6 +45,8 @@ export default function ImageInput({
   innerLabel,
   error,
   disabled,
+  imageContainerClassName,
+  mediaLoaderContainerClassName,
   withPreview = true,
   setIsLoading,
   ...props
@@ -114,10 +118,16 @@ export default function ImageInput({
         </InfoPanel>
       )}
       {shownImage && withPreview && (
-        <div className='absolute inset-0 h-20 w-20 md:h-24 md:w-24'>
+        <div
+          className={cx(
+            'absolute inset-0 h-20 w-20 md:h-24 md:w-24',
+            mediaLoaderContainerClassName
+          )}
+        >
           <MediaLoader
             containerClassName={cx(
-              'h-full w-full rounded-full overflow-hidden'
+              'h-full w-full rounded-full overflow-hidden',
+              imageContainerClassName
             )}
             className={cx('h-full w-full object-cover', {})}
             src={shownImage}
