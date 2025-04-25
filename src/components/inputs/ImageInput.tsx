@@ -40,7 +40,7 @@ export default function ImageInput({
   image,
   setImageUrl,
   containerProps,
-  withIpfsPrefix,
+  withIpfsPrefix = true,
   dropzoneClassName,
   innerLabel,
   error,
@@ -51,7 +51,24 @@ export default function ImageInput({
   setIsLoading,
   ...props
 }: ImageInputProps) {
-  const { mutate: saveImage, isError, isLoading, data, reset } = useSaveImage()
+  const [imageUrlState, setImageUrlState] = useState<string>()
+
+  const {
+    mutate: saveImage,
+    isError,
+    isLoading,
+    data,
+    reset,
+  } = useSaveImage({
+    onSuccess: (data) => {
+      if (data?.cid) {
+        setImageUrlState(withIpfsPrefix ? `ipfs://${data?.cid}` : data?.cid)
+      }
+    },
+    onError: () => {
+      setImageUrlState('')
+    },
+  })
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
@@ -74,11 +91,7 @@ export default function ImageInput({
       return
     }
     saveImage(resizedImage)
-    setImageUrl(URL.createObjectURL(image))
   }
-
-  const shownImage =
-    image || (withIpfsPrefix ? `ipfs://${data?.cid}` : data?.cid)
 
   return (
     <div
@@ -117,7 +130,7 @@ export default function ImageInput({
           {errorMsg || error || '😥 Sorry, we cannot upload your image.'}
         </InfoPanel>
       )}
-      {shownImage && withPreview && (
+      {imageUrlState && withPreview && (
         <div
           className={cx(
             'absolute inset-0 h-20 w-20 md:h-24 md:w-24',
@@ -130,9 +143,9 @@ export default function ImageInput({
               imageContainerClassName
             )}
             className={cx('h-full w-full object-cover', {})}
-            src={shownImage}
+            src={imageUrlState}
             onLoad={() => {
-              if (shownImage) setImageUrl(shownImage)
+              if (imageUrlState) setImageUrl(imageUrlState)
             }}
             imageOnly
           />
